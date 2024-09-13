@@ -20,7 +20,7 @@ afterAll(async () => {
   await mongoose.disconnect();
   await mongoServer.stop();
 });
-// API Testing ngay 13/9/2024 
+// API Testing ngay 13/9/2024 9:52 
 describe('Auth API', () => {
   it('should register a new user', async () => {
     const res = await request(app)
