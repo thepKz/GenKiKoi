@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
+import { MongoError } from 'mongodb';
 import User from '../models/User';
 
 const signToken = (id: string) => {
@@ -18,13 +19,23 @@ export const register = async (req: Request, res: Response) => {
       token, 
       user: { 
         id: user._id?.toString() || '', 
-        username: user.username || '', 
-        email: user.email || '', 
+        username: user.username, 
+        email: user.email, 
         role: user.role 
       } 
     });
   } catch (error) {
-    res.status(400).json({ status: 'fail', message: (error as Error).message });
+    if (error instanceof MongoError && error.code === 11000) {
+      // Duplicate key error
+      const keyValue = (error as any).keyValue;
+      const field = Object.keys(keyValue)[0];
+      res.status(400).json({ 
+        status: 'fail', 
+        message: `${field.charAt(0).toUpperCase() + field.slice(1)} already exists. Please choose a different one.` 
+      });
+    } else {
+      res.status(400).json({ status: 'fail', message: (error as Error).message });
+    }
   }
 };
 
@@ -40,7 +51,7 @@ export const login = async (req: Request, res: Response) => {
     }
     const token = signToken(user._id?.toString() || '');
     res.status(200).json({ 
-      status: 'success', 
+      message: 'Login Successfully', 
       token, 
       user: { 
         id: user._id?.toString() || '', 
