@@ -2,39 +2,73 @@ name: Node.js CI
 
 on:
   push:
-    branches: [ main, feature/* ]
+    branches: 
+      - develop 
+      - 'feature/*' 
   pull_request:
-    branches: [ main, feature/* ]
+    branches: 
+      - develop 
+      - main
 
 jobs:
   test-and-build:
     runs-on: ubuntu-latest
+    # Chỉ chạy khi có push lên develop hoặc pull request vào develop hoặc main
+    if: (github.ref == 'refs/heads/develop' && github.event_name == 'push') || github.event_name == 'pull_request' 
 
     strategy:
       matrix:
         node-version: [18.x, 20.x, 22.x]
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-    - name: Install dependencies and run tests (Server)
-      run: |
-        cd server
-        npm ci
-        npm test
-    - name: Build server
-      run: |
-        cd server
-        npm run build --if-present
-    # - name: Install dependencies and run tests (Client)
-    #   run: |
-    #     cd client
-    #     npm ci
-    #     npm test
-    # - name: Build client
-    #   run: |
-    #     cd client
-    #     npm run build --if-present
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version  }}
+      - name: Install dependencies and run tests (Server)
+        run: |
+          cd server
+          npm ci
+          npm test
+      - name: Build server
+        run: |
+          cd server
+          npm run build --if-present
+      # - name: Install dependencies and run tests (Client)
+      #   run: |
+      #     cd client
+      #     npm ci
+      #     npm test
+      # - name: Build client
+      #   run: |
+      #     cd client
+      #     npm run build --if-present 
+      - name: Create Pull Request to main (Only when on develop branch)
+        if: github.ref == 'refs/heads/develop' 
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }} 
+          commit-message: "Merge develop into main"
+          title: "Merge develop into main"
+          body: "This pull request merges changes from develop into main after successful testing and building."
+          base: main
+          branch: develop
+          delete-branch: true 
+
+  basic-checks-on-feature-branches: # Job mới để chạy kiểm tra cơ bản trên các nhánh feature
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/heads/feature/') && github.event_name == 'push' # Chỉ chạy khi có push lên nhánh feature
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js 18.x 
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+      - name: Install dependencies and run tests (Server)
+        run: |
+          cd server
+          npm ci
+          npm test
+      # ... Các bước kiểm tra cơ bản khác bạn muốn chạy trên nhánh feature
