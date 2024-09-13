@@ -5,6 +5,7 @@ dotenv.config();
 
 const connectDB = async (): Promise<void> => {
   try {
+    console.log('Attempting to connect to MongoDB...');
     if (mongoose.connection.readyState === 1) {
       console.log('MongoDB is already connected');
       return;
@@ -15,15 +16,16 @@ const connectDB = async (): Promise<void> => {
       throw new Error('MONGO_URI is not defined in the environment variables');
     }
 
+    console.log('Connecting to MongoDB...');
     await mongoose.connect(mongoUri, {
-      serverSelectionTimeoutMS: 5000, // Timeout after 5 seconds
+      serverSelectionTimeoutMS: 30000,
       retryWrites: true,
     });
 
     console.log(`MongoDB Connected: ${mongoose.connection.host}`);
   } catch (error) {
-    console.error(`MongoDB connection error: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    // Don't exit the process, allow for retry or graceful handling
+    console.error('MongoDB connection error:', error);
+    throw error; // Re-throw the error to be caught in the retry logic
   }
 };
 

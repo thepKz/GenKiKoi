@@ -38,6 +38,7 @@
     "ts-jest": "^29.2.5"
   },
   "jest": {
+    "verbose": true,
     "preset": "ts-jest",
     "testEnvironment": "node",
     "setupFilesAfterEnv": [
