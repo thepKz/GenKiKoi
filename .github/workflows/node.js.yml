@@ -28,6 +28,8 @@ jobs:
         with:
           node-version: ${{ matrix.node-version  }}
       - name: Install dependencies and run tests (Server)
+        env:
+          MONGO_URI: ${{ secrets.MONGO_URI }}
         run: |
           cd server
           npm ci
