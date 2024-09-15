@@ -3,6 +3,7 @@ name: Node.js CI
 on:
   push:
     branches: 
+      - main
       - develop 
       - 'feature/*' 
   pull_request:
@@ -36,17 +37,6 @@ jobs:
         run: |
           cd server
           npm run build --if-present
-      - name: Create Pull Request to main (Only when on develop branch)
-        if: github.ref == 'refs/heads/develop' 
-        uses: peter-evans/create-pull-request@v5
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }} 
-          commit-message: "Merge develop into main"
-          title: "Merge develop into main"
-          body: "This pull request merges changes from develop into main after successful testing and building."
-          base: main
-          branch: develop
-          delete-branch: true 
 
   basic-checks-on-feature-branches:
     runs-on: ubuntu-latest
