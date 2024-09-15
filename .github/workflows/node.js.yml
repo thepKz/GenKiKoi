@@ -14,8 +14,6 @@ jobs:
   test-and-build:
     runs-on: ubuntu-latest
     timeout-minutes: 10 
-    # Chỉ chạy khi có push lên develop hoặc pull request vào develop hoặc main
-    if: (github.ref == 'refs/heads/develop' && github.event_name == 'push') || github.event_name == 'pull_request' 
 
     strategy:
       matrix:
@@ -26,7 +24,7 @@ jobs:
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.node-version  }}
+          node-version: ${{ matrix.node-version }}
       - name: Install dependencies and run tests (Server)
         env:
           MONGO_URI: ${{ secrets.MONGO_URI }}
@@ -38,15 +36,6 @@ jobs:
         run: |
           cd server
           npm run build --if-present
-      # - name: Install dependencies and run tests (Client)
-      #   run: |
-      #     cd client
-      #     npm ci
-      #     npm test
-      # - name: Build client
-      #   run: |
-      #     cd client
-      #     npm run build --if-present 
       - name: Create Pull Request to main (Only when on develop branch)
         if: github.ref == 'refs/heads/develop' 
         uses: peter-evans/create-pull-request@v5
@@ -59,9 +48,9 @@ jobs:
           branch: develop
           delete-branch: true 
 
-  basic-checks-on-feature-branches: # Job mới để chạy kiểm tra cơ bản trên các nhánh feature
+  basic-checks-on-feature-branches:
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/heads/feature/') && github.event_name == 'push' # Chỉ chạy khi có push lên nhánh feature
+    if: startsWith(github.ref, 'refs/heads/feature/') && github.event_name == 'push'
 
     steps:
       - uses: actions/checkout@v3
@@ -70,8 +59,13 @@ jobs:
         with:
           node-version: 18.x
       - name: Install dependencies and run tests (Server)
+        env:
+          MONGO_URI: ${{ secrets.MONGO_URI }}
         run: |
           cd server
           npm ci
           npm test
-      # ... Các bước kiểm tra cơ bản khác bạn muốn chạy trên nhánh feature
+      - name: Build server
+        run: |
+          cd server
+          npm run build --if-present
