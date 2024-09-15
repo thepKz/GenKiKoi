@@ -21,7 +21,11 @@ const connectWithRetry = async () => {
   }
 };
 
-connectWithRetry();
+// Ensure the connection is established before starting the server
+(async () => {
+  await connectWithRetry();
+  // Start your server here
+})();
 
 // Middleware
 app.use(cors());
@@ -47,7 +51,7 @@ const limiter = rateLimit({
   message: 'Too many requests from this IP, please try again later.'
 });
 
-// Apply rate limiting to auth routes
+// Apply rate limiting to all auth routes
 app.use('/api/auth', limiter);
 
 app.use(express.json());

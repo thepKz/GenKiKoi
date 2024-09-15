@@ -97,3 +97,18 @@ export const login = async (req: Request, res: Response) => {
 export const logout = (req: Request, res: Response) => {
   res.status(200).json({ status: 'success' });
 };
+
+export const getProfile = (req: Request, res: Response) => {
+  const user = (req as any).user;
+  res.status(200).json({
+    status: 'success',
+    data: {
+      user: {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        role: user.role
+      }
+    }
+  });
+};

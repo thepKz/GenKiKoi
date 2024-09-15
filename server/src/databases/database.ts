@@ -22,10 +22,15 @@ const connectDB = async (): Promise<void> => {
       retryWrites: true,
     });
 
-    console.log(`MongoDB Connected: ${mongoose.connection.host}`);
+    // Return a promise that resolves after logging the connection
+    return new Promise<void>((resolve) => {
+      mongoose.connection.once('connected', () => {
+        resolve();
+      });
+    });
   } catch (error) {
     console.error('MongoDB connection error:', error);
-    throw error; // Re-throw the error to be caught in the retry logic
+    throw error;
   }
 };
 

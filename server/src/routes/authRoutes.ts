@@ -1,13 +1,12 @@
 import express from 'express';
-import { login, logout, register } from '../controllers/authController';
-import { sendVerificationEmailController, verifyOTPController } from '../controllers/mailController';
+import { getProfile, login, logout, register } from '../controllers/authController';
+import { authMiddleware } from '../middleware/authMiddleware';
 
 const router = express.Router();
 
 router.post('/register', register);
 router.post('/login', login);
-router.get('/logout', logout);
-router.post('/send-verification', sendVerificationEmailController);
-router.post('/verify-otp', verifyOTPController);
+router.get('/logout', authMiddleware, logout);
+router.get('/profile', authMiddleware, getProfile);
 
 export default router;
