@@ -1,6 +1,7 @@
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose from 'mongoose';
 import request from 'supertest';
+import connectDB from '../databases/database'; // Assuming this is the correct import path
 import app from '../index';
 import User from '../models/User';
 let mongoServer: MongoMemoryServer;
@@ -8,8 +9,9 @@ let mongoServer: MongoMemoryServer;
 beforeAll(async () => {
   mongoServer = await MongoMemoryServer.create();
   const mongoUri = mongoServer.getUri();
+  process.env.MONGO_URI = mongoUri;
   await mongoose.disconnect();
-  await mongoose.connect(mongoUri);
+  await connectDB();
 });
 beforeEach(async () => {
   await User.deleteMany({}); // Xóa tất cả users

@@ -12,6 +12,8 @@ const connectDB = async (): Promise<typeof mongoose> => {
     }
 
     const mongoUri = process.env.MONGO_URI;
+    console.log('MONGO_URI is set:', !!mongoUri); // This will log true if MONGO_URI is set, false otherwise
+
     if (!mongoUri) {
       throw new Error('MONGO_URI is not defined in the environment variables');
     }
