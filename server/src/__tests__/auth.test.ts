@@ -26,6 +26,7 @@ beforeEach(async () => {
 afterAll(async () => {
   await mongoose.disconnect();
   await mongoServer.stop();
+  await new Promise(resolve => setTimeout(resolve, 1000)); // Give time for all connections to close
 });
 
 describe('Auth API', () => {

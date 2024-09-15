@@ -2,6 +2,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
 import rateLimit from 'express-rate-limit';
+import mongoose from 'mongoose';
 import connectDB from './databases/database';
 import authRoutes from './routes/authRoutes';
 import mailRoutes from './routes/mailRoutes';
@@ -57,4 +58,10 @@ app.use('/api/auth', limiter);
 app.use(express.json());
 app.use('/api/auth', authRoutes);
 
+export const closeConnection = async () => {
+  await mongoose.disconnect();
+  console.log('MongoDB connection closed');
+};
+
 export default app;
+
