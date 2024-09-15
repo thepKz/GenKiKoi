@@ -3,12 +3,12 @@ import mongoose from 'mongoose';
 
 dotenv.config();
 
-const connectDB = async (): Promise<void> => {
+const connectDB = async (): Promise<typeof mongoose> => {
   try {
     console.log('Attempting to connect to MongoDB...');
     if (mongoose.connection.readyState === 1) {
       console.log('MongoDB is already connected');
-      return;
+      return mongoose;
     }
 
     const mongoUri = process.env.MONGO_URI;
@@ -22,12 +22,15 @@ const connectDB = async (): Promise<void> => {
       retryWrites: true,
     });
 
-    // Return a promise that resolves after logging the connection
-    return new Promise<void>((resolve) => {
-      mongoose.connection.once('connected', () => {
-        resolve();
-      });
+    mongoose.connection.on('connected', () => {
+      console.log('MongoDB connected successfully');
     });
+
+    mongoose.connection.on('error', (err) => {
+      console.error('MongoDB connection error:', err);
+    });
+
+    return mongoose;
   } catch (error) {
     console.error('MongoDB connection error:', error);
     throw error;
