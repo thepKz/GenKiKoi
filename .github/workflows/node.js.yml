@@ -29,6 +29,8 @@ jobs:
       - name: Log before test
         run: echo "Running tests..."
       - name: Install dependencies and run tests (Server)
+        env:
+          MONGO_URI: ${{ secrets.MONGO_URI }}
         run: |
           cd server
           npm ci
