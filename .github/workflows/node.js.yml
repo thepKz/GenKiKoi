@@ -26,6 +26,8 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
+      - name: Log before test
+        run: echo "Running tests..."
       - name: Install dependencies and run tests (Server)
         env:
           MONGO_URI: ${{ secrets.MONGO_URI }}
@@ -33,7 +35,12 @@ jobs:
           cd server
           npm ci
           npm test
+      - name: Log after test
+        run: echo "Tests completed, building server..."
       - name: Build server
         run: |
           cd server
           npm run build --if-present
+      - name: Log after build
+        run: echo "Build completed!"
+
