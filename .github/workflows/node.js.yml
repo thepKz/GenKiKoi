@@ -1,5 +1,4 @@
 name: CI
-
 on:
   push:
     paths:
@@ -14,7 +13,7 @@ on:
     branches:
       - 'main'
       - 'release/**'
-      - '!dev/**'
+      - '!dev/** '
   pull_request:
     types: [opened, synchronize, reopened, labeled, unlabeled]
   workflow_dispatch:
