@@ -12,6 +12,8 @@
   "dependencies": {
     "@types/react-router-dom": "^5.3.3",
     "axios": "^1.7.7",
+    "antd": "^5.20.6",
+    "iconsax-react": "^0.0.8",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.26.2"
