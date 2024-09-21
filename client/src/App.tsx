@@ -1,4 +1,5 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+
 import {
   AboutUs,
   Doctors,
@@ -9,6 +10,7 @@ import {
   Services,
   SignUp,
 } from "./pages";
+
 import { MainLayout } from "./layouts";
 
 const App = () => {

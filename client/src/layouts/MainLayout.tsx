@@ -1,17 +1,15 @@
 import { Outlet } from "react-router-dom";
-import { Header } from "../components";
-import { Divider } from "antd";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
+import { DividerComponent } from "../share";
 
 const MainLayout = () => {
   return (
     <div>
       <Header />
-      <Divider
-        style={{
-          margin: "0px",
-        }}
-      />
       <Outlet />
+      <DividerComponent />
+      <Footer />
     </div>
   );
 };
