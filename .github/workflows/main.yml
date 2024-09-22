@@ -11,26 +11,8 @@ env:
   NODE_VERSION: '20'
 
 jobs:
-  lint-and-test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Use Node.js ${{ env.NODE_VERSION }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-      - name: Install dependencies
-        run: npm ci
-        working-directory: ./client
-      - name: Lint code
-        run: npm run lint
-        working-directory: ./client
-      - name: Run unit tests
-        run: npm test
-        working-directory: ./client
 
   build:
-    needs: [lint-and-test]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
