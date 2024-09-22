@@ -19,7 +19,7 @@ export const sendVerificationEmail = async (to: string, otp: string) => {
       <h2>${otp}</h2>
       <p>Please enter this code in the application to verify your email address.</p>
       <p>This code will expire in 10 minutes.</p>
-    `
+    `  
   };
 
   try {

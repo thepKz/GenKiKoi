@@ -12,6 +12,7 @@ on:
       - '**.js'
       - '**.ts'
     branches:
+      - 'develop'
       - 'main'
       - 'release/**'
       - '!dev/** '
