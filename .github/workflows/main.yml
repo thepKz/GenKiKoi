@@ -13,6 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Clear npm cache
+        run: npm cache clean --force
       - name: Use Node.js 20
         uses: actions/setup-node@v3
         with:
