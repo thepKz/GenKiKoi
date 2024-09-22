@@ -19,22 +19,31 @@ const items: MenuProps["items"] = [
 
 const Header = () => {
   return (
-    <header className="bg-blue-primary fixed z-50 w-full">
+    <header className="fixed z-50 w-full bg-blue-primary shadow-lg">
       <div className="container mx-auto lg:px-40">
         <div className="flex items-center justify-between">
           <div className="h-20 w-20">
-            <img src={Logo} alt="" />
+            <img
+              src={Logo}
+              alt=""
+            />
           </div>
           <ul className="flex items-center gap-8 text-white">
             <div className="link">
-              <Link className="" to={"/home"}>
+              <Link
+                className=""
+                to={"/home"}
+              >
                 Trang chủ
               </Link>
               <div className="h-[1.5px] bg-white duration-300 ease-in" />
             </div>
             <Dropdown menu={{ items }}>
               <div className="link">
-                <Link className="" to={"/services"}>
+                <Link
+                  className=""
+                  to={"/services"}
+                >
                   Dịch vụ
                 </Link>
                 <div className="h-[1.5px] bg-white duration-300 ease-in" />
@@ -42,37 +51,55 @@ const Header = () => {
             </Dropdown>
 
             <div className="link">
-              <Link className="" to={"/images"}>
+              <Link
+                className=""
+                to={"/images"}
+              >
                 Hình ảnh
               </Link>
               <div className="h-[1.5px] bg-white duration-300 ease-in" />
             </div>
             <div className="link">
-              <Link className="" to={"/doctors"}>
+              <Link
+                className=""
+                to={"/doctors"}
+              >
                 Bác sĩ
               </Link>
               <div className="h-[1.5px] bg-white duration-300 ease-in" />
             </div>
 
             <div className="link">
-              <Link className="" to={"/about-us"}>
+              <Link
+                className=""
+                to={"/about-us"}
+              >
                 Giới thiệu
               </Link>
               <div className="h-[1.5px] bg-white duration-300 ease-in" />
             </div>
 
             <div className="link">
-              <Link className="" to={"/faq"}>
+              <Link
+                className=""
+                to={"/faq"}
+              >
                 Hỏi & Đáp
               </Link>
               <div className="h-[1.5px] bg-white duration-300 ease-in" />
             </div>
           </ul>
           <div className="flex items-center gap-3">
-            <Button size="large" ghost>
+            <Button
+              size="large"
+              ghost
+            >
               Đăng nhập
             </Button>
-            <Button size="large" type="primary">
+            <Button
+              size="large"
+              type="primary"
+            >
               Đăng ký
             </Button>
           </div>
