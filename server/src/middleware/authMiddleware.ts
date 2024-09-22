@@ -13,11 +13,18 @@ export const authMiddleware = (req: AuthRequest, res: Response, next: NextFuncti
     return res.status(401).json({ message: 'No token provided' });
   }
 
+  if (!process.env.JWT_SECRET && !process.env.FALLBACK_SECRET) {
+    throw new Error('JWT secret is not defined');
+  }
+  const jwtSecret = process.env.JWT_SECRET || process.env.FALLBACK_SECRET;
+  if (!jwtSecret) {
+    throw new Error('JWT secret is not defined');
+  }
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback_secret');
+    const decoded = jwt.verify(token, jwtSecret);
     req.user = decoded;
     next();
   } catch (error) {
-    return res.status(403).json({ message: 'Invalid token' });
+    return res.status(401).json({ message: 'Invalid token' });
   }
 };
