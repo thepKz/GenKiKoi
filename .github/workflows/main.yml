@@ -7,18 +7,16 @@ on:
     branches: [main, develop]
   workflow_dispatch:
 
-env:
-  NODE_VERSION: '20'
 
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Use Node.js ${{ env.NODE_VERSION }}
+      - name: Use Node.js 20
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version: 20
           cache: 'npm'
       - name: Install dependencies 
         run: npm ci 
@@ -29,10 +27,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Use Node.js ${{ env.NODE_VERSION }}
-        uses: actions/setup-node@v4
+      - name: Use Node.js 20
+        uses: actions/setup-node@v3
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version: 20
           cache: 'npm'
       - name: Install dependencies
         run: npm ci
