@@ -5,8 +5,16 @@ on:
     branches: [main, develop, 'release/**']
   pull_request:
     branches: [main, develop]
-  workflow_dispatch:
 
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
 env:
   NODE_VERSION: '20'
 
@@ -17,7 +25,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Use Node.js ${{ env.NODE_VERSION }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
