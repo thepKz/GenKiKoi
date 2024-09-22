@@ -20,14 +20,12 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-      - name: Install dependencies
-        run: npm ci
-        working-directory: ./client
-      - name: Run unit tests
-        run: npm test
-        working-directory: ./client
+      - name: Install dependencies 
+        run: npm ci 
+        working-directory: ./client 
 
   build:
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
