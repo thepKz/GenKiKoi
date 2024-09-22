@@ -37,7 +37,9 @@ jobs:
         with:
           path: './build'
 
+
   deploy-staging:
+
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
