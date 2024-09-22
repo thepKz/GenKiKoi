@@ -123,7 +123,7 @@ const Footer = () => {
           </div>
         </div>
         <div className="mt-10 text-left">
-          <h3>© 2023 Phòng khám Thú Y GenKiKoi</h3>
+          <h3>© 2024 Phòng khám Thú Y GenKiKoi</h3>
         </div>
       </div>
     </div>
