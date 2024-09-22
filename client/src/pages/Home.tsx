@@ -1,9 +1,8 @@
+import { Avatar, Button } from "antd";
+import { ArrowLeft2, ArrowRight2, EmojiHappy, Heart, HeartTick, Moneys, Star } from "iconsax-react";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
-import { motion } from "framer-motion";
-import { Avatar, Button } from "antd";
 import Background from "../assets/background.png";
-import { ArrowLeft2, ArrowRight2, EmojiHappy, Heart, HeartTick, Moneys, Star } from "iconsax-react";
 
 import Image1 from "../assets/Image1.png";
 import Image2 from "../assets/Image2.png";
