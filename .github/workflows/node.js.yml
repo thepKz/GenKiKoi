@@ -10,6 +10,7 @@ on:
       - '!vite.config.ts'
       - '!docs/**'
       - '**.js'
+      - '**.ts'
     branches:
       - 'main'
       - 'release/**'
