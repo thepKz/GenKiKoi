@@ -7,7 +7,7 @@ const transporter = nodemailer.createTransport({
     pass: 'fpjr xbrv utgj enok'  // App password you generated
   }
 });
-
+//test mail
 export const sendVerificationEmail = async (to: string, otp: string) => {
   const mailOptions = {
     from: 'maitanthepmrthep@gmail.com',
