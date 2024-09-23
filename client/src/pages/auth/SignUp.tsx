@@ -1,14 +1,37 @@
-import { Button, Checkbox, ConfigProvider, Divider, Form, Input } from "antd";
+import { Button, ConfigProvider, Divider, Form, Input, message } from "antd";
 import Logo from "../../assets/logo-transparent.png";
 import Banner from "../../assets/banner.jpg";
 import { SocialButton } from "../../components";
 import { Link } from "react-router-dom";
+import { SignUpData } from "../../models/AuthModels";
+import { useState } from "react";
+import { handleAPI } from "../../apis/handleAPI";
+import { useDispatch } from "react-redux";
+import { addAuth } from "../../redux/reducers/authReducer";
 
 const SignUp = () => {
   const [form] = Form.useForm();
 
-  const handleSubmit = () => {
-    console.log("Submit");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const dispatch = useDispatch();
+
+  const handleSubmit = async (values: SignUpData) => {
+    const api = `/api/auth/register`;
+
+    try {
+      setIsLoading(true);
+      const res: any = await handleAPI(api, values, "POST");
+      if (res.data) {
+        message.success(res.message);
+        dispatch(addAuth(res.data));
+      }
+    } catch (error: any) {
+      console.log(error);
+      message.error(error.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -30,15 +53,17 @@ const SignUp = () => {
               <p className="my-2 text-slate-500">Sign up to enjoy the feature of Revolute</p>
             </div>
             <Form
+              disabled={isLoading}
               size="large"
               form={form}
               layout="vertical"
               onFinish={handleSubmit}
             >
               <Form.Item
-                name="name"
+                name="username"
                 label="Name"
                 required={false}
+                hasFeedback
                 rules={[{ required: true, message: "Please input your name!" }]}
               >
                 <Input
@@ -49,6 +74,7 @@ const SignUp = () => {
               <Form.Item
                 name="email"
                 label="Email"
+                hasFeedback
                 required={false}
                 rules={[{ required: true, message: "Please input your email!" }]}
               >
@@ -61,16 +87,33 @@ const SignUp = () => {
                 name="password"
                 label="Password"
                 required={false}
-                rules={[{ required: true, message: "Please input your password!" }]}
+                hasFeedback
+                tooltip="Password must be at least 8 characters long, include an uppercase letter, a lowercase letter, a number, and a special character."
+                rules={[
+                  {
+                    required: true,
+                    message: "Please enter your password!",
+                  },
+                  {
+                    pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/,
+                    message: "Password not strong enough!",
+                    warningOnly: true,
+                  },
+                ]}
               >
                 <Input.Password placeholder="Please input your password!" />
               </Form.Item>
               <Form.Item
-                name="confirm password"
+                name="confirmPassword"
                 label="Confirm Password"
+                hasFeedback
                 required={false}
+                tooltip="Password and Confirm Password must match each other!"
                 rules={[
-                  { required: true, message: "Please input your confirm password!" },
+                  {
+                    required: true,
+                    message: "Please confirm your password!",
+                  },
                   ({ getFieldValue }) => ({
                     validator(_, value) {
                       if (!value || getFieldValue("password") === value) {
@@ -80,6 +123,7 @@ const SignUp = () => {
                         new Error("The new password that you entered do not match!"),
                       );
                     },
+                    warningOnly: true,
                   }),
                 ]}
               >
@@ -96,6 +140,7 @@ const SignUp = () => {
                 }}
               >
                 <Button
+                  loading={isLoading}
                   size="large"
                   type="primary"
                   className="mt-3 w-full"

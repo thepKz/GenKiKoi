@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { MainLayout } from "../layouts";
 import {
   AboutUs,
@@ -12,18 +12,24 @@ import {
   SignUp,
   UnAuthorized,
 } from "../pages";
+import { AuthState } from "../models/AuthModels";
+import { useSelector } from "react-redux";
 
 const MainRouter = () => {
+  const auth: AuthState = useSelector((state: any) => state.authReducer.data);
+
+  console.log(auth);
+
   return (
     <BrowserRouter>
       <Routes>
         <Route
           path="/sign-in"
-          element={<SignIn />}
+          element={!auth ? <SignIn /> : <Navigate to={"/"} />}
         />
         <Route
           path="/sign-up"
-          element={<SignUp />}
+          element={!auth ? <SignUp /> : <Navigate to={"/"} />}
         />
         <Route
           path="/*"
