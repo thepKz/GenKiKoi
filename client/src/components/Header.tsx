@@ -5,7 +5,7 @@ import { Button, Dropdown, MenuProps } from "antd";
 const items: MenuProps["items"] = [
   {
     key: "1",
-    label: <Link to="#">Tư vấn & Điều trị</Link>,
+    label: <Link to="services/consulting-treatment">Tư vấn & Điều trị</Link>,
   },
   {
     key: "2",
@@ -23,16 +23,18 @@ const Header = () => {
       <div className="container mx-auto lg:px-40">
         <div className="flex items-center justify-between">
           <div className="h-20 w-20">
-            <img
-              src={Logo}
-              alt=""
-            />
+            <Link to={"/"}>
+              <img
+                src={Logo}
+                alt=""
+              />
+            </Link>
           </div>
           <ul className="flex items-center gap-8 text-white">
             <div className="link">
               <Link
                 className=""
-                to={"/home"}
+                to={"/"}
               >
                 Trang chủ
               </Link>
@@ -94,13 +96,13 @@ const Header = () => {
               size="large"
               ghost
             >
-              Đăng nhập
+              <Link to={"/sign-in"}>Đăng nhập</Link>
             </Button>
             <Button
               size="large"
               type="primary"
             >
-              Đăng ký
+              <Link to={"/sign-up"}>Đăng ký</Link>
             </Button>
           </div>
         </div>

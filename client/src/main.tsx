@@ -27,6 +27,9 @@ createRoot(document.getElementById("root")!).render(
           Divider: {
             marginLG: 0,
           },
+          Form: {
+            itemMarginBottom: 12,
+          },
         },
       }}
     >

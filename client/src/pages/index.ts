@@ -3,8 +3,21 @@ import Doctors from "./Doctors";
 import FAQ from "./FAQ";
 import Home from "./Home";
 import Images from "./Images";
-import Login from "./Login";
+import SignIn from "./auth/SignIn";
 import Services from "./Services";
-import SignUp from "./SignUp";
+import SignUp from "./auth/SignUp";
+import UnAuthorized from "./UnAuthorized";
+import ConsultingTreatment from "./services/ConsultingTreatment";
 
-export { Login, SignUp, Images, FAQ, Services, AboutUs, Doctors, Home };
+export {
+  SignIn,
+  SignUp,
+  Images,
+  FAQ,
+  Services,
+  AboutUs,
+  Doctors,
+  Home,
+  ConsultingTreatment,
+  UnAuthorized,
+};

@@ -1,6 +1,5 @@
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
-import { motion } from "framer-motion";
 import { Avatar, Button } from "antd";
 import Background from "../assets/background.png";
 import { ArrowLeft2, ArrowRight2, EmojiHappy, Heart, HeartTick, Moneys, Star } from "iconsax-react";
@@ -23,6 +22,7 @@ import Fish4 from "../assets/fish-care-4.jpg";
 
 import FishBanner from "../assets/fish-banner.png";
 import { AnimatedSection, DividerComponent } from "../share";
+import { useEffect } from "react";
 
 const responsive = {
   desktop: {
@@ -40,6 +40,9 @@ const responsive = {
 };
 
 const Home = () => {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   return (
     <div>
       {/* Banner */}
@@ -67,7 +70,7 @@ const Home = () => {
             }}
             className="mt-20 w-2/5"
           >
-            <h1 className="text-5xl font-bold">Hơn cả sự hài lòng.</h1>
+            <h1 className="heading-1">Hơn cả sự hài lòng.</h1>
             <p className="py-8 text-justify text-base">
               GenKiKoi là tập thể những người trẻ, đầy nhiệt huyết và giàu kinh nghiệm trong lĩnh
               vực điều trị và chăm sóc cho cá Koi. <br />
@@ -159,7 +162,7 @@ const Home = () => {
               },
             }}
           >
-            <h1 className="mb-5 text-5xl font-bold">Tại sao chọn GenKiKoi?</h1>
+            <h1 className="heading-1 mb-5">Tại sao chọn GenKiKoi?</h1>
             <p>
               Rất cảm ơn bạn đã sử dụng dịch vụ tại GenKiKoi. Nếu chưa, chúng tôi có những lý do sau
               để hy vọng một lúc nào đó sẽ được phục vụ bạn.
@@ -262,7 +265,7 @@ const Home = () => {
               },
             }}
           >
-            <h1 className="mb-5 text-5xl font-bold">Đầy đủ dịch vụ cho thú cưng của bạn</h1>
+            <h1 className="heading-1 mb-5">Đầy đủ dịch vụ cho thú cưng của bạn</h1>
             <div className="flex justify-center gap-2">
               <p className="text-center">Tất cả đều có ở GenKiKoi</p>
               <div className="relative">
@@ -391,7 +394,7 @@ const Home = () => {
               },
             }}
           >
-            <h1 className="mb-5 text-5xl font-bold">Hình ảnh hoạt động tại GenKiKoi</h1>
+            <h1 className="heading-1 mb-5">Hình ảnh hoạt động tại GenKiKoi</h1>
           </AnimatedSection>
           {/* Images list */}
           <AnimatedSection
@@ -494,7 +497,7 @@ const Home = () => {
               },
             }}
           >
-            <h1 className="mb-5 text-5xl font-bold">Được khách hàng ghi nhận</h1>
+            <h1 className="heading-1 mb-5">Được khách hàng ghi nhận</h1>
             <div className="flex justify-center gap-2">
               <p className="text-center">
                 Sự hài lòng của khách hàng là thứ chúng tôi luôn mong muốn
@@ -624,7 +627,7 @@ const Home = () => {
               },
             }}
           >
-            <h1 className="mb-5 text-5xl font-bold">Kỳ vọng gì từ GenKiKoi</h1>
+            <h1 className="heading-1 mb-5">Kỳ vọng gì từ GenKiKoi</h1>
             <div className="flex justify-center gap-2">
               <p className="text-center">
                 Hãy để chúng tôi thay mặt bạn mang đến cho thú cưng những điều tốt đẹp nhất.
@@ -716,6 +719,7 @@ const Home = () => {
           </div>
         </div>
       </div>
+      <DividerComponent />
     </div>
   );
 };
