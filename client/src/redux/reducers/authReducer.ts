@@ -20,7 +20,7 @@ const authSlice = createSlice({
     },
     removeAuth: (state, _action) => {
       state.data = initialState;
-      localStorage.removeItem("auth_GenKiKoi");
+      localStorage.setItem("auth_GenKiKoi", JSON.stringify({}));
     },
   },
 });

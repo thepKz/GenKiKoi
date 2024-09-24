@@ -1,23 +1,47 @@
 import { Link } from "react-router-dom";
 import Logo from "../assets/logo.jpg";
-import { Button, Dropdown, MenuProps } from "antd";
-
-const items: MenuProps["items"] = [
-  {
-    key: "1",
-    label: <Link to="services/consulting-treatment">Tư vấn & Điều trị</Link>,
-  },
-  {
-    key: "2",
-    label: <Link to="#">Tiêm ngừa</Link>,
-  },
-  {
-    key: "3",
-    label: <Link to="#">Kiểm tra chất lượng nước</Link>,
-  },
-];
+import { Avatar, Badge, Button, Dropdown, MenuProps } from "antd";
+import { AuthState } from "../models/AuthModels";
+import { useDispatch, useSelector } from "react-redux";
+import { Logout, Notification, User } from "iconsax-react";
+import { removeAuth } from "../redux/reducers/authReducer";
 
 const Header = () => {
+  const auth: AuthState = useSelector((state: any) => state.authReducer.data);
+
+  const dispatch = useDispatch();
+
+  const services: MenuProps["items"] = [
+    {
+      key: "1",
+      label: <Link to="services/consulting-treatment">Tư vấn & Điều trị</Link>,
+    },
+    {
+      key: "2",
+      label: <Link to="#">Tiêm ngừa</Link>,
+    },
+    {
+      key: "3",
+      label: <Link to="#">Kiểm tra chất lượng nước</Link>,
+    },
+  ];
+
+  const profile: MenuProps["items"] = [
+    {
+      key: "1",
+      label: "My Account",
+    },
+    {
+      type: "divider",
+    },
+    {
+      key: "2",
+      label: "Logout",
+      icon: <Logout size={18} />,
+      onClick: () => dispatch(removeAuth({})),
+    },
+  ];
+
   return (
     <header className="fixed z-50 w-full bg-blue-primary shadow-lg">
       <div className="container mx-auto lg:px-40">
@@ -40,7 +64,7 @@ const Header = () => {
               </Link>
               <div className="h-[1.5px] bg-white duration-300 ease-in" />
             </div>
-            <Dropdown menu={{ items }}>
+            <Dropdown menu={{ items: services }}>
               <div className="link">
                 <Link
                   className=""
@@ -91,20 +115,41 @@ const Header = () => {
               <div className="h-[1.5px] bg-white duration-300 ease-in" />
             </div>
           </ul>
-          <div className="flex items-center gap-3">
-            <Button
-              size="large"
-              ghost
-            >
-              <Link to={"/sign-in"}>Đăng nhập</Link>
-            </Button>
-            <Button
-              size="large"
-              type="primary"
-            >
-              <Link to={"/sign-up"}>Đăng ký</Link>
-            </Button>
-          </div>
+          {!auth.token ? (
+            <div className="flex items-center gap-3">
+              <Button
+                size="large"
+                ghost
+              >
+                <Link to={"/sign-in"}>Đăng nhập</Link>
+              </Button>
+              <Button
+                size="large"
+                type="primary"
+              >
+                <Link to={"/sign-up"}>Đăng ký</Link>
+              </Button>
+            </div>
+          ) : (
+            <div className="flex items-center gap-3">
+              <Badge
+                count={9}
+                size="small"
+                offset={[-4, 3]}
+              >
+                <Notification
+                  className="cursor-pointer"
+                  color="white"
+                />
+              </Badge>
+              <Dropdown menu={{ items: profile }}>
+                <Avatar
+                  className="cursor-pointer"
+                  icon={<User size={18} />}
+                />
+              </Dropdown>
+            </div>
+          )}
         </div>
       </div>
     </header>

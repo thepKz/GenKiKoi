@@ -25,12 +25,16 @@ createRoot(document.getElementById("root")!).render(
             colorBgElevated: "#0c3c54",
             colorText: "white",
             fontSize: 16,
+            controlItemBgHover: "#006478",
           },
           Divider: {
             marginLG: 0,
           },
           Form: {
             itemMarginBottom: 12,
+          },
+          Badge: {
+            textFontSizeSM: 10,
           },
         },
       }}

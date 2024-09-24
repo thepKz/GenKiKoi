@@ -39,13 +39,15 @@ const SignUp = () => {
       <div className="flex h-[94vh]">
         <div className="w-2/5">
           <div className="mb-5">
-            <div className="flex w-20 items-center gap-2">
-              <img
-                src={Logo}
-                alt=""
-              />
-              <h3 className="text-2xl font-bold text-blue-primary">GenKiKoi</h3>
-            </div>
+            <Link to={"/"}>
+              <div className="flex w-20 items-center gap-2">
+                <img
+                  src={Logo}
+                  alt=""
+                />
+                <h3 className="text-2xl font-bold text-blue-primary">GenKiKoi</h3>
+              </div>
+            </Link>
           </div>
           <div className="mx-auto w-3/5">
             <div className="">
@@ -64,7 +66,24 @@ const SignUp = () => {
                 label="Name"
                 required={false}
                 hasFeedback
-                rules={[{ required: true, message: "Please input your name!" }]}
+                rules={[
+                  {
+                    validator: async (_, value) => {
+                      if (!value) {
+                        return Promise.reject(new Error("Please input your name!"));
+                      }
+                      if (!value && !/^[a-zA-ZÀ-ÿ\s]+$/.test(value)) {
+                        return Promise.reject(
+                          new Error("Invalid name! Only letters and spaces are allowed."),
+                        );
+                      }
+                      if (value.trim().length === 0) {
+                        return Promise.reject(new Error("Name cannot be just spaces!"));
+                      }
+                      return Promise.resolve();
+                    },
+                  },
+                ]}
               >
                 <Input
                   placeholder="Please input your name!"
@@ -76,7 +95,14 @@ const SignUp = () => {
                 label="Email"
                 hasFeedback
                 required={false}
-                rules={[{ required: true, message: "Please input your email!" }]}
+                rules={[
+                  { required: true, message: "Please input your email!" },
+                  {
+                    pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                    message: "Invalid email!",
+                    warningOnly: true,
+                  },
+                ]}
               >
                 <Input
                   placeholder="Please input your email!"

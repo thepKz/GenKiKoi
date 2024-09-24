@@ -13,10 +13,23 @@ import {
   UnAuthorized,
 } from "../pages";
 import { AuthState } from "../models/AuthModels";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
+import { addAuth } from "../redux/reducers/authReducer";
 
 const MainRouter = () => {
   const auth: AuthState = useSelector((state: any) => state.authReducer.data);
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const getData = () => {
+      const res = localStorage.getItem("auth_GenKiKoi");
+      res && dispatch(addAuth(JSON.parse(res)));
+    };
+    getData();
+    console.log("render");
+  }, [auth.token]);
 
   console.log(auth);
 
@@ -25,11 +38,11 @@ const MainRouter = () => {
       <Routes>
         <Route
           path="/sign-in"
-          element={!auth ? <SignIn /> : <Navigate to={"/"} />}
+          element={!auth.token ? <SignIn /> : <Navigate to={"/"} />}
         />
         <Route
           path="/sign-up"
-          element={!auth ? <SignUp /> : <Navigate to={"/"} />}
+          element={!auth.token ? <SignUp /> : <Navigate to={"/"} />}
         />
         <Route
           path="/*"

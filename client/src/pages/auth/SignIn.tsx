@@ -1,27 +1,52 @@
-import { Button, Checkbox, ConfigProvider, Divider, Form, Input } from "antd";
+import { Button, Checkbox, ConfigProvider, Divider, Form, Input, message } from "antd";
 import Logo from "../../assets/logo-transparent.png";
 import Banner from "../../assets/banner.jpg";
 import { SocialButton } from "../../components";
 import { Link } from "react-router-dom";
+import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { handleAPI } from "../../apis/handleAPI";
+import { addAuth } from "../../redux/reducers/authReducer";
 
 const SignIn = () => {
   const [form] = Form.useForm();
 
-  const handleSubmit = (values: any) => {
-    console.log(values);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
+
+  const dispatch = useDispatch();
+
+  const handleSubmit = async (values: any) => {
+    const api = `/api/auth/login`;
+
+    try {
+      setIsLoading(true);
+      const res: any = await handleAPI(api, values, "POST");
+      if (res.data) {
+        message.success(res.message);
+        dispatch(addAuth(res.data));
+      }
+    } catch (error: any) {
+      setIsError(true);
+      message.error(error.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
   return (
     <div className="container m-5 mx-auto px-10 text-black">
       <div className="flex h-[94vh]">
         <div className="w-2/5">
           <div className="mb-16">
-            <div className="flex w-20 items-center gap-2">
-              <img
-                src={Logo}
-                alt=""
-              />
-              <h3 className="text-2xl font-bold text-blue-primary">GenKiKoi</h3>
-            </div>
+            <Link to={"/"}>
+              <div className="flex w-20 items-center gap-2">
+                <img
+                  src={Logo}
+                  alt=""
+                />
+                <h3 className="text-2xl font-bold text-blue-primary">GenKiKoi</h3>
+              </div>
+            </Link>
           </div>
           <div className="mx-auto w-3/5">
             <div className="">
@@ -29,6 +54,7 @@ const SignIn = () => {
               <p className="my-2 text-slate-500">Please login to continue to your account.</p>
             </div>
             <Form
+              disabled={isLoading}
               onFinish={handleSubmit}
               size="large"
               form={form}
@@ -38,7 +64,16 @@ const SignIn = () => {
                 name="email"
                 label="Email"
                 required={false}
-                rules={[{ required: true, message: "Please input your email!" }]}
+                validateStatus={isError ? "warning" : ""}
+                help={isError ? "Need to be checked" : ""}
+                rules={[
+                  { required: true, message: "Please input your email!" },
+                  {
+                    pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                    message: "Invalid email!",
+                    warningOnly: true,
+                  },
+                ]}
               >
                 <Input
                   placeholder="Please input your email!"
@@ -48,6 +83,8 @@ const SignIn = () => {
               <Form.Item
                 name="password"
                 label="Password"
+                validateStatus={isError ? "warning" : ""}
+                help={isError ? "Need to be checked" : ""}
                 required={false}
                 rules={[{ required: true, message: "Please input your password!" }]}
               >
@@ -64,6 +101,7 @@ const SignIn = () => {
                 }}
               >
                 <Button
+                  loading={isLoading}
                   size="large"
                   type="primary"
                   className="mt-3 w-full"
