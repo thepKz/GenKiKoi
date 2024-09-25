@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import { Request, Response } from "express";
-import User from "../models/User";
+import User from "../models/UserModel";
 import { isStrongPassword, signToken } from "../utils";
 
 /**
@@ -12,40 +12,57 @@ export const register = async (req: Request, res: Response) => {
   try {
     const { username, email, password, confirmPassword } = req.body;
 
-    if (!username || !email || !password) {
-      return res
-        .status(400)
-        .json({ message: "Vui lòng điền đẩy đủ các trường!" });
+    const errors: any = {
+      message: "",
+      username: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    };
+
+    // Apply the trim method for all fields
+    const trimmedUsername = username.trim();
+    const trimmedEmail = email.trim();
+    const trimmedPassword = password.trim();
+    const trimmedConfirmPassword = confirmPassword.trim();
+
+    if (!trimmedUsername || !trimmedEmail || !trimmedPassword) {
+      errors.message = "Vui lòng điền đẩy đủ các trường!";
+      return res.status(400).json(errors);
     }
 
-    const usernameExist = await User.findOne({ username });
+    const usernameExist = await User.findOne({ username: trimmedUsername });
 
     if (usernameExist) {
-      return res
-        .status(400)
-        .json({ message: "Tên tài khoản này đã được sử dụng!" });
+      errors.username = "Tên tài khoản này đã được sử dụng!";
+      return res.status(400).json(errors);
     }
 
-    const emailExist = await User.findOne({ email: email.toLowerCase() });
+    const emailExist = await User.findOne({
+      email: trimmedEmail.toLowerCase(),
+    });
 
     if (emailExist) {
-      return res.status(400).json({ message: "Email này đã được sử dụng!" });
+      errors.email = "Email này đã được sử dụng!";
+      return res.status(400).json(errors);
     }
 
     // Handling for extra safety
-    if (!isStrongPassword(password)) {
-      return res.status(400).json({ message: "Mật khẩu không đủ mạnh!" });
+    if (!isStrongPassword(trimmedPassword)) {
+      errors.password = "Mật khẩu không đủ mạnh!";
+      return res.status(400).json(errors);
     }
 
-    if (password !== confirmPassword) {
-      return res.status(400).json({ message: "Mật khẩu xác nhận không khớp!" });
+    if (trimmedPassword !== trimmedConfirmPassword) {
+      errors.confirmPassword = "Mật khẩu xác nhận không khớp!";
+      return res.status(400).json(errors);
     }
 
     const salt = await bcrypt.genSalt(10);
-    const hashedPass = await bcrypt.hash(password, salt);
+    const hashedPass = await bcrypt.hash(trimmedPassword, salt);
     const newUser = await User.create({
-      username,
-      email,
+      username: trimmedUsername,
+      email: trimmedEmail,
       password: hashedPass,
     });
 
@@ -82,24 +99,38 @@ export const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
 
-    if (!email || !password) {
-      return res
-        .status(400)
-        .json({ message: "Vui lòng điền đẩy đủ các trường!" });
+    const errors: any = {
+      message: "",
+      email: "",
+      password: "",
+    };
+
+    const trimmedEmail = email.trim();
+    const trimmedPassword = password.trim();
+
+    if (!trimmedEmail || !trimmedPassword) {
+      errors.message = "Vui lòng điền đẩy đủ các trường!";
+      return res.status(400).json(errors);
     }
 
-    const user = await User.findOne({ email: email.toLowerCase() });
+    const user = await User.findOne({ email: trimmedEmail.toLowerCase() });
 
     if (!user) {
-      return res.status(400).json({ message: "Tài khoản không tồn tại!" });
+      errors.message = "Tài khoản không tồn tại!";
+      errors.email = "Vui lòng kiểm tra lại!";
+      return res.status(400).json(errors);
     }
 
-    const comparePassword = await bcrypt.compare(password, user.password);
+    const comparePassword = await bcrypt.compare(
+      trimmedPassword,
+      user.password
+    );
 
     if (!comparePassword) {
-      return res
-        .status(400)
-        .json({ message: "Thông tin đăng nhập sai, vui lòng thử lại!" });
+      errors.message = "Thông tin đăng nhập sai, vui lòng thử lại!";
+      errors.email = "Vui lòng kiểm tra lại!";
+      errors.password = "Vui lòng kiểm tra lại!";
+      return res.status(400).json(errors);
     }
 
     return res.status(200).json({

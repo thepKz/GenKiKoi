@@ -1,4 +1,4 @@
-import { Button, Checkbox, ConfigProvider, Divider, Form, Input, message } from "antd";
+import { Button, ConfigProvider, Divider, Form, Input, message } from "antd";
 import Logo from "../../assets/logo-transparent.png";
 import Banner from "../../assets/banner.jpg";
 import { SocialButton } from "../../components";
@@ -7,12 +7,13 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { handleAPI } from "../../apis/handleAPI";
 import { addAuth } from "../../redux/reducers/authReducer";
+import { Heart } from "iconsax-react";
+import { handleEnterPress } from "../../utils";
 
 const SignIn = () => {
   const [form] = Form.useForm();
 
   const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -27,7 +28,11 @@ const SignIn = () => {
         dispatch(addAuth(res.data));
       }
     } catch (error: any) {
-      setIsError(true);
+      console.log(error);
+      form.setFields([
+        { name: "email", errors: error.email ? [error.email] : [] },
+        { name: "password", errors: error.password ? [error.password] : [] },
+      ]);
       message.error(error.message);
     } finally {
       setIsLoading(false);
@@ -50,8 +55,14 @@ const SignIn = () => {
           </div>
           <div className="mx-auto w-3/5">
             <div className="">
-              <h1 className="heading-2 text-blue-primary">Sign In</h1>
-              <p className="my-2 text-slate-500">Please login to continue to your account.</p>
+              <h1 className="heading-2 text-blue-primary">Đăng nhập</h1>
+              <div className="flex items-center gap-2">
+                <p className="my-2 text-slate-500">Chọn sức khỏe, chọn GenKiKoi</p>
+                <Heart
+                  variant="Bold"
+                  color="#f7776d"
+                />
+              </div>
             </div>
             <Form
               disabled={isLoading}
@@ -64,31 +75,31 @@ const SignIn = () => {
                 name="email"
                 label="Email"
                 required={false}
-                validateStatus={isError ? "warning" : ""}
-                help={isError ? "Need to be checked" : ""}
                 rules={[
-                  { required: true, message: "Please input your email!" },
+                  { required: true, message: "Vui lòng nhập email!" },
                   {
                     pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-                    message: "Invalid email!",
-                    warningOnly: true,
+                    message: "Email không hợp lệ!",
                   },
                 ]}
               >
                 <Input
-                  placeholder="Please input your email!"
+                  placeholder="Email"
+                  onPressEnter={() => handleEnterPress(form, "email", "password")}
                   allowClear
                 />
               </Form.Item>
               <Form.Item
                 name="password"
-                label="Password"
-                validateStatus={isError ? "warning" : ""}
-                help={isError ? "Need to be checked" : ""}
+                label="Mật khẩu"
                 required={false}
-                rules={[{ required: true, message: "Please input your password!" }]}
+                tooltip="Mật khẩu chỉ chứa chữ thường, in hoa, số và trên 8 ký tự!"
+                rules={[{ required: true, message: "Vui lòng nhập mật khẩu!" }]}
               >
-                <Input.Password placeholder="Please input your password!" />
+                <Input.Password
+                  onPressEnter={() => handleEnterPress(form, "password", null)}
+                  placeholder="Mật khẩu"
+                />
               </Form.Item>
             </Form>
             <div className="">
@@ -107,7 +118,7 @@ const SignIn = () => {
                   className="mt-3 w-full"
                   onClick={() => form.submit()}
                 >
-                  Sign In
+                  Đăng nhập
                 </Button>
               </ConfigProvider>
               <Divider
@@ -115,17 +126,17 @@ const SignIn = () => {
                   margin: "12px 0",
                 }}
               >
-                <p className="text-sm font-bold text-slate-500">Or</p>
+                <p className="text-sm font-bold text-slate-500">Hoặc</p>
               </Divider>
               <SocialButton text="Sign In with Google" />
             </div>
             <div className="my-3 flex items-center justify-center gap-1">
-              <p className="text-base text-slate-500">Need an account?</p>
+              <p className="text-base text-slate-500">Bạn chưa có tài khoản?</p>
               <Link
                 to="/sign-up"
                 className="text-base font-bold text-blue-500 underline"
               >
-                Create one
+                Đăng ký
               </Link>
             </div>
           </div>

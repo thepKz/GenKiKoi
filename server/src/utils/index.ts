@@ -14,6 +14,14 @@ export const isStrongPassword = (password: string): boolean => {
   );
 };
 
+export const isValidUserName = (username: string): boolean => {
+  const hasUpperCase = /[A-Z]/.test(username);
+  const hasLowerCase = /[a-z]/.test(username);
+  const hasNumbers = /\d/.test(username);
+
+  return hasUpperCase && hasLowerCase && hasNumbers;
+};
+
 export const signToken = async (payload: {
   _id: Types.ObjectId;
   email: string;

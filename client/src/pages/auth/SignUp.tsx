@@ -8,6 +8,8 @@ import { useState } from "react";
 import { handleAPI } from "../../apis/handleAPI";
 import { useDispatch } from "react-redux";
 import { addAuth } from "../../redux/reducers/authReducer";
+import { Heart } from "iconsax-react";
+import { handleEnterPress } from "../../utils";
 
 const SignUp = () => {
   const [form] = Form.useForm();
@@ -28,7 +30,13 @@ const SignUp = () => {
       }
     } catch (error: any) {
       console.log(error);
-      message.error(error.message);
+      form.setFields([
+        { name: "username", errors: error.username ? [error.username] : [] },
+        { name: "email", errors: error.email ? [error.email] : [] },
+        { name: "password", errors: error.password ? [error.password] : [] },
+        { name: "confirmPassword", errors: error.confirmPassword ? [error.confirmPassword] : [] },
+      ]);
+      message.error("Có lỗi xảy ra, vui lòng kiểm tra các trường!");
     } finally {
       setIsLoading(false);
     }
@@ -51,8 +59,14 @@ const SignUp = () => {
           </div>
           <div className="mx-auto w-3/5">
             <div className="">
-              <h1 className="heading-2 text-blue-primary">Sign Up</h1>
-              <p className="my-2 text-slate-500">Sign up to enjoy the feature of Revolute</p>
+              <h1 className="heading-2 text-blue-primary">Đăng ký</h1>
+              <div className="flex items-center gap-2">
+                <p className="my-2 text-slate-500">Chọn sức khỏe, chọn GenKiKoi</p>
+                <Heart
+                  variant="Bold"
+                  color="#f7776d"
+                />
+              </div>
             </div>
             <Form
               disabled={isLoading}
@@ -63,22 +77,23 @@ const SignUp = () => {
             >
               <Form.Item
                 name="username"
-                label="Name"
+                label="Tên tài khoản"
                 required={false}
                 hasFeedback
+                tooltip="Chỉ chữ thường, in hoa và số được chấp nhận!"
                 rules={[
                   {
                     validator: async (_, value) => {
                       if (!value) {
-                        return Promise.reject(new Error("Please input your name!"));
-                      }
-                      if (!value && !/^[a-zA-ZÀ-ÿ\s]+$/.test(value)) {
-                        return Promise.reject(
-                          new Error("Invalid name! Only letters and spaces are allowed."),
-                        );
+                        return Promise.reject(new Error("Vui lòng nhập tên tài khoản!"));
                       }
                       if (value.trim().length === 0) {
-                        return Promise.reject(new Error("Name cannot be just spaces!"));
+                        return Promise.reject(new Error("Vui lòng nhập tên tài khoản!"));
+                      }
+                      if (!value || !/^[a-zA-Z0-9]+$/.test(value)) {
+                        return Promise.reject(
+                          new Error("Chỉ chữ thường, in hoa và số được chấp nhận!"),
+                        );
                       }
                       return Promise.resolve();
                     },
@@ -86,7 +101,8 @@ const SignUp = () => {
                 ]}
               >
                 <Input
-                  placeholder="Please input your name!"
+                  placeholder="Tên tài khoản"
+                  onPressEnter={() => handleEnterPress(form, "username", "email")}
                   allowClear
                 />
               </Form.Item>
@@ -96,64 +112,66 @@ const SignUp = () => {
                 hasFeedback
                 required={false}
                 rules={[
-                  { required: true, message: "Please input your email!" },
+                  { required: true, message: "Vui lòng nhập email!" },
                   {
                     pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-                    message: "Invalid email!",
-                    warningOnly: true,
+                    message: "Email không hợp lệ!",
                   },
                 ]}
               >
                 <Input
-                  placeholder="Please input your email!"
+                  placeholder="Email"
+                  onPressEnter={() => handleEnterPress(form, "email", "password")}
                   allowClear
                 />
               </Form.Item>
               <Form.Item
                 name="password"
-                label="Password"
+                label="Mật khẩu"
                 required={false}
                 hasFeedback
-                tooltip="Password must be at least 8 characters long, include an uppercase letter, a lowercase letter, a number, and a special character."
+                tooltip="Mật khẩu chỉ chứa chữ thường, in hoa, số và trên 8 ký tự!"
                 rules={[
                   {
                     required: true,
-                    message: "Please enter your password!",
+                    message: "Vui lòng nhập mật khẩu!",
                   },
                   {
                     pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/,
-                    message: "Password not strong enough!",
-                    warningOnly: true,
+                    message: "Mật khẩu không đủ mạnh!",
                   },
                 ]}
               >
-                <Input.Password placeholder="Please input your password!" />
+                <Input.Password
+                  onPressEnter={() => handleEnterPress(form, "password", "confirmPassword")}
+                  placeholder="Mật khẩu"
+                />
               </Form.Item>
               <Form.Item
                 name="confirmPassword"
-                label="Confirm Password"
+                label="Xác nhận mật khẩu"
                 hasFeedback
                 required={false}
-                tooltip="Password and Confirm Password must match each other!"
+                tooltip="Mật khẩu xác nhận phải khớp nhau!"
                 rules={[
                   {
                     required: true,
-                    message: "Please confirm your password!",
+                    message: "Vui lòng xác nhận lại mật khẩu!",
                   },
                   ({ getFieldValue }) => ({
                     validator(_, value) {
                       if (!value || getFieldValue("password") === value) {
                         return Promise.resolve();
                       }
-                      return Promise.reject(
-                        new Error("The new password that you entered do not match!"),
-                      );
+                      return Promise.reject(new Error("Mật khẩu xác nhận không khớp!"));
                     },
-                    warningOnly: true,
                   }),
                 ]}
               >
-                <Input.Password placeholder="Please input your confirm password!" />
+                <Input.Password
+                  onPressEnter={() => handleEnterPress(form, "confirmPassword", null)}
+                  placeholder="Xác nhận mật khẩu"
+                />
               </Form.Item>
             </Form>
             <div className="">
@@ -172,7 +190,7 @@ const SignUp = () => {
                   className="mt-3 w-full"
                   onClick={() => form.submit()}
                 >
-                  Sign Up
+                  Đăng ký
                 </Button>
               </ConfigProvider>
               <Divider
@@ -180,17 +198,17 @@ const SignUp = () => {
                   margin: "12px 0",
                 }}
               >
-                <p className="text-sm font-bold text-slate-500">Or</p>
+                <p className="text-sm font-bold text-slate-500">Hoặc</p>
               </Divider>
-              <SocialButton text="Continue with Google" />
+              <SocialButton text="Đăng ký với Google" />
             </div>
             <div className="my-3 flex items-center justify-center gap-1">
-              <p className="text-base text-slate-500">Already have an account?</p>
+              <p className="text-base text-slate-500">Bạn đã có tài khoản?</p>
               <Link
                 to="/sign-in"
                 className="text-base font-bold text-blue-500 underline"
               >
-                Sign In
+                Đăng nhập
               </Link>
             </div>
           </div>
