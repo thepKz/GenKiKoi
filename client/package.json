@@ -13,6 +13,7 @@
     "@reduxjs/toolkit": "^2.2.7",
     "antd": "^5.20.6",
     "axios": "^1.7.7",
+    "firebase": "^10.13.2",
     "framer-motion": "^11.5.6",
     "iconsax-react": "^0.0.8",
     "react": "^18.3.1",
