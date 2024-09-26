@@ -11,7 +11,7 @@ const lastEmailSent: { [email: string]: number } = {};
 const generateOTP = (): string => {
   return Math.floor(100000 + Math.random() * 900000).toString();
 };
-
+// check
 // Helper function to validate email
 function isValidEmail(email: string): boolean {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
