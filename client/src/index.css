@@ -41,16 +41,24 @@
   .heading-2 {
     @apply text-4xl font-bold;
   }
+
+  .heading-3 {
+    @apply text-3xl font-bold;
+  }
 }
 
 /* ======== ADDITIONAL CSS ======== */
 
 /* Header */
-
 .link div {
   width: 0;
 }
 
 .link:hover div {
   width: 100%;
+}
+
+/* Ant Design */
+.ant-menu-inline {
+  border-inline-end: none !important;
 }

@@ -1,5 +1,5 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-import { MainLayout } from "../layouts";
+import { MainLayout, MyAccountLayout } from "../layouts";
 import {
   AboutUs,
   ConsultingTreatment,
@@ -11,6 +11,7 @@ import {
   Services,
   SignUp,
   UnAuthorized,
+  Appointment,
 } from "../pages";
 import { AuthState } from "../models/AuthModels";
 import { useDispatch, useSelector } from "react-redux";
@@ -45,7 +46,7 @@ const MainRouter = () => {
           element={!auth.token ? <SignUp /> : <Navigate to={"/"} />}
         />
         <Route
-          path="/*"
+          path="/"
           element={<MainLayout />}
         >
           <Route
@@ -79,6 +80,15 @@ const MainRouter = () => {
           <Route
             path="unauthorized"
             element={<UnAuthorized />}
+          />
+        </Route>
+        <Route
+          path="/my-account"
+          element={<MyAccountLayout />}
+        >
+          <Route
+            path="appointment"
+            element={<Appointment />}
           />
         </Route>
       </Routes>

@@ -8,6 +8,7 @@ import Services from "./Services";
 import SignUp from "./auth/SignUp";
 import UnAuthorized from "./UnAuthorized";
 import ConsultingTreatment from "./services/ConsultingTreatment";
+import Appointment from "./my-account/Appointment";
 
 export {
   SignIn,
@@ -20,4 +21,5 @@ export {
   Home,
   ConsultingTreatment,
   UnAuthorized,
+  Appointment,
 };

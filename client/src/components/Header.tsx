@@ -29,7 +29,7 @@ const Header = () => {
   const profile: MenuProps["items"] = [
     {
       key: "1",
-      label: "My Account",
+      label: <Link to="/my-account/appointment">My Account</Link>,
     },
     {
       type: "divider",
