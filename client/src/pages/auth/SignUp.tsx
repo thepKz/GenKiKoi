@@ -200,7 +200,7 @@ const SignUp = () => {
               >
                 <p className="text-sm font-bold text-slate-500">Hoặc</p>
               </Divider>
-              <SocialButton text="Đăng ký với Google" />
+              <SocialButton text="Đăng nhập với Google" />
             </div>
             <div className="my-3 flex items-center justify-center gap-1">
               <p className="text-base text-slate-500">Bạn đã có tài khoản?</p>
