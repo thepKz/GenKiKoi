@@ -16,29 +16,63 @@ import { handleAPI } from "../../apis/handleAPI";
 
 const Profile = () => {
   const [data, setData] = useState<any>(null);
+  const [city, setCity] = useState<String>("");
+  const [district, setDistrict] = useState<String>("");
+  const [ward, setWard] = useState<String>("");
   const [cities, setCities] = useState<SelectProps["options"]>([]);
+  const [districts, setDistricts] = useState<SelectProps["options"]>([]);
+  const [wards, setWards] = useState<SelectProps["options"]>([]);
+
+  const [form] = Form.useForm();
 
   useEffect(() => {
     const getData = async () => {
       const api = "https://raw.githubusercontent.com/kenzouno1/DiaGioiHanhChinhVN/master/data.json";
       const res: any = await handleAPI(api, undefined, "GET");
       setData(res);
-      console.log(res);
     };
     getData();
   }, []);
 
   useEffect(() => {
     if (data) {
-      const data1 = data?.map((item: any) => ({
+      const res = data?.map((item: any) => ({
         value: item.Name,
         label: item.Name,
       }));
-      setCities(data1);
+      setCities(res);
     }
   }, [data]);
 
-  console.log(cities);
+  useEffect(() => {
+    if (data) {
+      const res = data.find((item: any) => item.Name === city);
+      const res1 = res?.Districts?.map((item: any) => ({
+        value: item.Name,
+        label: item.Name,
+      }));
+      setDistricts(res1);
+    }
+    if (form.getFieldValue(["district"])) {
+      form.setFieldValue("district", "");
+      form.setFieldValue("ward", "");
+    }
+  }, [city]);
+
+  useEffect(() => {
+    if (data) {
+      const res = data.find((item: any) => item.Name === city);
+      const res1 = res?.Districts.find((item: any) => item.Name === district);
+      const res2 = res1?.Wards.map((item: any) => ({
+        value: item.Name,
+        label: item.Name,
+      }));
+      setWards(res2);
+    }
+    if (form.getFieldValue(["ward"])) {
+      form.setFieldValue("ward", "");
+    }
+  }, [district]);
 
   return (
     <div>
@@ -65,7 +99,7 @@ const Profile = () => {
             <Avatar
               shape="square"
               style={{ backgroundColor: "transparent", border: "2px dashed #ccc" }}
-              size={80}
+              size={100}
               icon={
                 <User
                   color="#ccc"
@@ -102,11 +136,12 @@ const Profile = () => {
         {/* Profile detail */}
         <div className="mx-20">
           <Form
+            form={form}
             size="large"
             layout="vertical"
           >
-            <Row gutter={96}>
-              <Col span={12}>
+            <Row gutter={32}>
+              <Col span={10}>
                 <Form.Item
                   name="email"
                   label="Email"
@@ -142,7 +177,7 @@ const Profile = () => {
                   </Col>
                 </Row>
               </Col>
-              <Col span={12}>
+              <Col span={14}>
                 <Row gutter={24}>
                   <Col span={12}>
                     <Form.Item
@@ -177,24 +212,40 @@ const Profile = () => {
                       label="Tỉnh"
                     >
                       <Select
+                        placeholder="Thành phố"
+                        value={city}
+                        onChange={(e) => {
+                          setCity(e);
+                        }}
                         options={cities}
                       />
                     </Form.Item>
                   </Col>
                   <Col span={8}>
                     <Form.Item
-                      name="phoneNumber"
+                      name="district"
                       label="Quận / Huyện"
                     >
-                      <Input placeholder="Quận / Huyện" />
+                      <Select
+                        placeholder="Quận / Huyện"
+                        onChange={(e) => {
+                          setDistrict(e);
+                        }}
+                        options={districts}
+                      />
                     </Form.Item>
                   </Col>
                   <Col span={8}>
                     <Form.Item
-                      name="phoneNumber"
+                      name="ward"
                       label="Phường / Xã"
                     >
-                      <Input placeholder="Phường / Xã" />
+                      <Select
+                        placeholder="Phường / Xã"
+                        value={ward}
+                        onChange={(e) => setWard(e)}
+                        options={wards}
+                      />
                     </Form.Item>
                   </Col>
                 </Row>
@@ -204,7 +255,7 @@ const Profile = () => {
                       name="address"
                       label="Địa chỉ"
                     >
-                      <Input placeholder="Số điện thoại" />
+                      <Input placeholder="Địa chỉ" />
                     </Form.Item>
                   </Col>
                 </Row>
