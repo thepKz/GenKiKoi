@@ -14,7 +14,7 @@ const HeaderComponent = () => {
       <div className="flex items-center justify-between">
         <Search
           size="large"
-          placeholder="Search appointment"
+          placeholder="Tìm kiếm cuộc hẹn"
           allowClear
           style={{ width: 300 }}
         />

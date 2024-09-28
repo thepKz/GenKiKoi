@@ -15,17 +15,17 @@ const SiderComponent = () => {
   const items: MenuProps["items"] = [
     {
       key: "appointment",
-      label: <Link to={"/my-account/appointment"}>Appointment</Link>,
+      label: <Link to={"/my-account/appointment"}>Danh sách cuộc hẹn</Link>,
       icon: <Home2 size={20} />,
     },
     {
       key: "medical-record",
-      label: <Link to={"/my-account/medical-record"}>Medical Records</Link>,
+      label: <Link to={"/my-account/medical-record"}>Hồ sơ bệnh án</Link>,
       icon: <DocumentLike size={20} />,
     },
     {
       key: "history",
-      label: <Link to={"/my-account/history"}>History</Link>,
+      label: <Link to={"/my-account/history"}>Lịch sử</Link>,
       icon: <VscHistory size={20} />,
     },
     {
@@ -34,7 +34,7 @@ const SiderComponent = () => {
     },
     {
       key: "setting",
-      label: <Link to={"/my-account/setting"}>Setting</Link>,
+      label: <Link to={"/my-account/setting"}>Cài đặt</Link>,
       icon: <Setting2 size={20} />,
     },
   ];

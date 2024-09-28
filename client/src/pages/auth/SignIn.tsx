@@ -78,10 +78,11 @@ const SignIn = () => {
                 rules={[
                   { required: true, message: "Vui lòng nhập email!" },
                   {
-                    pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                    pattern: /^[A-Za-z0-9\._%+\-]+@[A-Za-z0-9\.\-]+\.[A-Za-z]{2,}$/,
                     message: "Email không hợp lệ!",
                   },
                 ]}
+                validateDebounce={1000}
               >
                 <Input
                   placeholder="Email"
@@ -93,8 +94,14 @@ const SignIn = () => {
                 name="password"
                 label="Mật khẩu"
                 required={false}
-                tooltip="Mật khẩu chỉ chứa chữ thường, in hoa, số và trên 8 ký tự!"
-                rules={[{ required: true, message: "Vui lòng nhập mật khẩu!" }]}
+                tooltip="Mật khẩu phải chứa chữ thường, in hoa, số và trên 6 ký tự!"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng nhập mật khẩu!",
+                  },
+                ]}
+                validateDebounce={1000}
               >
                 <Input.Password
                   onPressEnter={() => handleEnterPress(form, "password", null)}

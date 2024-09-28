@@ -12,6 +12,9 @@ import {
   SignUp,
   UnAuthorized,
   Appointment,
+  MedicalRecord,
+  Setting,
+  History,
 } from "../pages";
 import { AuthState } from "../models/AuthModels";
 import { useDispatch, useSelector } from "react-redux";
@@ -89,6 +92,18 @@ const MainRouter = () => {
           <Route
             path="appointment"
             element={<Appointment />}
+          />
+          <Route
+            path="medical-record"
+            element={<MedicalRecord />}
+          />
+          <Route
+            path="setting"
+            element={<Setting />}
+          />
+          <Route
+            path="history"
+            element={<History />}
           />
         </Route>
       </Routes>

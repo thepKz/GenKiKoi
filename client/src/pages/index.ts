@@ -9,6 +9,9 @@ import SignUp from "./auth/SignUp";
 import UnAuthorized from "./UnAuthorized";
 import ConsultingTreatment from "./services/ConsultingTreatment";
 import Appointment from "./my-account/Appointment";
+import MedicalRecord from "./my-account/MedicalRecord";
+import Setting from "./my-account/Setting";
+import History from "./my-account/History";
 
 export {
   SignIn,
@@ -22,4 +25,7 @@ export {
   ConsultingTreatment,
   UnAuthorized,
   Appointment,
+  MedicalRecord,
+  Setting,
+  History,
 };
