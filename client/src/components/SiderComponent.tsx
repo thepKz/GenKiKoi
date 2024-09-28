@@ -1,11 +1,9 @@
 import { Layout, Menu, MenuProps, Typography } from "antd";
-import { DocumentLike, Home2, Setting2 } from "iconsax-react";
+import { DocumentLike, Home2, User } from "iconsax-react";
 import { VscHistory } from "react-icons/vsc";
 import { Link, useLocation } from "react-router-dom";
 
 const { Sider } = Layout;
-
-const { Text } = Typography;
 
 import Logo from "../assets/logo-transparent.png";
 
@@ -33,9 +31,9 @@ const SiderComponent = () => {
       type: "divider",
     },
     {
-      key: "setting",
-      label: <Link to={"/my-account/setting"}>Cài đặt</Link>,
-      icon: <Setting2 size={20} />,
+      key: "profile",
+      label: <Link to={"/my-account/profile"}>Hồ sơ cá nhân</Link>,
+      icon: <User size={20} />,
     },
   ];
 

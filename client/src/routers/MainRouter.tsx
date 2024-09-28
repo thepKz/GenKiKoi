@@ -13,7 +13,7 @@ import {
   UnAuthorized,
   Appointment,
   MedicalRecord,
-  Setting,
+  Profile,
   History,
 } from "../pages";
 import { AuthState } from "../models/AuthModels";
@@ -98,8 +98,8 @@ const MainRouter = () => {
             element={<MedicalRecord />}
           />
           <Route
-            path="setting"
-            element={<Setting />}
+            path="profile"
+            element={<Profile />}
           />
           <Route
             path="history"

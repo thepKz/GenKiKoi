@@ -10,7 +10,7 @@ import UnAuthorized from "./UnAuthorized";
 import ConsultingTreatment from "./services/ConsultingTreatment";
 import Appointment from "./my-account/Appointment";
 import MedicalRecord from "./my-account/MedicalRecord";
-import Setting from "./my-account/Setting";
+import Profile from "./my-account/Profile";
 import History from "./my-account/History";
 
 export {
@@ -26,6 +26,6 @@ export {
   UnAuthorized,
   Appointment,
   MedicalRecord,
-  Setting,
+  Profile,
   History,
 };
