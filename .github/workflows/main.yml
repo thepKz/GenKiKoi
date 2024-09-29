@@ -7,38 +7,53 @@ on:
     branches: [main, develop]
   workflow_dispatch:
 
-
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Clear npm cache
-        run: npm cache clean --force
       - name: Use Node.js 20
         uses: actions/setup-node@v3
         with:
           node-version: 20
+          cache: 'npm'
+          cache-dependency-path: './client/package-lock.json'
       - name: Install dependencies 
         run: npm ci 
         working-directory: ./client 
+      - name: Check for test script
+        id: check_tests
+        run: |
+          if npm run | grep -q "test"; then
+            echo "has_tests=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_tests=false" >> $GITHUB_OUTPUT
+          fi
+        working-directory: ./client
+      - name: Run tests
+        if: steps.check_tests.outputs.has_tests == 'true'
+        run: npm test
+        working-directory: ./client
+      - name: No tests found
+        if: steps.check_tests.outputs.has_tests == 'false'
+        run: echo "No test script found in package.json. Skipping tests."
 
   build:
     needs: test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Clear npm cache
-        run: npm cache clean --force
       - name: Use Node.js 20
         uses: actions/setup-node@v3
         with:
           node-version: 20
+          cache: 'npm'
+          cache-dependency-path: './client/package-lock.json'
       - name: Install dependencies
         run: npm ci
         working-directory: ./client
       - name: Build
-        run: npm run build --noEmitOnError
+        run: npm run build
         working-directory: ./client
       - name: Upload artifact
         uses: actions/upload-artifact@v3
