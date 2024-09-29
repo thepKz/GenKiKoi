@@ -1,8 +1,9 @@
 import { Avatar, Badge, ConfigProvider, Dropdown, Input, Layout, MenuProps } from "antd";
 import { Home, Logout, Notification, User } from "iconsax-react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { removeAuth } from "../../redux/reducers/authReducer";
 import { Link } from "react-router-dom";
+import { AuthState } from "../../models/AuthModels";
 
 const { Header } = Layout;
 
@@ -10,6 +11,8 @@ const { Search } = Input;
 
 const HeaderComponent = () => {
   const dispatch = useDispatch();
+
+  const auth: AuthState = useSelector((state: any) => state.authReducer.data);
 
   const profile: MenuProps["items"] = [
     {
@@ -61,6 +64,7 @@ const HeaderComponent = () => {
           >
             <Dropdown menu={{ items: profile }}>
               <Avatar
+                src={auth.photoUrl}
                 className="cursor-pointer"
                 icon={<User size={18} />}
               />

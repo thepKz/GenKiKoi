@@ -145,6 +145,7 @@ const Header = () => {
               </Badge>
               <Dropdown menu={{ items: profile }}>
                 <Avatar
+                  src={auth.photoUrl}
                   className="cursor-pointer"
                   icon={<User size={18} />}
                 />

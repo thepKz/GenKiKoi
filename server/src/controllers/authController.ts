@@ -174,6 +174,7 @@ export const loginWithGoogle = async (req: Request, res: Response) => {
           username: user.username,
           email: user.email,
           role: user.role,
+          photoUrl,
           token: await signToken({
             _id: user._id,
             username: user.username,
@@ -200,6 +201,7 @@ export const loginWithGoogle = async (req: Request, res: Response) => {
           username: newUser.username,
           email: newUser.email,
           role: newUser.role,
+          photoUrl,
           token: await signToken({
             _id: newUser._id,
             username: newUser.username,
