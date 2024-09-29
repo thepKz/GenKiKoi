@@ -9,19 +9,18 @@ export const authMiddleware = (req: AuthRequest, res: Response, next: NextFuncti
   const authHeader = req.headers.authorization;
   const token = authHeader && authHeader.split(' ')[1];
 
+  console.log('Received token:', token);
+
   if (!token) {
     return res.status(401).json({ message: 'No token provided' });
   }
 
-  if (!process.env.JWT_SECRET && !process.env.FALLBACK_SECRET) {
-    throw new Error('JWT secret is not defined');
+  if (!process.env.SECRET_KEY) {
+    throw new Error('SECRET_KEY is not defined');
   }
-  const jwtSecret = process.env.JWT_SECRET || process.env.FALLBACK_SECRET;
-  if (!jwtSecret) {
-    throw new Error('JWT secret is not defined');
-  }
+  const jwtSecret = process.env.SECRET_KEY;
   try {
-    const decoded = jwt.verify(token, jwtSecret);
+    const decoded = jwt.verify(token, process.env.SECRET_KEY);
     req.user = decoded;
     next();
   } catch (error) {

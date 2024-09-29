@@ -8,7 +8,7 @@ interface IUser {
   photoUrl?: string;
   fullName?: string;
   phoneNumber?: string;
-  role: "customer" | "staff" | "veterinarian" | "manager" | "admin";
+  role: "customer" | "staff" | "veterinarian" | "manager";
 }
 
 // Mongoose schema for the User model
@@ -18,11 +18,11 @@ const userSchema = new mongoose.Schema(
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     photoUrl: { type: String, default: "" },
-    fullName: { type: String },
-    phoneNumber: { type: String },
+    fullName: { type: String, default: "" },
+    phoneNumber: { type: String, default: "" },
     role: {
       type: String,
-      enum: ["customer", "staff", "veterinarian", "manager", "admin"],
+      enum: ["customer", "staff", "veterinarian", "manager"],
       default: "customer",
     },
   },

@@ -18,8 +18,7 @@ app.use(express.json());
   });
 app.use("/api/auth", authRoutes);
 app.use("/api/profile", profileRoutes);
-console.log('JWT_SECRET:', process.env.JWT_SECRET);
-console.log('FALLBACK_SECRET:', process.env.FALLBACK_SECRET);
+console.log('SECRET_KEY:', process.env.SECRET_KEY);
 mongoose
   .connect(process.env.MONGO_URI as string)
   .then(() => {

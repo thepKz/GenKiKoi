@@ -1,13 +1,13 @@
 import { Button, ConfigProvider, Divider, Form, Input, message } from "antd";
-import Logo from "../../assets/logo-transparent.png";
-import Banner from "../../assets/banner.jpg";
-import { SocialButton } from "../../components";
-import { Link } from "react-router-dom";
+import { Heart } from "iconsax-react";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
+import { Link } from "react-router-dom";
 import { handleAPI } from "../../apis/handleAPI";
+import Banner from "../../assets/banner.jpg";
+import Logo from "../../assets/logo-transparent.png";
+import { SocialButton } from "../../components";
 import { addAuth } from "../../redux/reducers/authReducer";
-import { Heart } from "iconsax-react";
 import { handleEnterPress } from "../../utils";
 
 const SignIn = () => {
