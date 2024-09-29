@@ -1,7 +1,7 @@
 import "react-multi-carousel/lib/styles.css";
 
 
-import FishBanner from "../assets/fish-banner.png";
+import FishBanner from "../assets/fish-banner-3.png";
 import FishBanner2 from "../assets/banner_2.jpg";
 import { AnimatedSection, DividerComponent } from "../share";
 import { useEffect } from "react";
@@ -27,10 +27,10 @@ const AboutUs = () => {
   }, []);
   return (
     <div>
-      {/* Banner */}
+      
       
       {/* Why? Section */}
-      <div className="section bg-blue-primary text-center text-white ">
+      <div className="section bg-green-dark text-center text-white ">
         <div className="container mx-auto lg:px-40">
           <AnimatedSection
             variants={{
@@ -45,20 +45,34 @@ const AboutUs = () => {
               },
             }}
           >
-            <div class=" bg-blue-primary text-white p-6 text-center">
-  <div class="inline-flex items-baseline">
-    <h1 class="text-5xl font-bold mr-3">GenKiKoi</h1>
-    <p class="text-sm italic">Nâng tầm sức khỏe, tô điểm hồ cá</p>
+            <div class=" bg-green-dark text-white p-6 text-center">
+  <div class="text-center my-10">
+    <h1 class="text-5xl font-bold mr-3 pb-6 text-orange-400">GenKiKoi</h1>
+    <p class="text-xl ">Chăm sóc cá Koi toàn diện, quản lý dịch vụ dễ dàng</p>
   </div>
 </div>
 
-            <img
+            
+
+          </AnimatedSection>
+          <AnimatedSection
+                variants={{
+                  hidden: {
+                    opacity: 0,
+                    x: 100,
+                  },
+                  visible: {
+                    opacity: 1,
+                    x: 0,
+                    transition: { duration: 1.5, delay: 0.5 },
+                  },
+                }}
+              >
+               <img className="rounded-2xl"
                     src={FishBanner2}
                     alt=""
                   />
-
-          </AnimatedSection>
-
+              </AnimatedSection>
           <AnimatedSection
                 variants={{
                   hidden: {
@@ -109,7 +123,7 @@ const AboutUs = () => {
       
 
       {/* Expected */}
-      <div className="section bg-blue-primary text-center text-white">
+      <div className="section bg-green-dark text-center text-white">
         <div className="container mx-auto lg:px-40">
           <AnimatedSection
             variants={{
