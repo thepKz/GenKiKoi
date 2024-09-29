@@ -113,7 +113,7 @@ export const login = async (req: Request, res: Response) => {
       return res.status(400).json(errors);
     }
 
-    const user = await User.findOne({ email: trimmedEmail.toLowerCase() });
+    const user = await User.findOne({ email: trimmedEmail });
 
     if (!user) {
       errors.message = "Tài khoản không tồn tại!";
@@ -162,7 +162,7 @@ export const login = async (req: Request, res: Response) => {
  */
 export const loginWithGoogle = async (req: Request, res: Response) => {
   try {
-    const { email, username } = req.body;
+    const { email, username, photoUrl } = req.body;
 
     const user = await User.findOne({ email });
 
