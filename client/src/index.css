@@ -62,3 +62,7 @@
 .ant-menu-inline {
   border-inline-end: none !important;
 }
+
+.addon-input .ant-input-group-addon {
+  color: white !important;
+}

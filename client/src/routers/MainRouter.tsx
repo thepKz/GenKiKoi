@@ -16,6 +16,7 @@ import {
   Profile,
   History,
   InspectionRecord,
+  Booking,
 } from "../pages";
 import { AuthState } from "../models/AuthModels";
 import { useDispatch, useSelector } from "react-redux";
@@ -80,6 +81,10 @@ const MainRouter = () => {
           <Route
             path="faq"
             element={<FAQ />}
+          />
+          <Route
+            path="booking"
+            element={<Booking />}
           />
           <Route
             path="unauthorized"

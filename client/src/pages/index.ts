@@ -4,7 +4,7 @@ import FAQ from "./FAQ";
 import Home from "./Home";
 import Images from "./Images";
 import SignIn from "./auth/SignIn";
-import Services from "./Services";
+import Services from "./services/Services";
 import SignUp from "./auth/SignUp";
 import UnAuthorized from "./UnAuthorized";
 import ConsultingTreatment from "./services/ConsultingTreatment";
@@ -13,6 +13,7 @@ import MedicalRecord from "./my-account/MedicalRecord";
 import Profile from "./my-account/Profile";
 import History from "./my-account/History";
 import InspectionRecord from "./my-account/InspectionRecord";
+import Booking from "./Booking";
 
 export {
   SignIn,
@@ -30,4 +31,5 @@ export {
   Profile,
   History,
   InspectionRecord,
+  Booking,
 };
