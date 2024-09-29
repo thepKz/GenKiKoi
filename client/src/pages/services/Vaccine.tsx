@@ -3,10 +3,10 @@ import { AnimatedSection } from "../../share";
 import { Button } from "antd";
 import { ArrowRight2 } from "iconsax-react";
 
-import Demo1 from "../../assets/demo-1.jpg";
-import Fish4 from "../../assets/fish-care-4.jpg";
+import Vaccine1 from "../../assets/vaccine-1.jpg";
+import Vaccine2 from "../../assets/vaccine-2.jpg";
 
-const ConsultingTreatment = () => {
+const Vaccine = () => {
   return (
     <div>
       {/* Section 1 */}
@@ -28,7 +28,7 @@ const ConsultingTreatment = () => {
                 }}
               >
                 <img
-                  src={Fish4}
+                  src={Vaccine1}
                   className="rounded-xl"
                   alt=""
                 />
@@ -48,12 +48,10 @@ const ConsultingTreatment = () => {
                   },
                 }}
               >
-                <h1 className="heading-1">Tư vấn và Điều trị ban đầu</h1>
+                <h1 className="heading-1">Tiêm ngừa</h1>
 
                 <p className="my-5 text-justify">
-                  Dịch vụ tư vấn và điều trị cho cá Koi là việc cung cấp các dịch vụ liên quan đến
-                  sức khỏe và chăm sóc cho cá Koi như khám bệnh, điều trị, các cách thức phòng
-                  ngừa, tư vấn dinh dưỡng, chăm sóc cá nhân và nhiều những việc khác.
+                Dịch vụ tiêm ngừa cho thú cưng là quá trình rất quan trọng để bảo vệ sức khỏe và hạn chế lây lan các bệnh truyền nhiễm. Khi thú cưng được tiêm ngừa, chúng sẽ được tiêm một số mũi vắc xin để tạo ra kháng thể giúp phòng chống các bệnh nguy hiểm. Điều này sẽ giúp cải thiện chất lượng cuộc sống, kéo dài thời gian sống của thú cưng và giảm chi phí tiền dưỡng bệnh cho chủ nuôi.
                 </p>
                 <Button
                   size="large"
@@ -108,22 +106,23 @@ const ConsultingTreatment = () => {
                     }}
                   >
                     <p>
-                      Dịch vụ tư vấn và điều trị cho cá Koi là một phần không thể thiếu trong việc
-                      chăm sóc và bảo vệ sức khỏe của cá Koi. Việc khám bệnh thường xuyên và định
-                      kỳ giúp phát hiện sớm các vấn đề về sức khỏe của cá Koi và phòng tránh được
-                      những bệnh nguy hiểm.
+                    Cá Koi thường mắc các bệnh phổ biến như nấm, ký sinh trùng, 
+                    lở loét, đốm trắng, thối vây, nhiễm trùng máu, sưng bụng, và herpes. 
+                    Các nguyên nhân chính bao gồm môi trường nước ô nhiễm, cá bị stress hoặc thương, 
+                    và nhiễm khuẩn, ký sinh trùng. Triệu chứng thường thấy là cá mất màu, lờ đờ, gãi vào vật thể, 
+                    thối vây, loét da hoặc phình bụng. Việc điều trị tùy thuộc vào từng bệnh, chủ yếu bằng cách sử dụng thuốc kháng sinh, 
+                    chống nấm, và cải thiện chất lượng nước. Ngăn ngừa bệnh tốt nhất là giữ nước sạch và theo dõi sức khỏe cá thường xuyên.
+                    </p>
+                    <br/>
+                    <p>
+                    GenkiKoi cung cấp các loại vắc xin tiêm ngừa phổ biến như:
                     </p>
                     <p>
-                      Phòng khám Thú y GenKiKoi với đội ngũ bác sĩ chuyên khoa, trình độ cao và giàu
-                      kinh nghiệm, luôn sẵn sàng tiếp nhận cá Koi của bạn. Chúng tôi luôn mong có
-                      thể đáp ứng được nhu cầu chăm sóc sức khoẻ cho cá Koi một cách đa dạng nhất.
-                      Đội ngũ bác sĩ luôn không ngừng cập nhật những quy trình, kiến thức mới nhằm
-                      nâng cao tay nghề để đem lại chất lượng điều trị tốt nhất có thể.
+                    1. Vắc xin ngừa virus Herpes Koi (KHV - Koi Herpesvirus)
                     </p>
-                    <p>
-                      Với những điều đó, GenKiKoi tin rằng chúng tôi sẽ là một trong những điểm đến
-                      uy tín của khách hàng trong việc chăm sóc và bảo vệ sức khoẻ cho cá Koi.
-                    </p>
+                    <p>2. Vắc xin ngừa bệnh do vi khuẩn Aeromonas</p>
+                    <p>3. Vắc xin ngừa bệnh do Streptococcus</p>
+                    <p>4. Vắc xin ngừa bệnh Edwardsiella</p>
                   </AnimatedSection>
                 </div>
               </div>
@@ -143,7 +142,7 @@ const ConsultingTreatment = () => {
                 >
                   <img
                     className="mx-auto w-[90%] rounded-xl object-cover"
-                    src={Demo1}
+                    src={Vaccine2}
                     alt=""
                   />
                 </AnimatedSection>
@@ -179,4 +178,4 @@ const ConsultingTreatment = () => {
   );
 };
 
-export default ConsultingTreatment;
+export default Vaccine;

@@ -36,6 +36,9 @@ createRoot(document.getElementById("root")!).render(
           Badge: {
             textFontSizeSM: 10,
           },
+          Layout: {
+            headerHeight: "fit-content",
+          },
         },
       }}
     >

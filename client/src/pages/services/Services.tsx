@@ -1,14 +1,14 @@
 import { Button } from "antd";
-import Fish4 from "../assets/fish-care-4.jpg";
+import Fish4 from "../../assets/fish-care-4.jpg";
 import { ArrowRight2, Heart } from "iconsax-react";
-import { AnimatedSection, DividerComponent } from "../share";
+import { AnimatedSection, DividerComponent } from "../../share";
 
-import Icon1 from "../assets/Icon-01.svg";
-import Icon2 from "../assets/Icon-02.svg";
-import Icon3 from "../assets/Icon-03.svg";
-import Icon4 from "../assets/Icon-04.svg";
-import Icon5 from "../assets/Icon-05.svg";
-import Icon6 from "../assets/Icon-06.svg";
+import Icon1 from "../../assets/Icon-01.svg";
+import Icon2 from "../../assets/Icon-02.svg";
+import Icon3 from "../../assets/Icon-03.svg";
+import Icon4 from "../../assets/Icon-04.svg";
+import Icon5 from "../../assets/Icon-05.svg";
+import Icon6 from "../../assets/Icon-06.svg";
 
 import { useEffect } from "react";
 

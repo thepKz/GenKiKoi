@@ -24,3 +24,18 @@ export const replaceName = (str: string) => {
     .replace(/ /g, "")
     .replace(/[:!@#$%^&*()?;/]/g, "");
 };
+
+const valueMap: {
+  [key: string]: string;
+} = {
+  "Đang chờ xác nhận": "lime",
+  "Đã lên lịch": "cyan",
+  "Đang tiến hành": "geekblue",
+  "Đã thay đổi lịch": "orange",
+  "Đã hủy": "red",
+  "Đã hoàn thành": "green",
+};
+
+export const getValue = (value: string) => {
+  return valueMap[value];
+};
