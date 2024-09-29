@@ -16,6 +16,9 @@ import { AuthState } from "../models/AuthModels";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { addAuth } from "../redux/reducers/authReducer";
+import { TbVaccine } from "react-icons/tb";
+import Vaccine from "../pages/services/Vaccine";
+import WaterQuality from "../pages/services/WaterQuality";
 
 const MainRouter = () => {
   const auth: AuthState = useSelector((state: any) => state.authReducer.data);
@@ -71,6 +74,14 @@ const MainRouter = () => {
           <Route
             path="services/consulting-treatment"
             element={<ConsultingTreatment />}
+          />
+          <Route
+            path="services/vaccine"
+            element={<Vaccine />}
+          />
+          <Route
+           path="services/water-quality"
+          element={<WaterQuality />}
           />
           <Route
             path="faq"

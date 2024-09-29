@@ -3,10 +3,10 @@ import { AnimatedSection } from "../../share";
 import { Button } from "antd";
 import { ArrowRight2 } from "iconsax-react";
 
-import Demo1 from "../../assets/demo-1.jpg";
-import Fish4 from "../../assets/fish-care-4.jpg";
+import WaterQuality1 from "../../assets/water-quality-1.jpg";
+import WaterQuality2 from "../../assets/water-quality-2.jpg";
 
-const ConsultingTreatment = () => {
+const WaterQuality = () => {
   return (
     <div>
       {/* Section 1 */}
@@ -28,7 +28,7 @@ const ConsultingTreatment = () => {
                 }}
               >
                 <img
-                  src={Fish4}
+                  src={WaterQuality1}
                   className="rounded-xl"
                   alt=""
                 />
@@ -48,13 +48,13 @@ const ConsultingTreatment = () => {
                   },
                 }}
               >
-                <h1 className="heading-1">Tư vấn và Điều trị ban đầu</h1>
+                <h1 className="heading-1">Kiểm tra chất lượng ao hồ</h1>
 
                 <p className="my-5 text-justify">
-                  Dịch vụ tư vấn và điều trị cho cá Koi là việc cung cấp các dịch vụ liên quan đến
-                  sức khỏe và chăm sóc cho cá Koi như khám bệnh, điều trị, các cách thức phòng
-                  ngừa, tư vấn dinh dưỡng, chăm sóc cá nhân và nhiều những việc khác.
-                </p>
+                Việc kiểm tra và duy trì chất lượng nước ao hồ là rất quan trọng đối với sức khỏe và sự phát triển của cá Koi. 
+                Cá Koi rất nhạy cảm với các thông số nước như pH, amoniac, nitrit, oxy hòa tan và nhiệt độ. 
+                Kiểm tra thường xuyên giúp phát hiện sớm các vấn đề, từ đó có biện pháp xử lý kịp thời, 
+                đảm bảo môi trường sống tốt nhất và giúp cá Koi phát triển khỏe mạnh, màu sắc rực rỡ.              </p>
                 <Button
                   size="large"
                   ghost
@@ -107,23 +107,20 @@ const ConsultingTreatment = () => {
                       },
                     }}
                   >
+                   
+                    <br/>
                     <p>
-                      Dịch vụ tư vấn và điều trị cho cá Koi là một phần không thể thiếu trong việc
-                      chăm sóc và bảo vệ sức khỏe của cá Koi. Việc khám bệnh thường xuyên và định
-                      kỳ giúp phát hiện sớm các vấn đề về sức khỏe của cá Koi và phòng tránh được
-                      những bệnh nguy hiểm.
-                    </p>
-                    <p>
-                      Phòng khám Thú y GenKiKoi với đội ngũ bác sĩ chuyên khoa, trình độ cao và giàu
-                      kinh nghiệm, luôn sẵn sàng tiếp nhận cá Koi của bạn. Chúng tôi luôn mong có
-                      thể đáp ứng được nhu cầu chăm sóc sức khoẻ cho cá Koi một cách đa dạng nhất.
-                      Đội ngũ bác sĩ luôn không ngừng cập nhật những quy trình, kiến thức mới nhằm
-                      nâng cao tay nghề để đem lại chất lượng điều trị tốt nhất có thể.
-                    </p>
-                    <p>
-                      Với những điều đó, GenKiKoi tin rằng chúng tôi sẽ là một trong những điểm đến
-                      uy tín của khách hàng trong việc chăm sóc và bảo vệ sức khoẻ cho cá Koi.
-                    </p>
+                    Cá Koi rất nhạy cảm với chất lượng nước, nước không đạt tiêu chuẩn có thể gây ra nhiều vấn đề sức khỏe,
+                     từ stress, suy giảm miễn dịch đến bệnh tật và thậm chí tử vong. Ngoài ra, môi trường nước lý tưởng 
+                     còn giúp cá Koi phát triển tốt, đạt kích thước tối đa và có tuổi thọ cao, đồng thời duy trì màu sắc rực rỡ 
+                     và hoa văn đẹp mắt vốn là đặc trưng của loài cá này.</p>
+                    <br/>
+                    <p>Dịch vụ kiểm tra chất lượng nước của chúng tôi sẽ giúp bạn đảm bảo môi trường sống tốt nhất cho cá Koi của bạn. 
+                    Bằng cách kiểm tra các thông số quan trọng như pH, amoniac, nitrit, 
+                    oxy hòa tan và nhiệt độ, chúng tôi sẽ phát hiện sớm các vấn đề tiềm ẩn và đưa ra giải pháp kịp thời.</p>
+                    <br/>
+                    <p>Đừng để chất lượng nước ảnh hưởng đến sức khỏe và vẻ đẹp của cá Koi của bạn. 
+                    Hãy liên hệ với GenkiKoi ngay hôm nay để được tư vấn và kiểm tra chất lượng nước!</p>
                   </AnimatedSection>
                 </div>
               </div>
@@ -143,7 +140,7 @@ const ConsultingTreatment = () => {
                 >
                   <img
                     className="mx-auto w-[90%] rounded-xl object-cover"
-                    src={Demo1}
+                    src={WaterQuality2}
                     alt=""
                   />
                 </AnimatedSection>
@@ -179,4 +176,4 @@ const ConsultingTreatment = () => {
   );
 };
 
-export default ConsultingTreatment;
+export default WaterQuality;

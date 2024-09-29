@@ -18,11 +18,11 @@ const Header = () => {
     },
     {
       key: "2",
-      label: <Link to="#">Tiêm ngừa</Link>,
+      label: <Link to="services/vaccine">Tiêm ngừa</Link>,
     },
     {
       key: "3",
-      label: <Link to="#">Kiểm tra chất lượng nước</Link>,
+      label: <Link to="services/water-quality">Kiểm tra chất lượng nước</Link>,
     },
   ];
 
