@@ -8,6 +8,7 @@ export interface SignUpData {
 export interface AuthState {
   _id: string;
   username: string;
+  photoUrl: string;
   email: string;
   role: string;
   token: string;
