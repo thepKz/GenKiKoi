@@ -12,6 +12,7 @@ import Appointment from "./my-account/Appointment";
 import MedicalRecord from "./my-account/MedicalRecord";
 import Profile from "./my-account/Profile";
 import History from "./my-account/History";
+import InspectionRecord from "./my-account/InspectionRecord";
 
 export {
   SignIn,
@@ -28,4 +29,5 @@ export {
   MedicalRecord,
   Profile,
   History,
+  InspectionRecord,
 };

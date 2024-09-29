@@ -15,6 +15,7 @@ import {
   MedicalRecord,
   Profile,
   History,
+  InspectionRecord,
 } from "../pages";
 import { AuthState } from "../models/AuthModels";
 import { useDispatch, useSelector } from "react-redux";
@@ -96,6 +97,10 @@ const MainRouter = () => {
           <Route
             path="medical-record"
             element={<MedicalRecord />}
+          />
+          <Route
+            path="inspection-record"
+            element={<InspectionRecord />}
           />
           <Route
             path="profile"

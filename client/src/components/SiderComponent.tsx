@@ -1,5 +1,5 @@
 import { Layout, Menu, MenuProps, Typography } from "antd";
-import { DocumentLike, Home2, User } from "iconsax-react";
+import { DocumentLike, DocumentText, Home2, User } from "iconsax-react";
 import { VscHistory } from "react-icons/vsc";
 import { Link, useLocation } from "react-router-dom";
 
@@ -18,12 +18,17 @@ const SiderComponent = () => {
     },
     {
       key: "medical-record",
-      label: <Link to={"/my-account/medical-record"}>Hồ sơ bệnh án</Link>,
+      label: <Link to={"/my-account/medical-record"}>Hồ sơ điều trị</Link>,
       icon: <DocumentLike size={20} />,
     },
     {
+      key: "inspection-record",
+      label: <Link to={"/my-account/inspection-record"}>Hồ sơ kiểm định</Link>,
+      icon: <DocumentText size={20} />,
+    },
+    {
       key: "history",
-      label: <Link to={"/my-account/history"}>Lịch sử</Link>,
+      label: <Link to={"/my-account/history"}>Lịch sử thanh toán</Link>,
       icon: <VscHistory size={20} />,
     },
     {
