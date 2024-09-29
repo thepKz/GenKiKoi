@@ -20,11 +20,11 @@ export const register = async (req: Request, res: Response) => {
       confirmPassword: "",
     };
 
-    // Apply the trim method for all fields
-    const trimmedUsername = username.trim();
-    const trimmedEmail = email.trim();
-    const trimmedPassword = password.trim();
-    const trimmedConfirmPassword = confirmPassword.trim();
+    // Apply the trim method for all fields, with existence check
+    const trimmedUsername = username ? username.trim() : "";
+    const trimmedEmail = email ? email.trim() : "";
+    const trimmedPassword = password ? password.trim() : "";
+    const trimmedConfirmPassword = confirmPassword ? confirmPassword.trim() : "";
 
     if (!trimmedUsername || !trimmedEmail || !trimmedPassword) {
       errors.message = "Vui lòng điền đẩy đủ các trường!";
@@ -52,7 +52,6 @@ export const register = async (req: Request, res: Response) => {
       errors.password = "Mật khẩu không đủ mạnh!";
       return res.status(400).json(errors);
     }
-
     if (trimmedPassword !== trimmedConfirmPassword) {
       errors.confirmPassword = "Mật khẩu xác nhận không khớp!";
       return res.status(400).json(errors);
@@ -89,6 +88,7 @@ export const register = async (req: Request, res: Response) => {
     });
   }
 };
+
 
 /**
  * API: api/auth/login
