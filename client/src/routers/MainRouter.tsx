@@ -88,27 +88,27 @@ const MainRouter = () => {
         </Route>
         <Route
           path="/my-account"
-          element={<MyAccountLayout />}
+          element={auth.token ? <MyAccountLayout /> : <Navigate to="/sign-in" />}
         >
           <Route
             path="appointment"
-            element={<Appointment />}
+            element={auth.token ? <Appointment /> : <Navigate to="/sign-in" />}
           />
           <Route
             path="medical-record"
-            element={<MedicalRecord />}
+            element={auth.token ? <MedicalRecord /> : <Navigate to="/sign-in" />}
           />
           <Route
             path="inspection-record"
-            element={<InspectionRecord />}
+            element={auth.token ? <InspectionRecord /> : <Navigate to="/sign-in" />}
           />
           <Route
             path="profile"
-            element={<Profile />}
+            element={auth.token ? <Profile /> : <Navigate to="/sign-in" />}
           />
           <Route
             path="history"
-            element={<History />}
+            element={auth.token ? <History /> : <Navigate to="/sign-in" />}
           />
         </Route>
       </Routes>

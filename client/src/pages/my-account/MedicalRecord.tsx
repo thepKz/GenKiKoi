@@ -34,7 +34,7 @@ const MedicalRecord = () => {
           <Divider />
         </ConfigProvider>
         {/* List Card */}
-        <div className="flex h-[500px] flex-col gap-5 overflow-y-auto">
+        <div className="flex h-[calc(100vh-230px)] flex-col gap-5 overflow-y-auto">
           <Card>
             <div className="flex gap-5">
               <div className="">

@@ -29,14 +29,15 @@ const Header = () => {
   const profile: MenuProps["items"] = [
     {
       key: "1",
-      label: <Link to="/my-account/appointment">My Account</Link>,
+      icon: <User size={18} />,
+      label: <Link to="/my-account/appointment">Tài khoản</Link>,
     },
     {
       type: "divider",
     },
     {
       key: "2",
-      label: "Logout",
+      label: "Đăng xuất",
       icon: <Logout size={18} />,
       onClick: () => dispatch(removeAuth({})),
     },
