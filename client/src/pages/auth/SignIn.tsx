@@ -1,7 +1,6 @@
 import { Button, ConfigProvider, Divider, Form, Input, message } from "antd";
 import Logo from "../../assets/logo-transparent.png";
 import Banner from "../../assets/banner.jpg";
-import { SocialButton } from "../../components";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
@@ -9,6 +8,7 @@ import { handleAPI } from "../../apis/handleAPI";
 import { addAuth } from "../../redux/reducers/authReducer";
 import { Heart } from "iconsax-react";
 import { handleEnterPress } from "../../utils";
+import { SocialButton } from "../../share";
 
 const SignIn = () => {
   const [form] = Form.useForm();
@@ -78,10 +78,11 @@ const SignIn = () => {
                 rules={[
                   { required: true, message: "Vui lòng nhập email!" },
                   {
-                    pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                    pattern: /^[A-Za-z0-9\._%+\-]+@[A-Za-z0-9\.\-]+\.[A-Za-z]{2,}$/,
                     message: "Email không hợp lệ!",
                   },
                 ]}
+                validateDebounce={1000}
               >
                 <Input
                   placeholder="Email"
@@ -93,8 +94,14 @@ const SignIn = () => {
                 name="password"
                 label="Mật khẩu"
                 required={false}
-                tooltip="Mật khẩu chỉ chứa chữ thường, in hoa, số và trên 8 ký tự!"
-                rules={[{ required: true, message: "Vui lòng nhập mật khẩu!" }]}
+                tooltip="Mật khẩu phải chứa chữ thường, in hoa, số và trên 6 ký tự!"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng nhập mật khẩu!",
+                  },
+                ]}
+                validateDebounce={1000}
               >
                 <Input.Password
                   onPressEnter={() => handleEnterPress(form, "password", null)}

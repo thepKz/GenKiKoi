@@ -28,10 +28,13 @@ const SocialButton = (props: Props) => {
       const res = await signInWithPopup(auth, provider);
       const api = `api/auth/login-google`;
 
+      console.log(res.user);
+
       if (res.user) {
         const data = {
           username: replaceName(res.user.displayName || ""),
           email: res.user.email,
+          photoUrl: res.user.photoURL,
         };
         try {
           const res: any = await handleAPI(api, data, "POST");

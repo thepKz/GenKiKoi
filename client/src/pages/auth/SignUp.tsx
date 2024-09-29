@@ -1,7 +1,6 @@
 import { Button, ConfigProvider, Divider, Form, Input, message } from "antd";
 import Logo from "../../assets/logo-transparent.png";
 import Banner from "../../assets/banner.jpg";
-import { SocialButton } from "../../components";
 import { Link } from "react-router-dom";
 import { SignUpData } from "../../models/AuthModels";
 import { useState } from "react";
@@ -10,6 +9,7 @@ import { useDispatch } from "react-redux";
 import { addAuth } from "../../redux/reducers/authReducer";
 import { Heart } from "iconsax-react";
 import { handleEnterPress } from "../../utils";
+import { SocialButton } from "../../share";
 
 const SignUp = () => {
   const [form] = Form.useForm();
@@ -80,25 +80,30 @@ const SignUp = () => {
                 label="Tên tài khoản"
                 required={false}
                 hasFeedback
-                tooltip="Chỉ chữ thường, in hoa và số được chấp nhận!"
+                tooltip="Tên tài khoản phải bao gồm chữ thường, in hoa, số và có thể có dấu _!"
                 rules={[
                   {
                     validator: async (_, value) => {
                       if (!value) {
                         return Promise.reject(new Error("Vui lòng nhập tên tài khoản!"));
                       }
-                      if (value.trim().length === 0) {
-                        return Promise.reject(new Error("Vui lòng nhập tên tài khoản!"));
-                      }
-                      if (!value || !/^[a-zA-Z0-9]+$/.test(value)) {
+                      if (value.trim().length < 8 || value.trim().length > 30) {
                         return Promise.reject(
-                          new Error("Chỉ chữ thường, in hoa và số được chấp nhận!"),
+                          new Error("Tên tài khoản phải có độ dài từ 8 đến 30 ký tự!"),
+                        );
+                      }
+                      if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z0-9_]+$/.test(value)) {
+                        return Promise.reject(
+                          new Error(
+                            "Tên tài khoản phải bao gồm chữ thường, in hoa, số và có thể có dấu _!",
+                          ),
                         );
                       }
                       return Promise.resolve();
                     },
                   },
                 ]}
+                validateDebounce={1000}
               >
                 <Input
                   placeholder="Tên tài khoản"
@@ -114,10 +119,11 @@ const SignUp = () => {
                 rules={[
                   { required: true, message: "Vui lòng nhập email!" },
                   {
-                    pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                    pattern: /^[A-Za-z0-9\._%+\-]+@[A-Za-z0-9\.\-]+\.[A-Za-z]{2,}$/,
                     message: "Email không hợp lệ!",
                   },
                 ]}
+                validateDebounce={1000}
               >
                 <Input
                   placeholder="Email"
@@ -130,21 +136,27 @@ const SignUp = () => {
                 label="Mật khẩu"
                 required={false}
                 hasFeedback
-                tooltip="Mật khẩu chỉ chứa chữ thường, in hoa, số và trên 8 ký tự!"
+                tooltip="Mật khẩu phải chứa chữ thường, in hoa, số và trên 6 ký tự!"
                 rules={[
                   {
                     required: true,
                     message: "Vui lòng nhập mật khẩu!",
                   },
                   {
-                    pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/,
-                    message: "Mật khẩu không đủ mạnh!",
+                    pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{6,}$/,
+                    message: "Mật khẩu phải chứa chữ thường, in hoa, số và trên 6 ký tự!",
                   },
                 ]}
+                validateDebounce={1000}
               >
                 <Input.Password
                   onPressEnter={() => handleEnterPress(form, "password", "confirmPassword")}
                   placeholder="Mật khẩu"
+                  onChange={() => {
+                    if (form.getFieldValue(["confirmPassword"])) {
+                      form.validateFields(["confirmPassword"]);
+                    }
+                  }}
                 />
               </Form.Item>
               <Form.Item
@@ -167,6 +179,7 @@ const SignUp = () => {
                     },
                   }),
                 ]}
+                validateDebounce={1000}
               >
                 <Input.Password
                   onPressEnter={() => handleEnterPress(form, "confirmPassword", null)}
