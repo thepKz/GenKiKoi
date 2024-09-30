@@ -5,7 +5,6 @@ interface IUser {
   username: string;
   email: string;
   password: string;
-  fullname: string;
   photoUrl?: string;
   fullName?: string;
   phoneNumber?: string;
@@ -18,7 +17,6 @@ const userSchema = new mongoose.Schema(
     username: { type: String, required: true, unique: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    fullname: { type: String, required: true },
     photoUrl: { type: String, default: "" },
     fullName: { type: String, default: "" },
     phoneNumber: { type: String, default: "" },

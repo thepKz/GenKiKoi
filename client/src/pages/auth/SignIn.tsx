@@ -72,20 +72,22 @@ const SignIn = () => {
               layout="vertical"
             >
               <Form.Item
-                name="email"
-                label="Email"
+                name="login"
+                label="Email / Tên tài khoản"
                 required={false}
                 rules={[
-                  { required: true, message: "Vui lòng nhập email!" },
+                  { required: true, message: "Vui lòng nhập email hoặc tên tài khoản!" },
                   {
-                    pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-                    message: "Email không hợp lệ!",
+                    pattern:
+                      /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$|^[a-zA-Z0-9_]{8,30}$/,
+                    message: "Email hoặc tên tài khoản không hợp lệ!",
                   },
                 ]}
+                validateDebounce={1000}
               >
                 <Input
                   placeholder="Email"
-                  onPressEnter={() => handleEnterPress(form, "email", "password")}
+                  onPressEnter={() => handleEnterPress(form, "login", "password")}
                   allowClear
                 />
               </Form.Item>
@@ -95,6 +97,7 @@ const SignIn = () => {
                 required={false}
                 tooltip="Mật khẩu chỉ chứa chữ thường, in hoa, số và trên 8 ký tự!"
                 rules={[{ required: true, message: "Vui lòng nhập mật khẩu!" }]}
+                validateDebounce={1000}
               >
                 <Input.Password
                   onPressEnter={() => handleEnterPress(form, "password", null)}

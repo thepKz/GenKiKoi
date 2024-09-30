@@ -24,7 +24,9 @@ export const register = async (req: Request, res: Response) => {
     const trimmedUsername = username ? username.trim() : "";
     const trimmedEmail = email ? email.trim() : "";
     const trimmedPassword = password ? password.trim() : "";
-    const trimmedConfirmPassword = confirmPassword ? confirmPassword.trim() : "";
+    const trimmedConfirmPassword = confirmPassword
+      ? confirmPassword.trim()
+      : "";
 
     if (!trimmedUsername || !trimmedEmail || !trimmedPassword) {
       errors.message = "Vui lòng điền đẩy đủ các trường!";
@@ -89,7 +91,6 @@ export const register = async (req: Request, res: Response) => {
   }
 };
 
-
 /**
  * API: api/auth/login
  * METHOD: POST
@@ -97,27 +98,29 @@ export const register = async (req: Request, res: Response) => {
  */
 export const login = async (req: Request, res: Response) => {
   try {
-    const { email, password } = req.body;
+    const { login, password } = req.body;
 
     const errors: any = {
       message: "",
-      email: "",
+      login: "",
       password: "",
     };
 
-    const trimmedEmail = email.trim();
+    const trimmedLogin = login.trim();
     const trimmedPassword = password.trim();
 
-    if (!trimmedEmail || !trimmedPassword) {
+    if (!trimmedLogin || !trimmedPassword) {
       errors.message = "Vui lòng điền đẩy đủ các trường!";
       return res.status(400).json(errors);
     }
 
-    const user = await User.findOne({ email: trimmedEmail });
+    const user = await User.findOne({
+      $or: [{ email: trimmedLogin }, { username: trimmedLogin }],
+    });
 
     if (!user) {
       errors.message = "Tài khoản không tồn tại!";
-      errors.email = "Vui lòng kiểm tra lại!";
+      errors.login = "Vui lòng kiểm tra lại!";
       return res.status(400).json(errors);
     }
 
@@ -128,7 +131,7 @@ export const login = async (req: Request, res: Response) => {
 
     if (!comparePassword) {
       errors.message = "Thông tin đăng nhập sai, vui lòng thử lại!";
-      errors.email = "Vui lòng kiểm tra lại!";
+      errors.login = "Vui lòng kiểm tra lại!";
       errors.password = "Vui lòng kiểm tra lại!";
       return res.status(400).json(errors);
     }
