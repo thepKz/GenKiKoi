@@ -44,10 +44,10 @@ const AboutUs = () => {
               },
             }}
           >
-            <div class="bg-blue-primary p-6 text-center text-white">
-              <div class="inline-flex items-baseline">
-                <h1 class="mr-3 text-5xl font-bold">GenKiKoi</h1>
-                <p class="text-sm italic">Nâng tầm sức khỏe, tô điểm hồ cá</p>
+            <div className="bg-blue-primary p-6 text-center text-white">
+              <div className="inline-flex items-baseline">
+                <h1 className="mr-3 text-5xl font-bold">GenKiKoi</h1>
+                <p className="text-sm italic">Nâng tầm sức khỏe, tô điểm hồ cá</p>
               </div>
             </div>
 
@@ -93,8 +93,8 @@ const AboutUs = () => {
                   chúng tôi.
                 </p>
 
-                <div class="flex justify-center">
-                  <div class="my-6 h-0.5 w-52 bg-white"></div>
+                <div className="flex justify-center">
+                  <div className="my-6 h-0.5 w-52 bg-white"></div>
                 </div>
 
                 <p my-5> Sứ mệnh của GenkiKoi</p>
