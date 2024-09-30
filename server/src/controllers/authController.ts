@@ -21,19 +21,19 @@ export const register = async (req: Request, res: Response) => {
     };
 
     // Apply the trim method for all fields, with existence check
-    const trimmedUsername = username ? username.trim() : "";
-    const trimmedEmail = email ? email.trim() : "";
+    const formatUsername = username ? username.trim().toLowerCase() : "";
+    const formatEmail = email ? email.trim().toLowerCase() : "";
     const trimmedPassword = password ? password.trim() : "";
     const trimmedConfirmPassword = confirmPassword
       ? confirmPassword.trim()
       : "";
 
-    if (!trimmedUsername || !trimmedEmail || !trimmedPassword) {
+    if (!formatUsername || !formatEmail || !trimmedPassword) {
       errors.message = "Vui lòng điền đẩy đủ các trường!";
       return res.status(400).json(errors);
     }
 
-    const usernameExist = await User.findOne({ username: trimmedUsername });
+    const usernameExist = await User.findOne({ username: formatUsername });
 
     if (usernameExist) {
       errors.username = "Tên tài khoản này đã được sử dụng!";
@@ -41,7 +41,7 @@ export const register = async (req: Request, res: Response) => {
     }
 
     const emailExist = await User.findOne({
-      email: trimmedEmail.toLowerCase(),
+      email: formatEmail,
     });
 
     if (emailExist) {
@@ -62,8 +62,8 @@ export const register = async (req: Request, res: Response) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPass = await bcrypt.hash(trimmedPassword, salt);
     const newUser = await User.create({
-      username: trimmedUsername,
-      email: trimmedEmail,
+      username: formatUsername,
+      email: formatEmail,
       password: hashedPass,
     });
 
@@ -106,16 +106,16 @@ export const login = async (req: Request, res: Response) => {
       password: "",
     };
 
-    const trimmedLogin = login.trim();
+    const formatLogin = login.trim().toLowerCase();
     const trimmedPassword = password.trim();
 
-    if (!trimmedLogin || !trimmedPassword) {
+    if (!formatLogin || !trimmedPassword) {
       errors.message = "Vui lòng điền đẩy đủ các trường!";
       return res.status(400).json(errors);
     }
 
     const user = await User.findOne({
-      $or: [{ email: trimmedLogin }, { username: trimmedLogin }],
+      $or: [{ email: formatLogin }, { username: formatLogin }],
     });
 
     if (!user) {
@@ -167,7 +167,9 @@ export const loginWithGoogle = async (req: Request, res: Response) => {
   try {
     const { email, username, photoUrl } = req.body;
 
-    const user = await User.findOne({ email });
+    const formatEmail = email.trim().toLowerCase();
+
+    const user = await User.findOne({ formatEmail });
 
     if (user) {
       return res.status(200).json({
@@ -190,8 +192,8 @@ export const loginWithGoogle = async (req: Request, res: Response) => {
       const salt = await bcrypt.genSalt(10);
       const hashedPass = await bcrypt.hash(randomText(6), salt);
       const newUser = await User.create({
-        username: username + randomText(4),
-        email,
+        username: (username + randomText(4)).toLowerCase,
+        email: formatEmail,
         password: hashedPass,
       });
 
