@@ -39,6 +39,13 @@ createRoot(document.getElementById("root")!).render(
           Layout: {
             headerHeight: "fit-content",
           },
+          Collapse: {
+            headerBg: "#0c3c5480",
+            contentBg: "#006478",
+            colorText: "white",
+            colorTextHeading: "white",
+            fontSize: 17,
+          },
         },
       }}
     >
