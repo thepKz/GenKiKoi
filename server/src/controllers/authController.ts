@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import { Request, Response } from "express";
 import User from "../models/UserModel";
 import { isStrongPassword, randomText, signToken } from "../utils";
+import jwt from "jsonwebtoken";
 
 /**
  * API: api/auth/register
@@ -69,6 +70,12 @@ export const register = async (req: Request, res: Response) => {
 
     await newUser.save();
 
+    const token = jwt.sign(
+      { id: newUser._id, role: newUser.role },
+      process.env.SECRET_KEY as string,
+      { expiresIn: "1h" }
+    );
+
     return res.status(201).json({
       message: "Đăng ký thành công!",
       data: {
@@ -76,12 +83,7 @@ export const register = async (req: Request, res: Response) => {
         username: newUser.username,
         email: newUser.email,
         role: newUser.role,
-        token: await signToken({
-          _id: newUser._id,
-          username: newUser.username,
-          email: newUser.email,
-          role: newUser.role,
-        }),
+        token,
       },
     });
   } catch (error: any) {
