@@ -10,6 +10,10 @@ import userRoutes from "./routes/userRouter";
 import customerRouter from "./routes/customerRouter";
 import doctorRouter from "./routes/doctorRouter";
 import fishRouter from "./routes/fishRouter";
+import serviceRouter from "./routes/serviceRouter";
+import timeRouter from "./routes/timeRouter";
+import timeServiceRouter from "./routes/timeServiceRouter";
+import assignmentRouter from "./routes/assignmentRouter";
 dotenv.config();
 
 const app = express();
@@ -25,6 +29,10 @@ app.use("/api/user", userRoutes);
 app.use("/api/customer", customerRouter);
 app.use("/api/doctor", doctorRouter);
 app.use("/api/fish", fishRouter);
+app.use("/api/service", serviceRouter);
+app.use("/api/time", timeRouter);
+app.use("/api/timeService", timeServiceRouter);
+app.use("/api/assignment", assignmentRouter);
 
 console.log("SECRET_KEY:", process.env.SECRET_KEY);
 mongoose
