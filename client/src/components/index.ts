@@ -1,5 +1,6 @@
 import Footer from "./Footer";
 import Header from "./Header";
-import SocialButton from "./SocialButton";
+import HeaderComponent from "./my-account/HeaderComponent";
+import SiderComponent from "./SiderComponent";
 
-export { Footer, Header, SocialButton };
+export { Footer, Header, SiderComponent, HeaderComponent };

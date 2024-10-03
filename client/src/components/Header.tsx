@@ -3,7 +3,7 @@ import Logo from "../assets/logo.jpg";
 import { Avatar, Badge, Button, Dropdown, MenuProps } from "antd";
 import { AuthState } from "../models/AuthModels";
 import { useDispatch, useSelector } from "react-redux";
-import { Logout, Notification, User } from "iconsax-react";
+import { CalendarEdit, Logout, Notification, User } from "iconsax-react";
 import { removeAuth } from "../redux/reducers/authReducer";
 
 const Header = () => {
@@ -29,14 +29,15 @@ const Header = () => {
   const profile: MenuProps["items"] = [
     {
       key: "1",
-      label: "My Account",
+      icon: <User size={18} />,
+      label: <Link to="/my-account/appointment">Tài khoản</Link>,
     },
     {
       type: "divider",
     },
     {
       key: "2",
-      label: "Logout",
+      label: "Đăng xuất",
       icon: <Logout size={18} />,
       onClick: () => dispatch(removeAuth({})),
     },
@@ -132,6 +133,9 @@ const Header = () => {
             </div>
           ) : (
             <div className="flex items-center gap-3">
+              <Link to="booking">
+                <CalendarEdit color="white" size={24} />
+              </Link>
               <Badge
                 count={9}
                 size="small"
@@ -144,6 +148,7 @@ const Header = () => {
               </Badge>
               <Dropdown menu={{ items: profile }}>
                 <Avatar
+                  src={auth.photoUrl}
                   className="cursor-pointer"
                   icon={<User size={18} />}
                 />
