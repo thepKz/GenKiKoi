@@ -1,4 +1,6 @@
 import Center1 from "../assets/center-1.jpg";
+import Center10 from "../assets/center-10.jpg";
+import Center11 from "../assets/center-10.png";
 import Center2 from "../assets/center-2.jpg";
 import Center3 from "../assets/center-3.jpg";
 import Center4 from "../assets/center-4.jpg";
@@ -7,8 +9,6 @@ import Center6 from "../assets/center-6.jpg";
 import Center7 from "../assets/center-7.jpg";
 import Center8 from "../assets/center-8.jpg";
 import Center9 from "../assets/center-9.jpg";
-import Center10 from "../assets/center-10.jpg";
-import Center11 from "../assets/center-1.png";
 
 const Images = () => {
   return (
