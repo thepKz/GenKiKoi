@@ -7,6 +7,15 @@ on:
     branches: [main, develop]
   workflow_dispatch:
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -53,13 +62,13 @@ jobs:
         run: npm ci
         working-directory: ./client
       - name: Build
-        run: npm run build --noEmitOnError
+        run: npm run build
         working-directory: ./client
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
           name: dist
-          path: client/dist
+          path: ./client/dist
 
   deploy-staging:
     needs: build
@@ -71,7 +80,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: dist
-          path: client/dist
+          path: ./client/dist
       - name: Deploy to Netlify (Staging)
         uses: nwtgck/actions-netlify@v2.0
         with:
@@ -94,7 +103,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: dist
-          path: client/dist
+          path: ./client/dist
       - name: Deploy to Netlify (Production)
         uses: nwtgck/actions-netlify@v2.0
         with:

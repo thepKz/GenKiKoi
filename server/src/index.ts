@@ -4,16 +4,16 @@ import express from "express";
 import mongoose from "mongoose";
 
 // Routes
+import assignmentRouter from "./routes/assignmentRouter";
 import authRoutes from "./routes/authRoutes";
-import profileRoutes from "./routes/profileRoutes";
-import userRoutes from "./routes/userRouter";
 import customerRouter from "./routes/customerRouter";
 import doctorRouter from "./routes/doctorRouter";
 import fishRouter from "./routes/fishRouter";
+import profileRoutes from "./routes/profileRoutes";
 import serviceRouter from "./routes/serviceRouter";
 import timeRouter from "./routes/timeRouter";
 import timeServiceRouter from "./routes/timeServiceRouter";
-import assignmentRouter from "./routes/assignmentRouter";
+import userRoutes from "./routes/userRouter";
 dotenv.config();
 
 const app = express();
