@@ -44,7 +44,7 @@
   },
   "optionalDependencies": {
     "@esbuild/linux-x64": "^0.18.20",
-    "@rollup/rollup-linux-x64-gnu": "4.24.0",
+    "@rollup/rollup-linux-x64-gnu": "4.6.1",
     "@rollup/rollup-android-arm-eabi": "4.22.2",
     "@rollup/rollup-android-arm64": "4.22.2",
     "@rollup/rollup-darwin-arm64": "4.22.2",
@@ -60,5 +60,10 @@
     "@rollup/rollup-win32-arm64-msvc": "4.22.2",
     "@rollup/rollup-win32-ia32-msvc": "4.22.2",
     "fsevents": "2.3.3"
+  },
+  "overrides": {
+    "vite": {
+      "rollup": "npm:@rollup/wasm-node"
+    }
   }
 }

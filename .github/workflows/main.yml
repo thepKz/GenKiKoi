@@ -18,16 +18,19 @@ jobs:
       with:
         node-version: '18'
 
-    - name: Install dependencies
+    - name: Clear npm cache
+      run: npm cache clean --force
+
+    - name: Remove node_modules and package-lock.json
       run: |
-        cd client
-        npm ci
-        npm install @esbuild/linux-x64 @rollup/rollup-linux-x64-gnu
+        rm -rf node_modules
+        rm -f package-lock.json
+
+    - name: Install dependencies
+      run: npm install
 
     - name: Build
-      run: |
-        cd client
-        npm run build
+      run: npm run build
 
     - name: Upload artifact
       uses: actions/upload-artifact@v3
