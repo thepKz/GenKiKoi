@@ -1,24 +1,10 @@
 import "react-multi-carousel/lib/styles.css";
 
-import FishBanner from "../assets/fish-banner.png";
-import FishBanner2 from "../assets/banner_2.jpg";
-import { AnimatedSection, DividerComponent } from "../share";
 import { useEffect } from "react";
+import FishBanner2 from "../assets/banner_2.jpg";
+import FishBanner from "../assets/fish-banner.png";
+import { AnimatedSection, DividerComponent } from "../share";
 
-const responsive = {
-  desktop: {
-    breakpoint: { max: 3000, min: 1024 },
-    items: 2,
-  },
-  tablet: {
-    breakpoint: { max: 1024, min: 464 },
-    items: 2,
-  },
-  mobile: {
-    breakpoint: { max: 464, min: 0 },
-    items: 1,
-  },
-};
 
 const AboutUs = () => {
   useEffect(() => {
@@ -119,19 +105,7 @@ const AboutUs = () => {
       {/* Expected */}
       <div className="section bg-blue-primary text-center text-white">
         <div className="container mx-auto lg:px-40">
-          <AnimatedSection
-            variants={{
-              hidden: {
-                opacity: 0,
-                y: 50,
-              },
-              visible: {
-                opacity: 1,
-                y: 0,
-                transition: { duration: 1.5, delay: 0.5 },
-              },
-            }}
-          ></AnimatedSection>
+
           <div className="my-10 flex">
             <div className="w-1/2">
               <AnimatedSection

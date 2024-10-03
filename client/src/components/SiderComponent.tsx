@@ -1,4 +1,4 @@
-import { Layout, Menu, MenuProps, Typography } from "antd";
+import { Layout, Menu, MenuProps } from "antd";
 import { DocumentLike, DocumentText, Home2, User } from "iconsax-react";
 import { VscHistory } from "react-icons/vsc";
 import { Link, useLocation } from "react-router-dom";
