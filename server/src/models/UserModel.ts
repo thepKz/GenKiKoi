@@ -8,7 +8,7 @@ interface IUser {
   photoUrl?: string;
   fullName?: string;
   phoneNumber?: string;
-  role: "customer" | "staff" | "veterinarian" | "manager";
+  role: "customer" | "staff" | "doctor" | "manager";
 }
 
 // Mongoose schema for the User model
@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema(
     phoneNumber: { type: String, default: "" },
     role: {
       type: String,
-      enum: ["customer", "staff", "veterinarian", "manager"],
+      enum: ["customer", "staff", "doctor", "manager"],
       default: "customer",
     },
   },
