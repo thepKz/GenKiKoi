@@ -1,11 +1,10 @@
 import "react-multi-carousel/lib/styles.css";
 
 
-import FishBanner from "../assets/fish-banner-3.png";
-
-import FishBanner2 from "../assets/banner_2.jpg";
-import { AnimatedSection, DividerComponent } from "../share";
 import { useEffect } from "react";
+import FishBanner2 from "../assets/banner_2.jpg";
+import FishBanner from "../assets/fish-banner.png";
+import { AnimatedSection, DividerComponent } from "../share";
 
 
 const AboutUs = () => {
@@ -125,21 +124,7 @@ const AboutUs = () => {
       {/* Expected */}
       <div className="section bg-green-dark text-center text-white">
         <div className="container mx-auto lg:px-40">
-          <AnimatedSection
-            variants={{
-              hidden: {
-                opacity: 0,
-                y: 50,
-              },
-              visible: {
-                opacity: 1,
-                y: 0,
-                transition: { duration: 1.5, delay: 0.5 },
-              },
-            }}
-          >
-            hi
-          </AnimatedSection>
+
           <div className="my-10 flex">
             <div className="w-1/2">
               <AnimatedSection

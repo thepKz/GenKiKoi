@@ -1,14 +1,14 @@
 import { Button, ConfigProvider, Divider, Form, Input, message } from "antd";
-import Logo from "../../assets/logo-transparent.png";
-import Banner from "../../assets/banner.jpg";
-import { Link } from "react-router-dom";
+import { Heart } from "iconsax-react";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
+import { Link } from "react-router-dom";
 import { handleAPI } from "../../apis/handleAPI";
-import { addAuth } from "../../redux/reducers/authReducer";
-import { Heart } from "iconsax-react";
-import { handleEnterPress } from "../../utils";
+import Banner from "../../assets/banner.jpg";
+import Logo from "../../assets/logo-transparent.png";
 import { SocialButton } from "../../share";
+import { addAuth } from "../../redux/reducers/authReducer";
+import { handleEnterPress } from "../../utils";
 
 const SignIn = () => {
   const [form] = Form.useForm();
@@ -72,21 +72,22 @@ const SignIn = () => {
               layout="vertical"
             >
               <Form.Item
-                name="email"
-                label="Email"
+                name="login"
+                label="Email / Tên tài khoản"
                 required={false}
                 rules={[
-                  { required: true, message: "Vui lòng nhập email!" },
+                  { required: true, message: "Vui lòng nhập email hoặc tên tài khoản!" },
                   {
-                    pattern: /^[A-Za-z0-9\._%+\-]+@[A-Za-z0-9\.\-]+\.[A-Za-z]{2,}$/,
-                    message: "Email không hợp lệ!",
+                    pattern:
+                      /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$|^[a-zA-Z0-9_]{8,30}$/,
+                    message: "Email hoặc tên tài khoản không hợp lệ!",
                   },
                 ]}
                 validateDebounce={1000}
               >
                 <Input
                   placeholder="Email"
-                  onPressEnter={() => handleEnterPress(form, "email", "password")}
+                  onPressEnter={() => handleEnterPress(form, "login", "password")}
                   allowClear
                 />
               </Form.Item>
@@ -94,13 +95,8 @@ const SignIn = () => {
                 name="password"
                 label="Mật khẩu"
                 required={false}
-                tooltip="Mật khẩu phải chứa chữ thường, in hoa, số và trên 6 ký tự!"
-                rules={[
-                  {
-                    required: true,
-                    message: "Vui lòng nhập mật khẩu!",
-                  },
-                ]}
+                tooltip="Mật khẩu chỉ chứa chữ thường, in hoa, số và trên 8 ký tự!"
+                rules={[{ required: true, message: "Vui lòng nhập mật khẩu!" }]}
                 validateDebounce={1000}
               >
                 <Input.Password
