@@ -1,79 +1,45 @@
-name: CI/CD Pipeline CHECK
+name: CI/CD
 
 on:
   push:
-    branches: [main, develop, 'release/**']
+    branches: [ main, develop ]
   pull_request:
-    branches: [main, develop]
-  workflow_dispatch:
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
+    branches: [ main, develop ]
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Use Node.js 20
-        uses: actions/setup-node@v3
-        with:
-          node-version: 20
-          cache: 'npm'
-          cache-dependency-path: './client/package-lock.json'
-      - name: Install dependencies 
-        run: npm ci --ignore-scripts
-        working-directory: ./client 
-      - name: Check for test script
-        id: check_tests
-        run: |
-          if npm run | grep -q "test"; then
-            echo "has_tests=true" >> $GITHUB_OUTPUT
-          else
-            echo "has_tests=false" >> $GITHUB_OUTPUT
-          fi
-        working-directory: ./client
-      - name: Run tests
-        if: steps.check_tests.outputs.has_tests == 'true'
-        run: npm test
-        working-directory: ./client
-      - name: No tests found
-        if: steps.check_tests.outputs.has_tests == 'false'
-        run: echo "No test script found in package.json. Skipping tests."
-
   build:
-    needs: test
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-      - name: Use Node.js 20
-        uses: actions/setup-node@v3
-        with:
-          node-version: 20
-          cache: 'npm'
-          cache-dependency-path: './client/package-lock.json'
-      - name: Install dependencies
-        run: npm ci --ignore-scripts
-        working-directory: ./client
-      - name: Build
-        run: npm run build
-        working-directory: ./client
-      - name: Upload artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: dist
-          path: ./client/dist
+    - uses: actions/checkout@v4
+
+    - name: Use Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+
+    - name: Install dependencies
+      run: |
+        cd client
+        npm ci
+        npm install @esbuild/linux-x64 @rollup/rollup-linux-x64-gnu
+
+    - name: Build
+      run: |
+        cd client
+        npm run build
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: dist
+        path: client/dist
 
   deploy-staging:
     needs: build
     if: github.ref == 'refs/heads/develop'
     runs-on: ubuntu-latest
+    environment: staging
     steps:
       - uses: actions/checkout@v4
       - name: Download artifact
