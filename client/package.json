@@ -9,6 +9,9 @@
     "lint": "eslint .",
     "preview": "vite preview"
   },
+  "optionalDependencies": {
+        "@rollup/rollup-linux-x64-gnu": "*"
+    },
   "dependencies": {
     "@reduxjs/toolkit": "^2.2.7",
     "antd": "^5.20.6",
