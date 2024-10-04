@@ -13,15 +13,22 @@ import {
 import { User } from "iconsax-react";
 import { useEffect, useState } from "react";
 import { handleAPI } from "../../apis/handleAPI";
+import { useSelector } from "react-redux";
+import { AuthState } from "../../models/AuthModels";
+
+import VietNameProvinces from "../../../data/index";
 
 const Profile = () => {
-  const [data, setData] = useState<any>(null);
   const [city, setCity] = useState<String>("");
   const [district, setDistrict] = useState<String>("");
   const [ward, setWard] = useState<String>("");
   const [cities, setCities] = useState<SelectProps["options"]>([]);
   const [districts, setDistricts] = useState<SelectProps["options"]>([]);
   const [wards, setWards] = useState<SelectProps["options"]>([]);
+
+  const auth: AuthState = useSelector((state: any) => state.authReducer.data);
+
+  console.log("repeated");
 
   const handleSubmit = (values: any) => {
     console.log(values);
@@ -30,33 +37,21 @@ const Profile = () => {
   const [form] = Form.useForm();
 
   useEffect(() => {
-    const getData = async () => {
-      const api = "https://raw.githubusercontent.com/kenzouno1/DiaGioiHanhChinhVN/master/data.json";
-      const res: any = await handleAPI(api, undefined, "GET");
-      setData(res);
-    };
-    getData();
+    const res = VietNameProvinces.map((item: any) => ({
+      value: item.Name,
+      label: item.Name,
+    }));
+    setCities(res);
   }, []);
 
   useEffect(() => {
-    if (data) {
-      const res = data?.map((item: any) => ({
-        value: item.Name,
-        label: item.Name,
-      }));
-      setCities(res);
-    }
-  }, [data]);
+    const res = VietNameProvinces.find((item: any) => item.Name === city);
+    const res1 = res?.Districts?.map((item: any) => ({
+      value: item.Name,
+      label: item.Name,
+    }));
+    setDistricts(res1);
 
-  useEffect(() => {
-    if (data) {
-      const res = data.find((item: any) => item.Name === city);
-      const res1 = res?.Districts?.map((item: any) => ({
-        value: item.Name,
-        label: item.Name,
-      }));
-      setDistricts(res1);
-    }
     if (form.getFieldValue(["district"])) {
       form.setFieldValue("district", "");
       form.setFieldValue("ward", "");
@@ -64,19 +59,31 @@ const Profile = () => {
   }, [city]);
 
   useEffect(() => {
-    if (data) {
-      const res = data.find((item: any) => item.Name === city);
-      const res1 = res?.Districts.find((item: any) => item.Name === district);
-      const res2 = res1?.Wards.map((item: any) => ({
-        value: item.Name,
-        label: item.Name,
-      }));
-      setWards(res2);
-    }
+    const res = VietNameProvinces.find((item: any) => item.Name === city);
+    const res1 = res?.Districts.find((item: any) => item.Name === district);
+    const res2 = res1?.Wards.map((item: any) => ({
+      value: item.Name,
+      label: item.Name,
+    }));
+    setWards(res2);
+
     if (form.getFieldValue(["ward"])) {
       form.setFieldValue("ward", "");
     }
   }, [district]);
+
+  useEffect(() => {
+    const getProfile = async () => {
+      try {
+        const api = `api/auth/`;
+        const res = await handleAPI(api, undefined, "GET");
+        console.log(res);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getProfile();
+  }, []);
 
   return (
     <div>
@@ -98,7 +105,7 @@ const Profile = () => {
           <Divider />
         </ConfigProvider>
         {/* My Profile */}
-        <div className="mx-20">
+        <div className="mx-32">
           <div className="my-10 flex w-fit items-center gap-10">
             <Avatar
               shape="square"
@@ -122,7 +129,7 @@ const Profile = () => {
         </div>
 
         {/* Divider */}
-        <div className="mx-20">
+        <div className="mx-32">
           <ConfigProvider
             theme={{
               components: {
@@ -138,7 +145,7 @@ const Profile = () => {
         </div>
 
         {/* Profile detail */}
-        <div className="mx-20">
+        <div className="mx-32">
           <Form
             form={form}
             size="large"
@@ -164,20 +171,12 @@ const Profile = () => {
                   <Input defaultValue="QuangDung2k4" />
                 </Form.Item>
                 <Row gutter={24}>
-                  <Col span={12}>
+                  <Col span={24}>
                     <Form.Item
-                      name="lastName"
-                      label="Họ"
+                      name="fullName"
+                      label="Họ và tên"
                     >
-                      <Input placeholder="Họ" />
-                    </Form.Item>
-                  </Col>
-                  <Col span={12}>
-                    <Form.Item
-                      name="fistName"
-                      label="Tên"
-                    >
-                      <Input placeholder="Tên" />
+                      <Input placeholder="Họ và tên" />
                     </Form.Item>
                   </Col>
                 </Row>

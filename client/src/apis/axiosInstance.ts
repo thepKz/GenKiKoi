@@ -1,7 +1,12 @@
 import axios from "axios";
 
-const getAccessToken = (): string | null => {
-  return localStorage.getItem("access_token");
+const getAccessToken = () => {
+  const res = localStorage.getItem("auth_GenKiKoi");
+  if (res) {
+    const auth = JSON.parse(res);
+    return auth && auth.token ? auth.token : "";
+  }
+  return "";
 };
 
 // Tạo một axios instance
