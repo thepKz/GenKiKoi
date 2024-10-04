@@ -23,6 +23,10 @@ const Profile = () => {
   const [districts, setDistricts] = useState<SelectProps["options"]>([]);
   const [wards, setWards] = useState<SelectProps["options"]>([]);
 
+  const handleSubmit = (values: any) => {
+    console.log(values);
+  };
+
   const [form] = Form.useForm();
 
   useEffect(() => {
@@ -139,6 +143,7 @@ const Profile = () => {
             form={form}
             size="large"
             layout="vertical"
+            onFinish={handleSubmit}
           >
             <Row gutter={32}>
               <Col span={10}>
@@ -275,6 +280,7 @@ const Profile = () => {
                   size="large"
                   type="primary"
                   className="mt-3 w-fit"
+                  onClick={() => form.submit()}
                 >
                   Cập nhật
                 </Button>

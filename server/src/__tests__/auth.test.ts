@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import request from "supertest";
 import connectDB from "../databases/database"; // Assuming this is the correct import path
 import app from "../index";
-import User from "../models/UserModel";
+import User from "../models/User";
 let mongoServer: MongoMemoryServer;
 
 beforeAll(async () => {

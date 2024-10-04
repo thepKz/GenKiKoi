@@ -1,20 +1,25 @@
 import mongoose from "mongoose";
 
-const AssignmentSchema = new mongoose.Schema(
+interface IDoctorSlot {
+  timeServiceId: string;
+  doctorId: string;
+  status: string;
+}
+
+const DoctorSlotSchema = new mongoose.Schema(
   {
-    timeService_id: {
+    timeServiceId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "TimeService",
       required: true,
     },
-    doctor_id: {
+    doctorId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Doctor",
       required: true,
     },
     status: {
       type: String,
-      enum: ["busy", "available"],
       required: true,
     },
   },
@@ -23,6 +28,6 @@ const AssignmentSchema = new mongoose.Schema(
   }
 );
 
-const Assignment = mongoose.model("Assignment", AssignmentSchema);
+const DoctorSlot = mongoose.model<IDoctorSlot>("DoctorSlot", DoctorSlotSchema);
+export default DoctorSlot;
 
-export default Assignment;

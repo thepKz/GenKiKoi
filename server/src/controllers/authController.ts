@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import { Request, Response } from "express";
-import User from "../models/UserModel";
+import User from "../models/User";
 import { isStrongPassword, randomText, signToken } from "../utils";
 import jwt from "jsonwebtoken";
 

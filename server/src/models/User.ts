@@ -1,6 +1,4 @@
 import mongoose from "mongoose";
-
-// Interface defining the structure of a User document
 interface IUser {
   username: string;
   email: string;
@@ -11,7 +9,6 @@ interface IUser {
   role: "customer" | "staff" | "doctor" | "manager";
 }
 
-// Mongoose schema for the User model
 const userSchema = new mongoose.Schema(
   {
     username: { type: String, required: true, unique: true },
@@ -26,10 +23,9 @@ const userSchema = new mongoose.Schema(
       default: "customer",
     },
   },
-  { timestamps: true } // Adds createdAt and updatedAt fields
+  { timestamps: true }
 );
 
-// Create and export the User model
 const User = mongoose.model<IUser>("User", userSchema);
 
 export default User;

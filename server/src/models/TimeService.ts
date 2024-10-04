@@ -1,15 +1,20 @@
 import mongoose from "mongoose";
 
+interface ITimeService {
+  serviceId: string;
+  timeSlotId: string;
+}
+
 const TimeServiceSchema = new mongoose.Schema(
   {
-    service_id: {
+    serviceId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Service",
       required: true,
     },
-    timeSlot_id: {
+    timeSlotId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Time",
+      ref: "TimeSlot",
       required: true,
     },
   },
@@ -18,10 +23,9 @@ const TimeServiceSchema = new mongoose.Schema(
   }
 );
 
-const TimeService = mongoose.model(
+const TimeService = mongoose.model<ITimeService>(
   "TimeService",
-  TimeServiceSchema,
-  "timeServices"
+  TimeServiceSchema
 );
 
 export default TimeService;

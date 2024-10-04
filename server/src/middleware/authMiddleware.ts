@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 
-interface AuthRequest extends Request {
+export interface AuthRequest extends Request {
   user?: any;
 }
 
@@ -29,8 +29,7 @@ export const authMiddleware = (
     };
     req.user = decoded;
 
-    // Kiểm tra role
-    if (!["manager", "veterinarian", "staff"].includes(decoded.role)) {
+    if (["manager", "veterinarian", "staff"].includes(decoded.role)) {
       return res.status(403).json({ message: "Access denied" });
     }
 
