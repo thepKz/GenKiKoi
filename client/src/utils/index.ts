@@ -1,3 +1,6 @@
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { storage } from "../firebase/firebaseConfig";
+
 export const handleEnterPress = (
   form: any,
   currentFieldName: string,
@@ -40,4 +43,22 @@ const valueMap: {
 
 export const getValue = (value: string) => {
   return valueMap[value];
+};
+
+export const uploadFile = async (file: any, folder: "customer" | "fish") => {
+  const fileName = replaceName(file.name);
+
+  const storageRef = ref(storage, `${folder}/${fileName}`);
+
+  const res = await uploadBytes(storageRef, file);
+
+  if (res) {
+    if (res.metadata.size === file.size) {
+      return getDownloadURL(storageRef);
+    } else {
+      return "Uploading";
+    }
+  } else {
+    return "Error upload";
+  }
 };
