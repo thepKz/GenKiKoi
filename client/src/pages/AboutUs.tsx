@@ -3,7 +3,7 @@ import "react-multi-carousel/lib/styles.css";
 
 import { useEffect } from "react";
 import FishBanner2 from "../assets/banner_2.jpg";
-import FishBanner from "../assets/fish-banner.png";
+import FishBanner from "../assets/fish-banner-3.png";
 import { AnimatedSection, DividerComponent } from "../share";
 
 
