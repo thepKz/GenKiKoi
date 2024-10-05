@@ -17,7 +17,7 @@ import {
 } from "./models";
 
 // Routes
-import { appointmentRoutes, authRoutes } from "./routes";
+import { appointmentRoutes, authRoutes, userRoutes, } from "./routes";
 
 const app = express();
 
@@ -30,6 +30,7 @@ app.get("/", (_req, res) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api/appointments", appointmentRoutes);
+app.use("/api/users", userRoutes)
 
 // +++++++ ADD DATA +++++++
 

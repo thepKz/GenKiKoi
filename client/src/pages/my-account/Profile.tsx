@@ -93,7 +93,7 @@ const Profile = () => {
     const getProfile = async () => {
       try {
         setIsLoading(true);
-        const api = `api/auth/`;
+        const api = `api/users/`;
         const res = await handleAPI(api, undefined, "GET");
         setProfile(res.data);
       } catch (error) {
