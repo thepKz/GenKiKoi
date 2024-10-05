@@ -40,6 +40,9 @@ const Booking = () => {
   const [form] = Form.useForm();
 
   const [isLoading, setIsLoading] = useState(false);
+  const [slot, setSlot] = useState<number | null>(null);
+  const [date, setDate] = useState<string>("");
+  const [consultingOptions, setConsultingOptions] = useState([]);
 
   const [city, setCity] = useState<String>("");
   const [district, setDistrict] = useState<String>("");
@@ -102,6 +105,48 @@ const Booking = () => {
     getProfile();
   }, []);
 
+  const handleServiceChange = (value: string) => {
+    let options: any = [];
+    switch (value) {
+      case "Tư vấn & Điều trị":
+        options = [
+          { value: "Tại phòng khám", label: "Tại phòng khám" },
+          { value: "Tại nhà", label: "Tại nhà" },
+          { value: "Tư vấn trực tuyến", label: "Tư vấn trực tuyến" },
+        ];
+        break;
+      case "Xét nghiệm":
+        options = [{ value: "Tại phòng khám", label: "Tại phòng khám" }];
+        break;
+      case "Tiêm ngừa":
+        options = [{ value: "Tại phòng khám", label: "Tại phòng khám" }];
+        break;
+      case "Đánh giá chất lượng hồ cá":
+        options = [{ value: "Tại nhà", label: "Tại nhà" }];
+        break;
+      case "Đánh giá chất lượng nước":
+        options = [
+          { value: "Tại nhà", label: "Tại nhà" },
+          { value: "Tại phòng khám", label: "Tại phòng khám" },
+        ];
+        break;
+      default:
+        options = [];
+    }
+    setConsultingOptions(options);
+  };
+
+  const handleSubmit = async (values: any) => {
+    if (date) {
+      values.appointmentDate = date;
+    }
+
+    if (slot) {
+      values.slotTime = demoSlots[slot].time;
+    }
+    console.log(values);
+  };
+
   if (isLoading) {
     return (
       <div className="flex h-screen items-center justify-center bg-green-dark">
@@ -109,6 +154,7 @@ const Booking = () => {
       </div>
     );
   }
+
   return (
     <div>
       <div className="bg-green-dark py-36 pb-16 text-white">
@@ -129,27 +175,13 @@ const Booking = () => {
             >
               <Form
                 form={form}
+                onFinish={handleSubmit}
                 size="large"
                 layout="vertical"
               >
                 <h3 className="heading-3 text-white">Nội dung chi tiết đặt hẹn</h3>
                 <div className="my-5 flex gap-10">
                   <div className="lg:w-1/5">
-                    <Form.Item
-                      name="typeOfConsulting"
-                      label="Hình thức khám"
-                      required
-                    >
-                      <Select
-                        placeholder="Chọn hình thức khám"
-                        style={{ width: "100%" }}
-                        options={[
-                          { value: "Tại phòng khám", label: "Tại phòng khám" },
-                          { value: "Tại nhà", label: "Tại nhà" },
-                          { value: "Tư vấn trực tuyến", label: "Tư vấn trực tuyến" },
-                        ]}
-                      />
-                    </Form.Item>
                     <Form.Item
                       name="typeOfServices"
                       label="Loại dịch vụ"
@@ -161,12 +193,14 @@ const Booking = () => {
                         options={[
                           { value: "Tư vấn & Điều trị", label: "Tư vấn & Điều trị" },
                           { value: "Xét nghiệm", label: "Xét nghiệm" },
-                          { value: "Ký sinh trùng máu", label: "Ký sinh trùng máu" },
-                          { value: "Kháng sinh đồ", label: "Kháng sinh đồ" },
-                          { value: "Siêu âm", label: "Siêu âm" },
-                          { value: "Phẫu thuật", label: "Phẫu thuật" },
                           { value: "Tiêm ngừa", label: "Tiêm ngừa" },
+                          {
+                            value: "Đánh giá chất lượng hồ cá",
+                            label: "Đánh giá chất lượng hồ cá",
+                          },
+                          { value: "Đánh giá chất lượng nước", label: "Đánh giá chất lượng nước" },
                         ]}
+                        onChange={handleServiceChange}
                       />
                     </Form.Item>
                     <Form.Item
@@ -184,21 +218,32 @@ const Booking = () => {
                         ]}
                       />
                     </Form.Item>
+                    <Form.Item
+                      name="typeOfConsulting"
+                      label="Hình thức khám"
+                      required
+                    >
+                      <Select
+                        placeholder="Chọn hình thức khám"
+                        style={{ width: "100%" }}
+                        options={consultingOptions}
+                      />
+                    </Form.Item>
                   </div>
                   <div className="lg:w-[30%]">
                     <Form.Item
-                      name="time"
+                      name="appointmentDate"
                       label="Thời gian khám"
                       required
                     >
-                      <CustomCalendar />
+                      <CustomCalendar setDate={setDate} />
                     </Form.Item>
                     <Form.Item
-                      name="slot"
+                      name="slotTime"
                       className="mt-5"
                     >
                       <div className="flex flex-wrap gap-4">
-                        {demoSlots.map((slot) => (
+                        {demoSlots.map((slotTime) => (
                           <ConfigProvider
                             theme={{
                               components: {
@@ -209,10 +254,16 @@ const Booking = () => {
                             }}
                           >
                             <Card
-                              key={slot.id}
+                              key={slotTime.id}
                               style={{ width: 70, textAlign: "center" }}
+                              onClick={() => setSlot(slotTime.id)}
+                              className={
+                                slot === slotTime.id
+                                  ? "bg-green-dark text-white"
+                                  : "hover:bg-green-dark hover:text-white"
+                              }
                             >
-                              {slot.time}
+                              {slotTime.time}
                             </Card>
                           </ConfigProvider>
                         ))}
@@ -360,6 +411,7 @@ const Booking = () => {
                   size="large"
                   type="primary"
                   className="mt-3 w-fit"
+                  onClick={() => form.submit()}
                 >
                   Gửi thông tin
                 </Button>

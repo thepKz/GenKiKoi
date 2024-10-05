@@ -5,7 +5,6 @@ interface IAppointment {
   doctorId: string;
   customerId: string;
   appointmentDate: string;
-  address?: string;
   status: string;
   notes?: string;
   feedbackId?: string;
@@ -32,14 +31,10 @@ const AppointmentSchema = new mongoose.Schema(
       type: Date,
       required: true,
     },
-    address: {
-      type: String,
-    },
     status: {
       type: String,
       enum: ["Pending", "Confirmed", "Completed", "Cancelled"],
       default: "Pending",
-      required: true,
     },
     notes: {
       type: String,
