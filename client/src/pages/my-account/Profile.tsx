@@ -39,10 +39,16 @@ const Profile = () => {
   const handleSubmit = async (values: any) => {
     try {
       setIsLoadingForm(true);
+
+      const api = `api/users/update-profile`;
+
       if (file) {
         values.photoUrl = await uploadFile(file, "customer");
       }
-      console.log(values);
+
+      const res: any = await handleAPI(api, values, "PATCH");
+
+      message.success(res.message);
     } catch (error: any) {
       console.log(error);
       message.error(error.message);
@@ -311,7 +317,7 @@ const Profile = () => {
                 <Row>
                   <Col span={24}>
                     <Form.Item
-                      name="address"
+                      name="detailAddress"
                       label="Địa chỉ"
                     >
                       <Input
