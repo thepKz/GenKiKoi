@@ -1,7 +1,23 @@
-import { Button, Card, Col, ConfigProvider, Form, Input, Row, Select } from "antd";
-import TextArea from "antd/es/input/TextArea";
-import { Calendar } from "iconsax-react";
-import { useEffect } from "react";
+import {
+  Button,
+  Card,
+  Col,
+  ConfigProvider,
+  Form,
+  Input,
+  Row,
+  Select,
+  SelectProps,
+  Spin,
+} from "antd";
+
+import { useEffect, useState } from "react";
+import { CustomerData } from "../models/DataModels";
+import VietNamProvinces from "../../data";
+import { handleAPI } from "../apis/handleAPI";
+import { CustomCalendar } from "../share";
+
+const { TextArea } = Input;
 
 const demoSlots = [
   { id: 1, time: "10:30" },
@@ -22,6 +38,77 @@ const Booking = () => {
   }, []);
 
   const [form] = Form.useForm();
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [city, setCity] = useState<String>("");
+  const [district, setDistrict] = useState<String>("");
+  const [ward, setWard] = useState<String>("");
+
+  const [cities, setCities] = useState<SelectProps["options"]>([]);
+  const [districts, setDistricts] = useState<SelectProps["options"]>([]);
+  const [wards, setWards] = useState<SelectProps["options"]>([]);
+  const [profile, setProfile] = useState<CustomerData | null>(null);
+
+  useEffect(() => {
+    const res = VietNamProvinces.map((item: any) => ({
+      value: item.Name,
+      label: item.Name,
+    }));
+    setCities(res);
+  }, []);
+
+  useEffect(() => {
+    const res = VietNamProvinces.find((item: any) => item.Name === city);
+    const res1 = res?.Districts?.map((item: any) => ({
+      value: item.Name,
+      label: item.Name,
+    }));
+    setDistricts(res1);
+
+    if (form.getFieldValue(["district"])) {
+      form.setFieldValue("district", "");
+      form.setFieldValue("ward", "");
+    }
+  }, [city]);
+
+  useEffect(() => {
+    const res = VietNamProvinces.find((item: any) => item.Name === city);
+    const res1 = res?.Districts.find((item: any) => item.Name === district);
+    const res2 = res1?.Wards.map((item: any) => ({
+      value: item.Name,
+      label: item.Name,
+    }));
+    setWards(res2);
+
+    if (form.getFieldValue(["ward"])) {
+      form.setFieldValue("ward", "");
+    }
+  }, [district]);
+
+  useEffect(() => {
+    const getProfile = async () => {
+      try {
+        setIsLoading(true);
+        const api = `api/users/`;
+        const res = await handleAPI(api, undefined, "GET");
+        setProfile(res.data);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    getProfile();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-green-dark">
+        <Spin size="large" />
+      </div>
+    );
+  }
   return (
     <div>
       <div className="bg-green-dark py-36 pb-16 text-white">
@@ -104,71 +191,7 @@ const Booking = () => {
                       label="Thời gian khám"
                       required
                     >
-                      <div className="flex items-center justify-between gap-5">
-                        <ConfigProvider
-                          theme={{
-                            components: {
-                              Card: {
-                                paddingLG: 8,
-                              },
-                            },
-                          }}
-                        >
-                          <Card className="w-1/3 text-center">
-                            <h2 className="text-xl font-bold">29/09</h2>
-                            <p>Chủ Nhật</p>
-                          </Card>
-                        </ConfigProvider>
-                        <ConfigProvider
-                          theme={{
-                            components: {
-                              Card: {
-                                paddingLG: 8,
-                              },
-                            },
-                          }}
-                        >
-                          <Card className="w-1/3 text-center">
-                            <h2 className="text-xl font-bold">30/09</h2>
-                            <p>Thứ 2</p>
-                          </Card>
-                        </ConfigProvider>
-                        <ConfigProvider
-                          theme={{
-                            components: {
-                              Card: {
-                                paddingLG: 8,
-                              },
-                            },
-                          }}
-                        >
-                          <Card className="w-1/3 text-center">
-                            <h2 className="text-xl font-bold">1/10</h2>
-                            <p>thứ 3</p>
-                          </Card>
-                        </ConfigProvider>
-                      </div>
-                      <div className="mt-5 flex items-center gap-5">
-                        <ConfigProvider
-                          theme={{
-                            components: {
-                              Card: {
-                                paddingLG: 8,
-                              },
-                            },
-                          }}
-                        >
-                          <Card className="w-1/3 text-center">
-                            <Calendar
-                              size={28}
-                              className="mx-auto"
-                            />
-                            <p>Ngày khác</p>
-                          </Card>
-                        </ConfigProvider>
-                        <div className="w-1/3"></div>
-                        <div className="w-1/3"></div>
-                      </div>
+                      <CustomCalendar />
                     </Form.Item>
                     <Form.Item
                       name="slot"
@@ -202,22 +225,16 @@ const Booking = () => {
                   </div>
                   <div className="lg:flex-1">
                     <Row gutter={24}>
-                      <Col span={12}>
+                      <Col span={24}>
                         <Form.Item
                           required
-                          name="lastName"
-                          label="Họ"
+                          name="fullName"
+                          label="Họ và tên"
                         >
-                          <Input placeholder="Họ" />
-                        </Form.Item>
-                      </Col>
-                      <Col span={12}>
-                        <Form.Item
-                          required
-                          name="fistName"
-                          label="Tên"
-                        >
-                          <Input placeholder="Tên" />
+                          <Input
+                            defaultValue={profile?.fullName}
+                            placeholder="Họ và tên"
+                          />
                         </Form.Item>
                       </Col>
                     </Row>
@@ -232,6 +249,7 @@ const Booking = () => {
                             className="addon-input"
                             addonBefore="+84"
                             placeholder="Số điện thoại"
+                            defaultValue={profile?.phoneNumber}
                           />
                         </Form.Item>
                       </Col>
@@ -242,6 +260,7 @@ const Booking = () => {
                         >
                           <Select
                             placeholder="Giới tính"
+                            defaultValue={profile?.gender ? "Nam" : "Nữ"}
                             options={[
                               { value: "female", label: "Nữ" },
                               { value: "male", label: "Nam" },
@@ -258,11 +277,12 @@ const Booking = () => {
                         >
                           <Select
                             placeholder="Thành phố"
-                            // value={city}
-                            // onChange={(e) => {
-                            //   setCity(e);
-                            // }}
-                            // options={cities}
+                            value={city}
+                            defaultValue={profile?.city}
+                            onChange={(e) => {
+                              setCity(e);
+                            }}
+                            options={cities}
                           />
                         </Form.Item>
                       </Col>
@@ -273,10 +293,11 @@ const Booking = () => {
                         >
                           <Select
                             placeholder="Quận / Huyện"
-                            // onChange={(e) => {
-                            //   setDistrict(e);
-                            // }}
-                            // options={districts}
+                            defaultValue={profile?.district}
+                            onChange={(e) => {
+                              setDistrict(e);
+                            }}
+                            options={districts}
                           />
                         </Form.Item>
                       </Col>
@@ -287,9 +308,10 @@ const Booking = () => {
                         >
                           <Select
                             placeholder="Phường / Xã"
-                            // value={ward}
-                            // onChange={(e) => setWard(e)}
-                            // options={wards}
+                            defaultValue={profile?.ward}
+                            value={ward}
+                            onChange={(e) => setWard(e)}
+                            options={wards}
                           />
                         </Form.Item>
                       </Col>
@@ -300,7 +322,10 @@ const Booking = () => {
                           name="address"
                           label="Địa chỉ"
                         >
-                          <Input placeholder="Địa chỉ" />
+                          <Input
+                            placeholder="Địa chỉ"
+                            defaultValue={profile?.detailAddress}
+                          />
                         </Form.Item>
                       </Col>
                     </Row>

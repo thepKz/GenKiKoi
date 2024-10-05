@@ -46,7 +46,7 @@ export const getValue = (value: string) => {
   return valueMap[value];
 };
 
-export const uploadFile = async (file: any, folder: "customer" | "fish") => {
+export const uploadFile = async (file: any, folder: "customers" | "fishes") => {
   const compressedFile: any = await handleResize(file);
 
   const fileName = replaceName(compressedFile.name);

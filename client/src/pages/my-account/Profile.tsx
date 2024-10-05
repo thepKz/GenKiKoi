@@ -16,7 +16,7 @@ import { User } from "iconsax-react";
 import { useEffect, useRef, useState } from "react";
 import { handleAPI } from "../../apis/handleAPI";
 
-import VietNameProvinces from "../../../data/index";
+import VietNamProvinces from "../../../data/index";
 import { CustomerData } from "../../models/DataModels";
 import { uploadFile } from "../../utils";
 
@@ -43,7 +43,7 @@ const Profile = () => {
       const api = `api/users/update-profile`;
 
       if (file) {
-        values.photoUrl = await uploadFile(file, "customer");
+        values.photoUrl = await uploadFile(file, "customers");
       }
 
       const res: any = await handleAPI(api, values, "PATCH");
@@ -60,7 +60,7 @@ const Profile = () => {
   const [form] = Form.useForm();
 
   useEffect(() => {
-    const res = VietNameProvinces.map((item: any) => ({
+    const res = VietNamProvinces.map((item: any) => ({
       value: item.Name,
       label: item.Name,
     }));
@@ -68,7 +68,7 @@ const Profile = () => {
   }, []);
 
   useEffect(() => {
-    const res = VietNameProvinces.find((item: any) => item.Name === city);
+    const res = VietNamProvinces.find((item: any) => item.Name === city);
     const res1 = res?.Districts?.map((item: any) => ({
       value: item.Name,
       label: item.Name,
@@ -82,7 +82,7 @@ const Profile = () => {
   }, [city]);
 
   useEffect(() => {
-    const res = VietNameProvinces.find((item: any) => item.Name === city);
+    const res = VietNamProvinces.find((item: any) => item.Name === city);
     const res1 = res?.Districts.find((item: any) => item.Name === district);
     const res2 = res1?.Wards.map((item: any) => ({
       value: item.Name,
