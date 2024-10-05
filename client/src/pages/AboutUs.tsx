@@ -56,10 +56,12 @@ const AboutUs = () => {
                   },
                 }}
               >
-               <img className="rounded-2xl"
-                    src={FishBanner2}
-                    alt=""
-                  />
+                <div className="flex justify-center">
+                  <img className="rounded-2xl w-full"
+                        src={FishBanner2}
+                        alt=""
+                      />
+                </div>
               </AnimatedSection>
 
           <AnimatedSection
