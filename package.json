@@ -1,16 +1,17 @@
 {
-  "name": "genkikoi",
+  "name": "genkikoi-server",
   "version": "1.0.0",
-  "description": "Develop software to manage veterinary services for Koi fish, including online consultation, aquarium inspection, fish disease treatment, doctor and customer management and service evaluation.",
-  "main": "index.js",
+  "description": "Server for GenKiKoi application",
+  "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node dist/index.js",
+    "build": "tsc",
+    "postinstall": "npm run build"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "engines": {
+    "node": "20.x"
+  },
   "dependencies": {
-    "framer-motion": "^11.11.0",
-    "react-icons": "^5.3.0"
+    "typescript": "^5.6.2"
   }
 }
