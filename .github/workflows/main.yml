@@ -31,6 +31,14 @@ jobs:
         cd client
         npm ci
         npm run build
+      env:
+        VITE_BASE_apiKey: ${{ secrets.VITE_BASE_APIKEY }}
+        VITE_BASE_authDomain: ${{ secrets.VITE_BASE_AUTHDOMAIN }}
+        VITE_BASE_projectId: ${{ secrets.VITE_BASE_PROJECTID }}
+        VITE_BASE_storageBucket: ${{ secrets.VITE_BASE_STORAGEBUCKET }}
+        VITE_BASE_messagingSenderId: ${{ secrets.VITE_BASE_MESSAGINGSENDERID }}
+        VITE_BASE_appId: ${{ secrets.VITE_BASE_APPID }}
+        VITE_API_URL: ${{ secrets.VITE_API_URL }}
 
     - name: Upload artifact
       uses: actions/upload-artifact@v3
@@ -91,3 +99,6 @@ jobs:
     steps:
       - name: Deploy to Render
         run: curl ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+    env:
+      MONGO_URI: ${{ secrets.MONGO_URI }}
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
