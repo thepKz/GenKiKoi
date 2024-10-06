@@ -1,24 +1,15 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Document, Schema } from 'mongoose';
 
-const ServiceSchema: Schema = new Schema(
-  {
-    service_name: {
-      type: String,
-      required: true,
-    },
-    price: {
-      type: Number,
-    },
-    description: {
-      type: String,
-      default: null,
-    },
-  },
-  {
-    timestamps: true, // Adds createdAt and updatedAt fields
-  }
-);
+export interface IService extends Document {
+  service_name: string;
+  price: number;
+  description: string;
+}
 
-const Service = mongoose.model("Service", ServiceSchema);
+const ServiceSchema: Schema = new Schema({
+  service_name: { type: String, required: true },
+  price: { type: Number, required: true },
+  description: { type: String, required: true },
+});
 
-export default Service;
+export default mongoose.model<IService>('Service', ServiceSchema);

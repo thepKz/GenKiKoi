@@ -1,27 +1,15 @@
-import mongoose from "mongoose";
+import mongoose, { Document, Schema } from 'mongoose';
 
-const TimeServiceSchema = new mongoose.Schema(
-  {
-    service_id: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Service",
-      required: true,
-    },
-    timeSlot_id: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Time",
-      required: true,
-    },
-  },
-  {
-    timestamps: true,
-  }
-);
+export interface ITimeService extends Document {
+  service_id: mongoose.Types.ObjectId;
+  Time_slot_id: mongoose.Types.ObjectId;
+  status: 'available' | 'booked';
+}
 
-const TimeService = mongoose.model(
-  "TimeService",
-  TimeServiceSchema,
-  "timeServices"
-);
+const TimeServiceSchema: Schema = new Schema({
+  service_id: { type: Schema.Types.ObjectId, ref: 'Service', required: true },
+  Time_slot_id: { type: Schema.Types.ObjectId, ref: 'TimeSlot', required: true },
+  status: { type: String, enum: ['available', 'booked'], default: 'available' },
+});
 
-export default TimeService;
+export default mongoose.model<ITimeService>('TimeService', TimeServiceSchema);

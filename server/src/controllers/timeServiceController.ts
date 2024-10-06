@@ -1,5 +1,5 @@
-import TimeService from "../models/timeServiceModel";
 import { Request, Response } from "express";
+import TimeService from "../models/TimeServiceModel";
 
 export const getTimeServices = async (req: Request, res: Response) => {
   try {
