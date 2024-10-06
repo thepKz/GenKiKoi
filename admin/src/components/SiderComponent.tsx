@@ -1,35 +1,102 @@
 import { Layout, Menu, MenuProps } from "antd";
-import { DocumentLike, DocumentText, Home2, User } from "iconsax-react";
-import { VscHistory } from "react-icons/vsc";
+import {
+  Calendar,
+  CalendarSearch,
+  Grammerly,
+  HomeTrendUp,
+  Lamp,
+  NoteAdd,
+  Profile2User,
+  Stickynote,
+  User,
+} from "iconsax-react";
 import { Link, useLocation } from "react-router-dom";
 
 const { Sider } = Layout;
 
 import Logo from "../assets/logo-transparent.png";
+import { useSelector } from "react-redux";
+import { AuthState } from "../models/AuthModels";
 
 const SiderComponent = () => {
-  const location = useLocation();
+  const auth: AuthState = useSelector((state: any) => state.authReducer.data);
 
-  const items: MenuProps["items"] = [
+  // const location = useLocation();
+
+  const managerItems: MenuProps["items"] = [
     {
-      key: "appointment",
-      label: <Link to={"/my-account/appointment"}>Danh sách cuộc hẹn</Link>,
-      icon: <Home2 size={20} />,
+      key: "dashboard",
+      label: <Link to={"#"}>Bảng điều khiển</Link>,
+      icon: <HomeTrendUp size={20} />,
     },
     {
-      key: "medical-record",
-      label: <Link to={"/my-account/medical-record"}>Hồ sơ điều trị</Link>,
-      icon: <DocumentLike size={20} />,
+      key: "manage-services",
+      label: <Link to={"#"}>Dịch vụ</Link>,
+      icon: <Lamp size={20} />,
     },
     {
-      key: "inspection-record",
-      label: <Link to={"/my-account/inspection-record"}>Hồ sơ kiểm định</Link>,
-      icon: <DocumentText size={20} />,
+      key: "manage-staffs",
+      label: <Link to={"#"}>Nhân viên</Link>,
+      icon: <Profile2User size={20} />,
     },
     {
-      key: "history",
-      label: <Link to={"/my-account/history"}>Lịch sử thanh toán</Link>,
-      icon: <VscHistory size={20} />,
+      key: "divider",
+      type: "divider",
+    },
+    {
+      key: "profile",
+      label: <Link to={"/my-account/profile"}>Hồ sơ cá nhân</Link>,
+      icon: <User size={20} />,
+    },
+  ];
+
+  const doctorItems: MenuProps["items"] = [
+    {
+      key: "doctor-calendar",
+      label: <Link to={"#"}>Lịch làm việc</Link>,
+      icon: <Calendar size={20} />,
+    },
+    {
+      key: "view-appointment",
+      label: <Link to={"#"}>Xem cuộc hẹn</Link>,
+      icon: <CalendarSearch size={20} />,
+    },
+    {
+      key: "view-record",
+      label: <Link to={"#"}>Hồ sơ khách hàng</Link>,
+      icon: <Stickynote size={20} />,
+    },
+    {
+      key: "create-record",
+      label: <Link to={"#"}>Tạo hồ sơ bệnh án</Link>,
+      icon: <NoteAdd size={20} />,
+    },
+    {
+      key: "feedbacks",
+      label: <Link to={"#"}>Phản hồi khách hàng</Link>,
+      icon: <Grammerly size={20} />,
+    },
+    {
+      key: "divider",
+      type: "divider",
+    },
+    {
+      key: "profile",
+      label: <Link to={"/my-account/profile"}>Hồ sơ cá nhân</Link>,
+      icon: <User size={20} />,
+    },
+  ];
+
+  const staffItems: MenuProps["items"] = [
+    {
+      key: "manager-doctor-calendar",
+      label: <Link to={"#"}>Lịch làm việc của bác sĩ</Link>,
+      icon: <Calendar size={20} />,
+    },
+    {
+      key: "view-appointment",
+      label: <Link to={"#"}>Cuộc hẹn khách hàng</Link>,
+      icon: <CalendarSearch size={20} />,
     },
     {
       key: "divider",
@@ -54,24 +121,25 @@ const SiderComponent = () => {
     >
       <Link to={"/"}>
         <div className="py-5 text-center">
-          <img
-            src={Logo}
-            className="mx-auto w-20"
-            alt=""
-          />
-          <h3 className="text-2xl font-bold text-blue-primary">GenKiKoi</h3>
+          <img src={Logo} className="mx-auto w-20" alt="" />
+          <h3 className="text-blue-primary text-2xl font-bold">GenKiKoi</h3>
         </div>
       </Link>
       <div className="flex h-[calc(100vh-160px)] flex-col justify-between">
         <Menu
           mode="inline"
-          items={items}
-          theme="light"
-          selectedKeys={
-            [items.find((item) => item?.key === location.pathname.split("/")[2])?.key] as string[]
+          items={
+            auth.role === "manager"
+              ? managerItems
+              : auth.role === "staff"
+                ? staffItems
+                : doctorItems
           }
+          theme="light"
         />
-        <p className="text-center font-bold text-blue-primary">© 2024 GenKiKoi</p>
+        <p className="text-blue-primary text-center font-bold">
+          © 2024 GenKiKoi
+        </p>
       </div>
     </Sider>
   );
