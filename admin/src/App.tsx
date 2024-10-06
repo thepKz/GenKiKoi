@@ -1,10 +1,7 @@
+import MainRouter from "./routers/MainRouter";
 
 const App = () => {
-  return (
-    <div className="text-red-500">
-      Hello Demo
-    </div>
-  )
-}
+  return <MainRouter />;
+};
 
-export default App
+export default App;

@@ -1,3 +1,50 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@font-face {
+  font-family: "Pro-Rounded";
+  src: url("/fonts/SF-Pro-Rounded-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-size: normal;
+}
+
+@font-face {
+  font-family: "Pro-Rounded";
+  src: url("/fonts/SF-Pro-Rounded-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-size: normal;
+}
+
+@layer base {
+  body {
+    font-family: "Pro-Rounded", sans-serif;
+    font-size: large;
+  }
+}
+
+@layer components {
+  .section {
+    @apply py-20;
+  }
+
+  .item-hover {
+    @apply ring-blue-secondary hover:shadow-blue-secondary flex items-center rounded-md p-8 ring-2 duration-200 ease-in hover:shadow-lg;
+  }
+}
+
+@layer utilities {
+  .heading-1 {
+    @apply text-5xl font-bold;
+  }
+
+  .heading-2 {
+    @apply text-4xl font-bold;
+  }
+
+  .heading-3 {
+    @apply text-3xl font-bold;
+  }
+}
+
+/* ======== ADDITIONAL CSS ======== */
