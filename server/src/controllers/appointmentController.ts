@@ -2,7 +2,13 @@ import { Response } from "express";
 import Appointment from "../models/Appointment";
 import { AuthRequest } from "../middleware/authMiddleware";
 import Customer from "../models/Customer";
+import { Doctor, Service, User } from "../models";
 
+/**
+ * API: /api/appointments/
+ * Method: GET
+ * PROTECTED
+ */
 export const getAppointmentsByUser = async (
   req: AuthRequest,
   res: Response
@@ -56,5 +62,53 @@ export const getAppointmentsByUser = async (
     return res
       .status(500)
       .json({ message: "Lỗi khi lấy danh sách cuộc hẹn", error });
+  }
+};
+
+/**
+ * API: /api/appointments/
+ * Method: PUT
+ * PROTECTED
+ */
+export const createNewAppointment = async (req: AuthRequest, res: Response) => {
+  try {
+    const {
+      serviceName,
+      doctorName,
+      typeOfConsulting,
+      appointmentDate,
+      slotTime,
+      reasons,
+    } = req.body;
+
+    const userId = req.user._id;
+
+    const customer = await Customer.findOne({ userId });
+
+    const service = await Service.findOne({ serviceName });
+
+    const doctorAccount = await User.findOne({
+      fullName: doctorName,
+      role: "doctor",
+    });
+
+    const doctor = await Doctor.findOne({ userId: doctorAccount?._id });
+
+    const newAppointment = new Appointment({
+      doctorId: doctor?._id,
+      customerId: customer?._id,
+      serviceId: service?._id,
+      appointmentDate,
+      slotTime,
+      typeOfConsulting,
+      reasons,
+    });
+
+    await newAppointment.save();
+
+    return res.status(200).json({ message: "Cuộc hẹn được tạo thành công!" });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Lỗi khi tạo cuộc hẹn"});
   }
 };

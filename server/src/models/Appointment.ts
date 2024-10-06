@@ -1,22 +1,20 @@
 import mongoose from "mongoose";
 
 interface IAppointment {
-  doctorSlotId: string;
   doctorId: string;
   customerId: string;
+  serviceId: string;
   appointmentDate: string;
+  typeOfConsulting: string;
+  slotTime: string;
   status: string;
+  reasons: string;
   notes?: string;
   feedbackId?: string;
 }
 
 const AppointmentSchema = new mongoose.Schema(
   {
-    doctorSlotId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "DoctorSlot",
-      required: true,
-    },
     doctorId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Doctor",
@@ -27,14 +25,40 @@ const AppointmentSchema = new mongoose.Schema(
       ref: "Customer",
       required: true,
     },
+    serviceId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Service",
+      required: true,
+    },
     appointmentDate: {
       type: Date,
+      required: true,
+    },
+    typeOfConsulting: {
+      type: String,
       required: true,
     },
     status: {
       type: String,
       enum: ["Pending", "Confirmed", "Completed", "Cancelled"],
       default: "Pending",
+    },
+    reasons: {
+      type: String,
+    },
+    slotTime: {
+      type: String,
+      enum: [
+        "8:00",
+        "9:00",
+        "10:00",
+        "11:00",
+        "12:00",
+        "13:00",
+        "14:00",
+        "15:00",
+        "16:00",
+      ],
     },
     notes: {
       type: String,

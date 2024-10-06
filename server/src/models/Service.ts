@@ -3,7 +3,6 @@ import mongoose from "mongoose";
 interface IService {
   serviceName: string;
   price: number;
-  description?: string;
 }
 
 const ServiceSchema = new mongoose.Schema(
@@ -15,9 +14,6 @@ const ServiceSchema = new mongoose.Schema(
     price: {
       type: Number,
       required: true,
-    },
-    description: {
-      type: String,
     },
   },
   {

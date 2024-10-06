@@ -2,6 +2,7 @@ import Appointment from "./Appointment";
 import Bill from "./Bill";
 import Customer from "./Customer";
 import Doctor from "./Doctor";
+import DoctorSchedule from "./DoctorSchedule";
 import DoctorSlot from "./DoctorSlot";
 import Feedback from "./Feedback";
 import Fish from "./Fish";
@@ -24,4 +25,5 @@ export {
   TimeService,
   TimeSlot,
   User,
+  DoctorSchedule
 };

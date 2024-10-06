@@ -10,6 +10,7 @@ import {
   Appointment,
   Customer,
   Doctor,
+  DoctorSchedule,
   DoctorSlot,
   Service,
   TimeService,
@@ -17,7 +18,7 @@ import {
 } from "./models";
 
 // Routes
-import { appointmentRoutes, authRoutes, userRoutes, } from "./routes";
+import { appointmentRoutes, authRoutes, userRoutes } from "./routes";
 
 const app = express();
 
@@ -30,7 +31,7 @@ app.get("/", (_req, res) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api/appointments", appointmentRoutes);
-app.use("/api/users", userRoutes)
+app.use("/api/users", userRoutes);
 
 // +++++++ ADD DATA +++++++
 
@@ -56,11 +57,11 @@ const addCustomer = async () => {
 const addDoctor = async () => {
   try {
     const newDoctor = new Doctor({
-      userId: "66fe8784a277fa8f4fb20c96",
-      specialization: "ABC",
-      licenseNumber: "ABC-DHC",
-      yearOfExperience: 4,
-      movingService: 1,
+      userId: "67015a6f730a407f11ff9a0d",
+      specialization: "ABd",
+      licenseNumber: "AcfC-fHC",
+      yearOfExperience: 2,
+      movingService: 0,
     });
 
     const addedDoctor = await newDoctor.save();
@@ -114,9 +115,8 @@ const addAppointment = async () => {
 const addService = async () => {
   try {
     const newService = new Service({
-      serviceName: "Khám cá",
-      price: 200,
-      description: "Demo",
+      serviceName: "Tiêm ngừa",
+      price: 100000,
     });
 
     const addedService = await newService.save();
@@ -161,6 +161,72 @@ const addTimeService = async () => {
   }
 };
 // addTimeService();
+
+// Add Doctor Schedule
+const addDoctorSchedule = async () => {
+  try {
+    const newDoctorSchedule = new DoctorSchedule({
+      doctorId: "66fe89be9f22e008f565e074", // Thay bằng ObjectId của bác sĩ tương ứng
+      weekSchedule: [
+        {
+          dayOfWeek: "Monday",
+          slots: generateSlots(), // Gọi hàm để tạo các slots cho thứ 2
+        },
+        {
+          dayOfWeek: "Tuesday",
+          slots: generateSlots(), // Gọi hàm để tạo các slots cho thứ 3
+        },
+        {
+          dayOfWeek: "Wednesday",
+          slots: generateSlots(),
+        },
+        {
+          dayOfWeek: "Thursday",
+          slots: generateSlots(),
+        },
+        {
+          dayOfWeek: "Friday",
+          slots: generateSlots(),
+        },
+        {
+          dayOfWeek: "Saturday",
+          slots: generateSlots(),
+        },
+        {
+          dayOfWeek: "Sunday",
+          slots: generateSlots(),
+        },
+      ],
+    });
+
+    const addedDoctorSchedule = await newDoctorSchedule.save();
+    console.log(addedDoctorSchedule);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+function generateSlots() {
+  const timeSlots = [
+    "8:00",
+    "9:00",
+    "10:00",
+    "11:00",
+    "12:00",
+    "13:00",
+    "14:00",
+    "15:00",
+    "16:00",
+  ];
+
+  return timeSlots.map((time) => ({
+    time: time,
+    isAvailable: true, // Mặc định là có sẵn để khách hàng đặt lịch
+    isBooked: false, // Mặc định là chưa được đặt
+  }));
+}
+
+// addDoctorSchedule()
 
 mongoose
   .connect(process.env.MONGO_URI as string)

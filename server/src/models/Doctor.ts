@@ -6,6 +6,7 @@ interface IDoctor {
   yearOfExperience?: number;
   movingService?: boolean;
   userId: string;
+  doctorScheduleId: string;
 }
 
 const DoctorSchema = new mongoose.Schema(

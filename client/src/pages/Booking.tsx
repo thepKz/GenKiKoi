@@ -5,6 +5,7 @@ import {
   ConfigProvider,
   Form,
   Input,
+  message,
   Row,
   Select,
   SelectProps,
@@ -20,16 +21,15 @@ import { CustomCalendar } from "../share";
 const { TextArea } = Input;
 
 const demoSlots = [
-  { id: 1, time: "10:30" },
-  { id: 2, time: "11:00" },
-  { id: 3, time: "11:30" },
-  { id: 4, time: "12:00" },
-  { id: 5, time: "12:30" },
+  { id: 1, time: "8:00" },
+  { id: 2, time: "9:00" },
+  { id: 3, time: "10:00" },
+  { id: 4, time: "11:00" },
+  { id: 5, time: "12:00" },
   { id: 6, time: "13:00" },
-  { id: 7, time: "13:30" },
-  { id: 8, time: "14:00" },
-  { id: 9, time: "14:30" },
-  { id: 10, time: "15:00" },
+  { id: 7, time: "14:00" },
+  { id: 8, time: "15:00" },
+  { id: 9, time: "16:00" },
 ];
 
 const Booking = () => {
@@ -38,6 +38,7 @@ const Booking = () => {
   }, []);
 
   const [form] = Form.useForm();
+  const [isLoadingForm, setIsLoadingForm] = useState(false);
 
   const [isLoading, setIsLoading] = useState(false);
   const [slot, setSlot] = useState<number | null>(null);
@@ -137,14 +138,27 @@ const Booking = () => {
   };
 
   const handleSubmit = async (values: any) => {
-    if (date) {
-      values.appointmentDate = date;
-    }
+    try {
+      setIsLoadingForm(true);
+      const api = `/api/appointments/`;
 
-    if (slot) {
-      values.slotTime = demoSlots[slot].time;
+      if (date) {
+        values.appointmentDate = date;
+      }
+
+      if (slot) {
+        values.slotTime = demoSlots[slot - 1].time;
+      }
+
+      const res: any = await handleAPI(api, values, "PUT");
+
+      message.success(res.message);
+    } catch (error: any) {
+      console.log(error);
+      message.error(error.message);
+    } finally {
+      setIsLoadingForm(false);
     }
-    console.log(values);
   };
 
   if (isLoading) {
@@ -175,6 +189,7 @@ const Booking = () => {
             >
               <Form
                 form={form}
+                disabled={isLoadingForm}
                 onFinish={handleSubmit}
                 size="large"
                 layout="vertical"
@@ -183,7 +198,7 @@ const Booking = () => {
                 <div className="my-5 flex gap-10">
                   <div className="lg:w-1/5">
                     <Form.Item
-                      name="typeOfServices"
+                      name="serviceName"
                       label="Loại dịch vụ"
                       required
                     >
@@ -204,7 +219,7 @@ const Booking = () => {
                       />
                     </Form.Item>
                     <Form.Item
-                      name="vetName"
+                      name="doctorName"
                       label="Bác sĩ"
                       required
                     >
@@ -212,9 +227,8 @@ const Booking = () => {
                         style={{ width: "100%" }}
                         placeholder="Chọn bác sĩ"
                         options={[
-                          { value: "Bs. Đỗ Quang Dũng", label: "Bs. Đỗ Quang Dũng" },
-                          { value: "Bs. Mai Tấn Thép", label: "Bs. Mai Tấn Thép" },
-                          { value: "Bs. Nguyễn Văn A", label: "Bs. Nguyễn Văn A" },
+                          { value: "Đỗ Thị Mỹ Uyên", label: "Bs. Đỗ Quang Dũng" },
+                          { value: "Mai Tấn Thép", label: "Bs. Mai Tấn Thép" },
                         ]}
                       />
                     </Form.Item>
@@ -410,6 +424,7 @@ const Booking = () => {
                 <Button
                   size="large"
                   type="primary"
+                  loading={isLoadingForm}
                   className="mt-3 w-fit"
                   onClick={() => form.submit()}
                 >
