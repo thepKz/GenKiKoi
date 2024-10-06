@@ -34,7 +34,7 @@ app.use("/api/appointments", appointmentRoutes);
 app.use("/api/users", userRoutes);
 
 // +++++++ ADD DATA +++++++
-
+// Cái này t dùng để add tam dữ liêu!
 // Add customer
 const addCustomer = async () => {
   try {

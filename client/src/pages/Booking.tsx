@@ -227,7 +227,7 @@ const Booking = () => {
                         style={{ width: "100%" }}
                         placeholder="Chọn bác sĩ"
                         options={[
-                          { value: "Đỗ Thị Mỹ Uyên", label: "Bs. Đỗ Quang Dũng" },
+                          { value: "Đỗ Thị Mỹ Uyên", label: "Bs. Đỗ Thị Mỹ Uyên" },
                           { value: "Mai Tấn Thép", label: "Bs. Mai Tấn Thép" },
                         ]}
                       />

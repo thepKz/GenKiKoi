@@ -40,8 +40,14 @@ const AppointmentSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["Pending", "Confirmed", "Completed", "Cancelled"],
-      default: "Pending",
+      enum: [
+        "Đang chờ xử lý",
+        "Đã xác nhân",
+        "Đã hoàn thành",
+        "Đã hủy",
+        "Đã thay đổi lịch",
+      ],
+      default: "Đang chờ xử lý",
     },
     reasons: {
       type: String,

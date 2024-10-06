@@ -34,9 +34,8 @@ export const replaceName = (str: string) => {
 const valueMap: {
   [key: string]: string;
 } = {
-  "Đang chờ xác nhận": "lime",
-  "Đã lên lịch": "cyan",
-  "Đang tiến hành": "geekblue",
+  "Đang chờ xử lý": "lime",
+  "Đã xác nhân": "cyan",
   "Đã thay đổi lịch": "orange",
   "Đã hủy": "red",
   "Đã hoàn thành": "green",
