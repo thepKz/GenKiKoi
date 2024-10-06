@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import Appointment from '../models/AppointmentModel.ts';
-import Bill from '../models/BillModel';
+import Appointment from '../models/AppointmentModel';
+import BillModel from '../models/BillModel';
 
 export const createInvoice = async (req: Request, res: Response) => {
   try {
@@ -11,7 +11,7 @@ export const createInvoice = async (req: Request, res: Response) => {
       return res.status(404).json({ message: 'Appointment not found' });
     }
 
-    const newBill = new Bill({
+    const newBill = new BillModel({
       appointment_id,
       appointmentDate: appointment.appointmentDate,
       service_price,
@@ -33,7 +33,7 @@ export const createInvoice = async (req: Request, res: Response) => {
 
 export const getInvoices = async (req: Request, res: Response) => {
   try {
-    const bills = await Bill.find().populate('appointment_id');
+    const bills = await BillModel.find().populate('appointment_id');
     res.status(200).json(bills);
   } catch (error) {
     res.status(500).json({ message: (error as Error).message });
@@ -42,7 +42,7 @@ export const getInvoices = async (req: Request, res: Response) => {
 
 export const getInvoiceById = async (req: Request, res: Response) => {
   try {
-    const bill = await Bill.findById(req.params.id).populate('appointment_id');
+    const bill = await BillModel.findById(req.params.id).populate('appointment_id');
     if (!bill) {
       return res.status(404).json({ message: 'Invoice not found' });
     }
@@ -56,7 +56,7 @@ export const processPayment = async (req: Request, res: Response) => {
   try {
     const { bill_id, payment_method } = req.body;
 
-    const bill = await Bill.findById(bill_id);
+    const bill = await BillModel.findById(bill_id);
     if (!bill) {
       return res.status(404).json({ message: 'Invoice not found' });
     }

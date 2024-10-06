@@ -8,6 +8,7 @@ export interface IAppointment extends Document {
   status: 'scheduled' | 'completed' | 'cancelled';
   createdAt: Date;
   updatedAt: Date;
+  appointmentDate: Date;
 }
 
 const AppointmentSchema: Schema = new Schema({
@@ -16,6 +17,7 @@ const AppointmentSchema: Schema = new Schema({
   timeService: { type: Schema.Types.ObjectId, ref: 'TimeService', required: true },
   notes: { type: String, default: '' },
   status: { type: String, enum: ['scheduled', 'completed', 'cancelled'], default: 'scheduled' },
+  appointmentDate: { type: Date, required: true },
 }, { timestamps: true });
 
 const Appointment = mongoose.model<IAppointment>('Appointment', AppointmentSchema);
