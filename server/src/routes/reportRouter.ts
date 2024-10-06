@@ -10,4 +10,4 @@ const router = express.Router();
 router.get('/daily-appointments', authMiddleware, getDailyAppointmentsReport);
 router.get('/monthly-revenue', authMiddleware, getMonthlyRevenueReport);
 
-export default router;
+export default router; 
