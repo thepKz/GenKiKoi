@@ -2,6 +2,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
 import mongoose from "mongoose";
+import configRouter from './routes/configRouter';
 
 // Routes
 import assignmentRouter from "./routes/assignmentRouter";
@@ -33,6 +34,7 @@ app.use("/api/service", serviceRouter);
 app.use("/api/time", timeRouter);
 app.use("/api/timeService", timeServiceRouter);
 app.use("/api/assignment", assignmentRouter);
+app.use('/api', configRouter);
 
 console.log("SECRET_KEY:", process.env.SECRET_KEY);
 mongoose

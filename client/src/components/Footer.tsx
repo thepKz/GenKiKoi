@@ -1,5 +1,6 @@
 import { Happyemoji, Map, Pet } from "iconsax-react";
 import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 import { useEffect, useRef } from 'react';
 import { Link } from "react-router-dom";
 import Logo from "../assets/logo.jpg";
@@ -8,32 +9,28 @@ const Footer = () => {
   const mapRef = useRef<L.Map | null>(null);
 
   useEffect(() => {
-    const initMap = async () => {
+    const initMap = () => {
       if (mapRef.current) return;
 
-      const response = await fetch('https://beautifulmap-api-287cd5a9eef9.herokuapp.com/api/search?q=FPT+University+Ho+Chi+Minh+City');
-      const data = await response.json();
+      const lat = 10.8411;
+      const lon = 106.8090;
+      const map = L.map('map').setView([lat, lon], 15);
+      mapRef.current = map;
       
-      if (data && data.length > 0) {
-        const { lat, lon } = data[0];
-        const map = L.map('map').setView([lat, lon], 15);
-        mapRef.current = map;
-        
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          attribution: ''
-        }).addTo(map);
-        
-        const genkikoiIcon = L.icon({
-          iconUrl: Logo,
-          iconSize: [32, 32],
-          iconAnchor: [16, 32],
-          popupAnchor: [0, -32]
-        });
-        
-        L.marker([lat, lon], { icon: genkikoiIcon }).addTo(map)
-          .bindPopup('GenKiKoi')
-          .openPopup();
-      }
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: ''
+      }).addTo(map);
+      
+      const genkikoiIcon = L.icon({
+        iconUrl: Logo,
+        iconSize: [32, 32],
+        iconAnchor: [16, 32],
+        popupAnchor: [0, -32]
+      });
+      
+      L.marker([lat, lon], { icon: genkikoiIcon }).addTo(map)
+        .bindPopup('GenKiKoi')
+        .openPopup();
     };
 
     initMap();
