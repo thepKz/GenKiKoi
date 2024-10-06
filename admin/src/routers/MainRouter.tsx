@@ -17,15 +17,15 @@ const MainRouter = () => {
       res && dispatch(addAuth(JSON.parse(res)));
     };
     getData();
-    console.log("render");
   }, [auth.token]);
-
-  console.log(auth);
 
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/sign-in" element={<SignIn />} />
+        <Route
+          path="/sign-in"
+          element={!auth.token ? <SignIn /> : <Navigate to={"/"} />}
+        />
         <Route
           path="/"
           element={auth.token ? <MainLayout /> : <Navigate to={"/sign-in"} />}

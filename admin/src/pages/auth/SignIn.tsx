@@ -1,4 +1,4 @@
-import { Button, ConfigProvider, Divider, Form, Input, message } from "antd";
+import { Button, ConfigProvider, Form, Input, message } from "antd";
 import { Heart } from "iconsax-react";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
@@ -6,7 +6,6 @@ import { Link } from "react-router-dom";
 import { handleAPI } from "../../apis/handleAPI";
 import Banner from "../../assets/banner.jpg";
 import Logo from "../../assets/logo-transparent.png";
-import { SocialButton } from "../../share";
 import { addAuth } from "../../redux/reducers/authReducer";
 import { handleEnterPress } from "../../utils";
 
@@ -18,7 +17,7 @@ const SignIn = () => {
   const dispatch = useDispatch();
 
   const handleSubmit = async (values: any) => {
-    const api = `/api/auth/login`;
+    const api = `/api/auth/login-admin`;
 
     try {
       setIsLoading(true);
@@ -45,23 +44,21 @@ const SignIn = () => {
           <div className="mb-16">
             <Link to={"/"}>
               <div className="flex w-20 items-center gap-2">
-                <img
-                  src={Logo}
-                  alt=""
-                />
-                <h3 className="text-2xl font-bold text-blue-primary">GenKiKoi</h3>
+                <img src={Logo} alt="" />
+                <h3 className="text-blue-primary text-2xl font-bold">
+                  GenKiKoi
+                </h3>
               </div>
             </Link>
           </div>
-          <div className="mx-auto w-3/5">
+          <div className="mx-auto mt-28 w-3/5">
             <div className="">
               <h1 className="heading-2 text-blue-primary">Đăng nhập</h1>
               <div className="flex items-center gap-2">
-                <p className="my-2 text-slate-500">Chọn sức khỏe, chọn GenKiKoi</p>
-                <Heart
-                  variant="Bold"
-                  color="#f7776d"
-                />
+                <p className="my-2 text-slate-500">
+                  Chọn sức khỏe, chọn GenKiKoi
+                </p>
+                <Heart variant="Bold" color="#f7776d" />
               </div>
             </div>
             <Form
@@ -72,22 +69,26 @@ const SignIn = () => {
               layout="vertical"
             >
               <Form.Item
-                name="login"
-                label="Email / Tên tài khoản"
+                name="email"
+                label="Email"
                 required={false}
                 rules={[
-                  { required: true, message: "Vui lòng nhập email hoặc tên tài khoản!" },
                   {
-                    pattern:
-                      /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$|^[a-zA-Z0-9_]{8,30}$/,
-                    message: "Email hoặc tên tài khoản không hợp lệ!",
+                    required: true,
+                    message: "Vui lòng nhập email!",
+                  },
+                  {
+                    pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                    message: "Email không hợp lệ!",
                   },
                 ]}
                 validateDebounce={1000}
               >
                 <Input
                   placeholder="Email"
-                  onPressEnter={() => handleEnterPress(form, "login", "password")}
+                  onPressEnter={() =>
+                    handleEnterPress(form, "email", "password")
+                  }
                   allowClear
                 />
               </Form.Item>
@@ -124,23 +125,6 @@ const SignIn = () => {
                   Đăng nhập
                 </Button>
               </ConfigProvider>
-              <Divider
-                style={{
-                  margin: "12px 0",
-                }}
-              >
-                <p className="text-sm font-bold text-slate-500">Hoặc</p>
-              </Divider>
-              <SocialButton text="Đăng nhập với Google" />
-            </div>
-            <div className="my-3 flex items-center justify-center gap-1">
-              <p className="text-base text-slate-500">Bạn chưa có tài khoản?</p>
-              <Link
-                to="/sign-up"
-                className="text-base font-bold text-blue-500 underline"
-              >
-                Đăng ký
-              </Link>
             </div>
           </div>
         </div>
