@@ -13,6 +13,11 @@ createRoot(document.getElementById("root")!).render(
         token: {
           fontFamily: "Pro-Rounded",
         },
+        components: {
+          Divider: {
+            marginLG: 15,
+          },
+        },
       }}
     >
       <Provider store={store}>

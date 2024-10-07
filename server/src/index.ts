@@ -18,7 +18,12 @@ import {
 } from "./models";
 
 // Routes
-import { appointmentRoutes, authRoutes, userRoutes } from "./routes";
+import {
+  appointmentRoutes,
+  authRoutes,
+  serviceRoutes,
+  userRoutes,
+} from "./routes";
 
 const app = express();
 
@@ -32,6 +37,7 @@ app.get("/", (_req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/appointments", appointmentRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/services", serviceRoutes);
 
 // +++++++ ADD DATA +++++++
 // Cái này t dùng để add tam dữ liêu!
@@ -115,8 +121,9 @@ const addAppointment = async () => {
 const addService = async () => {
   try {
     const newService = new Service({
-      serviceName: "Tiêm ngừa",
+      serviceName: "Đánh giá chất lượng nước",
       price: 100000,
+      availableAt: ["Tại nhà", "Tại phòng khám"],
     });
 
     const addedService = await newService.save();

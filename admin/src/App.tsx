@@ -1,7 +1,7 @@
-import MainRouter from "./routers/MainRouter";
+import Routers from "./routers/Routers";
 
 const App = () => {
-  return <MainRouter />;
+  return <Routers />;
 };
 
 export default App;

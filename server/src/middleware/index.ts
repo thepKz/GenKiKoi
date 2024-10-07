@@ -1,2 +1,3 @@
 import { authMiddleware } from "./authMiddleware";
-export { authMiddleware };
+import { managerMiddleware } from "./managerMiddleware";
+export { authMiddleware, managerMiddleware };

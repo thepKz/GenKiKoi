@@ -31,12 +31,12 @@ const SiderComponent = () => {
     },
     {
       key: "manage-services",
-      label: <Link to={"#"}>Dịch vụ</Link>,
+      label: <Link to={"/manage-service"}>Danh sách dịch vụ</Link>,
       icon: <Lamp size={20} />,
     },
     {
       key: "manage-staffs",
-      label: <Link to={"#"}>Nhân viên</Link>,
+      label: <Link to={"#"}>Danh sách nhân viên</Link>,
       icon: <Profile2User size={20} />,
     },
     {

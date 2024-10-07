@@ -5,7 +5,7 @@ export interface AuthRequest extends Request {
   user?: object | any;
 }
 
-export const authMiddleware = (
+export const managerMiddleware = (
   req: AuthRequest,
   res: Response,
   next: NextFunction
@@ -28,7 +28,7 @@ export const authMiddleware = (
 
     req.user = decoded;
 
-    if (["manager", "veterinarian", "staff"].includes(decoded.role)) {
+    if (["customer", "veterinarian", "staff"].includes(decoded.role)) {
       return res.status(403).json({ message: "Access denied" });
     }
 
