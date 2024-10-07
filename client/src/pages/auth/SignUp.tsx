@@ -1,15 +1,15 @@
 import { Button, ConfigProvider, Divider, Form, Input, message } from "antd";
-import Logo from "../../assets/logo-transparent.png";
-import Banner from "../../assets/banner.jpg";
-import { Link } from "react-router-dom";
-import { SignUpData } from "../../models/AuthModels";
-import { useState } from "react";
-import { handleAPI } from "../../apis/handleAPI";
-import { useDispatch } from "react-redux";
-import { addAuth } from "../../redux/reducers/authReducer";
 import { Heart } from "iconsax-react";
-import { handleEnterPress } from "../../utils";
+import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { Link } from "react-router-dom";
+import { handleAPI } from "../../apis/handleAPI";
+import Banner from "../../assets/banner.jpg";
+import Logo from "../../assets/logo-transparent.png";
+import { SignUpData } from "../../models/AuthModels";
+import { addAuth } from "../../redux/reducers/authReducer";
 import { SocialButton } from "../../share";
+import { handleEnterPress } from "../../utils";
 
 const SignUp = () => {
   const [form] = Form.useForm();
@@ -100,23 +100,23 @@ const SignUp = () => {
                       }
                       if (value.trim().length < 8 || value.trim().length > 30) {
                         return Promise.reject(
-                          new Error("Tên tài khoản phải có độ dài từ 8 đến 30 ký tự!"),
+                          new Error("Tên tài khoản phải có độ dài từ 8 đến 30 ký tự!")
                         );
                       }
                       if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z0-9_]+$/.test(value)) {
                         return Promise.reject(
                           new Error(
-                            "Tên tài khoản phải bao gồm chữ thường, in hoa, số và có thể có dấu _!",
-                          ),
+                            "Tên tài khoản phải bao gồm chữ thường, in hoa, số và có thể có dấu _!"
+                          )
                         );
                       }
-
+                
                       // Gọi hàm kiểm tra sự tồn tại và chờ kết quả
                       const exists = await handleCheckExistence("username", value);
                       if (exists) {
-                        return Promise.reject(new Error("Tên tài khoản đã tồn tại!")); // Thêm dòng này
+                        return Promise.reject(new Error("Tên tài khoản đã tồn tại!"));
                       }
-
+                
                       return Promise.resolve();
                     },
                   },
@@ -137,7 +137,7 @@ const SignUp = () => {
                 rules={[
                   { required: true, message: "Vui lòng nhập email!" },
                   {
-                    pattern: /^[A-Za-z0-9\._%+\-]+@[A-Za-z0-9\.\-]+\.[A-Za-z]{2,}$/,
+                    pattern: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/,
                     message: "Email không hợp lệ!",
                   },
                 ]}
@@ -155,15 +155,15 @@ const SignUp = () => {
                 label="Mật khẩu"
                 required={false}
                 hasFeedback
-                tooltip="Mật khẩu phải chứa chữ thường, in hoa, số và trên 6 ký tự!"
+                tooltip="Mật khẩu phải chứa ít nhất 8 ký tự, bao gồm chữ thường, chữ hoa, số và ký tự đặc biệt!"
                 rules={[
                   {
                     required: true,
                     message: "Vui lòng nhập mật khẩu!",
                   },
                   {
-                    pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{6,}$/,
-                    message: "Mật khẩu phải chứa chữ thường, in hoa, số và trên 6 ký tự!",
+                    pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/,
+                    message: "Mật khẩu phải chứa ít nhất 8 ký tự, bao gồm chữ thường, chữ hoa, số và ký tự đặc biệt!",
                   },
                 ]}
                 validateDebounce={1000}

@@ -6,8 +6,8 @@ import { Link } from "react-router-dom";
 import { handleAPI } from "../../apis/handleAPI";
 import Banner from "../../assets/banner.jpg";
 import Logo from "../../assets/logo-transparent.png";
-import { SocialButton } from "../../share";
 import { addAuth } from "../../redux/reducers/authReducer";
+import { SocialButton } from "../../share";
 import { handleEnterPress } from "../../utils";
 
 const SignIn = () => {

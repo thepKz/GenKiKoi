@@ -8,7 +8,7 @@
     "build": "tsc",
     "postinstall": "npm run build",
     "client": "cd client && npm run dev",
-    "server": "cd server && npm start",
+    "server": "cd server && npm run dev",
     "dev": "concurrently \"npm run server\" \"npm run client\""
   },
   "engines": {

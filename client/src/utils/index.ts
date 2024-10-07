@@ -1,6 +1,6 @@
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { storage } from "../firebase/firebaseConfig";
 import Resizer from "react-image-file-resizer";
+import { storage } from "../firebase/firebaseConfig";
 
 export const handleEnterPress = (
   form: any,
@@ -20,15 +20,13 @@ export const handleEnterPress = (
 };
 
 export const replaceName = (str: string) => {
-  str
+  return str
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .replace(/đ/g, "d")
     .replace(/Đ/g, "D")
     .replace(/ /g, "")
     .replace(/[:!@#$%^&*()?;/]/g, "");
-
-  return str.toLowerCase();
 };
 
 const valueMap: {
