@@ -45,28 +45,25 @@ export const getValue = (value: string) => {
   return valueMap[value];
 };
 
-export const uploadFile = async (file: any, folder: "customers" | "fishes") => {
+export const uploadFile = async (
+  file: any,
+  folder: "customers" | "fishes" | "staffs" | "doctors",
+) => {
   const compressedFile: any = await handleResize(file);
 
   const fileName = replaceName(compressedFile.name);
 
   const storageRef = ref(storage, `${folder}/${fileName}`);
 
-  const res = await uploadBytes(storageRef, file);
+  const res = await uploadBytes(storageRef, compressedFile);
 
   if (res) {
-    if (res.metadata.size === compressedFile.size) {
-      return getDownloadURL(storageRef);
-    } else {
-      return "Uploading";
-    }
+    return getDownloadURL(storageRef);
   } else {
     return "Error upload";
   }
 };
 
-// Hàm nén ảnh
-// Ủa nén sao thấy y nguyên vậy trời ???
 const handleResize = (file: any) =>
   new Promise((resolve) => {
     Resizer.imageFileResizer(
@@ -74,10 +71,13 @@ const handleResize = (file: any) =>
       1080,
       720,
       "JPEG",
-      80,
+      80, // Giảm chất lượng xuống 60
       0,
       (compressedFile) => {
-        compressedFile && resolve(compressedFile);
+        if (compressedFile) {
+          console.log("Compressed file size:", (compressedFile as File).size);
+          resolve(compressedFile);
+        }
       },
       "file",
     );
