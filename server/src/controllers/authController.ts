@@ -1,8 +1,8 @@
 import bcrypt from "bcryptjs";
 import { Request, Response } from "express";
+import jwt from "jsonwebtoken";
 import User from "../models/User";
 import { isStrongPassword, randomText, signToken } from "../utils";
-import jwt from "jsonwebtoken";
 
 /**
  * API: api/auth/register
@@ -22,7 +22,7 @@ export const register = async (req: Request, res: Response) => {
     };
 
     // Apply the trim method for all fields, with existence check
-    const formatUsername = username ? username.trim().toLowerCase() : "";
+    const formatUsername = username ? username.trim() : "";
     const formatEmail = email ? email.trim().toLowerCase() : "";
     const trimmedPassword = password ? password.trim() : "";
     const trimmedConfirmPassword = confirmPassword
@@ -52,7 +52,7 @@ export const register = async (req: Request, res: Response) => {
 
     // Handling for extra safety
     if (!isStrongPassword(trimmedPassword)) {
-      errors.password = "Mật khẩu không đủ mạnh!";
+      errors.password = "Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và kí tự đặc biệt! ";
       return res.status(400).json(errors);
     }
     if (trimmedPassword !== trimmedConfirmPassword) {
@@ -167,13 +167,16 @@ export const login = async (req: Request, res: Response) => {
  */
 export const loginWithGoogle = async (req: Request, res: Response) => {
   try {
+    console.log("Received Google login request:", req.body);
     const { email, username, photoUrl } = req.body;
 
     const formatEmail = email.trim().toLowerCase();
+    console.log("Formatted email:", formatEmail);
 
-    const user = await User.findOne({ formatEmail });
+    let user = await User.findOne({ email: formatEmail });
 
     if (user) {
+      console.log("Existing user found:", user);
       return res.status(200).json({
         message: "Đăng nhập thành công!",
         data: {
@@ -181,7 +184,7 @@ export const loginWithGoogle = async (req: Request, res: Response) => {
           username: user.username,
           email: user.email,
           role: user.role,
-          photoUrl,
+          photoUrl: user.photoUrl || photoUrl,
           token: await signToken({
             _id: user._id,
             username: user.username,
@@ -190,40 +193,66 @@ export const loginWithGoogle = async (req: Request, res: Response) => {
           }),
         },
       });
-    } else {
-      const salt = await bcrypt.genSalt(10);
-      const hashedPass = await bcrypt.hash(randomText(6), salt);
-      const newUser = await User.create({
-        username: (username + randomText(4)).toLowerCase,
-        email: formatEmail,
-        password: hashedPass,
-      });
+    }
 
-      await newUser.save();
+    console.log("Creating new user");
+    const salt = await bcrypt.genSalt(10);
+    const hashedPass = await bcrypt.hash(randomText(12), salt);
+    
+    const newUsername = username || generateUniqueUsername(email);
+    console.log("Generated username:", newUsername);
 
-      return res.status(201).json({
-        message: "Đăng ký thành công!",
-        data: {
-          id: newUser._id,
+    const newUser = await User.create({
+      username: newUsername,
+      email: formatEmail,
+      password: hashedPass,
+      photoUrl,
+    });
+
+    console.log("New user created:", newUser);
+
+    return res.status(201).json({
+      message: "Đăng ký thành công!",
+      data: {
+        id: newUser._id,
+        username: newUser.username,
+        email: newUser.email,
+        role: newUser.role,
+        photoUrl,
+        token: await signToken({
+          _id: newUser._id,
           username: newUser.username,
           email: newUser.email,
           role: newUser.role,
-          photoUrl,
-          token: await signToken({
-            _id: newUser._id,
-            username: newUser.username,
-            email: newUser.email,
-            role: newUser.role,
-          }),
-        },
-      });
-    }
+        }),
+      },
+    });
   } catch (error: any) {
-    res.status(500).json({
-      message: error.message,
+    console.error("Google login error:", error);
+    return res.status(500).json({
+      message: "An error occurred during Google login. Please try again.",
+      error: error.message,
     });
   }
 };
+function generateUniqueUsername(displayName: string): string {
+  console.log("Original displayName:", displayName);
+  
+  // Kiểm tra và đảm bảo displayName là chuỗi và không trống
+  if (typeof displayName !== 'string' || displayName.trim() === '') {
+    console.log("Invalid displayName, using default 'user'");
+    displayName = 'user';
+  }
+
+  const baseName = displayName.trim().toLowerCase().replace(/\s+/g, '');
+  console.log("Base name after processing:", baseName);
+
+  const randomSuffix = Math.random().toString(36).substring(2, 7);
+  const username = `${baseName}_${randomSuffix}`;
+
+  console.log("Final generated username:", username);
+  return username;
+}
 
 /**
  * API: api/auth/login-admin

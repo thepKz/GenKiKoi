@@ -28,6 +28,7 @@ app.use(cors());
 app.use(express.json());
 
 app.get("/", (_req, res) => {
+  console.log("Log message on backend");
   res.send("Welcome to the GenKiKoi API");
 });
 
@@ -185,6 +186,7 @@ mongoose
   .then(() => {
     console.log("Connected to MongoDB successfully");
     app.listen(process.env.PORT || 5000, () => {
+      console.log(`Server started at ${new Date().toISOString()}`);
       console.log(`Server is running on port ${process.env.PORT}`);
     });
   })
