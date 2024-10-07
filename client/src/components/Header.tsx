@@ -1,11 +1,10 @@
 import { Avatar, Badge, Button, Dropdown, MenuProps } from "antd";
 import { CalendarEdit, Logout, Notification, User } from "iconsax-react";
 import { useDispatch, useSelector } from "react-redux";
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Logo from "../assets/logo.jpg";
 import { AuthState } from "../models/AuthModels";
 import { removeAuth } from "../redux/reducers/authReducer";
-
 const Header = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -109,17 +108,17 @@ const Header = () => {
           {!auth.token ? (
             <div className="flex items-center gap-3">
               <Button size="large" ghost>
-                <a className="cursor-pointer" onClick={(e) => handleNavClick(e, "/sign-in")}>Đăng nhập</a>
+                <Link to="/sign-in" className="cursor-pointer">Đăng nhập</Link>
               </Button>
               <Button size="large" type="primary">
-                <a className="cursor-pointer" onClick={(e) => handleNavClick(e, "/sign-up")}>Đăng ký</a>
+                <Link to="/sign-up" className="cursor-pointer">Đăng ký</Link>
               </Button>
             </div>
           ) : (
             <div className="flex items-center gap-3">
-              <a className="cursor-pointer" onClick={(e) => handleNavClick(e, "/booking")}>
+              <Link to="/booking" className="cursor-pointer">
                 <CalendarEdit color="white" size={24} />
-              </a>
+              </Link>
               <Badge count={9} size="small" offset={[-4, 3]}>
                 <Notification className="cursor-pointer" color="white" />
               </Badge>

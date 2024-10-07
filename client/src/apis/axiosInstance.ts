@@ -12,6 +12,7 @@ const getAccessToken = () => {
 // Tạo một axios instance
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
+  withCredentials: true
 });
 
 // Interceptor cho request để thêm Authorization header
