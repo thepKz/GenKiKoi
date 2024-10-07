@@ -14,7 +14,7 @@ export const getAppointmentsByUser = async (
   res: Response
 ) => {
   try {
-    const userId = req.user?._id;
+    const userId = req.user?.id;
 
     const customer = await Customer.findOne({ userId });
 
@@ -71,7 +71,7 @@ export const createNewAppointment = async (req: AuthRequest, res: Response) => {
       reasons,
     } = req.body;
 
-    const userId = req.user._id;
+    const userId = req.user?.id;
 
     const customer = await Customer.findOne({ userId });
 

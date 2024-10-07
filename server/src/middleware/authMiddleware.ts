@@ -2,7 +2,10 @@ import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 
 export interface AuthRequest extends Request {
-  user?: object | any;
+  user?: {
+    id: string;
+    role: string;
+  };
 }
 
 export const authMiddleware = (
@@ -14,7 +17,7 @@ export const authMiddleware = (
   const token = authHeader && authHeader.split(" ")[1];
 
   if (!token) {
-    return res.status(401).json({ message: "No token provided" });
+    return res.status(401).json({ message: "Unauthorized: No token provided" });
   }
 
   if (!process.env.SECRET_KEY) {
@@ -23,17 +26,14 @@ export const authMiddleware = (
 
   try {
     const decoded = jwt.verify(token, process.env.SECRET_KEY) as {
+      id: string;
       role: string;
     };
 
     req.user = decoded;
 
-    if (["manager", "veterinarian", "staff"].includes(decoded.role)) {
-      return res.status(403).json({ message: "Access denied" });
-    }
-
     next();
   } catch (error) {
-    return res.status(401).json({ message: "Invalid token" });
+    return res.status(401).json({ message: "Unauthorized: Invalid token" });
   }
 };

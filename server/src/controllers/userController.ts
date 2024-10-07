@@ -9,7 +9,7 @@ import { Customer, User } from "../models";
  */
 export const getUser = async (req: AuthRequest, res: Response) => {
   try {
-    const userId = req.user?._id;
+    const userId = req.user?.id;
     const customer: any = await Customer.findOne({ userId })
       .populate(
         "userId",
@@ -46,7 +46,7 @@ export const getUser = async (req: AuthRequest, res: Response) => {
  */
 export const updateProfile = async (req: AuthRequest, res: Response) => {
   try {
-    const userId = req.user._id;
+    const userId = req.user?.id;
     const {
       username,
       fullName,

@@ -9,12 +9,14 @@ import {
   Select,
   Spin,
   TableProps,
+  Tag,
 } from "antd";
 import { CiEdit } from "react-icons/ci";
 import { AiOutlineDelete } from "react-icons/ai";
 import { useEffect, useState } from "react";
 import { handleAPI } from "../../apis/handleAPI";
 import { CustomTable } from "../../share";
+import { getValue } from "../../utils";
 
 const { TextArea } = Input;
 
@@ -24,6 +26,79 @@ const Services = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingForm, setIsLoadingForm] = useState(false);
+  const [editingService, setEditingService] = useState<any>(null);
+
+  const columns: TableProps["columns"] = [
+    {
+      key: "#",
+      title: "#",
+      dataIndex: "key",
+      width: 100,
+      render: (_text, _record, index) => index + 1,
+    },
+    {
+      key: "Tên dịch vụ",
+      title: "Tên dịch vụ",
+      dataIndex: "serviceName",
+      width: 200,
+    },
+    {
+      key: "Giá dịch vụ",
+      title: "Giá dịch vụ",
+      dataIndex: "price",
+      width: 150,
+      render: (price) =>
+        new Intl.NumberFormat("vi-VN", {
+          style: "currency",
+          currency: "VND",
+        }).format(price),
+    },
+    {
+      key: "Khả dụng",
+      title: "Khả dụng",
+      dataIndex: "availableAt",
+      render: (values) =>
+        values.map((value: string) => (
+          <Tag color={getValue(value)}>{value}</Tag>
+        )),
+    },
+    {
+      key: "Mô tả dịch vụ",
+      title: "Mô tả dịch vụ",
+      dataIndex: "description",
+    },
+    {
+      key: "action",
+      title: "Sửa / Xóa",
+      width: 120,
+      render: (_text, record) => (
+        <div className="flex items-center justify-center gap-5">
+          <Button
+            onClick={() => handleUpdate(record._id)}
+            shape="circle"
+            icon={<CiEdit size={20} color="#1677ff" />}
+          />
+
+          <Button
+            onClick={() => handleDelete(record._id)}
+            shape="circle"
+            icon={<AiOutlineDelete color="#ff4d4f" size={20} />}
+          />
+        </div>
+      ),
+    },
+  ];
+
+  const handleOpenModal = (service?: any) => {
+    if (service) {
+      setEditingService(service);
+      form.setFieldsValue(service);
+    } else {
+      setEditingService(null);
+      form.resetFields();
+    }
+    setIsModalOpen(true);
+  };
 
   useEffect(() => {
     const getAllServices = async () => {
@@ -45,11 +120,26 @@ const Services = () => {
   const handleSubmit = async (values: any) => {
     try {
       setIsLoadingForm(true);
-      const api = `/api/services/create-service`;
-      const res: any = await handleAPI(api, values, "POST");
+      let api = `/api/services/`;
+      let method: any = "POST";
+
+      if (editingService) {
+        api += editingService._id;
+        method = "PATCH";
+      }
+
+      const res: any = await handleAPI(api, values, method);
 
       if (res) {
-        setServices([...services, res.data]);
+        if (editingService) {
+          setServices(
+            services.map((s: any) =>
+              s._id === editingService._id ? res.data : s,
+            ),
+          );
+        } else {
+          setServices([...services, res.data]);
+        }
         message.success(res.message);
       }
     } catch (error: any) {
@@ -58,64 +148,45 @@ const Services = () => {
     } finally {
       setIsLoadingForm(false);
       setIsModalOpen(false);
+      setEditingService(null);
       form.resetFields();
     }
   };
 
-  const handleDelete = async () => {
-    try {
-      
-    } catch (error) {
-      
-    }
-  }
+  // Ê đoạn này hay nha!
+  const handleDelete = async (serviceId: string) => {
+    Modal.confirm({
+      title: "Xác nhận xóa",
+      content: "Bạn có chắc chắn muốn xóa dịch vụ này không?",
+      okText: "Đồng ý",
+      cancelText: "Hủy",
+      onOk: async () => {
+        try {
+          const api = `/api/services/${serviceId}`;
+          const res = await handleAPI(api, undefined, "DELETE");
 
-  const columns: TableProps["columns"] = [
-    {
-      key: "#",
-      title: "#",
-      dataIndex: "key",
-      width: 100,
-      render: (_text, _record, index) => index + 1,
-    },
-    {
-      key: "Tên dịch vụ",
-      title: "Tên dịch vụ",
-      dataIndex: "serviceName",
-      width: 350,
-    },
-    {
-      key: "Giá dịch vụ",
-      title: "Giá dịch vụ",
-      dataIndex: "price",
-      width: 200,
-      render: (price) =>
-        new Intl.NumberFormat("vi-VN", {
-          style: "currency",
-          currency: "VND",
-        }).format(price),
-    },
-    {
-      key: "Mô tả dịch vụ",
-      title: "Mô tả dịch vụ",
-      dataIndex: "description",
-    },
-    {
-      key: "action",
-      title: "Sửa / Xóa",
-      width: 120,
-      render: () => (
-        <div className="flex items-center justify-center gap-5">
-          <Button shape="circle" icon={<CiEdit size={20} color="#1677ff" />} />
-          <Button
-            onClick={handleDelete}
-            shape="circle"
-            icon={<AiOutlineDelete color="#ff4d4f" size={20} />}
-          />
-        </div>
-      ),
-    },
-  ];
+          if (res) {
+            setServices(
+              services.filter((service: any) => service._id !== serviceId),
+            );
+            message.success("Đã xóa dịch vụ thành công");
+          }
+        } catch (error: any) {
+          console.log(error);
+          message.error(error.message || "Có lỗi xảy ra khi xóa dịch vụ");
+        }
+      },
+    });
+  };
+
+  const handleUpdate = (serviceId: string) => {
+    const service = services.find((s: any) => s._id === serviceId);
+    if (service) {
+      handleOpenModal(service);
+    } else {
+      message.error("Không tìm thấy dịch vụ");
+    }
+  };
 
   if (isLoading) {
     return (
@@ -131,7 +202,7 @@ const Services = () => {
         {/* Header */}
         <div className="flex items-center justify-between">
           <h1 className="heading-3">Danh sách dịch vụ</h1>
-          <Button type="primary" onClick={() => setIsModalOpen(true)}>
+          <Button type="primary" onClick={() => handleOpenModal()}>
             Thêm dịch vụ
           </Button>
         </div>
@@ -139,6 +210,7 @@ const Services = () => {
         <div className="">
           <CustomTable columns={columns} dataSource={services} />
         </div>
+        {/* Add service modal */}
         <Modal
           open={isModalOpen}
           style={{ top: 60 }}
@@ -146,10 +218,12 @@ const Services = () => {
           onClose={() => setIsModalOpen(false)}
           onOk={() => form.submit()}
           cancelText="Hủy"
-          okText="Thêm mới"
+          okText={editingService ? "Cập nhật" : "Thêm mới"}
         >
           <div className="p-5 pb-0">
-            <h3 className="heading-4">Thêm dịch vụ</h3>
+            <h3 className="heading-4">
+              {editingService ? "Cập nhật dịch vụ" : "Thêm dịch vụ"}
+            </h3>
             <Divider />
             <div>
               <Form

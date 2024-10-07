@@ -17,13 +17,11 @@ const ServiceSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    availableAt: [
-      {
-        type: [String],
-        enum: ["Tại phòng khám", "Tại nhà", "Tư vấn trực tuyến"],
-        required: true,
-      },
-    ],
+    availableAt: {
+      type: [String],
+      enum: ["Tại phòng khám", "Tại nhà", "Tư vấn trực tuyến"],
+      required: true,
+    },
     description: {
       type: String,
     },
