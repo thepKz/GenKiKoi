@@ -11,10 +11,7 @@ import {
   Customer,
   Doctor,
   DoctorSchedule,
-  DoctorSlot,
   Service,
-  TimeService,
-  TimeSlot,
 } from "./models";
 
 // Routes
@@ -79,24 +76,6 @@ const addDoctor = async () => {
 };
 // addDoctor();
 
-// Add DoctorSlot
-const addDoctorSlot = async () => {
-  try {
-    const newDoctorSlot = new DoctorSlot({
-      timeServiceId: "651b84a3f9e4a0d47e000601",
-      doctorId: "66fe89be9f22e008f565e074",
-      status: "Pending",
-    });
-
-    const addedDoctorSlot = await newDoctorSlot.save();
-
-    console.log(addedDoctorSlot);
-  } catch (error) {
-    console.log(error);
-  }
-};
-// addDoctorSlot();
-
 // Add Appointment
 const addAppointment = async () => {
   try {
@@ -134,40 +113,6 @@ const addService = async () => {
   }
 };
 // addService();
-
-// Add TimeSlot
-const addTimeSlot = async () => {
-  try {
-    const newTimeSlot = new TimeSlot({
-      startTime: new Date(),
-      endTime: new Date(),
-    });
-
-    const addedTimeSlot = await newTimeSlot.save();
-
-    console.log(addedTimeSlot);
-  } catch (error) {
-    console.log(error);
-  }
-};
-// addTimeSlot();
-
-// Add TimeService
-const addTimeService = async () => {
-  try {
-    const newTimeService = new TimeService({
-      serviceId: "66feb03e0356b2ccda228b4c",
-      timeSlotId: "66feb10f8bd8daf481ccc16f",
-    });
-
-    const addedTimeService = await newTimeService.save();
-
-    console.log(addedTimeService);
-  } catch (error) {
-    console.log(error);
-  }
-};
-// addTimeService();
 
 // Add Doctor Schedule
 const addDoctorSchedule = async () => {

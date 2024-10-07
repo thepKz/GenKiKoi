@@ -1,24 +1,11 @@
 import "react-multi-carousel/lib/styles.css";
 
-import FishBanner from "../assets/fish-banner.png";
-import FishBanner2 from "../assets/banner_2.jpg";
-import { AnimatedSection, DividerComponent } from "../share";
-import { useEffect } from "react";
 
-const responsive = {
-  desktop: {
-    breakpoint: { max: 3000, min: 1024 },
-    items: 2,
-  },
-  tablet: {
-    breakpoint: { max: 1024, min: 464 },
-    items: 2,
-  },
-  mobile: {
-    breakpoint: { max: 464, min: 0 },
-    items: 1,
-  },
-};
+import { useEffect } from "react";
+import FishBanner2 from "../assets/banner_2.jpg";
+import FishBanner from "../assets/fish-banner-3.png";
+import { AnimatedSection, DividerComponent } from "../share";
+
 
 const AboutUs = () => {
   useEffect(() => {
@@ -26,10 +13,11 @@ const AboutUs = () => {
   }, []);
   return (
     <div>
-      {/* Banner */}
 
+      
       {/* Why? Section */}
-      <div className="section bg-blue-primary text-center text-white">
+      <div className="section bg-green-dark text-center text-white ">
+
         <div className="container mx-auto lg:px-40">
           <AnimatedSection
             variants={{
@@ -44,18 +32,37 @@ const AboutUs = () => {
               },
             }}
           >
-            <div className="bg-blue-primary p-6 text-center text-white">
-              <div className="inline-flex items-baseline">
-                <h1 className="mr-3 text-5xl font-bold">GenKiKoi</h1>
-                <p className="text-sm italic">Nâng tầm sức khỏe, tô điểm hồ cá</p>
-              </div>
-            </div>
 
-            <img
-              src={FishBanner2}
-              alt=""
-            />
+            <div className=" bg-green-dark text-white p-6 text-center">
+  <div className="text-center my-10">
+    <h1 className="text-5xl font-bold mr-3 pb-6 text-orange-400">GenKiKoi</h1>
+    <p className="text-xl ">Chăm sóc cá Koi toàn diện, quản lý dịch vụ dễ dàng</p>
+  </div>
+</div>
+
+            
+
           </AnimatedSection>
+          <AnimatedSection
+                variants={{
+                  hidden: {
+                    opacity: 0,
+                    x: 100,
+                  },
+                  visible: {
+                    opacity: 1,
+                    x: 0,
+                    transition: { duration: 1.5, delay: 0.5 },
+                  },
+                }}
+              >
+                <div className="flex justify-center">
+                  <img className="rounded-2xl w-full"
+                        src={FishBanner2}
+                        alt=""
+                      />
+                </div>
+              </AnimatedSection>
 
           <AnimatedSection
             variants={{
@@ -117,21 +124,9 @@ const AboutUs = () => {
       <DividerComponent />
 
       {/* Expected */}
-      <div className="section bg-blue-primary text-center text-white">
+      <div className="section bg-green-dark text-center text-white">
         <div className="container mx-auto lg:px-40">
-          <AnimatedSection
-            variants={{
-              hidden: {
-                opacity: 0,
-                y: 50,
-              },
-              visible: {
-                opacity: 1,
-                y: 0,
-                transition: { duration: 1.5, delay: 0.5 },
-              },
-            }}
-          ></AnimatedSection>
+
           <div className="my-10 flex">
             <div className="w-1/2">
               <AnimatedSection

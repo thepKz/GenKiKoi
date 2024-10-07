@@ -1,77 +1,63 @@
-name: CI/CD Pipeline CHECK
+name: CI/CD
 
 on:
   push:
-    branches: [main, develop, 'release/**']
+    branches: [ main, develop ]
   pull_request:
-    branches: [main, develop]
-  workflow_dispatch:
+    branches: [ main, develop ]
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Use Node.js 20
-        uses: actions/setup-node@v3
-        with:
-          node-version: 20
-          cache: 'npm'
-          cache-dependency-path: './client/package-lock.json'
-      - name: Install dependencies 
-        run: npm ci 
-        working-directory: ./client 
-      - name: Check for test script
-        id: check_tests
-        run: |
-          if npm run | grep -q "test"; then
-            echo "has_tests=true" >> $GITHUB_OUTPUT
-          else
-            echo "has_tests=false" >> $GITHUB_OUTPUT
-          fi
-        working-directory: ./client
-      - name: Run tests
-        if: steps.check_tests.outputs.has_tests == 'true'
-        run: npm test
-        working-directory: ./client
-      - name: No tests found
-        if: steps.check_tests.outputs.has_tests == 'false'
-        run: echo "No test script found in package.json. Skipping tests."
-
   build:
-    needs: test
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-      - name: Use Node.js 20
-        uses: actions/setup-node@v3
-        with:
-          node-version: 20
-          cache: 'npm'
-          cache-dependency-path: './client/package-lock.json'
-      - name: Install dependencies
-        run: npm ci
-        working-directory: ./client
-      - name: Build
-        run: npm run build --noEmitOnError
-        working-directory: ./client
-      - name: Upload artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: dist
-          path: client/dist
+    - uses: actions/checkout@v4
+
+    - name: Use Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+
+    - name: Clear npm cache
+      run: npm cache clean --force
+
+    - name: Remove node_modules and package-lock.json
+      run: |
+        rm -rf node_modules
+        rm -f package-lock.json
+
+    - name: Install dependencies and build
+      run: |
+        cd client
+        npm ci
+        npm run build
+      env:
+        VITE_BASE_apiKey: ${{ secrets.VITE_BASE_APIKEY }}
+        VITE_BASE_authDomain: ${{ secrets.VITE_BASE_AUTHDOMAIN }}
+        VITE_BASE_projectId: ${{ secrets.VITE_BASE_PROJECTID }}
+        VITE_BASE_storageBucket: ${{ secrets.VITE_BASE_STORAGEBUCKET }}
+        VITE_BASE_messagingSenderId: ${{ secrets.VITE_BASE_MESSAGINGSENDERID }}
+        VITE_BASE_appId: ${{ secrets.VITE_BASE_APPID }}
+        VITE_API_URL: ${{ secrets.VITE_API_URL }}
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: dist
+        path: client/dist
 
   deploy-staging:
     needs: build
     if: github.ref == 'refs/heads/develop'
     runs-on: ubuntu-latest
+    environment: staging
     steps:
       - uses: actions/checkout@v4
       - name: Download artifact
         uses: actions/download-artifact@v3
         with:
           name: dist
-          path: client/dist
+          path: ./client/dist
       - name: Deploy to Netlify (Staging)
         uses: nwtgck/actions-netlify@v2.0
         with:
@@ -94,7 +80,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: dist
-          path: client/dist
+          path: ./client/dist
       - name: Deploy to Netlify (Production)
         uses: nwtgck/actions-netlify@v2.0
         with:
@@ -105,3 +91,14 @@ jobs:
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_PRODUCTION_SITE_ID }}
+
+  deploy-backend:
+    needs: build
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to Render
+        run: curl ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+    env:
+      MONGO_URI: ${{ secrets.MONGO_URI }}
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}

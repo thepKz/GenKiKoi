@@ -4,7 +4,7 @@ import { Button } from "antd";
 import { ArrowRight2 } from "iconsax-react";
 
 import Demo1 from "../../assets/demo-1.jpg";
-import Fish4 from "../../assets/fish-care-4.jpg";
+import Fish4 from "../../assets/consulting.webp";
 
 const ConsultingTreatment = () => {
   return (
@@ -113,6 +113,7 @@ const ConsultingTreatment = () => {
                       kỳ giúp phát hiện sớm các vấn đề về sức khỏe của cá Koi và phòng tránh được
                       những bệnh nguy hiểm.
                     </p>
+                    <br />
                     <p>
                       Phòng khám Thú y GenKiKoi với đội ngũ bác sĩ chuyên khoa, trình độ cao và giàu
                       kinh nghiệm, luôn sẵn sàng tiếp nhận cá Koi của bạn. Chúng tôi luôn mong có
@@ -120,6 +121,7 @@ const ConsultingTreatment = () => {
                       Đội ngũ bác sĩ luôn không ngừng cập nhật những quy trình, kiến thức mới nhằm
                       nâng cao tay nghề để đem lại chất lượng điều trị tốt nhất có thể.
                     </p>
+                    <br />
                     <p>
                       Với những điều đó, GenKiKoi tin rằng chúng tôi sẽ là một trong những điểm đến
                       uy tín của khách hàng trong việc chăm sóc và bảo vệ sức khoẻ cho cá Koi.

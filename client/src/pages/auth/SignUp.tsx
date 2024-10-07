@@ -18,9 +18,9 @@ const SignUp = () => {
 
   const dispatch = useDispatch();
 
+  // Handle Submit for SignUp
   const handleSubmit = async (values: SignUpData) => {
     const api = `/api/auth/register`;
-
     try {
       setIsLoading(true);
       const res: any = await handleAPI(api, values, "POST");
@@ -39,6 +39,17 @@ const SignUp = () => {
       message.error("Có lỗi xảy ra, vui lòng kiểm tra các trường!");
     } finally {
       setIsLoading(false);
+    }
+  };
+  // Handle check exists
+  const handleCheckExistence = async (field: string, value: string) => {
+    const api = `/api/auth/check-${field}`;
+    try {
+      const res: any = await handleAPI(api, { [field]: value }, "POST");
+      return res.exists; // Trả về giá trị boolean
+    } catch (error) {
+      console.log(error);
+      return false; // Nếu có lỗi, coi như không tồn tại
     }
   };
 
@@ -99,6 +110,13 @@ const SignUp = () => {
                           ),
                         );
                       }
+
+                      // Gọi hàm kiểm tra sự tồn tại và chờ kết quả
+                      const exists = await handleCheckExistence("username", value);
+                      if (exists) {
+                        return Promise.reject(new Error("Tên tài khoản đã tồn tại!")); // Thêm dòng này
+                      }
+
                       return Promise.resolve();
                     },
                   },
@@ -128,6 +146,7 @@ const SignUp = () => {
                 <Input
                   placeholder="Email"
                   onPressEnter={() => handleEnterPress(form, "email", "password")}
+                  onChange={(e) => handleCheckExistence("email", e.target.value)}
                   allowClear
                 />
               </Form.Item>

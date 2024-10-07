@@ -295,3 +295,31 @@ export const loginAdmin = async (req: Request, res: Response) => {
     });
   }
 };
+
+/**
+ * API: api/auth/check-username
+ * Method: POST
+ * UNPROTECTED
+ */
+export const checkUsername = async (req: Request, res: Response) => {
+  const { username } = req.body;
+
+  const formatUsername = username.toLowerCase();
+
+  const user = await User.findOne({ username: formatUsername });
+  return res.status(200).json({ exists: !!user });
+};
+
+/**
+ * API: api/auth/check-email
+ * Method: POST
+ * UNPROTECTED
+ */
+export const checkEmail = async (req: Request, res: Response) => {
+  const { email } = req.body;
+
+  const formatEmail = email.toLowerCase();
+
+  const user = await User.findOne({ email: formatEmail });
+  return res.status(200).json({ exists: !!user });
+};

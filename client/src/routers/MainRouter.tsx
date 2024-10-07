@@ -1,32 +1,32 @@
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { MainLayout, MyAccountLayout } from "../layouts";
+import { AuthState } from "../models/AuthModels";
 import {
   AboutUs,
+  Appointment,
+  Booking,
   ConsultingTreatment,
   Doctors,
   FAQ,
+  History,
   Home,
   Images,
-  SignIn,
-  Services,
-  SignUp,
-  UnAuthorized,
-  Appointment,
+  InspectionRecord,
   MedicalRecord,
   Profile,
-  History,
-  InspectionRecord,
-  Booking,
+  Services,
+  SignIn,
+  SignUp,
+  UnAuthorized,
 } from "../pages";
-import { AuthState } from "../models/AuthModels";
-import { useDispatch, useSelector } from "react-redux";
-import { useEffect } from "react";
-import { addAuth } from "../redux/reducers/authReducer";
-import { TbVaccine } from "react-icons/tb";
 import Vaccine from "../pages/services/Vaccine";
 import WaterQuality from "../pages/services/WaterQuality";
+import { addAuth } from "../redux/reducers/authReducer";
 
 const MainRouter = () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const auth: AuthState = useSelector((state: any) => state.authReducer.data);
 
   const dispatch = useDispatch();
@@ -34,11 +34,13 @@ const MainRouter = () => {
   useEffect(() => {
     const getData = () => {
       const res = localStorage.getItem("auth_GenKiKoi");
-      res && dispatch(addAuth(JSON.parse(res)));
+      if (res) {
+        dispatch(addAuth(JSON.parse(res)));
+      }
     };
     getData();
     console.log("render");
-  }, [auth.token]);
+  }, [dispatch]);
 
   console.log(auth);
 

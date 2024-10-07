@@ -244,3 +244,4 @@ describe("Auth API", () => {
     expect(res.body.message).toContain("Please provide login and password");
   });
 });
+
