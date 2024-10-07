@@ -11,7 +11,7 @@ const CustomCalendar = (props: Props) => {
     <Calendar
       fullscreen={false}
       disabledDate={(current) => current && current < moment().endOf("day")}
-      headerRender={({ value, type, onChange, onTypeChange }) => {
+      headerRender={({ value, onChange }) => {
         const currentYear = moment().year();
         const currentMonth = moment().month();
         const monthOptions = [];
