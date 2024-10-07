@@ -1,56 +1,91 @@
-import Customer from "../models/CustomerModel";
-import Doctor from "../models/DoctorModel";
-import User from "../models/UserModel";
-import { Request, Response } from "express";
+import { Response } from "express";
+import { AuthRequest } from "../middleware/authMiddleware";
+import { Customer, User } from "../models";
 
-export const getUsers = async (req: Request, res: Response) => {
+/**
+ * API: api/users/
+ * METHOD: GET
+ * PROTECTED
+ */
+export const getUser = async (req: AuthRequest, res: Response) => {
   try {
-    const users = await User.find();
-    res.status(200).json(users);
-  } catch (error) {
-    res.status(500).json({ message: (error as Error).message });
-  }
-};
-export const getUserById = async (req: Request, res: Response) => {
-  try {
-    const user = await User.findById(req.params.id);
-    if (user) res.status(200).json(user);
-  } catch (error) {
-    res.status(500).json({ message: (error as Error).message });
-  }
-};
+    const userId = req.user?._id;
+    const customer: any = await Customer.findOne({ userId })
+      .populate(
+        "userId",
+        "username email photoUrl fullName phoneNumber photoUrl"
+      )
+      .select("detailAddress city district ward gender");
 
-export const createUser = async (req: Request, res: Response) => {
-  try {
-    const user = await User.create(req.body);
-    if (user && user.role === "customer") {
-      const customer = await Customer.create({ user_id: user._id });
+    if (customer) {
+      const formattedProfile = {
+        email: customer.userId.email,
+        username: customer.userId.username,
+        fullName: customer.userId?.fullName || null,
+        phoneNumber: customer.userId?.phoneNumber || null,
+        photoUrl: customer.userId?.photoUrl || null,
+        gender: customer?.gender || null,
+        city: customer?.city || null,
+        district: customer?.district || null,
+        ward: customer?.ward || null,
+        detailAddress: customer?.detailAddress || null,
+      };
+      return res.status(200).json({ data: formattedProfile });
     }
-    if (user && user.role === "doctor") {
-      const doctor = await Doctor.create({ user_id: user._id });
-    }
-    res.status(201).json(user);
-  } catch (error) {
-    res.status(500).json({ message: (error as Error).message });
-  }
-};
-
-export const updateUser = async (req: Request, res: Response) => {
-  try {
-    const user = await User.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
+  } catch (error: any) {
+    return res.status(500).json({
+      message: error.message,
     });
-    res.status(200).json(user);
-  } catch (error) {
-    res.status(500).json({ message: (error as Error).message });
   }
 };
 
-export const deleteUser = async (req: Request, res: Response) => {
+/**
+ * API: /api/users/update-profile
+ * METHOD: PATCH
+ * PROTECTED
+ */
+export const updateProfile = async (req: AuthRequest, res: Response) => {
   try {
-    await User.findByIdAndDelete(req.params.id);
-    res.status(200).json({ message: "User deleted successfully" });
-  } catch (error) {
-    res.status(500).json({ message: (error as Error).message });
+    const userId = req.user._id;
+    const {
+      username,
+      fullName,
+      phoneNumber,
+      gender,
+      city,
+      district,
+      ward,
+      photoUrl,
+      detailAddress,
+    } = req.body;
+
+    await User.findOneAndUpdate(
+      { _id: userId },
+      {
+        username,
+        fullName,
+        phoneNumber,
+        photoUrl,
+      },
+      { new: true }
+    );
+
+    await Customer.findOneAndUpdate(
+      { userId },
+      {
+        gender,
+        city,
+        district,
+        ward,
+        detailAddress,
+      },
+      { new: true }
+    );
+
+    return res.status(200).json({ message: "Cập nhật thành công!" });
+  } catch (error: any) {
+    return res.status(500).json({
+      message: error.message,
+    });
   }
 };

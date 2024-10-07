@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import { Request, Response } from "express";
-import User from "../models/UserModel";
+import User from "../models/User";
 import { isStrongPassword, randomText, signToken } from "../utils";
 import jwt from "jsonwebtoken";
 
@@ -87,7 +87,7 @@ export const register = async (req: Request, res: Response) => {
       },
     });
   } catch (error: any) {
-    res.status(404).json({
+    res.status(500).json({
       message: error.message,
     });
   }
@@ -154,7 +154,7 @@ export const login = async (req: Request, res: Response) => {
       },
     });
   } catch (error: any) {
-    res.status(404).json({
+    res.status(500).json({
       message: error.message,
     });
   }
@@ -219,7 +219,78 @@ export const loginWithGoogle = async (req: Request, res: Response) => {
       });
     }
   } catch (error: any) {
-    res.status(404).json({
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+/**
+ * API: api/auth/login-admin
+ * METHOD: POST
+ * UNPROTECTED
+ */
+
+export const loginAdmin = async (req: Request, res: Response) => {
+  try {
+    const { email, password } = req.body;
+
+    const errors: any = {
+      message: "",
+      email: "",
+      password: "",
+    };
+
+    const formatLogin = email.trim().toLowerCase();
+    const trimmedPassword = password.trim();
+
+    if (!formatLogin || !trimmedPassword) {
+      errors.message = "Vui lòng điền đẩy đủ các trường!";
+      return res.status(400).json(errors);
+    }
+
+    const user = await User.findOne({
+      $and: [
+        { email: formatLogin },
+        { role: { $in: ["manager", "doctor", "staff"] } },
+      ],
+    });
+
+    if (!user) {
+      errors.message = "Tài khoản không tồn tại!";
+      errors.email = "Vui lòng kiểm tra lại!";
+      return res.status(400).json(errors);
+    }
+
+    const comparePassword = await bcrypt.compare(
+      trimmedPassword,
+      user.password
+    );
+
+    if (!comparePassword) {
+      errors.message = "Thông tin đăng nhập sai, vui lòng thử lại!";
+      errors.email = "Vui lòng kiểm tra lại!";
+      errors.password = "Vui lòng kiểm tra lại!";
+      return res.status(400).json(errors);
+    }
+
+    return res.status(200).json({
+      message: "Đăng nhập thành công!",
+      data: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+        token: await signToken({
+          _id: user._id,
+          username: user.username,
+          email: user.email,
+          role: user.role,
+        }),
+      },
+    });
+  } catch (error: any) {
+    res.status(500).json({
       message: error.message,
     });
   }

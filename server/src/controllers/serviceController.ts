@@ -1,56 +1,53 @@
+import { Service } from "../models";
 import { Request, Response } from "express";
-import Service from "../models/ServiceModel";
-export const getServices = async (req: Request, res: Response) => {
+
+/**
+ * API: /api/services/
+ * Method: GET
+ * UNPROTECTED
+ */
+export const getAllServices = async (req: Request, res: Response) => {
   try {
     const services = await Service.find();
-    res.status(200).json(services);
-  } catch (error) {
-    res.status(500).json({ error: (error as Error).message });
-  }
-};
 
-export const getServiceById = async (req: Request, res: Response) => {
-  try {
-    const service = await Service.findById(req.params.id);
-    if (!service) {
-      return res.status(404).json({ error: "Service not found" });
+    if (!services) {
+      return res.status(404).json({ message: "Không có dịch vụ nào khả dụng" });
     }
-    res.status(200).json(service);
-  } catch (error) {
-    res.status(500).json({ error: (error as Error).message });
-  }
-};
-export const createService = async (req: Request, res: Response) => {
-  try {
-    const service = await Service.create(req.body);
 
-    await service.save();
-    res.status(201).json(service);
-  } catch (error) {
-    res.status(500).json({ error: (error as Error).message });
+    return res.status(200).json({ data: services });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
   }
 };
-export const updateService = async (req: Request, res: Response) => {
+
+/**
+ * API: /api/services/create-service
+ * Method: PUT
+ * PROTECTED
+ */
+export const createNewService = async (req: Request, res: Response) => {
   try {
-    const service = await Service.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
+    const { serviceName, price, availableAt, description } = req.body;
+    const newService = new Service({
+      serviceName,
+      price,
+      availableAt,
+      description,
     });
-    if (!service) {
-      return res.status(404).json({ error: "Service not found" });
+
+    const existService = await Service.findOne({ serviceName });
+
+    if (existService) {
+      return res.status(400).json({ message: "Dịch vụ này đã tồn tại!" });
     }
-    res.status(200).json(service);
-  } catch (error) {
-    res.status(500).json({ error: (error as Error).message });
-  }
-};
-export const deleteService = async (req: Request, res: Response) => {
-  try {
-    const service = await Service.findByIdAndDelete(req.params.id);
-    if (!service) {
-      return res.status(404).json({ error: "Service not found" });
-    }
-    res.status(200).json({ message: "Service deleted successfully" });
-  } catch (error) {
-    res.status(500).json({ error: (error as Error).message });
+
+    const createdService = await newService.save();
+
+    return res.status(201).json({
+      message: "Dịch vụ được tạo thành công!",
+      data: createdService,
+    });
+  } catch (error: any) {
+    return res.status(500).json({ message: error.message });
   }
 };

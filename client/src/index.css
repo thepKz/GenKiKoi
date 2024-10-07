@@ -65,3 +65,7 @@
 .addon-input .ant-input-group-addon {
   color: white !important;
 }
+
+.ant-table-container {
+  height: calc(100vh - 280px);
+}
