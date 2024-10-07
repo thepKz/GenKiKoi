@@ -1,8 +1,8 @@
+import { Avatar, Button } from "antd";
+import { ArrowLeft2, ArrowRight2, EmojiHappy, Heart, HeartTick, Moneys, Star } from "iconsax-react";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
-import { Avatar, Button } from "antd";
 import Background from "../assets/background.png";
-import { ArrowLeft2, ArrowRight2, EmojiHappy, Heart, HeartTick, Moneys, Star } from "iconsax-react";
 
 import Image1 from "../assets/Image1.png";
 import Image2 from "../assets/Image2.png";
@@ -20,9 +20,9 @@ import Fish2 from "../assets/fish-care-2.webp";
 import Fish3 from "../assets/fish-care-3.jpg";
 import Fish4 from "../assets/fish-care-4.jpg";
 
+import { useEffect } from "react";
 import FishBanner from "../assets/fish-banner.png";
 import { AnimatedSection, DividerComponent } from "../share";
-import { useEffect } from "react";
 
 const responsive = {
   desktop: {

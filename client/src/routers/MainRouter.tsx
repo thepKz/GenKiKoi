@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import ScrollToTop from "../hooks/scrollToTop";
 import { MainLayout, MyAccountLayout } from "../layouts";
 import { AuthState } from "../models/AuthModels";
 import {
@@ -15,6 +16,7 @@ import {
   Images,
   InspectionRecord,
   MedicalRecord,
+  NotFound,
   Profile,
   Services,
   SignIn,
@@ -46,6 +48,7 @@ const MainRouter = () => {
 
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <Routes>
         <Route
           path="/sign-in"
@@ -129,6 +132,7 @@ const MainRouter = () => {
             element={auth.token ? <History /> : <Navigate to="/sign-in" />}
           />
         </Route>
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );
