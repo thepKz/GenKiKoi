@@ -27,6 +27,7 @@ const DoctorSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    isAvailable: { type: Boolean, default: true },
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

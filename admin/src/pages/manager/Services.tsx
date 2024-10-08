@@ -7,7 +7,6 @@ import {
   message,
   Modal,
   Select,
-  Spin,
   TableProps,
   Tag,
 } from "antd";
@@ -188,14 +187,6 @@ const Services = () => {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex h-[calc(100vh-115px)] items-center justify-center">
-        <Spin size="large" />
-      </div>
-    );
-  }
-
   return (
     <div>
       <div className="container mx-auto my-5 h-[calc(100vh-115px)] rounded-md bg-white p-5 shadow-sm lg:w-[95%]">
@@ -208,7 +199,11 @@ const Services = () => {
         </div>
         <Divider />
         <div className="">
-          <CustomTable columns={columns} dataSource={services} />
+          <CustomTable
+            loading={isLoading}
+            columns={columns}
+            dataSource={services}
+          />
         </div>
         {/* Add service modal */}
         <Modal

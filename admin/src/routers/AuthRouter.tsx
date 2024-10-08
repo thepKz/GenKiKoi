@@ -1,5 +1,5 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { SignIn } from "../pages";
+import { SignIn } from "../pages/auth";
 
 const AuthRouter = () => {
   return (

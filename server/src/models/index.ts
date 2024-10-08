@@ -5,8 +5,10 @@ import Doctor from "./Doctor";
 import DoctorSchedule from "./DoctorSchedule";
 import Feedback from "./Feedback";
 import Fish from "./Fish";
+import Manager from "./Manager";
 import MedicalRecord from "./MedicalRecord";
 import Service from "./Service";
+import Staff from "./Staff";
 import User from "./User";
 
 export {
@@ -19,5 +21,7 @@ export {
   MedicalRecord,
   Service,
   User,
-  DoctorSchedule
+  DoctorSchedule,
+  Staff,
+  Manager,
 };
