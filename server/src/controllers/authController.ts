@@ -1,11 +1,8 @@
 import bcrypt from "bcryptjs";
 import { Request, Response } from "express";
 import User from "../models/User";
-import { randomText, signToken } from "../utils";
-import {
-  checkExistingUser,
-  validateRegistrationInput,
-} from "../services/authService";
+import { isStrongPassword, randomText, signToken } from "../utils";
+import { ValidationError } from "../errors/ValidationError";
 
 /**
  * API: api/auth/register
@@ -16,22 +13,48 @@ export const register = async (req: Request, res: Response) => {
   try {
     const { username, email, password, confirmPassword } = req.body;
 
-    const errors: any = {};
-    
-    // Validate input
-    validateRegistrationInput(
-      username.trim(),
-      email.trim(),
-      password.trim(),
-      confirmPassword.trim()
-    );
-
-    // Format input
     const formatUsername = username.trim().toLowerCase();
     const formatEmail = email.trim().toLowerCase();
+    const formatPassword = password.trim();
+    const formatConfirmPassword = confirmPassword.trim();
 
-    // Check if username or email already exists
-    await checkExistingUser(formatUsername, formatEmail);
+    const errors: any = {};
+
+    if (
+      !formatUsername ||
+      !formatEmail ||
+      !formatPassword ||
+      !formatConfirmPassword
+    ) {
+      errors.message = "Vui lòng điền đầy đủ các trường!";
+    }
+
+    if (!isStrongPassword(formatPassword)) {
+      errors.password = "Mật khẩu không đủ mạnh!";
+    }
+
+    if (formatPassword !== formatConfirmPassword) {
+      errors.confirmPassword = "Mật khẩu xác nhận không khớp!";
+    }
+
+    if (Object.keys(errors).length > 0) {
+      throw new ValidationError(errors);
+    }
+
+    const existingUser = await User.findOne({
+      $or: [{ username: formatUsername }, { email: formatEmail }],
+    });
+
+    if (existingUser) {
+      const errors: any = {};
+      if (existingUser.username === username) {
+        errors.username = "Tên tài khoản này đã được sử dụng!";
+      }
+      if (existingUser.email === email) {
+        errors.email = "Email này đã được sử dụng!";
+      }
+      throw new ValidationError(errors);
+    }
 
     // Create new user
     const salt = await bcrypt.genSalt(10);
@@ -61,6 +84,9 @@ export const register = async (req: Request, res: Response) => {
       },
     });
   } catch (error: any) {
+    if (error instanceof ValidationError) {
+      return res.status(400).json(error.errors);
+    }
     res.status(500).json({ message: "Đã xảy ra lỗi server" });
   }
 };
