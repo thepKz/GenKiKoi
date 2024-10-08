@@ -194,13 +194,19 @@ function generateSlots() {
 
 // addDoctorSchedule()
 
-mongoose
-  .connect(process.env.MONGO_URI as string)
-  .then(() => {
-    console.log("Connected to MongoDB successfully");
-    app.listen(process.env.PORT || 5000, () => {
-      console.log(`Server started at ${new Date().toISOString()}`);
-      console.log(`Server is running on port ${process.env.PORT}`);
-    });
-  })
-  .catch((error) => console.log("MongoDB connection error:", error));
+// Export the app for testing purposes
+export { app };
+
+// Only start the server if this file is run directly (not imported as a module)
+if (require.main === module) {
+  mongoose
+    .connect(process.env.MONGO_URI as string)
+    .then(() => {
+      console.log("Connected to MongoDB successfully");
+      app.listen(process.env.PORT || 5000, () => {
+        console.log(`Server started at ${new Date().toISOString()}`);
+        console.log(`Server is running on port ${process.env.PORT}`);
+      });
+    })
+    .catch((error) => console.log("MongoDB connection error:", error));
+}

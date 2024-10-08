@@ -78,15 +78,14 @@ const SignIn = () => {
                 rules={[
                   { required: true, message: "Vui lòng nhập email hoặc tên tài khoản!" },
                   {
-                    pattern:
-                      /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$|^[a-zA-Z0-9_]{8,30}$/,
+                    pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$|^[a-zA-Z0-9_]{8,30}$/,
                     message: "Email hoặc tên tài khoản không hợp lệ!",
                   },
                 ]}
                 validateDebounce={1000}
               >
                 <Input
-                  placeholder="Email"
+                  placeholder="Email hoặc tên tài khoản"
                   onPressEnter={() => handleEnterPress(form, "login", "password")}
                   allowClear
                 />

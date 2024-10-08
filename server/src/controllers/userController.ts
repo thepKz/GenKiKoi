@@ -62,7 +62,7 @@ export const updateProfile = async (req: AuthRequest, res: Response) => {
     await User.findOneAndUpdate(
       { _id: userId },
       {
-        username,
+        username: username.toLowerCase(),
         fullName,
         phoneNumber,
         photoUrl,

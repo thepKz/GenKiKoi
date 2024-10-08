@@ -22,7 +22,7 @@ export const register = async (req: Request, res: Response) => {
     };
 
     // Apply the trim method for all fields, with existence check
-    const formatUsername = username ? username.trim() : "";
+    const formatUsername = username ? username.trim().toLowerCase() : "";
     const formatEmail = email ? email.trim().toLowerCase() : "";
     const trimmedPassword = password ? password.trim() : "";
     const trimmedConfirmPassword = confirmPassword
@@ -108,7 +108,8 @@ export const login = async (req: Request, res: Response) => {
       password: "",
     };
 
-    const formatLogin = login.trim().toLowerCase();
+    const formatLogin = login.trim();
+    const lowercaseLogin = formatLogin.toLowerCase();
     const trimmedPassword = password.trim();
 
     if (!formatLogin || !trimmedPassword) {
@@ -117,7 +118,10 @@ export const login = async (req: Request, res: Response) => {
     }
 
     const user = await User.findOne({
-      $or: [{ email: formatLogin }, { username: formatLogin }],
+      $or: [
+        { email: { $regex: new RegExp(`^${lowercaseLogin}$`, 'i') } },
+        { username: { $regex: new RegExp(`^${formatLogin}$`, 'i') } }
+      ],
     });
 
     if (!user) {
@@ -332,10 +336,8 @@ export const loginAdmin = async (req: Request, res: Response) => {
  */
 export const checkUsername = async (req: Request, res: Response) => {
   const { username } = req.body;
-
   const formatUsername = username.toLowerCase();
-
-  const user = await User.findOne({ username: formatUsername });
+  const user = await User.findOne({ username: { $regex: new RegExp(`^${formatUsername}$`, 'i') } });
   return res.status(200).json({ exists: !!user });
 };
 
@@ -346,9 +348,7 @@ export const checkUsername = async (req: Request, res: Response) => {
  */
 export const checkEmail = async (req: Request, res: Response) => {
   const { email } = req.body;
-
   const formatEmail = email.toLowerCase();
-
-  const user = await User.findOne({ email: formatEmail });
+  const user = await User.findOne({ email: { $regex: new RegExp(`^${formatEmail}$`, 'i') } });
   return res.status(200).json({ exists: !!user });
 };
