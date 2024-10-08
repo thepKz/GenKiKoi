@@ -4,12 +4,11 @@ interface IDoctor {
   specialization: string;
   licenseNumber: string;
   yearOfExperience?: number;
-  movingService?: boolean;
-  userId: string;
-  doctorScheduleId: string;
+  movingService: boolean;
+  userId: mongoose.Types.ObjectId;
 }
 
-const DoctorSchema = new mongoose.Schema(
+const DoctorSchema = new mongoose.Schema<IDoctor>(
   {
     specialization: {
       type: String,
@@ -18,7 +17,7 @@ const DoctorSchema = new mongoose.Schema(
     licenseNumber: {
       type: String,
       unique: true,
-      require: true,
+      required: true,
     },
     yearOfExperience: {
       type: Number,
@@ -27,7 +26,6 @@ const DoctorSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    isAvailable: { type: Boolean, default: true },
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

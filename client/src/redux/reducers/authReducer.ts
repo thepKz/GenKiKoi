@@ -17,11 +17,11 @@ const authSlice = createSlice({
   reducers: {
     addAuth: (state, action) => {
       state.data = action.payload;
-      localStorage.setItem("auth_GenKiKoi", JSON.stringify(action.payload));
+      localStorage.setItem("customer_GenKiKoi", JSON.stringify(action.payload));
     },
     removeAuth: (state, _action) => {
       state.data = initialState;
-      localStorage.setItem("auth_GenKiKoi", JSON.stringify({}));
+      localStorage.setItem("customer_GenKiKoi", JSON.stringify({}));
     },
   },
 });

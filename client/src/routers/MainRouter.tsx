@@ -39,10 +39,7 @@ const MainRouter = () => {
       }
     };
     getData();
-    console.log("render");
   }, [dispatch]);
-
-  console.log(auth);
 
   return (
     <BrowserRouter>
@@ -88,8 +85,8 @@ const MainRouter = () => {
             element={<Vaccine />}
           />
           <Route
-           path="services/water-quality"
-          element={<WaterQuality />}
+            path="services/water-quality"
+            element={<WaterQuality />}
           />
           <Route
             path="faq"

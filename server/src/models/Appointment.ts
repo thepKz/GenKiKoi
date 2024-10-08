@@ -1,19 +1,18 @@
 import mongoose from "mongoose";
 
 interface IAppointment {
-  doctorId: string;
-  customerId: string;
-  serviceId: string;
-  appointmentDate: string;
+  doctorId: mongoose.Types.ObjectId;
+  customerId: mongoose.Types.ObjectId;
+  serviceId: mongoose.Types.ObjectId;
+  appointmentDate: Date;
   typeOfConsulting: string;
   slotTime: string;
   status: string;
   reasons: string;
   notes?: string;
-  feedbackId?: string;
 }
 
-const AppointmentSchema = new mongoose.Schema(
+const AppointmentSchema = new mongoose.Schema<IAppointment>(
   {
     doctorId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -42,7 +41,7 @@ const AppointmentSchema = new mongoose.Schema(
       type: String,
       enum: [
         "Đang chờ xử lý",
-        "Đã xác nhân",
+        "Đã xác nhận",
         "Đã hoàn thành",
         "Đã hủy",
         "Đã thay đổi lịch",
@@ -51,6 +50,7 @@ const AppointmentSchema = new mongoose.Schema(
     },
     reasons: {
       type: String,
+      required: true,
     },
     slotTime: {
       type: String,
@@ -68,10 +68,6 @@ const AppointmentSchema = new mongoose.Schema(
     },
     notes: {
       type: String,
-    },
-    feedbackId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Feedback",
     },
   },
   {

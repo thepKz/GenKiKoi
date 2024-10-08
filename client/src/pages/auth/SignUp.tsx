@@ -18,7 +18,6 @@ const SignUp = () => {
 
   const dispatch = useDispatch();
 
-  // Handle Submit for SignUp
   const handleSubmit = async (values: SignUpData) => {
     const api = `/api/auth/register`;
     try {
@@ -46,10 +45,10 @@ const SignUp = () => {
     const api = `/api/auth/check-${field}`;
     try {
       const res: any = await handleAPI(api, { [field]: value }, "POST");
-      return res.exists; // Trả về giá trị boolean
+      return res.exists;
     } catch (error) {
       console.log(error);
-      return false; // Nếu có lỗi, coi như không tồn tại
+      return false;
     }
   };
 
@@ -111,7 +110,6 @@ const SignUp = () => {
                         );
                       }
 
-                      // Gọi hàm kiểm tra sự tồn tại và chờ kết quả
                       const exists = await handleCheckExistence("username", value);
                       if (exists) {
                         return Promise.reject(new Error("Tên tài khoản đã tồn tại!")); // Thêm dòng này
@@ -140,6 +138,16 @@ const SignUp = () => {
                     pattern: /^[A-Za-z0-9\._%+\-]+@[A-Za-z0-9\.\-]+\.[A-Za-z]{2,}$/,
                     message: "Email không hợp lệ!",
                   },
+                  {
+                    validator: async (_, value) => {
+                      const exists = await handleCheckExistence("email", value);
+                      if (exists) {
+                        return Promise.reject(new Error("Email đã tồn tại!")); // Thêm dòng này
+                      }
+
+                      return Promise.resolve();
+                    },
+                  },
                 ]}
                 validateDebounce={1000}
               >
@@ -155,15 +163,17 @@ const SignUp = () => {
                 label="Mật khẩu"
                 required={false}
                 hasFeedback
-                tooltip="Mật khẩu phải chứa chữ thường, in hoa, số và trên 6 ký tự!"
+                tooltip="Mật khẩu phải chứa chữ thường, in hoa, số, ký tự đặc biệt và trên 6 ký tự!"
                 rules={[
                   {
                     required: true,
                     message: "Vui lòng nhập mật khẩu!",
                   },
                   {
-                    pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{6,}$/,
-                    message: "Mật khẩu phải chứa chữ thường, in hoa, số và trên 6 ký tự!",
+                    pattern:
+                      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>/?]).{6,30}$/,
+                    message:
+                      "Mật khẩu phải chứa chữ thường, in hoa, số, ký tự đặc biệt và trên 6 ký tự!",
                   },
                 ]}
                 validateDebounce={1000}

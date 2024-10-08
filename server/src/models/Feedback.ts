@@ -1,14 +1,27 @@
 import mongoose from "mongoose";
 
 interface IFeedback {
-  rating: number;
+  appointmentId: mongoose.Types.ObjectId;
+  userId: mongoose.Types.ObjectId;
+  rating: 1 | 2 | 3 | 4 | 5;
   comment?: string;
 }
 
-const FeedBackSchema = new mongoose.Schema(
+const FeedBackSchema = new mongoose.Schema<IFeedback>(
   {
+    appointmentId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Appointment",
+      required: true,
+    },
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
     rating: {
       type: Number,
+      enum: [1, 2, 3, 4, 5],
       required: true,
     },
     comment: {

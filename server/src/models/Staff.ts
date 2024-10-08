@@ -1,14 +1,14 @@
 import mongoose from "mongoose";
 
 interface IStaff {
-  userId: string;
+  userId: mongoose.Types.ObjectId;
   position?: string;
-  workShift: string;
+  workShift: "Morning" | "Afternoon" | "Night";
   isAvailable: boolean;
-  startDate: string;
+  startDate: Date;
 }
 
-const StaffSchema = new mongoose.Schema(
+const StaffSchema = new mongoose.Schema<IStaff>(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,

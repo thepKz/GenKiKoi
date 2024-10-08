@@ -1,12 +1,12 @@
 import mongoose from "mongoose";
 
 interface IMedicalRecord {
-  customerId: string;
+  customerId: mongoose.Types.ObjectId;
   description?: string;
-  appointmentId: string;
+  appointmentId: mongoose.Types.ObjectId;
 }
 
-const MedicalRecordSchema = new mongoose.Schema(
+const MedicalRecordSchema = new mongoose.Schema<IMedicalRecord>(
   {
     customerId: {
       type: mongoose.Schema.Types.ObjectId,

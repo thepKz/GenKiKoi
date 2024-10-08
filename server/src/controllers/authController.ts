@@ -1,8 +1,11 @@
 import bcrypt from "bcryptjs";
 import { Request, Response } from "express";
 import User from "../models/User";
-import { isStrongPassword, randomText, signToken } from "../utils";
-import jwt from "jsonwebtoken";
+import { randomText, signToken } from "../utils";
+import {
+  checkExistingUser,
+  validateRegistrationInput,
+} from "../services/authService";
 
 /**
  * API: api/auth/register
@@ -13,68 +16,39 @@ export const register = async (req: Request, res: Response) => {
   try {
     const { username, email, password, confirmPassword } = req.body;
 
-    const errors: any = {
-      message: "",
-      username: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
-    };
+    const errors: any = {};
+    
+    // Validate input
+    validateRegistrationInput(
+      username.trim(),
+      email.trim(),
+      password.trim(),
+      confirmPassword.trim()
+    );
 
-    // Apply the trim method for all fields, with existence check
-    const formatUsername = username ? username.trim().toLowerCase() : "";
-    const formatEmail = email ? email.trim().toLowerCase() : "";
-    const trimmedPassword = password ? password.trim() : "";
-    const trimmedConfirmPassword = confirmPassword
-      ? confirmPassword.trim()
-      : "";
+    // Format input
+    const formatUsername = username.trim().toLowerCase();
+    const formatEmail = email.trim().toLowerCase();
 
-    if (!formatUsername || !formatEmail || !trimmedPassword) {
-      errors.message = "Vui lòng điền đẩy đủ các trường!";
-      return res.status(400).json(errors);
-    }
+    // Check if username or email already exists
+    await checkExistingUser(formatUsername, formatEmail);
 
-    const usernameExist = await User.findOne({ username: formatUsername });
-
-    if (usernameExist) {
-      errors.username = "Tên tài khoản này đã được sử dụng!";
-      return res.status(400).json(errors);
-    }
-
-    const emailExist = await User.findOne({
-      email: formatEmail,
-    });
-
-    if (emailExist) {
-      errors.email = "Email này đã được sử dụng!";
-      return res.status(400).json(errors);
-    }
-
-    // Handling for extra safety
-    if (!isStrongPassword(trimmedPassword)) {
-      errors.password = "Mật khẩu không đủ mạnh!";
-      return res.status(400).json(errors);
-    }
-    if (trimmedPassword !== trimmedConfirmPassword) {
-      errors.confirmPassword = "Mật khẩu xác nhận không khớp!";
-      return res.status(400).json(errors);
-    }
-
+    // Create new user
     const salt = await bcrypt.genSalt(10);
-    const hashedPass = await bcrypt.hash(trimmedPassword, salt);
+    const hashedPass = await bcrypt.hash(password, salt);
     const newUser = await User.create({
       username: formatUsername,
       email: formatEmail,
       password: hashedPass,
     });
 
-    await newUser.save();
-
-    const token = jwt.sign(
-      { id: newUser._id, role: newUser.role },
-      process.env.SECRET_KEY as string,
-      { expiresIn: "1h" }
-    );
+    // Generate token
+    const token = signToken({
+      id: newUser._id,
+      username: newUser.username,
+      email: newUser.email,
+      role: newUser.role,
+    });
 
     return res.status(201).json({
       message: "Đăng ký thành công!",
@@ -87,9 +61,7 @@ export const register = async (req: Request, res: Response) => {
       },
     });
   } catch (error: any) {
-    res.status(500).json({
-      message: error.message,
-    });
+    res.status(500).json({ message: "Đã xảy ra lỗi server" });
   }
 };
 
@@ -146,7 +118,7 @@ export const login = async (req: Request, res: Response) => {
         email: user.email,
         role: user.role,
         token: await signToken({
-          _id: user._id,
+          id: user._id,
           username: user.username,
           email: user.email,
           role: user.role,
@@ -170,57 +142,43 @@ export const loginWithGoogle = async (req: Request, res: Response) => {
     const { email, username, photoUrl } = req.body;
 
     const formatEmail = email.trim().toLowerCase();
+    const formatUserName = username + "-" + randomText(5);
 
-    const user = await User.findOne({ formatEmail });
+    let user = await User.findOne({ email: formatEmail });
 
-    if (user) {
-      return res.status(200).json({
-        message: "Đăng nhập thành công!",
-        data: {
-          id: user._id,
-          username: user.username,
-          email: user.email,
-          role: user.role,
-          photoUrl,
-          token: await signToken({
-            _id: user._id,
-            username: user.username,
-            email: user.email,
-            role: user.role,
-          }),
-        },
-      });
-    } else {
+    if (!user) {
       const salt = await bcrypt.genSalt(10);
-      const hashedPass = await bcrypt.hash(randomText(6), salt);
-      const newUser = await User.create({
-        username: (username + randomText(4)).toLowerCase,
+      const hashedPass = await bcrypt.hash(randomText(12), salt);
+      user = await User.create({
+        username: formatUserName,
         email: formatEmail,
         password: hashedPass,
-      });
-
-      await newUser.save();
-
-      return res.status(201).json({
-        message: "Đăng ký thành công!",
-        data: {
-          id: newUser._id,
-          username: newUser.username,
-          email: newUser.email,
-          role: newUser.role,
-          photoUrl,
-          token: await signToken({
-            _id: newUser._id,
-            username: newUser.username,
-            email: newUser.email,
-            role: newUser.role,
-          }),
-        },
+        photoUrl,
       });
     }
+
+    const token = await signToken({
+      id: user._id,
+      username: user.username,
+      email: user.email,
+      role: user.role,
+    });
+
+    return res.status(200).json({
+      message: user.isNew ? "Đăng ký thành công!" : "Đăng nhập thành công!",
+      data: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+        photoUrl: user.photoUrl || photoUrl,
+        token,
+      },
+    });
   } catch (error: any) {
+    console.error("Lỗi đăng nhập Google:", error);
     res.status(500).json({
-      message: error.message,
+      message: "Đã xảy ra lỗi khi xử lý đăng nhập Google",
     });
   }
 };
@@ -282,7 +240,7 @@ export const loginAdmin = async (req: Request, res: Response) => {
         email: user.email,
         role: user.role,
         token: await signToken({
-          _id: user._id,
+          id: user._id,
           username: user.username,
           email: user.email,
           role: user.role,

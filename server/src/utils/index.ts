@@ -23,7 +23,7 @@ export const isValidUserName = (username: string): boolean => {
 };
 
 export const signToken = async (payload: {
-  _id: Types.ObjectId;
+  id: Types.ObjectId;
   email: string;
   username: string;
   role: string;

@@ -1,15 +1,15 @@
 import mongoose from "mongoose";
 
 interface IBill {
-  appointmentId: string;
-  appointmentDate: string;
+  appointmentId: mongoose.Types.ObjectId;
+  appointmentDate: Date;
   servicePrice: number;
   medicinePrice?: number;
   totalPrice: number;
-  status: string;
+  status: "Đang xử lý" | "Hoàn thành" | "Lỗi thanh toán" | "Hủy";
 }
 
-const BillSchema = new mongoose.Schema(
+const BillSchema = new mongoose.Schema<IBill>(
   {
     appointmentId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -29,12 +29,12 @@ const BillSchema = new mongoose.Schema(
     },
     totalPrice: {
       type: Number,
-      require: true,
+      required: true,
     },
     status: {
       type: String,
-      enum: ["Pending", "Confirmed", "Completed", "Cancelled"],
-      default: "Pending",
+      enum: ["Đang xử lý", "Hoàn thành", "Lỗi thanh toán", "Hủy"],
+      default: "Đang xử lý",
       required: true,
     },
   },

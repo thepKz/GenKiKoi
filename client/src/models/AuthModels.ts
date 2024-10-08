@@ -6,7 +6,7 @@ export interface SignUpData {
 }
 
 export interface AuthState {
-  _id: string;
+  id: string;
   username: string;
   photoUrl: string;
   email: string;

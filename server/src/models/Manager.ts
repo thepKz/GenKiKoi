@@ -1,12 +1,12 @@
 import mongoose from "mongoose";
 
 interface IManager {
-  userId: string;
+  userId: mongoose.Types.ObjectId;
   position?: string;
-  startDate: string;
+  startDate: Date;
 }
 
-const ManagerSchema = new mongoose.Schema(
+const ManagerSchema = new mongoose.Schema<IManager>(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
