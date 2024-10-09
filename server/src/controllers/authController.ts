@@ -95,7 +95,7 @@ export const register = async (req: Request, res: Response) => {
  * API: api/auth/login
  * METHOD: POST
  * UNPROTECTED
- * TEST: 10.9.2024
+ * TEST: 10.9.2024 (QuangDung)
  */
 export const login = async (req: Request, res: Response) => {
   try {
@@ -164,6 +164,7 @@ export const login = async (req: Request, res: Response) => {
  * API: api/auth/login-google
  * METHOD: POST
  * UNPROTECTED
+ * TEST: 10.9.2024 (QuangDung)
  */
 export const loginWithGoogle = async (req: Request, res: Response) => {
   try {
@@ -214,7 +215,7 @@ export const loginWithGoogle = async (req: Request, res: Response) => {
  * API: api/auth/login-admin
  * METHOD: POST
  * UNPROTECTED
- * TEST: 10.9.2024
+ * TEST: 10.9.2024 (QuangDung)
  */
 export const loginAdmin = async (req: Request, res: Response) => {
   try {
@@ -286,7 +287,7 @@ export const loginAdmin = async (req: Request, res: Response) => {
  * API: api/auth/check-username
  * Method: POST
  * UNPROTECTED
- * TEST: 10.9.2024
+ * TEST: 10.9.2024 (QuangDung)
  */
 export const checkUsername = async (req: Request, res: Response) => {
   const { username } = req.body;
@@ -301,7 +302,7 @@ export const checkUsername = async (req: Request, res: Response) => {
  * API: api/auth/check-email
  * Method: POST
  * UNPROTECTED
- * TEST: 10.9.2024
+ * TEST: 10.9.2024 (QuangDung)
  */
 export const checkEmail = async (req: Request, res: Response) => {
   const { email } = req.body;

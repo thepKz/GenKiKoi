@@ -132,16 +132,18 @@ const SignUp = () => {
                 hasFeedback
                 required={false}
                 rules={[
-                  { required: true, message: "Vui lòng nhập email!" },
                   {
                     pattern: /^[A-Za-z0-9\._%+\-]+@[A-Za-z0-9\.\-]+\.[A-Za-z]{2,}$/,
                     message: "Email không hợp lệ!",
                   },
                   {
                     validator: async (_, value) => {
+                      if (!value) {
+                        return Promise.reject(new Error("Vui lòng nhập email!"));
+                      }
                       const exists = await handleCheckExistence("email", value);
                       if (exists) {
-                        return Promise.reject(new Error("Email đã tồn tại!")); // Thêm dòng này
+                        return Promise.reject(new Error("Email đã tồn tại!"));
                       }
 
                       return Promise.resolve();
