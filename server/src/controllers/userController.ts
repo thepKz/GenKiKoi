@@ -1,6 +1,7 @@
 import { Response } from "express";
-import { AuthRequest } from "../middleware/authMiddleware";
 import { Customer, User } from "../models";
+import { AuthRequest } from "../types";
+import { ICustomer } from "../types/customer";
 
 /**
  * API: api/users/
@@ -9,32 +10,44 @@ import { Customer, User } from "../models";
  */
 export const getUser = async (req: AuthRequest, res: Response) => {
   try {
-    const userId = req.user?._id;
-    const customer: any = await Customer.findOne({ userId })
+    const userId = req.user?.id;
+
+    if (!userId) {
+      return res.status(401).json({ message: "Không tìm thấy ID người dùng" });
+    }
+
+    const customer: ICustomer | null = await Customer.findOne({ userId })
       .populate(
         "userId",
-        "username email photoUrl fullName phoneNumber photoUrl"
+        "username email photoUrl fullName phoneNumber photoUrl gender"
       )
-      .select("detailAddress city district ward gender");
+      .select("detailAddress city district ward");
 
-    if (customer) {
-      const formattedProfile = {
-        email: customer.userId.email,
-        username: customer.userId.username,
-        fullName: customer.userId?.fullName || null,
-        phoneNumber: customer.userId?.phoneNumber || null,
-        photoUrl: customer.userId?.photoUrl || null,
-        gender: customer?.gender || null,
-        city: customer?.city || null,
-        district: customer?.district || null,
-        ward: customer?.ward || null,
-        detailAddress: customer?.detailAddress || null,
-      };
-      return res.status(200).json({ data: formattedProfile });
+    console.log(customer);
+
+    if (!customer) {
+      return res
+        .status(404)
+        .json({ message: "Không tìm thấy thông tin khách hàng" });
     }
+
+    const formattedProfile = {
+      email: customer.userId.email,
+      username: customer.userId.username,
+      fullName: customer.userId.fullName || null,
+      phoneNumber: customer.userId.phoneNumber || null,
+      photoUrl: customer.userId.photoUrl || null,
+      gender: customer.userId.gender || null,
+      city: customer.city || null,
+      district: customer.district || null,
+      ward: customer.ward || null,
+      detailAddress: customer.detailAddress || null,
+    };
+    return res.status(200).json({ data: formattedProfile });
   } catch (error: any) {
+    console.log(error);
     return res.status(500).json({
-      message: error.message,
+      message: "Đã xảy ra lỗi khi xử lý yêu cầu",
     });
   }
 };
@@ -46,7 +59,7 @@ export const getUser = async (req: AuthRequest, res: Response) => {
  */
 export const updateProfile = async (req: AuthRequest, res: Response) => {
   try {
-    const userId = req.user._id;
+    const userId = req.user?.id;
     const {
       username,
       fullName,
@@ -59,13 +72,16 @@ export const updateProfile = async (req: AuthRequest, res: Response) => {
       detailAddress,
     } = req.body;
 
+    const formatUsername = username.toLowerCase();
+
     await User.findOneAndUpdate(
       { _id: userId },
       {
-        username: username.toLowerCase(),
+        username: formatUsername,
         fullName,
         phoneNumber,
         photoUrl,
+        gender,
       },
       { new: true }
     );
@@ -73,7 +89,6 @@ export const updateProfile = async (req: AuthRequest, res: Response) => {
     await Customer.findOneAndUpdate(
       { userId },
       {
-        gender,
         city,
         district,
         ward,
