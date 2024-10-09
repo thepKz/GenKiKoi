@@ -6,13 +6,13 @@ interface IFish {
   age: number;
   photoUrl?: string;
   numberOfTreatments: number;
-  customerId: string;
   healthStatus: string;
-  appointmentId: string;
-  medicalRecordId: string;
+  customerId: mongoose.Types.ObjectId;
+  appointmentId: mongoose.Types.ObjectId;
+  medicalRecordId: mongoose.Types.ObjectId;
 }
 
-const FishSchema = new mongoose.Schema(
+const FishSchema = new mongoose.Schema<IFish>(
   {
     description: {
       type: String,
@@ -31,9 +31,11 @@ const FishSchema = new mongoose.Schema(
     numberOfTreatments: {
       type: Number,
       required: true,
+      default: 0,
     },
     healthStatus: {
       type: String,
+      enum: ["Tốt", "Xấu", "Cần theo dõi"],
       required: true,
     },
     customerId: {

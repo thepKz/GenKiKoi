@@ -43,7 +43,6 @@ const Booking = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [slot, setSlot] = useState<number | null>(null);
   const [date, setDate] = useState<string>("");
-  const [consultingOptions, setConsultingOptions] = useState([]);
 
   const [city, setCity] = useState<String>("");
   const [district, setDistrict] = useState<String>("");
@@ -53,6 +52,10 @@ const Booking = () => {
   const [districts, setDistricts] = useState<SelectProps["options"]>([]);
   const [wards, setWards] = useState<SelectProps["options"]>([]);
   const [profile, setProfile] = useState<CustomerData | null>(null);
+
+  const [services, setServices] = useState([]);
+  const [doctors, setDoctors] = useState([]);
+  const [consultingOptions, setConsultingOptions] = useState([]);
 
   useEffect(() => {
     const res = VietNamProvinces.map((item: any) => ({
@@ -106,35 +109,61 @@ const Booking = () => {
     getProfile();
   }, []);
 
-  const handleServiceChange = (value: string) => {
-    let options: any = [];
-    switch (value) {
-      case "Tư vấn & Điều trị":
-        options = [
-          { value: "Tại phòng khám", label: "Tại phòng khám" },
-          { value: "Tại nhà", label: "Tại nhà" },
-          { value: "Tư vấn trực tuyến", label: "Tư vấn trực tuyến" },
-        ];
-        break;
-      case "Xét nghiệm":
-        options = [{ value: "Tại phòng khám", label: "Tại phòng khám" }];
-        break;
-      case "Tiêm ngừa":
-        options = [{ value: "Tại phòng khám", label: "Tại phòng khám" }];
-        break;
-      case "Đánh giá chất lượng hồ cá":
-        options = [{ value: "Tại nhà", label: "Tại nhà" }];
-        break;
-      case "Đánh giá chất lượng nước":
-        options = [
-          { value: "Tại nhà", label: "Tại nhà" },
-          { value: "Tại phòng khám", label: "Tại phòng khám" },
-        ];
-        break;
-      default:
-        options = [];
+  useEffect(() => {
+    if (profile) {
+      form.setFieldsValue({
+        fullName: profile.fullName,
+        phoneNumber: profile.phoneNumber,
+        gender: profile.gender,
+        city: profile.city,
+        district: profile.district,
+        ward: profile.ward,
+        detailAddress: profile.detailAddress,
+      });
     }
-    setConsultingOptions(options);
+  }, [profile]);
+
+  useEffect(() => {
+    const getAllServices = async () => {
+      try {
+        const api = `/api/services/`;
+        const res = await handleAPI(api, undefined, "GET");
+        setServices(res.data);
+      } catch (error: any) {
+        console.log(error);
+        message.error(error.message);
+      }
+    };
+    getAllServices();
+  }, []);
+
+  useEffect(() => {
+    const getAllDoctors = async () => {
+      try {
+        const api = `/api/doctors/all`;
+        const res = await handleAPI(api, undefined, "GET");
+        setDoctors(res.data);
+      } catch (error: any) {
+        console.log(error);
+        message.error(error.message);
+      }
+    };
+    getAllDoctors();
+  }, []);
+
+  const handleServiceChange = (value: string) => {
+    form.setFieldValue("typeOfConsulting", undefined);
+    const selectedService: any = services.find((service: any) => service.serviceName === value);
+    if (selectedService) {
+      setConsultingOptions(
+        selectedService.availableAt.map((option: any) => ({
+          value: option,
+          label: option,
+        })),
+      );
+    } else {
+      setConsultingOptions([]);
+    }
   };
 
   const handleSubmit = async (values: any) => {
@@ -172,7 +201,7 @@ const Booking = () => {
   return (
     <div>
       <div className="bg-green-dark py-36 pb-16 text-white">
-        <div className="container mx-auto lg:px-40">
+        <div className="container mx-auto lg:px-28">
           <div className="rounded-md bg-blue-primary p-5 px-10">
             <ConfigProvider
               theme={{
@@ -205,16 +234,10 @@ const Booking = () => {
                       <Select
                         placeholder="Chọn loại dịch vụ"
                         style={{ width: "100%" }}
-                        options={[
-                          { value: "Tư vấn & Điều trị", label: "Tư vấn & Điều trị" },
-                          { value: "Xét nghiệm", label: "Xét nghiệm" },
-                          { value: "Tiêm ngừa", label: "Tiêm ngừa" },
-                          {
-                            value: "Đánh giá chất lượng hồ cá",
-                            label: "Đánh giá chất lượng hồ cá",
-                          },
-                          { value: "Đánh giá chất lượng nước", label: "Đánh giá chất lượng nước" },
-                        ]}
+                        options={services.map((service: any) => ({
+                          value: service.serviceName,
+                          label: service.serviceName,
+                        }))}
                         onChange={handleServiceChange}
                       />
                     </Form.Item>
@@ -226,10 +249,10 @@ const Booking = () => {
                       <Select
                         style={{ width: "100%" }}
                         placeholder="Chọn bác sĩ"
-                        options={[
-                          { value: "Đỗ Thị Mỹ Uyên", label: "Bs. Đỗ Thị Mỹ Uyên" },
-                          { value: "Mai Tấn Thép", label: "Bs. Mai Tấn Thép" },
-                        ]}
+                        options={doctors.map((doctor: any) => ({
+                          value: doctor.fullName,
+                          label: "Bs. " + doctor.fullName,
+                        }))}
                       />
                     </Form.Item>
                     <Form.Item
@@ -325,10 +348,16 @@ const Booking = () => {
                         >
                           <Select
                             placeholder="Giới tính"
-                            defaultValue={profile?.gender ? "Nam" : "Nữ"}
+                            defaultValue={
+                              profile?.gender === undefined
+                                ? null
+                                : profile?.gender === true
+                                  ? "Nam"
+                                  : "Nữ"
+                            }
                             options={[
-                              { value: "female", label: "Nữ" },
-                              { value: "male", label: "Nam" },
+                              { value: "nữ", label: "Nữ" },
+                              { value: "nam", label: "Nam" },
                             ]}
                           />
                         </Form.Item>
@@ -397,9 +426,10 @@ const Booking = () => {
                     <Row>
                       <Col span={24}>
                         <Form.Item
-                          required
+                          tooltip="Hãy mô tả kỹ lý do khám cho cá của bạn nhé"
                           name="reasons"
                           label="Lý do khám"
+                          rules={[{ required: true, message: "Vui lòng nhập lý do khám!" }]}
                         >
                           <TextArea
                             placeholder="Lý do khám"

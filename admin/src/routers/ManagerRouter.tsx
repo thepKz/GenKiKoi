@@ -1,13 +1,14 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { MainLayout } from "../layouts";
-import { Services } from "../pages";
+import { Services, Staffs } from "../pages/manager";
 
 const ManagerRouter = () => {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<MainLayout />}>
-          <Route path="/manage-service" element={<Services />} />
+          <Route path="manage-services" element={<Services />} />
+          <Route path="manage-staffs" element={<Staffs />} />
         </Route>
       </Routes>
     </BrowserRouter>

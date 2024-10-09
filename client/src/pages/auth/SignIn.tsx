@@ -28,9 +28,8 @@ const SignIn = () => {
         dispatch(addAuth(res.data));
       }
     } catch (error: any) {
-      console.log(error);
       form.setFields([
-        { name: "email", errors: error.email ? [error.email] : [] },
+        { name: "login", errors: error.login ? [error.login] : [] },
         { name: "password", errors: error.password ? [error.password] : [] },
       ]);
       message.error(error.message);

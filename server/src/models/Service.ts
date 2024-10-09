@@ -1,13 +1,15 @@
 import mongoose from "mongoose";
 
+type AvailableAt = "Tại phòng khám" | "Tại nhà" | "Tư vấn trực tuyến";
+
 interface IService {
   serviceName: string;
   price: number;
-  availableAt: any;
-  description: string;
+  availableAt: AvailableAt[];
+  description?: string;
 }
 
-const ServiceSchema = new mongoose.Schema(
+const ServiceSchema = new mongoose.Schema<IService>(
   {
     serviceName: {
       type: String,
@@ -17,13 +19,11 @@ const ServiceSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    availableAt: [
-      {
-        type: [String],
-        enum: ["Tại phòng khám", "Tại nhà", "Tư vấn trực tuyến"],
-        required: true,
-      },
-    ],
+    availableAt: {
+      type: [String],
+      enum: ["Tại phòng khám", "Tại nhà", "Tư vấn trực tuyến"],
+      required: true,
+    },
     description: {
       type: String,
     },

@@ -21,22 +21,22 @@ import { AuthState } from "../models/AuthModels";
 const SiderComponent = () => {
   const auth: AuthState = useSelector((state: any) => state.authReducer.data);
 
-  // const location = useLocation();
+  const location = useLocation();
 
   const managerItems: MenuProps["items"] = [
     {
       key: "dashboard",
-      label: <Link to={"#"}>Bảng điều khiển</Link>,
+      label: <Link to={"/dashboard"}>Bảng điều khiển</Link>,
       icon: <HomeTrendUp size={20} />,
     },
     {
       key: "manage-services",
-      label: <Link to={"/manage-service"}>Danh sách dịch vụ</Link>,
+      label: <Link to={"/manage-services"}>Danh sách dịch vụ</Link>,
       icon: <Lamp size={20} />,
     },
     {
       key: "manage-staffs",
-      label: <Link to={"#"}>Danh sách nhân viên</Link>,
+      label: <Link to={"/manage-staffs"}>Danh sách nhân viên</Link>,
       icon: <Profile2User size={20} />,
     },
     {
@@ -53,27 +53,27 @@ const SiderComponent = () => {
   const doctorItems: MenuProps["items"] = [
     {
       key: "doctor-calendar",
-      label: <Link to={"#"}>Lịch làm việc</Link>,
+      label: <Link to={"/doctor-calendar"}>Lịch làm việc</Link>,
       icon: <Calendar size={20} />,
     },
     {
       key: "view-appointment",
-      label: <Link to={"#"}>Xem cuộc hẹn</Link>,
+      label: <Link to={"/view-appointment"}>Xem cuộc hẹn</Link>,
       icon: <CalendarSearch size={20} />,
     },
     {
       key: "view-record",
-      label: <Link to={"#"}>Hồ sơ khách hàng</Link>,
+      label: <Link to={"/view-record"}>Hồ sơ khách hàng</Link>,
       icon: <Stickynote size={20} />,
     },
     {
       key: "create-record",
-      label: <Link to={"#"}>Tạo hồ sơ bệnh án</Link>,
+      label: <Link to={"/create-record"}>Tạo hồ sơ bệnh án</Link>,
       icon: <NoteAdd size={20} />,
     },
     {
       key: "feedbacks",
-      label: <Link to={"#"}>Phản hồi khách hàng</Link>,
+      label: <Link to={"/feedbacks"}>Phản hồi khách hàng</Link>,
       icon: <Grammerly size={20} />,
     },
     {
@@ -89,13 +89,15 @@ const SiderComponent = () => {
 
   const staffItems: MenuProps["items"] = [
     {
-      key: "manager-doctor-calendar",
-      label: <Link to={"#"}>Lịch làm việc của bác sĩ</Link>,
+      key: "manage-doctor-calendar",
+      label: (
+        <Link to={"/manage-doctor-calendar"}>Lịch làm việc của bác sĩ</Link>
+      ),
       icon: <Calendar size={20} />,
     },
     {
       key: "view-appointment",
-      label: <Link to={"#"}>Cuộc hẹn khách hàng</Link>,
+      label: <Link to={"/view-appointment"}>Cuộc hẹn khách hàng</Link>,
       icon: <CalendarSearch size={20} />,
     },
     {
@@ -134,6 +136,25 @@ const SiderComponent = () => {
               : auth.role === "staff"
                 ? staffItems
                 : doctorItems
+          }
+          selectedKeys={
+            auth.role === "manager"
+              ? ([
+                  managerItems.find(
+                    (item) => item?.key === location.pathname.split("/")[1],
+                  )?.key,
+                ] as string[])
+              : auth.role === "staff"
+                ? ([
+                    staffItems.find(
+                      (item) => item?.key === location.pathname.split("/")[1],
+                    )?.key,
+                  ] as string[])
+                : ([
+                    staffItems.find(
+                      (item) => item?.key === location.pathname.split("/")[1],
+                    )?.key,
+                  ] as string[])
           }
           theme="light"
         />

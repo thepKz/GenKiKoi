@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const getAccessToken = () => {
-  const res = localStorage.getItem("auth_GenKiKoi");
+  const res = localStorage.getItem("customer_GenKiKoi");
   if (res) {
     const auth = JSON.parse(res);
     return auth && auth.token ? auth.token : "";

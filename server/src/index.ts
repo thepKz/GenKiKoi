@@ -11,14 +11,18 @@ import {
   Customer,
   Doctor,
   DoctorSchedule,
+  Manager,
   Service,
+  Staff,
 } from "./models";
 
 // Routes
 import {
   appointmentRoutes,
   authRoutes,
+  doctorRoutes,
   serviceRoutes,
+  staffRoutes,
   userRoutes,
 } from "./routes";
 
@@ -49,9 +53,45 @@ app.use("/api/auth", authRoutes);
 app.use("/api/appointments", appointmentRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/services", serviceRoutes);
+app.use("/api/staffs", staffRoutes);
+app.use("/api/doctors", doctorRoutes);
 
 // +++++++ ADD DATA +++++++
-// Cái này t dùng để add tam dữ liêu!
+// Cái này t dùng để add tạm dữ liêu!
+
+// Add manager
+const addManager = async () => {
+  try {
+    const newManager = new Manager({
+      userId: "67028f335b63ca0427bcad16",
+    });
+
+    const addedManager = await newManager.save();
+
+    console.log(addedManager);
+  } catch (error) {
+    console.log(error);
+  }
+};
+// addManager();
+
+// Add manager
+const addStaff = async () => {
+  try {
+    const newStaff = new Staff({
+      userId: "67028ef15b63ca0427bcad11",
+      workShift: "Afternoon",
+    });
+
+    const addedStaff = await newStaff.save();
+
+    console.log(addedStaff);
+  } catch (error) {
+    console.log(error);
+  }
+};
+// addStaff();
+
 // Add customer
 const addCustomer = async () => {
   try {

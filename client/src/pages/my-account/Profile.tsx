@@ -17,15 +17,19 @@ import { useEffect, useRef, useState } from "react";
 import { handleAPI } from "../../apis/handleAPI";
 
 import VietNamProvinces from "../../../data/index";
-import { CustomerData } from "../../models/DataModels";
 import { uploadFile } from "../../utils";
+import { IAuth, ICustomerData } from "../../types";
+import { useSelector } from "react-redux";
 
 const Profile = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [isLoadingForm, setIsLoadingForm] = useState(false);
+  const auth: IAuth = useSelector((state: any) => state.authReducer.data);
+
+  const inpRef = useRef<any>();
 
   const [file, setFile] = useState(null);
-  const inpRef = useRef<any>();
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingForm, setIsLoadingForm] = useState(false);
 
   const [city, setCity] = useState<String>("");
   const [district, setDistrict] = useState<String>("");
@@ -34,13 +38,14 @@ const Profile = () => {
   const [cities, setCities] = useState<SelectProps["options"]>([]);
   const [districts, setDistricts] = useState<SelectProps["options"]>([]);
   const [wards, setWards] = useState<SelectProps["options"]>([]);
-  const [profile, setProfile] = useState<CustomerData | null>(null);
+
+  const [profile, setProfile] = useState<ICustomerData | null>(null);
 
   const handleSubmit = async (values: any) => {
     try {
       setIsLoadingForm(true);
 
-      const api = `api/users/update-profile`;
+      const api = `/api/users/update-profile`;
 
       if (file) {
         values.photoUrl = await uploadFile(file, "customers");
@@ -99,17 +104,48 @@ const Profile = () => {
     const getProfile = async () => {
       try {
         setIsLoading(true);
-        const api = `api/users/`;
+        const api = `/api/users/`;
         const res = await handleAPI(api, undefined, "GET");
         setProfile(res.data);
-      } catch (error) {
+      } catch (error: any) {
         console.log(error);
+        message.error(error.message);
       } finally {
         setIsLoading(false);
       }
     };
     getProfile();
   }, []);
+
+  useEffect(() => {
+    if (profile) {
+      form.setFieldsValue({
+        email: profile.email,
+        username: profile.username,
+        fullName: profile.fullName,
+        phoneNumber: profile.phoneNumber,
+        gender: profile.gender,
+        city: profile.city,
+        district: profile.district,
+        ward: profile.ward,
+        detailAddress: profile.detailAddress,
+      });
+    }
+  }, [profile]);
+
+  const handleCheckExistence = async (field: string, value: string) => {
+    const api = `/api/auth/check-${field}`;
+    try {
+      const res: any = await handleAPI(api, { [field]: value }, "POST");
+      if (res.exists && res.userId !== auth.id) {
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.log(error);
+      return false;
+    }
+  };
 
   if (isLoading) {
     return (
@@ -212,7 +248,7 @@ const Profile = () => {
                   label="Email"
                 >
                   <Input
-                    defaultValue={profile?.email}
+                    placeholder="Email"
                     readOnly
                     disabled
                   />
@@ -220,19 +256,65 @@ const Profile = () => {
                 <Form.Item
                   name="username"
                   label="Tên tài khoản"
+                  hasFeedback
+                  tooltip="Tên tài khoản phải bao gồm chữ thường, in hoa, số và có thể có dấu _!"
+                  rules={[
+                    { required: true, message: "Vui lòng nhập tên tài khoản" },
+                    {
+                      validator: async (_, value) => {
+                        if (value.trim().length < 8 || value.trim().length > 30) {
+                          return Promise.reject(
+                            new Error("Tên tài khoản phải có độ dài từ 8 đến 30 ký tự!"),
+                          );
+                        }
+                        if (!/^(?=.*[a-z])(?=.*\d)[a-zA-Z0-9_]+$/.test(value)) {
+                          return Promise.reject(
+                            new Error(
+                              "Tên tài khoản phải bao gồm chữ thường, số và có thể có dấu _!",
+                            ),
+                          );
+                        }
+
+                        const exists = await handleCheckExistence("username", value);
+                        if (exists) {
+                          return Promise.reject(new Error("Tên tài khoản đã tồn tại!")); // Thêm dòng này
+                        }
+
+                        return Promise.resolve();
+                      },
+                    },
+                  ]}
+                  validateDebounce={1000}
                 >
-                  <Input defaultValue={profile?.username} />
+                  <Input placeholder="Tên tài khoản" />
                 </Form.Item>
                 <Row gutter={24}>
                   <Col span={24}>
                     <Form.Item
                       name="fullName"
                       label="Họ và tên"
+                      hasFeedback
+                      tooltip="Chỉ chữ cái và khoảng trắng, dài từ 2 đến 50 ký tự!"
+                      rules={[
+                        { required: true, message: "Vui lòng nhập họ và tên" },
+                        { min: 2, message: "Họ và tên phải có ít nhất 2 ký tự" },
+                        { max: 50, message: "Họ và tên không được vượt quá 50 ký tự" },
+                        {
+                          pattern: /^[a-zA-ZÀ-ỹ\s]+$/,
+                          message: "Họ và tên chỉ được chứa chữ cái và khoảng trắng",
+                        },
+                        {
+                          validator: (_, value) => {
+                            if (value && value.trim().split(/\s+/).length < 2) {
+                              return Promise.reject("Họ và tên phải bao gồm ít nhất hai từ");
+                            }
+                            return Promise.resolve();
+                          },
+                        },
+                      ]}
+                      validateDebounce={1000}
                     >
-                      <Input
-                        placeholder="Họ và tên"
-                        defaultValue={profile?.fullName}
-                      />
+                      <Input placeholder="Họ và tên" />
                     </Form.Item>
                   </Col>
                 </Row>
@@ -243,11 +325,16 @@ const Profile = () => {
                     <Form.Item
                       name="phoneNumber"
                       label="Số điện thoại"
+                      hasFeedback
+                      rules={[
+                        { required: true, message: "Vui lòng nhập số điện thoại" },
+                        { pattern: /^[0-9]{10}$/, message: "Số điện thoại không hợp lệ" },
+                      ]}
+                      validateDebounce={1000}
                     >
                       <Input
                         addonBefore="+84"
                         placeholder="Số điện thoại"
-                        defaultValue={profile?.phoneNumber}
                       />
                     </Form.Item>
                   </Col>
@@ -258,10 +345,9 @@ const Profile = () => {
                     >
                       <Select
                         placeholder="Giới tính"
-                        defaultValue={profile?.gender ? "Nam" : "Nữ"}
                         options={[
-                          { value: 0, label: "Nữ" },
-                          { value: 1, label: "Nam" },
+                          { value: "nữ", label: "Nữ" },
+                          { value: "nam", label: "Nam" },
                         ]}
                       />
                     </Form.Item>
@@ -320,10 +406,7 @@ const Profile = () => {
                       name="detailAddress"
                       label="Địa chỉ"
                     >
-                      <Input
-                        placeholder="Địa chỉ"
-                        defaultValue={profile?.detailAddress}
-                      />
+                      <Input placeholder="Địa chỉ" />
                     </Form.Item>
                   </Col>
                 </Row>

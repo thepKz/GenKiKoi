@@ -1,8 +1,8 @@
 import { Response } from "express";
 import Appointment from "../models/Appointment";
-import { AuthRequest } from "../middleware/authMiddleware";
 import Customer from "../models/Customer";
 import { Doctor, Service, User } from "../models";
+import { AuthRequest } from "../types";
 
 /**
  * API: /api/appointments/
@@ -14,7 +14,7 @@ export const getAppointmentsByUser = async (
   res: Response
 ) => {
   try {
-    const userId = req.user?._id;
+    const userId = req.user?.id;
 
     const customer = await Customer.findOne({ userId });
 
@@ -71,7 +71,7 @@ export const createNewAppointment = async (req: AuthRequest, res: Response) => {
       reasons,
     } = req.body;
 
-    const userId = req.user._id;
+    const userId = req.user?.id;
 
     const customer = await Customer.findOne({ userId });
 

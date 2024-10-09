@@ -3,13 +3,14 @@ interface IUser {
   username: string;
   email: string;
   password: string;
-  photoUrl?: string;
-  fullName?: string;
-  phoneNumber?: string;
+  photoUrl: string;
+  fullName: string;
+  phoneNumber: string;
   role: "customer" | "staff" | "doctor" | "manager";
+  gender: "nam" | "nữ";
 }
 
-const userSchema = new mongoose.Schema(
+const userSchema = new mongoose.Schema<IUser>(
   {
     username: { type: String, required: true, unique: true },
     email: { type: String, required: true, unique: true },
@@ -21,6 +22,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       enum: ["customer", "staff", "doctor", "manager"],
       default: "customer",
+    },
+    gender: {
+      type: String,
+      enum: ["nam", "nữ"],
     },
   },
   { timestamps: true }

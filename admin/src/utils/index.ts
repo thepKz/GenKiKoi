@@ -39,6 +39,9 @@ const valueMap: {
   "Đã thay đổi lịch": "orange",
   "Đã hủy": "red",
   "Đã hoàn thành": "green",
+  "Tại phòng khám": "green",
+  "Tại nhà": "lime",
+  "Tư vấn trực tuyến": "orange",
 };
 
 export const getValue = (value: string) => {

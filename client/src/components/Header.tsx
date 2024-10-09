@@ -3,13 +3,13 @@ import { CalendarEdit, Logout, Notification, User } from "iconsax-react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Logo from "../assets/logo.jpg";
-import { AuthState } from "../models/AuthModels";
 import { removeAuth } from "../redux/reducers/authReducer";
+import { IAuth } from "../types";
+
 const Header = () => {
+  const auth: IAuth = useSelector((state: any) => state.authReducer.data);
   const location = useLocation();
   const navigate = useNavigate();
-  const auth: AuthState = useSelector((state: any) => state.authReducer.data);
-
   const dispatch = useDispatch();
 
   const handleNavClick = (e: React.MouseEvent, path: string) => {
