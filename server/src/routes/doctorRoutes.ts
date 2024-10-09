@@ -1,9 +1,12 @@
 import express from "express";
-import { getAllDoctors } from "../controllers/doctorController";
-import { authMiddleware, roleMiddleware } from "../middleware";
+import {
+  getAllDoctors,
+  getAllDoctorsForBooking,
+} from "../controllers/doctorController";
 
 const router = express.Router();
 
-router.get("/", authMiddleware, roleMiddleware(["manager"]), getAllDoctors);
+router.get("/", getAllDoctors);
+router.get("/all", getAllDoctorsForBooking);
 
 export default router;
