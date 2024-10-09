@@ -1,7 +1,7 @@
 import { Response } from "express";
+import { Doctor, Service, User } from "../models";
 import Appointment from "../models/Appointment";
 import Customer from "../models/Customer";
-import { Doctor, Service, User } from "../models";
 import { AuthRequest } from "../types";
 
 /**
@@ -14,12 +14,17 @@ export const getAppointmentsByUser = async (
   res: Response
 ) => {
   try {
-    const userId = req.user?.id;
+    const userId = req.user?._id;
 
-    const customer = await Customer.findOne({ userId });
+    let customer = await Customer.findOne({ userId });
 
     if (!customer) {
-      return res.status(404).json({ message: "Customer not found!" });
+      // If customer is not found, create a new one
+      const user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found!" });
+      }
+      customer = await Customer.create({ userId: user._id });
     }
 
     const appointments = await Appointment.find({
@@ -71,7 +76,7 @@ export const createNewAppointment = async (req: AuthRequest, res: Response) => {
       reasons,
     } = req.body;
 
-    const userId = req.user?.id;
+    const userId = req.user?._id;
 
     const customer = await Customer.findOne({ userId });
 

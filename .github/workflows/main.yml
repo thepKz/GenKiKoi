@@ -49,6 +49,14 @@ jobs:
         MONGO_URI: ${{ secrets.MONGO_URI }}
         SECRET_KEY: ${{ secrets.SECRET_KEY }}
 
+    - name: Run server tests
+      run: |
+        cd server
+        npm run test
+      env:
+        MONGO_URI: ${{ secrets.MONGO_URI }}
+        SECRET_KEY: ${{ secrets.SECRET_KEY }}
+
     - name: Upload artifact
       uses: actions/upload-artifact@v3
       with:
