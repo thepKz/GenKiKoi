@@ -8,6 +8,7 @@ import { ValidationError } from "../errors/ValidationError";
  * API: api/auth/register
  * METHOD: POST
  * UNPROTECTED
+ * TEST: 10.9.2024 (QuangDung)
  */
 export const register = async (req: Request, res: Response) => {
   try {
@@ -27,17 +28,6 @@ export const register = async (req: Request, res: Response) => {
       !formatConfirmPassword
     ) {
       errors.message = "Vui lòng điền đầy đủ các trường!";
-    }
-
-    if (!isStrongPassword(formatPassword)) {
-      errors.password = "Mật khẩu không đủ mạnh!";
-    }
-
-    if (formatPassword !== formatConfirmPassword) {
-      errors.confirmPassword = "Mật khẩu xác nhận không khớp!";
-    }
-
-    if (Object.keys(errors).length > 0) {
       throw new ValidationError(errors);
     }
 
@@ -56,6 +46,16 @@ export const register = async (req: Request, res: Response) => {
       throw new ValidationError(errors);
     }
 
+    if (!isStrongPassword(formatPassword)) {
+      errors.password = "Mật khẩu không đủ mạnh!";
+      throw new ValidationError(errors);
+    }
+
+    if (formatPassword !== formatConfirmPassword) {
+      errors.confirmPassword = "Mật khẩu xác nhận không khớp!";
+      throw new ValidationError(errors);
+    }
+
     // Create new user
     const salt = await bcrypt.genSalt(10);
     const hashedPass = await bcrypt.hash(password, salt);
@@ -66,7 +66,7 @@ export const register = async (req: Request, res: Response) => {
     });
 
     // Generate token
-    const token = signToken({
+    const token = await signToken({
       id: newUser._id,
       username: newUser.username,
       email: newUser.email,
@@ -95,23 +95,20 @@ export const register = async (req: Request, res: Response) => {
  * API: api/auth/login
  * METHOD: POST
  * UNPROTECTED
+ * TEST: 10.9.2024
  */
 export const login = async (req: Request, res: Response) => {
   try {
     const { login, password } = req.body;
 
-    const errors: any = {
-      message: "",
-      login: "",
-      password: "",
-    };
+    const errors: any = {};
 
     const formatLogin = login.trim().toLowerCase();
     const trimmedPassword = password.trim();
 
     if (!formatLogin || !trimmedPassword) {
       errors.message = "Vui lòng điền đẩy đủ các trường!";
-      return res.status(400).json(errors);
+      throw new ValidationError(errors);
     }
 
     const user = await User.findOne({
@@ -121,7 +118,7 @@ export const login = async (req: Request, res: Response) => {
     if (!user) {
       errors.message = "Tài khoản không tồn tại!";
       errors.login = "Vui lòng kiểm tra lại!";
-      return res.status(400).json(errors);
+      throw new ValidationError(errors);
     }
 
     const comparePassword = await bcrypt.compare(
@@ -133,8 +130,15 @@ export const login = async (req: Request, res: Response) => {
       errors.message = "Thông tin đăng nhập sai, vui lòng thử lại!";
       errors.login = "Vui lòng kiểm tra lại!";
       errors.password = "Vui lòng kiểm tra lại!";
-      return res.status(400).json(errors);
+      throw new ValidationError(errors);
     }
+
+    const token = await signToken({
+      id: user._id,
+      username: user.username,
+      email: user.email,
+      role: user.role,
+    });
 
     return res.status(200).json({
       message: "Đăng nhập thành công!",
@@ -143,15 +147,13 @@ export const login = async (req: Request, res: Response) => {
         username: user.username,
         email: user.email,
         role: user.role,
-        token: await signToken({
-          id: user._id,
-          username: user.username,
-          email: user.email,
-          role: user.role,
-        }),
+        token,
       },
     });
   } catch (error: any) {
+    if (error instanceof ValidationError) {
+      return res.status(400).json(error.errors);
+    }
     res.status(500).json({
       message: error.message,
     });
@@ -202,7 +204,6 @@ export const loginWithGoogle = async (req: Request, res: Response) => {
       },
     });
   } catch (error: any) {
-    console.error("Lỗi đăng nhập Google:", error);
     res.status(500).json({
       message: "Đã xảy ra lỗi khi xử lý đăng nhập Google",
     });
@@ -213,24 +214,20 @@ export const loginWithGoogle = async (req: Request, res: Response) => {
  * API: api/auth/login-admin
  * METHOD: POST
  * UNPROTECTED
+ * TEST: 10.9.2024
  */
-
 export const loginAdmin = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
 
-    const errors: any = {
-      message: "",
-      email: "",
-      password: "",
-    };
+    const errors: any = {};
 
     const formatLogin = email.trim().toLowerCase();
     const trimmedPassword = password.trim();
 
     if (!formatLogin || !trimmedPassword) {
       errors.message = "Vui lòng điền đẩy đủ các trường!";
-      return res.status(400).json(errors);
+      throw new ValidationError(errors);
     }
 
     const user = await User.findOne({
@@ -243,7 +240,7 @@ export const loginAdmin = async (req: Request, res: Response) => {
     if (!user) {
       errors.message = "Tài khoản không tồn tại!";
       errors.email = "Vui lòng kiểm tra lại!";
-      return res.status(400).json(errors);
+      throw new ValidationError(errors);
     }
 
     const comparePassword = await bcrypt.compare(
@@ -255,8 +252,15 @@ export const loginAdmin = async (req: Request, res: Response) => {
       errors.message = "Thông tin đăng nhập sai, vui lòng thử lại!";
       errors.email = "Vui lòng kiểm tra lại!";
       errors.password = "Vui lòng kiểm tra lại!";
-      return res.status(400).json(errors);
+      throw new ValidationError(errors);
     }
+
+    const token = await signToken({
+      id: user._id,
+      username: user.username,
+      email: user.email,
+      role: user.role,
+    });
 
     return res.status(200).json({
       message: "Đăng nhập thành công!",
@@ -265,15 +269,13 @@ export const loginAdmin = async (req: Request, res: Response) => {
         username: user.username,
         email: user.email,
         role: user.role,
-        token: await signToken({
-          id: user._id,
-          username: user.username,
-          email: user.email,
-          role: user.role,
-        }),
+        token,
       },
     });
   } catch (error: any) {
+    if (error instanceof ValidationError) {
+      return res.status(400).json(error.errors);
+    }
     res.status(500).json({
       message: error.message,
     });
@@ -284,11 +286,12 @@ export const loginAdmin = async (req: Request, res: Response) => {
  * API: api/auth/check-username
  * Method: POST
  * UNPROTECTED
+ * TEST: 10.9.2024
  */
 export const checkUsername = async (req: Request, res: Response) => {
   const { username } = req.body;
 
-  const formatUsername = username.toLowerCase();
+  const formatUsername = username.trim().toLowerCase();
 
   const user = await User.findOne({ username: formatUsername });
   return res.status(200).json({ exists: !!user });
@@ -298,11 +301,12 @@ export const checkUsername = async (req: Request, res: Response) => {
  * API: api/auth/check-email
  * Method: POST
  * UNPROTECTED
+ * TEST: 10.9.2024
  */
 export const checkEmail = async (req: Request, res: Response) => {
   const { email } = req.body;
 
-  const formatEmail = email.toLowerCase();
+  const formatEmail = email.trim().toLowerCase();
 
   const user = await User.findOne({ email: formatEmail });
   return res.status(200).json({ exists: !!user });

@@ -4,13 +4,20 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export const isStrongPassword = (password: string): boolean => {
-  const minLength = 8;
+  const minLength = 6;
   const hasUpperCase = /[A-Z]/.test(password);
   const hasLowerCase = /[a-z]/.test(password);
   const hasNumbers = /\d/.test(password);
+  const specialCharacter = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>/?]/.test(
+    password
+  );
 
   return (
-    password.length >= minLength && hasUpperCase && hasLowerCase && hasNumbers
+    password.length >= minLength &&
+    hasUpperCase &&
+    hasLowerCase &&
+    hasNumbers &&
+    specialCharacter
   );
 };
 
