@@ -18,7 +18,6 @@ const SignUp = () => {
 
   const dispatch = useDispatch();
 
-  // Handle Submit for SignUp
   const handleSubmit = async (values: SignUpData) => {
     const api = `/api/auth/register`;
     try {
@@ -29,7 +28,6 @@ const SignUp = () => {
         dispatch(addAuth(res.data));
       }
     } catch (error: any) {
-      console.log(error);
       form.setFields([
         { name: "username", errors: error.username ? [error.username] : [] },
         { name: "email", errors: error.email ? [error.email] : [] },
@@ -46,10 +44,10 @@ const SignUp = () => {
     const api = `/api/auth/check-${field}`;
     try {
       const res: any = await handleAPI(api, { [field]: value }, "POST");
-      return res.exists; // Trả về giá trị boolean
+      return res.exists;
     } catch (error) {
       console.log(error);
-      return false; // Nếu có lỗi, coi như không tồn tại
+      return false;
     }
   };
 
@@ -91,30 +89,29 @@ const SignUp = () => {
                 label="Tên tài khoản"
                 required={false}
                 hasFeedback
-                tooltip="Tên tài khoản phải bao gồm chữ cái, số và có thể có dấu _"
+                tooltip="Tên tài khoản phải bao gồm chữ thường, in hoa, số và có thể có dấu _!"
                 rules={[
                   {
                     validator: async (_, value) => {
                       if (!value) {
                         return Promise.reject(new Error("Vui lòng nhập tên tài khoản!"));
                       }
-                      if (value.trim().length < 6 || value.trim().length > 30) {
+                      if (value.trim().length < 8 || value.trim().length > 30) {
                         return Promise.reject(
-                          new Error("Tên tài khoản phải có độ dài từ 6 đến 30 ký tự!")
+                          new Error("Tên tài khoản phải có độ dài từ 8 đến 30 ký tự!"),
                         );
                       }
-                      if (!/^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d_]+$/.test(value)) {
+                      if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z0-9_]+$/.test(value)) {
                         return Promise.reject(
                           new Error(
-                            "Tên tài khoản phải bao gồm chữ cái, số và có thể có dấu _!"
-                          )
+                            "Tên tài khoản phải bao gồm chữ thường, in hoa, số và có thể có dấu _!",
+                          ),
                         );
                       }
 
-                      // Gọi hàm kiểm tra sự tồn tại và chờ kết quả
-                      const exists = await handleCheckExistence("username", value.toLowerCase());
+                      const exists = await handleCheckExistence("username", value);
                       if (exists) {
-                        return Promise.reject(new Error("Tên tài khoản đã tồn tại!"));
+                        return Promise.reject(new Error("Tên tài khoản đã tồn tại!")); // Thêm dòng này
                       }
 
                       return Promise.resolve();
@@ -132,28 +129,33 @@ const SignUp = () => {
               <Form.Item
                 name="email"
                 label="Email"
-                required={false}
                 hasFeedback
+                required={false}
                 rules={[
-                  { required: true, message: "Vui lòng nhập email!" },
-                  { type: 'email', message: 'Email không hợp lệ!' },
+                  {
+                    pattern: /^[A-Za-z0-9\._%+\-]+@[A-Za-z0-9\.\-]+\.[A-Za-z]{2,}$/,
+                    message: "Email không hợp lệ!",
+                  },
                   {
                     validator: async (_, value) => {
-                      if (value) {
-                        const exists = await handleCheckExistence("email", value.toLowerCase());
-                        if (exists) {
-                          return Promise.reject(new Error("Email này đã được sử dụng!"));
-                        }
+                      if (!value) {
+                        return Promise.reject(new Error("Vui lòng nhập email!"));
                       }
+                      const exists = await handleCheckExistence("email", value);
+                      if (exists) {
+                        return Promise.reject(new Error("Email đã tồn tại!"));
+                      }
+
                       return Promise.resolve();
                     },
                   },
                 ]}
-                validateTrigger={["onBlur", "onChange"]}
+                validateDebounce={1000}
               >
                 <Input
                   placeholder="Email"
                   onPressEnter={() => handleEnterPress(form, "email", "password")}
+                  onChange={(e) => handleCheckExistence("email", e.target.value)}
                   allowClear
                 />
               </Form.Item>
@@ -162,15 +164,17 @@ const SignUp = () => {
                 label="Mật khẩu"
                 required={false}
                 hasFeedback
-                tooltip="Mật khẩu phải chứa ít nhất 8 ký tự, bao gồm chữ thường, chữ hoa, số và ký tự đặc biệt!"
+                tooltip="Mật khẩu phải chứa chữ thường, in hoa, số, ký tự đặc biệt và trên 6 ký tự!"
                 rules={[
                   {
                     required: true,
                     message: "Vui lòng nhập mật khẩu!",
                   },
                   {
-                    pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*_])[A-Za-z\d!@#$%^&*_]{8,}$/,
-                    message: "Mật khẩu phải chứa ít nhất 8 ký tự, bao gồm chữ thường, chữ hoa, số và ký tự đặc biệt!",
+                    pattern:
+                      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>/?]).{6,30}$/,
+                    message:
+                      "Mật khẩu phải chứa chữ thường, in hoa, số, ký tự đặc biệt và trên 6 ký tự!",
                   },
                 ]}
                 validateDebounce={1000}
