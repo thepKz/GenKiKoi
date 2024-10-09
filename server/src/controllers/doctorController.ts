@@ -1,48 +1,48 @@
-import Doctor from "../models/DoctorModel";
 import { Request, Response } from "express";
+import { Doctor } from "../models";
 
-export const getDoctors = async (req: Request, res: Response) => {
+/**
+ * API: /api/doctors/
+ * Method: GET
+ * PROTECTED
+ */
+export const getAllDoctors = async (req: Request, res: Response) => {
   try {
-    const doctors = await Doctor.find().populate("user_id");
-    res.status(200).json(doctors);
-  } catch (error) {
-    res.status(500).json({ message: (error as Error).message });
+    const doctors = await Doctor.find().populate("userId");
+
+    if (!doctors) {
+      return res.status(404).json({ message: "Danh sách bác sĩ trống!" });
+    }
+
+    return res.status(200).json({ data: doctors });
+  } catch (error: any) {
+    return res.status(500).json({ message: error.message });
   }
 };
 
-export const getDoctorById = async (req: Request, res: Response) => {
+/**
+ * API: /api/doctors/all
+ * Method: GET
+ * UNPROTECTED
+ */
+export const getAllDoctorsForBooking = async (req: Request, res: Response) => {
   try {
-    const doctor = await Doctor.findById(req.params.id).populate("user_id");
-    res.status(200).json(doctor);
-  } catch (error) {
-    res.status(500).json({ message: (error as Error).message });
-  }
-};
+    const doctors = await Doctor.find({}, "fullName").populate(
+      "userId",
+      "fullName"
+    );
 
-export const createDoctor = async (req: Request, res: Response) => {
-  try {
-    const doctor = await Doctor.create(req.body);
-    res.status(201).json(doctor);
-  } catch (error) {
-    res.status(500).json({ message: (error as Error).message });
-  }
-};
-export const updateDoctor = async (req: Request, res: Response) => {
-  try {
-    const doctor = await Doctor.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-    });
-    res.status(200).json(doctor);
-  } catch (error) {
-    res.status(500).json({ message: (error as Error).message });
-  }
-};
+    if (!doctors || doctors.length === 0) {
+      return res.status(404).json({ message: "Không tìm thấy bác sĩ nào" });
+    }
 
-export const deleteDoctor = async (req: Request, res: Response) => {
-  try {
-    await Doctor.findByIdAndDelete(req.params.id);
-    res.status(200).json({ message: "Doctor deleted successfully" });
-  } catch (error) {
-    res.status(500).json({ message: (error as Error).message });
+    const doctorList = doctors.map((doctor: any) => ({
+      id: doctor._id,
+      fullName: doctor.userId ? doctor.userId.fullName : doctor.fullName,
+    }));
+
+    return res.status(200).json({ data: doctorList });
+  } catch (error: any) {
+    return res.status(500).json({ message: error.message });
   }
 };

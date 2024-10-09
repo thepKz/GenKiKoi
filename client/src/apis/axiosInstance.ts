@@ -1,12 +1,18 @@
 import axios from "axios";
 
-const getAccessToken = (): string | null => {
-  return localStorage.getItem("access_token");
+const getAccessToken = () => {
+  const res = localStorage.getItem("customer_GenKiKoi");
+  if (res) {
+    const auth = JSON.parse(res);
+    return auth && auth.token ? auth.token : "";
+  }
+  return "";
 };
 
 // Tạo một axios instance
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:5000", // Địa chỉ API gốc
+  baseURL: import.meta.env.VITE_API_URL,
+  withCredentials: true
 });
 
 // Interceptor cho request để thêm Authorization header

@@ -1,9 +1,6 @@
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, Response } from "express";
 import jwt from "jsonwebtoken";
-
-interface AuthRequest extends Request {
-  user?: any;
-}
+import { AuthRequest } from "../types";
 
 export const authMiddleware = (
   req: AuthRequest,
@@ -13,10 +10,8 @@ export const authMiddleware = (
   const authHeader = req.headers.authorization;
   const token = authHeader && authHeader.split(" ")[1];
 
-  console.log("Received token:", token);
-
   if (!token) {
-    return res.status(401).json({ message: "No token provided" });
+    return res.status(401).json({ message: "Unauthorized: No token provided" });
   }
 
   if (!process.env.SECRET_KEY) {
@@ -25,17 +20,14 @@ export const authMiddleware = (
 
   try {
     const decoded = jwt.verify(token, process.env.SECRET_KEY) as {
+      _id: string;
       role: string;
     };
-    req.user = decoded;
 
-    // Kiểm tra role
-    if (!["manager", "veterinarian", "staff"].includes(decoded.role)) {
-      return res.status(403).json({ message: "Access denied" });
-    }
+    req.user = decoded;
 
     next();
   } catch (error) {
-    return res.status(401).json({ message: "Invalid token" });
+    return res.status(401).json({ message: "Unauthorized: Invalid token" });
   }
 };

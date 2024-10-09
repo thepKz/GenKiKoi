@@ -1,56 +1,118 @@
-import Customer from "../models/CustomerModel";
-import Doctor from "../models/DoctorModel";
-import User from "../models/UserModel";
-import { Request, Response } from "express";
+import { Response } from "express";
+import { Customer, User } from "../models";
+import { AuthRequest } from "../types";
+import { ICustomer } from "../types/customer";
+import { IUser } from "../types/user";
 
-export const getUsers = async (req: Request, res: Response) => {
+/**
+ * API: api/users/
+ * METHOD: GET
+ * PROTECTED
+ */
+export const getUser = async (req: AuthRequest, res: Response) => {
   try {
-    const users = await User.find();
-    res.status(200).json(users);
-  } catch (error) {
-    res.status(500).json({ message: (error as Error).message });
-  }
-};
-export const getUserById = async (req: Request, res: Response) => {
-  try {
-    const user = await User.findById(req.params.id);
-    if (user) res.status(200).json(user);
-  } catch (error) {
-    res.status(500).json({ message: (error as Error).message });
-  }
-};
+    const userId = req.user?._id;
+    console.log("userId:", userId);
 
-export const createUser = async (req: Request, res: Response) => {
-  try {
-    const user = await User.create(req.body);
-    if (user && user.role === "customer") {
-      const customer = await Customer.create({ user_id: user._id });
+    if (!userId) {
+      return res.status(401).json({ message: "Không tìm thấy ID người dùng" });
     }
-    if (user && user.role === "doctor") {
-      const doctor = await Doctor.create({ user_id: user._id });
-    }
-    res.status(201).json(user);
-  } catch (error) {
-    res.status(500).json({ message: (error as Error).message });
-  }
-};
 
-export const updateUser = async (req: Request, res: Response) => {
-  try {
-    const user = await User.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
+    let customer: ICustomer | null = await Customer.findOne({ userId: userId })
+      .populate(
+        "userId",
+        "username email photoUrl fullName phoneNumber photoUrl gender"
+      )
+      .select("detailAddress city district ward");
+
+    console.log("customer:", customer);
+
+    if (!customer) {
+      // If customer is not found, create a new one
+      const user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).json({ message: "Không tìm thấy thông tin người dùng" });
+      }
+      const newCustomer = await Customer.create({ userId: user._id });
+      customer = await Customer.findById(newCustomer._id).populate<{ userId: IUser }>(
+        "userId",
+        "username email photoUrl fullName phoneNumber photoUrl gender"
+      );
+      if (!customer) {
+        throw new Error("Failed to create and populate new customer");
+      }
+    }
+
+    const formattedProfile = {
+      email: customer?.userId.email,
+      username: customer?.userId.username,
+      fullName: customer?.userId.fullName,
+      phoneNumber: customer?.userId.phoneNumber,
+      photoUrl: customer?.userId.photoUrl,
+      gender: customer?.userId.gender,
+      city: customer?.city || null,
+      district: customer?.district || null,
+      ward: customer?.ward || null,
+      detailAddress: customer?.detailAddress || null,
+    };
+    return res.status(200).json({ data: formattedProfile });
+  } catch (error: any) {
+    console.log("Error in getUser:", error);
+    return res.status(500).json({
+      message: "Đã xảy ra lỗi khi xử lý yêu cầu",
     });
-    res.status(200).json(user);
-  } catch (error) {
-    res.status(500).json({ message: (error as Error).message });
   }
 };
 
-export const deleteUser = async (req: Request, res: Response) => {
+/**
+ * API: /api/users/update-profile
+ * METHOD: PATCH
+ * PROTECTED
+ */
+export const updateProfile = async (req: AuthRequest, res: Response) => {
   try {
-    await User.findByIdAndDelete(req.params.id);
-    res.status(200).json({ message: "User deleted successfully" });
-  } catch (error) {
-    res.status(500).json({ message: (error as Error).message });
+    const userId = req.user?._id;
+    const {
+      username,
+      fullName,
+      phoneNumber,
+      gender,
+      city,
+      district,
+      ward,
+      photoUrl,
+      detailAddress,
+    } = req.body;
+
+    const formatUsername = username.toLowerCase();
+
+    await User.findOneAndUpdate(
+      { _id: userId },
+      {
+        username: formatUsername,
+        fullName,
+        phoneNumber,
+        photoUrl,
+        gender,
+      },
+      { new: true }
+    );
+
+    await Customer.findOneAndUpdate(
+      { userId },
+      {
+        city,
+        district,
+        ward,
+        detailAddress,
+      },
+      { new: true }
+    );
+
+    return res.status(200).json({ message: "Cập nhật thành công!" });
+  } catch (error: any) {
+    return res.status(500).json({
+      message: error.message,
+    });
   }
 };

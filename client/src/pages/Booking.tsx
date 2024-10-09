@@ -1,19 +1,35 @@
-import { Button, Card, Col, ConfigProvider, Form, Input, Row, Select } from "antd";
-import TextArea from "antd/es/input/TextArea";
-import { Calendar } from "iconsax-react";
-import { useEffect } from "react";
+import {
+  Button,
+  Card,
+  Col,
+  ConfigProvider,
+  Form,
+  Input,
+  message,
+  Row,
+  Select,
+  SelectProps,
+  Spin,
+} from "antd";
+
+import { useEffect, useState } from "react";
+import VietNamProvinces from "../../data";
+import { handleAPI } from "../apis/handleAPI";
+import { CustomerData } from "../models/DataModels";
+import { CustomCalendar } from "../share";
+
+const { TextArea } = Input;
 
 const demoSlots = [
-  { id: 1, time: "10:30" },
-  { id: 2, time: "11:00" },
-  { id: 3, time: "11:30" },
-  { id: 4, time: "12:00" },
-  { id: 5, time: "12:30" },
+  { id: 1, time: "8:00" },
+  { id: 2, time: "9:00" },
+  { id: 3, time: "10:00" },
+  { id: 4, time: "11:00" },
+  { id: 5, time: "12:00" },
   { id: 6, time: "13:00" },
-  { id: 7, time: "13:30" },
-  { id: 8, time: "14:00" },
-  { id: 9, time: "14:30" },
-  { id: 10, time: "15:00" },
+  { id: 7, time: "14:00" },
+  { id: 8, time: "15:00" },
+  { id: 9, time: "16:00" },
 ];
 
 const Booking = () => {
@@ -22,10 +38,170 @@ const Booking = () => {
   }, []);
 
   const [form] = Form.useForm();
+  const [isLoadingForm, setIsLoadingForm] = useState(false);
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [slot, setSlot] = useState<number | null>(null);
+  const [date, setDate] = useState<string>("");
+
+  const [city, setCity] = useState<string>("");
+  const [district, setDistrict] = useState<string>("");
+  const [ward, setWard] = useState<string>("");
+
+  const [cities, setCities] = useState<SelectProps["options"]>([]);
+  const [districts, setDistricts] = useState<SelectProps["options"]>([]);
+  const [wards, setWards] = useState<SelectProps["options"]>([]);
+  const [profile, setProfile] = useState<CustomerData | null>(null);
+
+  const [services, setServices] = useState([]);
+  const [doctors, setDoctors] = useState([]);
+  const [consultingOptions, setConsultingOptions] = useState([]);
+
+  useEffect(() => {
+    const res = VietNamProvinces.map((item: any) => ({
+      value: item.Name,
+      label: item.Name,
+    }));
+    setCities(res);
+  }, []);
+
+  useEffect(() => {
+    const res = VietNamProvinces.find((item: any) => item.Name === city);
+    const res1 = res?.Districts?.map((item: any) => ({
+      value: item.Name,
+      label: item.Name,
+    }));
+    setDistricts(res1);
+
+    if (form.getFieldValue(["district"])) {
+      form.setFieldValue("district", "");
+      form.setFieldValue("ward", "");
+    }
+  }, [city]);
+
+  useEffect(() => {
+    const res = VietNamProvinces.find((item: any) => item.Name === city);
+    const res1 = res?.Districts.find((item: any) => item.Name === district);
+    const res2 = res1?.Wards.map((item: any) => ({
+      value: item.Name,
+      label: item.Name,
+    }));
+    setWards(res2);
+
+    if (form.getFieldValue(["ward"])) {
+      form.setFieldValue("ward", "");
+    }
+  }, [district]);
+
+  useEffect(() => {
+    const getProfile = async () => {
+      try {
+        setIsLoading(true);
+        const api = `api/users/`;
+        const res = await handleAPI(api, undefined, "GET");
+        setProfile(res.data);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    getProfile();
+  }, []);
+
+  useEffect(() => {
+    if (profile) {
+      form.setFieldsValue({
+        fullName: profile.fullName,
+        phoneNumber: profile.phoneNumber,
+        gender: profile.gender,
+        city: profile.city,
+        district: profile.district,
+        ward: profile.ward,
+        detailAddress: profile.detailAddress,
+      });
+    }
+  }, [profile]);
+
+  useEffect(() => {
+    const getAllServices = async () => {
+      try {
+        const api = `/api/services/`;
+        const res = await handleAPI(api, undefined, "GET");
+        setServices(res.data);
+      } catch (error: any) {
+        console.log(error);
+        message.error(error.message);
+      }
+    };
+    getAllServices();
+  }, []);
+
+  useEffect(() => {
+    const getAllDoctors = async () => {
+      try {
+        const api = `/api/doctors/all`;
+        const res = await handleAPI(api, undefined, "GET");
+        setDoctors(res.data);
+      } catch (error: any) {
+        console.log(error);
+        message.error(error.message);
+      }
+    };
+    getAllDoctors();
+  }, []);
+
+  const handleServiceChange = (value: string) => {
+    form.setFieldValue("typeOfConsulting", undefined);
+    const selectedService: any = services.find((service: any) => service.serviceName === value);
+    if (selectedService) {
+      setConsultingOptions(
+        selectedService.availableAt.map((option: any) => ({
+          value: option,
+          label: option,
+        })),
+      );
+    } else {
+      setConsultingOptions([]);
+    }
+  };
+
+  const handleSubmit = async (values: any) => {
+    try {
+      setIsLoadingForm(true);
+      const api = `/api/appointments/`;
+
+      if (date) {
+        values.appointmentDate = date;
+      }
+
+      if (slot) {
+        values.slotTime = demoSlots[slot - 1].time;
+      }
+
+      const res: any = await handleAPI(api, values, "PUT");
+
+      message.success(res.message);
+    } catch (error: any) {
+      console.log(error);
+      message.error(error.message);
+    } finally {
+      setIsLoadingForm(false);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-green-dark">
+        <Spin size="large" />
+      </div>
+    );
+  }
+
   return (
     <div>
       <div className="bg-green-dark py-36 pb-16 text-white">
-        <div className="container mx-auto lg:px-40">
+        <div className="container mx-auto lg:px-28">
           <div className="rounded-md bg-blue-primary p-5 px-10">
             <ConfigProvider
               theme={{
@@ -42,12 +218,43 @@ const Booking = () => {
             >
               <Form
                 form={form}
+                disabled={isLoadingForm}
+                onFinish={handleSubmit}
                 size="large"
                 layout="vertical"
               >
                 <h3 className="heading-3 text-white">Nội dung chi tiết đặt hẹn</h3>
                 <div className="my-5 flex gap-10">
                   <div className="lg:w-1/5">
+                    <Form.Item
+                      name="serviceName"
+                      label="Loại dịch vụ"
+                      required
+                    >
+                      <Select
+                        placeholder="Chọn loại dịch vụ"
+                        style={{ width: "100%" }}
+                        options={services.map((service: any) => ({
+                          value: service.serviceName,
+                          label: service.serviceName,
+                        }))}
+                        onChange={handleServiceChange}
+                      />
+                    </Form.Item>
+                    <Form.Item
+                      name="doctorName"
+                      label="Bác sĩ"
+                      required
+                    >
+                      <Select
+                        style={{ width: "100%" }}
+                        placeholder="Chọn bác sĩ"
+                        options={doctors.map((doctor: any) => ({
+                          value: doctor.fullName,
+                          label: "Bs. " + doctor.fullName,
+                        }))}
+                      />
+                    </Form.Item>
                     <Form.Item
                       name="typeOfConsulting"
                       label="Hình thức khám"
@@ -56,126 +263,24 @@ const Booking = () => {
                       <Select
                         placeholder="Chọn hình thức khám"
                         style={{ width: "100%" }}
-                        options={[
-                          { value: "Tại phòng khám", label: "Tại phòng khám" },
-                          { value: "Tại nhà", label: "Tại nhà" },
-                          { value: "Tư vấn trực tuyến", label: "Tư vấn trực tuyến" },
-                        ]}
-                      />
-                    </Form.Item>
-                    <Form.Item
-                      name="typeOfServices"
-                      label="Loại dịch vụ"
-                      required
-                    >
-                      <Select
-                        placeholder="Chọn loại dịch vụ"
-                        style={{ width: "100%" }}
-                        options={[
-                          { value: "Tư vấn & Điều trị", label: "Tư vấn & Điều trị" },
-                          { value: "Xét nghiệm", label: "Xét nghiệm" },
-                          { value: "Ký sinh trùng máu", label: "Ký sinh trùng máu" },
-                          { value: "Kháng sinh đồ", label: "Kháng sinh đồ" },
-                          { value: "Siêu âm", label: "Siêu âm" },
-                          { value: "Phẫu thuật", label: "Phẫu thuật" },
-                          { value: "Tiêm ngừa", label: "Tiêm ngừa" },
-                        ]}
-                      />
-                    </Form.Item>
-                    <Form.Item
-                      name="vetName"
-                      label="Bác sĩ"
-                      required
-                    >
-                      <Select
-                        style={{ width: "100%" }}
-                        placeholder="Chọn bác sĩ"
-                        options={[
-                          { value: "Bs. Đỗ Quang Dũng", label: "Bs. Đỗ Quang Dũng" },
-                          { value: "Bs. Mai Tấn Thép", label: "Bs. Mai Tấn Thép" },
-                          { value: "Bs. Nguyễn Văn A", label: "Bs. Nguyễn Văn A" },
-                        ]}
+                        options={consultingOptions}
                       />
                     </Form.Item>
                   </div>
                   <div className="lg:w-[30%]">
                     <Form.Item
-                      name="time"
+                      name="appointmentDate"
                       label="Thời gian khám"
                       required
                     >
-                      <div className="flex items-center justify-between gap-5">
-                        <ConfigProvider
-                          theme={{
-                            components: {
-                              Card: {
-                                paddingLG: 8,
-                              },
-                            },
-                          }}
-                        >
-                          <Card className="w-1/3 text-center">
-                            <h2 className="text-xl font-bold">29/09</h2>
-                            <p>Chủ Nhật</p>
-                          </Card>
-                        </ConfigProvider>
-                        <ConfigProvider
-                          theme={{
-                            components: {
-                              Card: {
-                                paddingLG: 8,
-                              },
-                            },
-                          }}
-                        >
-                          <Card className="w-1/3 text-center">
-                            <h2 className="text-xl font-bold">30/09</h2>
-                            <p>Thứ 2</p>
-                          </Card>
-                        </ConfigProvider>
-                        <ConfigProvider
-                          theme={{
-                            components: {
-                              Card: {
-                                paddingLG: 8,
-                              },
-                            },
-                          }}
-                        >
-                          <Card className="w-1/3 text-center">
-                            <h2 className="text-xl font-bold">1/10</h2>
-                            <p>thứ 3</p>
-                          </Card>
-                        </ConfigProvider>
-                      </div>
-                      <div className="mt-5 flex items-center gap-5">
-                        <ConfigProvider
-                          theme={{
-                            components: {
-                              Card: {
-                                paddingLG: 8,
-                              },
-                            },
-                          }}
-                        >
-                          <Card className="w-1/3 text-center">
-                            <Calendar
-                              size={28}
-                              className="mx-auto"
-                            />
-                            <p>Ngày khác</p>
-                          </Card>
-                        </ConfigProvider>
-                        <div className="w-1/3"></div>
-                        <div className="w-1/3"></div>
-                      </div>
+                      <CustomCalendar setDate={setDate} />
                     </Form.Item>
                     <Form.Item
-                      name="slot"
+                      name="slotTime"
                       className="mt-5"
                     >
                       <div className="flex flex-wrap gap-4">
-                        {demoSlots.map((slot) => (
+                        {demoSlots.map((slotTime) => (
                           <ConfigProvider
                             theme={{
                               components: {
@@ -186,10 +291,16 @@ const Booking = () => {
                             }}
                           >
                             <Card
-                              key={slot.id}
+                              key={slotTime.id}
                               style={{ width: 70, textAlign: "center" }}
+                              onClick={() => setSlot(slotTime.id)}
+                              className={
+                                slot === slotTime.id
+                                  ? "bg-green-dark text-white"
+                                  : "hover:bg-green-dark hover:text-white"
+                              }
                             >
-                              {slot.time}
+                              {slotTime.time}
                             </Card>
                           </ConfigProvider>
                         ))}
@@ -202,22 +313,16 @@ const Booking = () => {
                   </div>
                   <div className="lg:flex-1">
                     <Row gutter={24}>
-                      <Col span={12}>
+                      <Col span={24}>
                         <Form.Item
                           required
-                          name="lastName"
-                          label="Họ"
+                          name="fullName"
+                          label="Họ và tên"
                         >
-                          <Input placeholder="Họ" />
-                        </Form.Item>
-                      </Col>
-                      <Col span={12}>
-                        <Form.Item
-                          required
-                          name="fistName"
-                          label="Tên"
-                        >
-                          <Input placeholder="Tên" />
+                          <Input
+                            defaultValue={profile?.fullName}
+                            placeholder="Họ và tên"
+                          />
                         </Form.Item>
                       </Col>
                     </Row>
@@ -232,6 +337,7 @@ const Booking = () => {
                             className="addon-input"
                             addonBefore="+84"
                             placeholder="Số điện thoại"
+                            defaultValue={profile?.phoneNumber}
                           />
                         </Form.Item>
                       </Col>
@@ -242,9 +348,16 @@ const Booking = () => {
                         >
                           <Select
                             placeholder="Giới tính"
+                            defaultValue={
+                              profile?.gender === undefined
+                                ? null
+                                : profile?.gender === true
+                                  ? "Nam"
+                                  : "Nữ"
+                            }
                             options={[
-                              { value: "female", label: "Nữ" },
-                              { value: "male", label: "Nam" },
+                              { value: "nữ", label: "Nữ" },
+                              { value: "nam", label: "Nam" },
                             ]}
                           />
                         </Form.Item>
@@ -258,11 +371,12 @@ const Booking = () => {
                         >
                           <Select
                             placeholder="Thành phố"
-                            // value={city}
-                            // onChange={(e) => {
-                            //   setCity(e);
-                            // }}
-                            // options={cities}
+                            value={city}
+                            defaultValue={profile?.city}
+                            onChange={(e) => {
+                              setCity(e);
+                            }}
+                            options={cities}
                           />
                         </Form.Item>
                       </Col>
@@ -273,10 +387,11 @@ const Booking = () => {
                         >
                           <Select
                             placeholder="Quận / Huyện"
-                            // onChange={(e) => {
-                            //   setDistrict(e);
-                            // }}
-                            // options={districts}
+                            defaultValue={profile?.district}
+                            onChange={(e) => {
+                              setDistrict(e);
+                            }}
+                            options={districts}
                           />
                         </Form.Item>
                       </Col>
@@ -287,9 +402,10 @@ const Booking = () => {
                         >
                           <Select
                             placeholder="Phường / Xã"
-                            // value={ward}
-                            // onChange={(e) => setWard(e)}
-                            // options={wards}
+                            defaultValue={profile?.ward}
+                            value={ward}
+                            onChange={(e) => setWard(e)}
+                            options={wards}
                           />
                         </Form.Item>
                       </Col>
@@ -300,16 +416,20 @@ const Booking = () => {
                           name="address"
                           label="Địa chỉ"
                         >
-                          <Input placeholder="Địa chỉ" />
+                          <Input
+                            placeholder="Địa chỉ"
+                            defaultValue={profile?.detailAddress}
+                          />
                         </Form.Item>
                       </Col>
                     </Row>
                     <Row>
                       <Col span={24}>
                         <Form.Item
-                          required
+                          tooltip="Hãy mô tả kỹ lý do khám cho cá của bạn nhé"
                           name="reasons"
                           label="Lý do khám"
+                          rules={[{ required: true, message: "Vui lòng nhập lý do khám!" }]}
                         >
                           <TextArea
                             placeholder="Lý do khám"
@@ -334,7 +454,9 @@ const Booking = () => {
                 <Button
                   size="large"
                   type="primary"
+                  loading={isLoadingForm}
                   className="mt-3 w-fit"
+                  onClick={() => form.submit()}
                 >
                   Gửi thông tin
                 </Button>

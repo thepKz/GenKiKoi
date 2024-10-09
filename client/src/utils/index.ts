@@ -1,3 +1,7 @@
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import Resizer from "react-image-file-resizer";
+import { storage } from "../firebase/firebaseConfig";
+
 export const handleEnterPress = (
   form: any,
   currentFieldName: string,
@@ -16,23 +20,21 @@ export const handleEnterPress = (
 };
 
 export const replaceName = (str: string) => {
-  str
+  return str
     .normalize("NFD")
+    .toLocaleLowerCase()
     .replace(/[\u0300-\u036f]/g, "")
     .replace(/đ/g, "d")
     .replace(/Đ/g, "D")
-    .replace(/ /g, "")
+    .replace(/ /g, "-")
     .replace(/[:!@#$%^&*()?;/]/g, "");
-
-  return str.toLowerCase();
 };
 
 const valueMap: {
   [key: string]: string;
 } = {
-  "Đang chờ xác nhận": "lime",
-  "Đã lên lịch": "cyan",
-  "Đang tiến hành": "geekblue",
+  "Đang chờ xử lý": "lime",
+  "Đã xác nhân": "cyan",
   "Đã thay đổi lịch": "orange",
   "Đã hủy": "red",
   "Đã hoàn thành": "green",
@@ -41,3 +43,41 @@ const valueMap: {
 export const getValue = (value: string) => {
   return valueMap[value];
 };
+
+export const uploadFile = async (
+  file: any,
+  folder: "customers" | "fishes" | "staffs" | "doctors",
+) => {
+  const compressedFile: any = await handleResize(file);
+
+  const fileName = replaceName(compressedFile.name);
+
+  const storageRef = ref(storage, `${folder}/${fileName}`);
+
+  const res = await uploadBytes(storageRef, compressedFile);
+
+  if (res) {
+    return getDownloadURL(storageRef);
+  } else {
+    return "Error upload";
+  }
+};
+
+const handleResize = (file: any) =>
+  new Promise((resolve) => {
+    Resizer.imageFileResizer(
+      file,
+      1080,
+      720,
+      "JPEG",
+      80, // Giảm chất lượng xuống 60
+      0,
+      (compressedFile) => {
+        if (compressedFile) {
+          console.log("Compressed file size:", (compressedFile as File).size);
+          resolve(compressedFile);
+        }
+      },
+      "file",
+    );
+  });

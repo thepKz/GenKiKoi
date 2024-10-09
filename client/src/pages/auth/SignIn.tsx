@@ -6,8 +6,8 @@ import { Link } from "react-router-dom";
 import { handleAPI } from "../../apis/handleAPI";
 import Banner from "../../assets/banner.jpg";
 import Logo from "../../assets/logo-transparent.png";
-import { SocialButton } from "../../share";
 import { addAuth } from "../../redux/reducers/authReducer";
+import { SocialButton } from "../../share";
 import { handleEnterPress } from "../../utils";
 
 const SignIn = () => {
@@ -28,9 +28,8 @@ const SignIn = () => {
         dispatch(addAuth(res.data));
       }
     } catch (error: any) {
-      console.log(error);
       form.setFields([
-        { name: "email", errors: error.email ? [error.email] : [] },
+        { name: "login", errors: error.login ? [error.login] : [] },
         { name: "password", errors: error.password ? [error.password] : [] },
       ]);
       message.error(error.message);
