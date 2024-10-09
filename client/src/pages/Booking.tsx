@@ -13,9 +13,9 @@ import {
 } from "antd";
 
 import { useEffect, useState } from "react";
-import { CustomerData } from "../models/DataModels";
 import VietNamProvinces from "../../data";
 import { handleAPI } from "../apis/handleAPI";
+import { CustomerData } from "../models/DataModels";
 import { CustomCalendar } from "../share";
 
 const { TextArea } = Input;

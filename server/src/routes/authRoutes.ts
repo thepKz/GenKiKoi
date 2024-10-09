@@ -9,7 +9,7 @@ import {
 } from "../controllers/authController";
 
 const router = express.Router();
-
+console.log("Log message on backend");
 router.post("/register", register);
 router.post("/login", login);
 router.post("/login-google", loginWithGoogle);

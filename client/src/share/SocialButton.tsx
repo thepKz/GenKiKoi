@@ -1,50 +1,55 @@
 import { Button, ConfigProvider, message } from "antd";
-import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
-import { FcGoogle } from "react-icons/fc";
-import { auth } from "../firebase/firebaseConfig";
-import { replaceName } from "../utils";
-import { handleAPI } from "../apis/handleAPI";
-import { useDispatch } from "react-redux";
-import { addAuth } from "../redux/reducers/authReducer";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { useState } from "react";
+import { FcGoogle } from "react-icons/fc";
+import { useDispatch } from "react-redux";
+import { handleAPI } from "../apis/handleAPI";
+import { auth } from "../firebase/firebaseConfig";
+import { addAuth } from "../redux/reducers/authReducer";
+import { replaceName } from "../utils";
 
 interface Props {
   text: string;
 }
 
-const provider = new GoogleAuthProvider();
-
 const SocialButton = (props: Props) => {
   const { text } = props;
+
   const [isLoading, setIsLoading] = useState(false);
+
+  const provider = new GoogleAuthProvider();
+
   const dispatch = useDispatch();
 
   const handleLoginWithGoogle = async () => {
     try {
       setIsLoading(true);
-      const result = await signInWithPopup(auth, provider);
-      const user = result.user;
-
-      if (user) {
-        const { displayName, email, photoURL, uid } = user;
+  
+      const res = await signInWithPopup(auth, provider);
+      const api = `api/auth/login-google`;
+  
+      console.log("Google sign-in response:", res.user);
+  
+      if (res.user) {
         const data = {
-          username: replaceName(displayName || ""),
-          email,
-          photoUrl: photoURL,
-          googleId: uid,
+          username: replaceName(res.user.displayName || ""),
+          email: res.user.email,
+          photoUrl: res.user.photoURL,
         };
-
-        const api = `/api/auth/login-google`;
-        const res: any = await handleAPI(api, data, "POST");
-
-        message.success(res.message);
-        dispatch(addAuth(res.data));
-      } else {
-        message.error("Không thể đăng nhập bằng Google");
+        console.log("Data being sent to backend:", data);
+        try {
+          const res: any = await handleAPI(api, data, "POST");
+          console.log("Backend response:", res);
+          message.success(res.message);
+          dispatch(addAuth(res.data));
+        } catch (error: any) {
+          console.error("Error from backend:", error);
+          message.error(error.message);
+        }
       }
     } catch (error: any) {
-      console.error("Lỗi đăng nhập Google:", error);
-      message.error(error.message || "Đã xảy ra lỗi khi đăng nhập");
+      console.error("Google sign-in error:", error);
+      message.error(error.message);
     } finally {
       setIsLoading(false);
     }

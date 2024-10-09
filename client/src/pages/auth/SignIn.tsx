@@ -6,8 +6,8 @@ import { Link } from "react-router-dom";
 import { handleAPI } from "../../apis/handleAPI";
 import Banner from "../../assets/banner.jpg";
 import Logo from "../../assets/logo-transparent.png";
-import { SocialButton } from "../../share";
 import { addAuth } from "../../redux/reducers/authReducer";
+import { SocialButton } from "../../share";
 import { handleEnterPress } from "../../utils";
 
 const SignIn = () => {
@@ -77,15 +77,14 @@ const SignIn = () => {
                 rules={[
                   { required: true, message: "Vui lòng nhập email hoặc tên tài khoản!" },
                   {
-                    pattern:
-                      /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$|^[a-zA-Z0-9_]{8,30}$/,
+                    pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$|^[a-zA-Z0-9_]{8,30}$/,
                     message: "Email hoặc tên tài khoản không hợp lệ!",
                   },
                 ]}
                 validateDebounce={1000}
               >
                 <Input
-                  placeholder="Email"
+                  placeholder="Email hoặc tên tài khoản"
                   onPressEnter={() => handleEnterPress(form, "login", "password")}
                   allowClear
                 />

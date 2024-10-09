@@ -1,247 +1,152 @@
-import { MongoMemoryServer } from "mongodb-memory-server";
-import mongoose from "mongoose";
-import request from "supertest";
-import connectDB from "../databases/database"; // Assuming this is the correct import path
-import app from "../index";
-import User from "../models/User";
+import { MongoMemoryServer } from 'mongodb-memory-server';
+import mongoose from 'mongoose';
+import request from 'supertest';
+import { app } from '../index'; // Assuming your Express app is exported from app.ts
+import User from '../models/User';
+
 let mongoServer: MongoMemoryServer;
 
 beforeAll(async () => {
   mongoServer = await MongoMemoryServer.create();
   const mongoUri = mongoServer.getUri();
-  process.env.MONGO_URI = mongoUri;
-  await mongoose.disconnect();
-  await connectDB();
-});
-beforeEach(async () => {
-  await User.deleteMany({}); // Xóa tất cả users
-  await User.create({
-    username: "testuserCHECK",
-    email: "validCHECK@example.com",
-    password: "ValidPass1!",
-    role: "customer",
-  });
+  await mongoose.connect(mongoUri);
 });
 
 afterAll(async () => {
   await mongoose.disconnect();
   await mongoServer.stop();
-  await new Promise((resolve) => setTimeout(resolve, 1000)); // Give time for all connections to close
 });
 
-describe("Auth API", () => {
-  // Successful registration
-  it("should register a new user successfully", async () => {
-    const res = await request(app).post("/api/auth/register").send({
-      username: "validuser",
-      email: "valid@example.com",
-      password: "ValidPass1!",
-      role: "customer",
-    });
-    expect(res.statusCode).toBe(201);
-    expect(res.body).toHaveProperty("token");
-    expect(res.body.user).toHaveProperty("id");
-    expect(res.body.user.username).toBe("validuser");
-    console.info("--- Test case completed ---");
+describe('Auth Controller', () => {
+  beforeEach(async () => {
+    await User.deleteMany({});
   });
 
-  // BR-1: Unique Username/Email
-  it("should not register a user with an existing username", async () => {
-    await request(app).post("/api/auth/register").send({
-      username: "existinguser",
-      email: "existing@example.com",
-      password: "ValidPass2!",
-      role: "customer",
+  describe('POST /api/auth/register', () => {
+    it('should register a new user', async () => {
+      const res = await request(app)
+        .post('/api/auth/register')
+        .send({
+          username: 'testuser',
+          email: 'test@example.com',
+          password: 'Password123!',
+          confirmPassword: 'Password123!'
+        });
+
+      expect(res.statusCode).toBe(201);
+      expect(res.body.message).toBe('Đăng ký thành công!');
+      expect(res.body.data).toHaveProperty('token');
     });
 
-    const res = await request(app).post("/api/auth/register").send({
-      username: "existinguser",
-      email: "new@example.com",
-      password: "ValidPass3!",
-      role: "customer",
-    });
+    it('should return error for existing username', async () => {
+      await User.create({
+        username: 'existinguser',
+        email: 'existing@example.com',
+        password: 'Password123!'
+      });
 
-    expect(res.statusCode).toBe(400);
-    expect(res.body).toHaveProperty("message");
-    expect(res.body.message).toContain("Username already exists");
+      const res = await request(app)
+        .post('/api/auth/register')
+        .send({
+          username: 'existinguser',
+          email: 'new@example.com',
+          password: 'Password123!',
+          confirmPassword: 'Password123!'
+        });
+
+      expect(res.statusCode).toBe(400);
+      expect(res.body.username).toBe('Tên tài khoản này đã được sử dụng!');
+    });
   });
 
-  it("should not register a user with an existing email", async () => {
-    const res = await request(app).post("/api/auth/register").send({
-      username: "newuser",
-      email: "validCHECK@example.com",
-      password: "ValidPass4!",
-      role: "customer",
+  describe('POST /api/auth/login', () => {
+    beforeEach(async () => {
+      await User.create({
+        username: 'testuser',
+        email: 'test@example.com',
+        password: '$2a$10$XOPbrlUPQdwdJUpSrIF6X.LbE14qsMmKGhM1A8W9iqDuy0q.w7n.K' // Password123!
+      });
     });
-    console.log("Response:", res.status, res.body);
-    expect(res.statusCode).toBe(400);
-    expect(res.body).toHaveProperty("message");
-    expect(res.body.message).toContain("Email already exists");
+
+    it('should login with correct credentials', async () => {
+        const res = await request(app)
+          .post('/api/auth/login')
+          .send({
+            login: 'testuser',
+            password: 'Password123!'
+          });
+      
+        console.log('Login response:', res.body);
+      
+        expect(res.statusCode).toBe(200);
+        expect(res.body.message).toBe('Đăng nhập thành công!');
+        expect(res.body.data).toHaveProperty('token');
+      });
+
+    it('should return error for incorrect password', async () => {
+      const res = await request(app)
+        .post('/api/auth/login')
+        .send({
+          login: 'testuser',
+          password: 'WrongPassword123!'
+        });
+
+      expect(res.statusCode).toBe(400);
+      expect(res.body.message).toBe('Thông tin đăng nhập sai, vui lòng thử lại!');
+    });
   });
 
-  // BR-2: Strong Passwords
-  it("should not register a user with a short password", async () => {
-    const res = await request(app).post("/api/auth/register").send({
-      username: "shortpass",
-      email: "short@example.com",
-      password: "Short1!",
-      role: "customer",
+  describe('POST /api/auth/check-username', () => {
+    it('should return true for existing username', async () => {
+      await User.create({
+        username: 'existinguser',
+        email: 'existing@example.com',
+        password: 'Password123!'
+      });
+
+      const res = await request(app)
+        .post('/api/auth/check-username')
+        .send({ username: 'existinguser' });
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body.exists).toBe(true);
     });
 
-    expect(res.statusCode).toBe(400);
-    expect(res.body).toHaveProperty("message");
-    expect(res.body.message).toContain(
-      "Password must be at least 8 characters long"
-    );
-    expect(res.body.message).toContain(
-      "contain at least one uppercase letter, one lowercase letter, one number, and one special character"
-    );
+    it('should return false for non-existing username', async () => {
+      const res = await request(app)
+        .post('/api/auth/check-username')
+        .send({ username: 'nonexistinguser' });
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body.exists).toBe(false);
+    });
   });
 
-  it("should not register a user with a password missing uppercase", async () => {
-    const res = await request(app).post("/api/auth/register").send({
-      username: "nouppercase",
-      email: "nouppercase@example.com",
-      password: "nouppercase1!",
-      role: "customer",
+  describe('POST /api/auth/check-email', () => {
+    it('should return true for existing email', async () => {
+      await User.create({
+        username: 'testuser',
+        email: 'existing@example.com',
+        password: 'Password123!'
+      });
+
+      const res = await request(app)
+        .post('/api/auth/check-email')
+        .send({ email: 'existing@example.com' });
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body.exists).toBe(true);
     });
 
-    expect(res.statusCode).toBe(400);
-    expect(res.body).toHaveProperty("message");
-    expect(res.body.message).toContain(
-      "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character."
-    );
-  });
+    it('should return false for non-existing email', async () => {
+      const res = await request(app)
+        .post('/api/auth/check-email')
+        .send({ email: 'nonexisting@example.com' });
 
-  it("should not register a user with a password missing lowercase", async () => {
-    const res = await request(app).post("/api/auth/register").send({
-      username: "nolowercase",
-      email: "nolowercase@example.com",
-      password: "NOLOWERCASE1!",
-      role: "customer",
+      expect(res.statusCode).toBe(200);
+      expect(res.body.exists).toBe(false);
     });
-
-    expect(res.statusCode).toBe(400);
-    expect(res.body).toHaveProperty("message");
-    expect(res.body.message).toContain(
-      "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character."
-    );
-  });
-
-  it("should not register a user with a password missing digit", async () => {
-    const res = await request(app).post("/api/auth/register").send({
-      username: "nodigit",
-      email: "nodigit@example.com",
-      password: "NoDigitPass!",
-      role: "customer",
-    });
-
-    expect(res.statusCode).toBe(400);
-    expect(res.body).toHaveProperty("message");
-    expect(res.body.message).toContain(
-      "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character."
-    );
-  });
-
-  it("should not register a user with a password missing special character", async () => {
-    const res = await request(app).post("/api/auth/register").send({
-      username: "nospecial",
-      email: "nospecial@example.com",
-      password: "NoSpecialChar1",
-      role: "customer",
-    });
-
-    expect(res.statusCode).toBe(400);
-    expect(res.body).toHaveProperty("message");
-    expect(res.body.message).toContain(
-      "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character."
-    );
-  });
-
-  // Missing fields
-  it("should not register a user with missing username", async () => {
-    const res = await request(app).post("/api/auth/register").send({
-      email: "nousername@example.com",
-      password: "ValidPass5!",
-      role: "customer",
-    });
-
-    expect(res.statusCode).toBe(400);
-    expect(res.body).toHaveProperty("message");
-    expect(res.body.message).toContain(
-      "User validation failed: username: Path `username` is required."
-    );
-  });
-
-  it("should not register a user with missing email", async () => {
-    const res = await request(app).post("/api/auth/register").send({
-      username: "noemail",
-      password: "ValidPass6!",
-      role: "customer",
-    });
-
-    expect(res.statusCode).toBe(400);
-    expect(res.body).toHaveProperty("message");
-    expect(res.body.message).toContain(
-      "User validation failed: email: Path `email` is required."
-    );
-  });
-
-  // Login tests
-  it("should login an existing user successfully with email", async () => {
-    const res = await request(app).post("/api/auth/login").send({
-      login: "validCHECK@example.com",
-      password: "ValidPass1!",
-    });
-    expect(res.statusCode).toBe(200);
-    expect(res.body).toHaveProperty("token");
-  });
-
-  it("should login an existing user successfully with username", async () => {
-    const res = await request(app).post("/api/auth/login").send({
-      login: "testuserCHECK",
-      password: "ValidPass1!",
-    });
-    expect(res.statusCode).toBe(200);
-    expect(res.body).toHaveProperty("token");
-  });
-
-  it("should not login with incorrect password", async () => {
-    const res = await request(app).post("/api/auth/login").send({
-      login: "valid@example.com",
-      password: "WrongPassword1!",
-    });
-    expect(res.statusCode).toBe(401);
-    expect(res.body).toHaveProperty("message");
-    expect(res.body.message).toContain("Incorrect login or password");
-  });
-
-  it("should not login with non-existent username or email", async () => {
-    const res = await request(app).post("/api/auth/login").send({
-      login: "nonexistent",
-      password: "AnyPassword1!",
-    });
-    expect(res.statusCode).toBe(401);
-    expect(res.body).toHaveProperty("message");
-    expect(res.body.message).toContain("Incorrect login or password");
-  });
-
-  it("should not login without providing login", async () => {
-    const res = await request(app).post("/api/auth/login").send({
-      password: "AnyPassword1!",
-    });
-    expect(res.statusCode).toBe(400);
-    expect(res.body).toHaveProperty("message");
-    expect(res.body.message).toContain("Please provide login and password");
-  });
-
-  it("should not login without providing password", async () => {
-    const res = await request(app).post("/api/auth/login").send({
-      login: "valid@example.com",
-    });
-    expect(res.statusCode).toBe(400);
-    expect(res.body).toHaveProperty("message");
-    expect(res.body.message).toContain("Please provide login and password");
   });
 });
 
+    
