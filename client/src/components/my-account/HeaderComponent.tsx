@@ -3,7 +3,7 @@ import { Home, Logout, Notification, User } from "iconsax-react";
 import { useDispatch, useSelector } from "react-redux";
 import { removeAuth } from "../../redux/reducers/authReducer";
 import { Link } from "react-router-dom";
-import { AuthState } from "../../models/AuthModels";
+import { IAuth } from "../../types";
 
 const { Header } = Layout;
 
@@ -12,7 +12,7 @@ const { Search } = Input;
 const HeaderComponent = () => {
   const dispatch = useDispatch();
 
-  const auth: AuthState = useSelector((state: any) => state.authReducer.data);
+  const auth: IAuth = useSelector((state: any) => state.authReducer.data);
 
   const profile: MenuProps["items"] = [
     {

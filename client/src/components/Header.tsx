@@ -1,13 +1,13 @@
 import { Link } from "react-router-dom";
 import Logo from "../assets/logo.jpg";
 import { Avatar, Badge, Button, Dropdown, MenuProps } from "antd";
-import { AuthState } from "../models/AuthModels";
 import { useDispatch, useSelector } from "react-redux";
 import { CalendarEdit, Logout, Notification, User } from "iconsax-react";
 import { removeAuth } from "../redux/reducers/authReducer";
+import { IAuth } from "../types";
 
 const Header = () => {
-  const auth: AuthState = useSelector((state: any) => state.authReducer.data);
+  const auth: IAuth = useSelector((state: any) => state.authReducer.data);
 
   const dispatch = useDispatch();
 
@@ -134,7 +134,10 @@ const Header = () => {
           ) : (
             <div className="flex items-center gap-3">
               <Link to="booking">
-                <CalendarEdit color="white" size={24} />
+                <CalendarEdit
+                  color="white"
+                  size={24}
+                />
               </Link>
               <Badge
                 count={9}

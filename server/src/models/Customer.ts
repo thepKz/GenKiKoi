@@ -2,11 +2,10 @@ import mongoose from "mongoose";
 
 interface ICustomer {
   userId: mongoose.Types.ObjectId;
-  city: string;
-  district: string;
-  ward: string;
-  detailAddress: string;
-  gender?: boolean;
+  city?: string;
+  district?: string;
+  ward?: string;
+  detailAddress?: string;
 }
 
 const CustomerSchema = new mongoose.Schema<ICustomer>(
@@ -18,22 +17,15 @@ const CustomerSchema = new mongoose.Schema<ICustomer>(
     },
     city: {
       type: String,
-      required: true,
     },
     district: {
       type: String,
-      required: true,
     },
     ward: {
       type: String,
-      required: true,
     },
     detailAddress: {
       type: String,
-      required: true,
-    },
-    gender: {
-      type: Boolean,
     },
   },
   { timestamps: true }

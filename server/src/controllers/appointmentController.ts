@@ -1,8 +1,8 @@
 import { Response } from "express";
 import Appointment from "../models/Appointment";
-import { AuthRequest } from "../middleware/authMiddleware";
 import Customer from "../models/Customer";
 import { Doctor, Service, User } from "../models";
+import { AuthRequest } from "../types";
 
 /**
  * API: /api/appointments/

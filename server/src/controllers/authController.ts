@@ -3,6 +3,7 @@ import { Request, Response } from "express";
 import User from "../models/User";
 import { isStrongPassword, randomText, signToken } from "../utils";
 import { ValidationError } from "../errors/ValidationError";
+import { Customer } from "../models";
 
 /**
  * API: api/auth/register
@@ -63,6 +64,11 @@ export const register = async (req: Request, res: Response) => {
       username: formatUsername,
       email: formatEmail,
       password: hashedPass,
+    });
+
+    // Create new customer
+    await Customer.create({
+      userId: newUser._id,
     });
 
     // Generate token
@@ -184,6 +190,11 @@ export const loginWithGoogle = async (req: Request, res: Response) => {
         password: hashedPass,
         photoUrl,
       });
+
+      // Create a new customer
+      await Customer.create({
+        userId: user._id,
+      });
     }
 
     const token = await signToken({
@@ -295,7 +306,7 @@ export const checkUsername = async (req: Request, res: Response) => {
   const formatUsername = username.trim().toLowerCase();
 
   const user = await User.findOne({ username: formatUsername });
-  return res.status(200).json({ exists: !!user });
+  return res.status(200).json({ exists: !!user, userId: user?._id });
 };
 
 /**
@@ -310,5 +321,5 @@ export const checkEmail = async (req: Request, res: Response) => {
   const formatEmail = email.trim().toLowerCase();
 
   const user = await User.findOne({ email: formatEmail });
-  return res.status(200).json({ exists: !!user });
+  return res.status(200).json({ exists: !!user, userId: user?._id });
 };

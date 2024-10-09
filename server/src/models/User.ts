@@ -7,7 +7,7 @@ interface IUser {
   fullName: string;
   phoneNumber: string;
   role: "customer" | "staff" | "doctor" | "manager";
-  gender: boolean;
+  gender: "nam" | "nữ";
 }
 
 const userSchema = new mongoose.Schema<IUser>(
@@ -24,7 +24,8 @@ const userSchema = new mongoose.Schema<IUser>(
       default: "customer",
     },
     gender: {
-      type: Boolean,
+      type: String,
+      enum: ["nam", "nữ"],
     },
   },
   { timestamps: true }

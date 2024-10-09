@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { MainLayout, MyAccountLayout } from "../layouts";
-import { AuthState } from "../models/AuthModels";
 import {
   AboutUs,
   Appointment,
@@ -24,16 +23,17 @@ import {
 import Vaccine from "../pages/services/Vaccine";
 import WaterQuality from "../pages/services/WaterQuality";
 import { addAuth } from "../redux/reducers/authReducer";
+import { IAuth } from "../types";
 
 const MainRouter = () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const auth: AuthState = useSelector((state: any) => state.authReducer.data);
+  const auth: IAuth = useSelector((state: any) => state.authReducer.data);
 
   const dispatch = useDispatch();
 
   useEffect(() => {
     const getData = () => {
-      const res = localStorage.getItem("auth_GenKiKoi");
+      const res = localStorage.getItem("customer_GenKiKoi");
       if (res) {
         dispatch(addAuth(JSON.parse(res)));
       }

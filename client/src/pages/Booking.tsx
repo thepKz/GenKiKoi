@@ -106,6 +106,20 @@ const Booking = () => {
     getProfile();
   }, []);
 
+  useEffect(() => {
+    if (profile) {
+      form.setFieldsValue({
+        fullName: profile.fullName,
+        phoneNumber: profile.phoneNumber,
+        gender: profile.gender,
+        city: profile.city,
+        district: profile.district,
+        ward: profile.ward,
+        detailAddress: profile.detailAddress,
+      });
+    }
+  }, [profile]);
+
   const handleServiceChange = (value: string) => {
     let options: any = [];
     switch (value) {
@@ -172,7 +186,7 @@ const Booking = () => {
   return (
     <div>
       <div className="bg-green-dark py-36 pb-16 text-white">
-        <div className="container mx-auto lg:px-40">
+        <div className="container mx-auto lg:px-28">
           <div className="rounded-md bg-blue-primary p-5 px-10">
             <ConfigProvider
               theme={{
@@ -325,10 +339,16 @@ const Booking = () => {
                         >
                           <Select
                             placeholder="Giới tính"
-                            defaultValue={profile?.gender ? "Nam" : "Nữ"}
+                            defaultValue={
+                              profile?.gender === undefined
+                                ? null
+                                : profile?.gender === true
+                                  ? "Nam"
+                                  : "Nữ"
+                            }
                             options={[
-                              { value: "female", label: "Nữ" },
-                              { value: "male", label: "Nam" },
+                              { value: "nữ", label: "Nữ" },
+                              { value: "nam", label: "Nam" },
                             ]}
                           />
                         </Form.Item>
