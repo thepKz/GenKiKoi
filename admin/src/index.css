@@ -59,3 +59,12 @@
 .staff-table .ant-table-container {
   height: calc(100vh - 342px);
 }
+
+.ant-result {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 100px 32px;
+}
