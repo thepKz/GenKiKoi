@@ -1,16 +1,16 @@
-import { useDispatch, useSelector } from "react-redux";
-import { useEffect } from "react";
-import { addAuth } from "../redux/reducers/authReducer";
+import { useSelector } from "react-redux";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import AuthRouter from "./AuthRouter";
 import ManagerRouter from "./ManagerRouter";
 import StaffRouter from "./StaffRouter";
 import DoctorRouter from "./DoctorRouter";
 import { IAuth } from "../types";
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { addAuth } from "../redux/reducers/authReducer";
 
-// Không chắc cách tổ chức này là tốt
 const Routers = () => {
   const auth: IAuth = useSelector((state: any) => state.authReducer.data);
-
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -19,18 +19,35 @@ const Routers = () => {
       res && dispatch(addAuth(JSON.parse(res)));
     };
     getData();
-  }, [auth.token]);
+  }, [dispatch]);
 
-  return auth.token ? (
-    auth.role === "manager" ? (
-      <ManagerRouter />
-    ) : auth.role === "staff" ? (
-      <StaffRouter />
-    ) : (
-      <DoctorRouter />
-    )
-  ) : (
-    <AuthRouter />
+  return (
+    <BrowserRouter>
+      <Routes>
+        {auth.token ? (
+          <>
+            {auth.role === "manager" && (
+              <Route path="/manager/*" element={<ManagerRouter />} />
+            )}
+            {auth.role === "staff" && (
+              <Route path="/staff/*" element={<StaffRouter />} />
+            )}
+            {auth.role === "doctor" && (
+              <Route path="/doctor/*" element={<DoctorRouter />} />
+            )}
+            <Route
+              path="*"
+              element={<Navigate to={`/${auth.role}`} replace />}
+            />
+          </>
+        ) : (
+          <>
+            <Route path="/auth/*" element={<AuthRouter />} />
+            <Route path="*" element={<Navigate to="/auth" replace />} />
+          </>
+        )}
+      </Routes>
+    </BrowserRouter>
   );
 };
 
