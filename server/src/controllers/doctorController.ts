@@ -8,13 +8,24 @@ import { Doctor } from "../models";
  */
 export const getAllDoctors = async (req: Request, res: Response) => {
   try {
-    const doctors = await Doctor.find().populate("userId");
+    const doctors = await Doctor.find()
+      .populate("userId", "fullName email gender")
+      .select("startDate movingService");
 
     if (!doctors) {
       return res.status(404).json({ message: "Danh sách bác sĩ trống!" });
     }
 
-    return res.status(200).json({ data: doctors });
+    const formatDoctor = doctors.map((doctor: any) => ({
+      staffId: doctor._id,
+      fullName: doctor.userId.fullName,
+      gender: doctor.userId.gender,
+      position: doctor.movingService,
+      startDate: doctor.startDate,
+      email: doctor.userId.email,
+    }));
+
+    return res.status(200).json({ data: formatDoctor });
   } catch (error: any) {
     return res.status(500).json({ message: error.message });
   }

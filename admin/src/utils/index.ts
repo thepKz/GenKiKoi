@@ -42,6 +42,10 @@ const valueMap: {
   "Tại phòng khám": "green",
   "Tại nhà": "lime",
   "Tư vấn trực tuyến": "orange",
+  nam: "green",
+  nữ: "orange",
+  yes: "green",
+  no: "red",
 };
 
 export const getValue = (value: string) => {
