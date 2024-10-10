@@ -1,20 +1,21 @@
 import { useDispatch, useSelector } from "react-redux";
-import { AuthState } from "../models/AuthModels";
 import { useEffect } from "react";
 import { addAuth } from "../redux/reducers/authReducer";
 import AuthRouter from "./AuthRouter";
 import ManagerRouter from "./ManagerRouter";
 import StaffRouter from "./StaffRouter";
 import DoctorRouter from "./DoctorRouter";
+import { IAuth } from "../types";
 
+// Không chắc cách tổ chức này là tốt
 const Routers = () => {
-  const auth: AuthState = useSelector((state: any) => state.authReducer.data);
+  const auth: IAuth = useSelector((state: any) => state.authReducer.data);
 
   const dispatch = useDispatch();
 
   useEffect(() => {
     const getData = () => {
-      const res = localStorage.getItem("auth_GenKiKoi");
+      const res = localStorage.getItem("admin_GenKiKoi");
       res && dispatch(addAuth(JSON.parse(res)));
     };
     getData();

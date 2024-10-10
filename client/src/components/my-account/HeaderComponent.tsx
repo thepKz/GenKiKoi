@@ -25,7 +25,7 @@ const HeaderComponent = () => {
     },
     {
       key: "2",
-      label: "Đăng suất",
+      label: "Đăng xuất",
       icon: <Logout size={18} />,
       onClick: () => dispatch(removeAuth({})),
     },

@@ -16,10 +16,10 @@ const { Sider } = Layout;
 
 import Logo from "../assets/logo-transparent.png";
 import { useSelector } from "react-redux";
-import { AuthState } from "../models/AuthModels";
+import { IAuth } from "../types";
 
 const SiderComponent = () => {
-  const auth: AuthState = useSelector((state: any) => state.authReducer.data);
+  const auth: IAuth = useSelector((state: any) => state.authReducer.data);
 
   const location = useLocation();
 
