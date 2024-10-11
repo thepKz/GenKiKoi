@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 import { ValidationError } from "../errors/ValidationError";
 import { Customer } from "../models";
 import User from "../models/User";
-import { isStrongPassword, randomText, signToken } from "../utils";
+import { randomText, signToken } from "../utils";
 
 /**
  * @swagger
@@ -40,13 +40,24 @@ export const register = async (req: Request, res: Response) => {
 
     const errors: any = {};
 
-    if (
-      !formatUsername ||
-      !formatEmail ||
-      !formatPassword ||
-      !formatConfirmPassword
-    ) {
+    if (!formatUsername || !formatEmail || !formatPassword || !formatConfirmPassword) {
       errors.message = "Vui lòng điền đầy đủ các trường!";
+      throw new ValidationError(errors);
+    }
+
+    // Check username format
+    if (formatUsername.length < 8 || formatUsername.length > 30) {
+      errors.username = "Tên tài khoản phải có độ dài từ 8 đến 30 ký tự!";
+      throw new ValidationError(errors);
+    }
+    if (!/^(?:[a-zA-Z0-9_]{8,30})$/.test(formatUsername)) {
+      errors.username = "Tên tài khoản phải có độ dài từ 8 đến 30 ký tự!";
+      throw new ValidationError(errors);
+    }
+
+    // Check email format
+    if (!/^[A-Za-z0-9\._%+\-]+@[A-Za-z0-9\.\-]+\.[A-Za-z]{2,}$/.test(formatEmail)) {
+      errors.email = "Email không hợp lệ!";
       throw new ValidationError(errors);
     }
 
@@ -55,18 +66,18 @@ export const register = async (req: Request, res: Response) => {
     });
 
     if (existingUser) {
-      const errors: any = {};
-      if (existingUser.username === username) {
+      if (existingUser.username === formatUsername) {
         errors.username = "Tên tài khoản này đã được sử dụng!";
       }
-      if (existingUser.email === email) {
+      if (existingUser.email === formatEmail) {
         errors.email = "Email này đã được sử dụng!";
       }
       throw new ValidationError(errors);
     }
 
-    if (!isStrongPassword(formatPassword)) {
-      errors.password = "Mật khẩu không đủ mạnh!";
+    // Check password strength
+    if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>/?]).{6,30}$/.test(formatPassword)) {
+      errors.password = "Mật khẩu phải chứa chữ thường, in hoa, số, ký tự đặc biệt và từ 6 đến 30 ký tự!";
       throw new ValidationError(errors);
     }
 
@@ -77,7 +88,7 @@ export const register = async (req: Request, res: Response) => {
 
     // Create new user
     const salt = await bcrypt.genSalt(10);
-    const hashedPass = await bcrypt.hash(password, salt);
+    const hashedPass = await bcrypt.hash(formatPassword, salt);
     const newUser = await User.create({
       username: formatUsername,
       email: formatEmail,
@@ -344,9 +355,11 @@ export const loginWithGoogle = async (req: Request, res: Response) => {
  *               email:
  *                 type: string
  *                 description: Email address of the admin
+ *                 example: Admin_minthep26@gmail.com
  *               password:
  *                 type: string
  *                 description: Password for the admin account
+ *                 example: Admin_minthep26
  *     responses:
  *       200:
  *         description: Admin logged in successfully
