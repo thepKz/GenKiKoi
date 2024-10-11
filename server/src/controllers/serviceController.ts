@@ -3,6 +3,14 @@ import { Service } from "../models";
 
 /**
  * @swagger
+ * tags:
+ *   name: Services
+ *   description: Service management
+ */
+
+
+/**
+ * @swagger
  * /api/services:
  *   get:
  *     summary: Get all services
