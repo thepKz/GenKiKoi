@@ -1,12 +1,12 @@
 import { Button, ConfigProvider, message } from "antd";
-import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
-import { FcGoogle } from "react-icons/fc";
-import { auth } from "../firebase/firebaseConfig";
-import { replaceName } from "../utils";
-import { handleAPI } from "../apis/handleAPI";
-import { useDispatch } from "react-redux";
-import { addAuth } from "../redux/reducers/authReducer";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { useState } from "react";
+import { FcGoogle } from "react-icons/fc";
+import { useDispatch } from "react-redux";
+import { handleAPI } from "../apis/handleAPI";
+import { auth } from "../firebase/firebaseConfig";
+import { addAuth } from "../redux/reducers/authReducer";
+import { replaceName } from "../utils";
 
 interface Props {
   text: string;

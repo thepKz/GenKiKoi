@@ -2,7 +2,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
 import mongoose from "mongoose";
-
+// @ts-ignore
 dotenv.config();
 
 // Models
@@ -28,10 +28,24 @@ import {
 
 const app = express();
 
-app.use(cors());
+const allowedOrigins = ['https://staginggenkikoi.netlify.app', 'http://localhost:5173', 'https://productiongenkikoi.netlify.app'];
+
+app.use(cors({
+  origin: function(origin, callback) {
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) === -1) {
+      var msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
+  credentials: true
+}));
+
 app.use(express.json());
 
 app.get("/", (_req, res) => {
+  console.log("Log message on backend");
   res.send("Welcome to the GenKiKoi API");
 });
 
@@ -220,12 +234,19 @@ function generateSlots() {
 
 // addDoctorSchedule()
 
-mongoose
-  .connect(process.env.MONGO_URI as string)
-  .then(() => {
-    console.log("Connected to MongoDB successfully");
-    app.listen(process.env.PORT || 5000, () => {
-      console.log(`Server is running on port ${process.env.PORT}`);
-    });
-  })
-  .catch((error) => console.log("MongoDB connection error:", error));
+// Export the app for testing purposes
+export { app };
+
+// Only start the server if this file is run directly (not imported as a module)
+if (require.main === module) {
+  mongoose
+    .connect(process.env.MONGO_URI as string)
+    .then(() => {
+      console.log("Connected to MongoDB successfully");
+      app.listen(process.env.PORT || 5000, () => {
+        console.log(`Server started at ${new Date().toISOString()}`);
+        console.log(`Server is running on port ${process.env.PORT}`);
+      });
+    })
+    .catch((error) => console.log("MongoDB connection error:", error));
+}

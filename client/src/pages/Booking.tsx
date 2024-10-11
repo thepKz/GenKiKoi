@@ -13,9 +13,9 @@ import {
 } from "antd";
 
 import { useEffect, useState } from "react";
-import { CustomerData } from "../models/DataModels";
 import VietNamProvinces from "../../data";
 import { handleAPI } from "../apis/handleAPI";
+import { CustomerData } from "../models/DataModels";
 import { CustomCalendar } from "../share";
 
 const { TextArea } = Input;
@@ -44,9 +44,9 @@ const Booking = () => {
   const [slot, setSlot] = useState<number | null>(null);
   const [date, setDate] = useState<string>("");
 
-  const [city, setCity] = useState<String>("");
-  const [district, setDistrict] = useState<String>("");
-  const [ward, setWard] = useState<String>("");
+  const [city, setCity] = useState<string>("");
+  const [district, setDistrict] = useState<string>("");
+  const [ward, setWard] = useState<string>("");
 
   const [cities, setCities] = useState<SelectProps["options"]>([]);
   const [districts, setDistricts] = useState<SelectProps["options"]>([]);

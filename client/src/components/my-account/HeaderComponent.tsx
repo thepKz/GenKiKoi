@@ -1,9 +1,10 @@
 import { Avatar, Badge, ConfigProvider, Dropdown, Input, Layout, MenuProps } from "antd";
 import { Home, Logout, Notification, User } from "iconsax-react";
 import { useDispatch, useSelector } from "react-redux";
-import { removeAuth } from "../../redux/reducers/authReducer";
 import { Link } from "react-router-dom";
 import { IAuth } from "../../types";
+import { removeAuth } from "../../redux/reducers/authReducer";
+
 
 const { Header } = Layout;
 

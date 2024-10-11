@@ -20,7 +20,7 @@ export const authMiddleware = (
 
   try {
     const decoded = jwt.verify(token, process.env.SECRET_KEY) as {
-      id: string;
+      _id: string;
       role: string;
     };
 

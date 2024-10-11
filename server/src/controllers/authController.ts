@@ -1,9 +1,9 @@
 import bcrypt from "bcryptjs";
 import { Request, Response } from "express";
-import User from "../models/User";
-import { isStrongPassword, randomText, signToken } from "../utils";
 import { ValidationError } from "../errors/ValidationError";
 import { Customer } from "../models";
+import User from "../models/User";
+import { isStrongPassword, randomText, signToken } from "../utils";
 
 /**
  * API: api/auth/register
@@ -73,7 +73,7 @@ export const register = async (req: Request, res: Response) => {
 
     // Generate token
     const token = await signToken({
-      id: newUser._id,
+      _id: newUser._id,
       username: newUser.username,
       email: newUser.email,
       role: newUser.role,
@@ -140,7 +140,7 @@ export const login = async (req: Request, res: Response) => {
     }
 
     const token = await signToken({
-      id: user._id,
+      _id: user._id,
       username: user.username,
       email: user.email,
       role: user.role,
@@ -198,7 +198,7 @@ export const loginWithGoogle = async (req: Request, res: Response) => {
     }
 
     const token = await signToken({
-      id: user._id,
+      _id: user._id,
       username: user.username,
       email: user.email,
       role: user.role,
@@ -268,7 +268,7 @@ export const loginAdmin = async (req: Request, res: Response) => {
     }
 
     const token = await signToken({
-      id: user._id,
+      _id: user._id,
       username: user.username,
       email: user.email,
       role: user.role,

@@ -56,7 +56,6 @@ const Footer = () => {
                 <h1 className="text-2xl font-bold">GenKiKoi</h1>
               </div>
             </div>
-            <p className="text-sm">Uy tín - Chất lượng - Tận tâm</p>
           </div>
 
           {/* Cột 2: Về Phòng Khám và Dịch Vụ */}

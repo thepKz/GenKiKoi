@@ -26,7 +26,7 @@ jobs:
         rm -rf node_modules
         rm -f package-lock.json
 
-    - name: Install dependencies and build
+    - name: Install dependencies and build client
       run: |
         cd client
         npm ci
@@ -39,6 +39,23 @@ jobs:
         VITE_BASE_messagingSenderId: ${{ secrets.VITE_BASE_MESSAGINGSENDERID }}
         VITE_BASE_appId: ${{ secrets.VITE_BASE_APPID }}
         VITE_API_URL: ${{ secrets.VITE_API_URL }}
+
+    - name: Install dependencies and build server
+      run: |
+        cd server
+        npm ci
+        npm run build
+      env:
+        MONGO_URI: ${{ secrets.MONGO_URI }}
+        SECRET_KEY: ${{ secrets.SECRET_KEY }}
+
+    - name: Run server tests
+      run: |
+        cd server
+        npm run test
+      env:
+        MONGO_URI: ${{ secrets.MONGO_URI }}
+        SECRET_KEY: ${{ secrets.SECRET_KEY }}
 
     - name: Upload artifact
       uses: actions/upload-artifact@v3

@@ -1,24 +1,11 @@
+import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
 import { Types } from "mongoose";
-import dotenv from "dotenv";
 dotenv.config();
 
 export const isStrongPassword = (password: string): boolean => {
-  const minLength = 6;
-  const hasUpperCase = /[A-Z]/.test(password);
-  const hasLowerCase = /[a-z]/.test(password);
-  const hasNumbers = /\d/.test(password);
-  const specialCharacter = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>/?]/.test(
-    password
-  );
-
-  return (
-    password.length >= minLength &&
-    hasUpperCase &&
-    hasLowerCase &&
-    hasNumbers &&
-    specialCharacter
-  );
+  const strongPasswordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/;
+  return strongPasswordRegex.test(password);
 };
 
 export const isValidUserName = (username: string): boolean => {
@@ -30,7 +17,7 @@ export const isValidUserName = (username: string): boolean => {
 };
 
 export const signToken = async (payload: {
-  id: Types.ObjectId;
+  _id: Types.ObjectId;
   email: string;
   username: string;
   role: string;
@@ -63,3 +50,4 @@ export const randomText = (num: number) => {
   }
   return text;
 };
+

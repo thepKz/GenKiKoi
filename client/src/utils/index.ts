@@ -1,6 +1,6 @@
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { storage } from "../firebase/firebaseConfig";
 import Resizer from "react-image-file-resizer";
+import { storage } from "../firebase/firebaseConfig";
 
 export const handleEnterPress = (
   form: any,

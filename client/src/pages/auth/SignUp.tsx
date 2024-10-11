@@ -1,15 +1,15 @@
 import { Button, ConfigProvider, Divider, Form, Input, message } from "antd";
-import Logo from "../../assets/logo-transparent.png";
-import Banner from "../../assets/banner.jpg";
-import { Link } from "react-router-dom";
-import { SignUpData } from "../../models/AuthModels";
-import { useState } from "react";
-import { handleAPI } from "../../apis/handleAPI";
-import { useDispatch } from "react-redux";
-import { addAuth } from "../../redux/reducers/authReducer";
 import { Heart } from "iconsax-react";
-import { handleEnterPress } from "../../utils";
+import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { Link } from "react-router-dom";
+import { handleAPI } from "../../apis/handleAPI";
+import Banner from "../../assets/banner.jpg";
+import Logo from "../../assets/logo-transparent.png";
+import { SignUpData } from "../../models/AuthModels";
+import { addAuth } from "../../redux/reducers/authReducer";
 import { SocialButton } from "../../share";
+import { handleEnterPress } from "../../utils";
 
 const SignUp = () => {
   const [form] = Form.useForm();
