@@ -91,7 +91,7 @@ const Footer = () => {
             </h3>
             <div id="map" className="w-full h-80 rounded-md mb-2"></div>
             <button
-              className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition-colors mt-2"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition-colors mt-2"
               onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=FPT+University+Ho+Chi+Minh+City`, '_blank')}
             >
               Xem bản đồ lớn
