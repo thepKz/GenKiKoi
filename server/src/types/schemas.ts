@@ -56,8 +56,10 @@
  *       properties:
  *         login:
  *           type: string
+ *           example: Customer_minthep26
  *         password:
  *           type: string
+ *           example: Customer_minthep26
  *     RegisterInput:
  *       type: object
  *       required:
@@ -106,14 +108,6 @@
  *                       type: string
  *                     endTime:
  *                       type: string
- *         createdAt:
- *           type: string
- *           format: date-time
- *         updatedAt:
- *           type: string
- *           format: date-time
- *         __v:
- *           type: number
  *     DoctorSchema:
  *       type: object
  *       properties:

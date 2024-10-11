@@ -2,6 +2,12 @@ import bcrypt from "bcryptjs";
 import { Request, Response } from "express";
 import { Staff, User } from "../models";
 import { randomText, replaceName } from "../utils";
+/**
+ * @swagger
+ * tags:
+ *   name: Staffs
+ *   description: Staff management
+ */
 
 /**
  * API: /api/staffs/
