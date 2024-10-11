@@ -18,8 +18,10 @@
  *           type: string
  *         notes:
  *           type: string
- *       security:
- *         - bearerAuth: []
+ *     AppointmentList:
+ *       type: array
+ *       items:
+ *         $ref: '#/components/schemas/Appointment'
  *     Service:
  *       type: object
  *       properties:
