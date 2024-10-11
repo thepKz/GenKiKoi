@@ -5,9 +5,37 @@ import Customer from "../models/Customer";
 import { AuthRequest } from "../types";
 
 /**
- * API: /api/appointments/
- * Method: GET
- * PROTECTED
+ * @swagger
+ * /api/appointments:
+ *   get:
+ *     summary: Retrieve user appointments
+ *     description: This endpoint fetches a list of appointments associated with the authenticated user. It requires a valid bearer token for authentication.
+ *     tags: [Appointments]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Appointment list
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Appointment'
+ *       401:
+ *         description: Authentication failed due to missing or invalid token
+ *       404:
+ *         description: The user account was not found
+ *       500:
+ *         description: An internal server error occurred
+ *     securitySchemes:
+ *       bearerAuth:
+ *         type: http
+ *         scheme: bearer
+ *         bearerFormat: JWT
  */
 export const getAppointmentsByUser = async (
   req: AuthRequest,
@@ -61,9 +89,49 @@ export const getAppointmentsByUser = async (
 };
 
 /**
- * API: /api/appointments/
- * Method: PUT
- * PROTECTED
+ * @swagger
+ * /api/appointments:
+ *   post:
+ *     summary: Create a new appointment
+ *     description: Create a new appointment for a user
+ *     tags: [Appointments]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       description: Appointment details
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - serviceName
+ *               - doctorName
+ *               - typeOfConsulting
+ *               - appointmentDate
+ *               - slotTime
+ *               - reasons
+ *             properties:
+ *               serviceName:
+ *                 type: string
+ *               doctorName:
+ *                 type: string
+ *               typeOfConsulting:
+ *                 type: string
+ *               appointmentDate:
+ *                 type: string
+ *                 format: date
+ *               slotTime:
+ *                 type: string
+ *               reasons:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Appointment created successfully
+ *       404:
+ *         description: Doctor, customer, or service not found
+ *       500:
+ *         description: Internal server error
  */
 export const createNewAppointment = async (req: AuthRequest, res: Response) => {
   try {
