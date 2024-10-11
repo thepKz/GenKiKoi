@@ -28,7 +28,7 @@ import {
 
 const app = express();
 
-const allowedOrigins = ['https://staginggenkikoi.netlify.app', 'http://localhost:5173', 'https://productiongenkikoi.netlify.app'];
+const allowedOrigins = ['https://staginggenkikoi.netlify.app', 'http://localhost:5173', 'https://productiongenkikoi.netlify.app', 'http://localhost:5174', 'https://admingenkikoi.netlify.app'];
 
 app.use(cors({
   origin: function(origin, callback) {

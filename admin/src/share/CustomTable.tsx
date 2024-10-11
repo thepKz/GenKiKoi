@@ -5,6 +5,7 @@ interface Props {
   dataSource: any;
   scroll?: string;
   loading?: boolean;
+  className?: string;
 }
 
 const CustomTable = (props: Props) => {
@@ -13,9 +14,11 @@ const CustomTable = (props: Props) => {
     loading,
     dataSource,
     scroll = "calc(100vh - 330px)",
+    className,
   } = props;
   return (
     <Table
+      className={className}
       loading={loading}
       pagination={{
         showSizeChanger: true,

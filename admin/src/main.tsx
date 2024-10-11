@@ -17,6 +17,10 @@ createRoot(document.getElementById("root")!).render(
           Divider: {
             marginLG: 15,
           },
+          Result: {
+            titleFontSize: 70,
+            subtitleFontSize: 22,
+          },
         },
       }}
     >

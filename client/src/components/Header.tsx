@@ -1,7 +1,7 @@
 import { Avatar, Badge, Button, Dropdown, MenuProps } from "antd";
 import { CalendarEdit, Logout, Notification, User } from "iconsax-react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import Logo from "../assets/logo.jpg";
 import { removeAuth } from "../redux/reducers/authReducer";
 import { IAuth } from "../types";
@@ -12,10 +12,11 @@ const Header = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  // Mục đích ???
   const handleNavClick = (e: React.MouseEvent, path: string) => {
     if (location.pathname === path) {
       e.preventDefault();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, behavior: "smooth" });
     } else {
       navigate(path);
     }
@@ -24,15 +25,36 @@ const Header = () => {
   const services: MenuProps["items"] = [
     {
       key: "1",
-      label: <a className="cursor-pointer" onClick={(e) => handleNavClick(e, "/services/consulting-treatment")}>Tư vấn & Điều trị</a>,
+      label: (
+        <a
+          className="cursor-pointer"
+          onClick={(e) => handleNavClick(e, "/services/consulting-treatment")}
+        >
+          Tư vấn & Điều trị
+        </a>
+      ),
     },
     {
       key: "2",
-      label: <a className="cursor-pointer" onClick={(e) => handleNavClick(e, "/services/vaccine")}>Tiêm ngừa</a>,
+      label: (
+        <a
+          className="cursor-pointer"
+          onClick={(e) => handleNavClick(e, "/services/vaccine")}
+        >
+          Tiêm ngừa
+        </a>
+      ),
     },
     {
       key: "3",
-      label: <a className="cursor-pointer" onClick={(e) => handleNavClick(e, "/services/water-quality")}>Kiểm tra chất lượng nước</a>,
+      label: (
+        <a
+          className="cursor-pointer"
+          onClick={(e) => handleNavClick(e, "/services/water-quality")}
+        >
+          Kiểm tra chất lượng nước
+        </a>
+      ),
     },
   ];
 
@@ -40,7 +62,14 @@ const Header = () => {
     {
       key: "1",
       icon: <User size={18} />,
-      label: <a className="cursor-pointer" onClick={(e) => handleNavClick(e, "/my-account/appointment")}>Tài khoản</a>,
+      label: (
+        <a
+          className="cursor-pointer"
+          onClick={(e) => handleNavClick(e, "/my-account/appointment")}
+        >
+          Tài khoản
+        </a>
+      ),
     },
     {
       type: "divider",
@@ -58,20 +87,33 @@ const Header = () => {
       <div className="container mx-auto lg:px-40">
         <div className="flex items-center justify-between">
           <div className="h-20 w-20 cursor-pointer">
-            <a href="/" onClick={(e) => handleNavClick(e, "/")}>
-              <img src={Logo} alt="" />
+            <a
+              href="/"
+              onClick={(e) => handleNavClick(e, "/")}
+            >
+              <img
+                src={Logo}
+                alt=""
+              />
             </a>
           </div>
           <ul className="flex items-center gap-8 text-white">
             <div className="link cursor-pointer">
-              <a className="" href="/" onClick={(e) => handleNavClick(e, "/")}>
+              <a
+                className=""
+                href="/"
+                onClick={(e) => handleNavClick(e, "/")}
+              >
                 Trang chủ
               </a>
               <div className="h-[1.5px] bg-white duration-300 ease-in" />
             </div>
             <Dropdown menu={{ items: services }}>
               <div className="link cursor-pointer">
-                <a className="" onClick={(e) => handleNavClick(e, "/services")}>
+                <a
+                  className=""
+                  onClick={(e) => handleNavClick(e, "/services")}
+                >
                   Dịch vụ
                 </a>
                 <div className="h-[1.5px] bg-white duration-300 ease-in" />
@@ -79,27 +121,39 @@ const Header = () => {
             </Dropdown>
 
             <div className="link cursor-pointer">
-              <a className="" onClick={(e) => handleNavClick(e, "/images")}>
+              <a
+                className=""
+                onClick={(e) => handleNavClick(e, "/images")}
+              >
                 Hình ảnh
               </a>
               <div className="h-[1.5px] bg-white duration-300 ease-in" />
             </div>
             <div className="link cursor-pointer">
-              <a className="" onClick={(e) => handleNavClick(e, "/doctors")}>
+              <a
+                className=""
+                onClick={(e) => handleNavClick(e, "/doctors")}
+              >
                 Bác sĩ
               </a>
               <div className="h-[1.5px] bg-white duration-300 ease-in" />
             </div>
 
             <div className="link cursor-pointer">
-              <a className="" onClick={(e) => handleNavClick(e, "/about-us")}>
+              <a
+                className=""
+                onClick={(e) => handleNavClick(e, "/about-us")}
+              >
                 Giới thiệu
               </a>
               <div className="h-[1.5px] bg-white duration-300 ease-in" />
             </div>
 
             <div className="link cursor-pointer">
-              <a className="" onClick={(e) => handleNavClick(e, "/faq")}>
+              <a
+                className=""
+                onClick={(e) => handleNavClick(e, "/faq")}
+              >
                 Hỏi & Đáp
               </a>
               <div className="h-[1.5px] bg-white duration-300 ease-in" />
@@ -107,20 +161,49 @@ const Header = () => {
           </ul>
           {!auth.token ? (
             <div className="flex items-center gap-3">
-              <Button size="large" ghost>
-                <Link to="/sign-in" className="cursor-pointer">Đăng nhập</Link>
+              <Button
+                size="large"
+                ghost
+              >
+                <Link
+                  to="/sign-in"
+                  className="cursor-pointer"
+                >
+                  Đăng nhập
+                </Link>
               </Button>
-              <Button size="large" type="primary">
-                <Link to="/sign-up" className="cursor-pointer">Đăng ký</Link>
+              <Button
+                size="large"
+                type="primary"
+              >
+                <Link
+                  to="/sign-up"
+                  className="cursor-pointer"
+                >
+                  Đăng ký
+                </Link>
               </Button>
             </div>
           ) : (
             <div className="flex items-center gap-3">
-              <Link to="/booking" className="cursor-pointer">
-                <CalendarEdit color="white" size={24} />
+              <Link
+                to="/booking"
+                className="cursor-pointer"
+              >
+                <CalendarEdit
+                  color="white"
+                  size={24}
+                />
               </Link>
-              <Badge count={9} size="small" offset={[-4, 3]}>
-                <Notification className="cursor-pointer" color="white" />
+              <Badge
+                count={9}
+                size="small"
+                offset={[-4, 3]}
+              >
+                <Notification
+                  className="cursor-pointer"
+                  color="white"
+                />
               </Badge>
               <Dropdown menu={{ items: profile }}>
                 <Avatar

@@ -25,7 +25,7 @@ export const replaceName = (str: string) => {
     .replace(/[\u0300-\u036f]/g, "")
     .replace(/đ/g, "d")
     .replace(/Đ/g, "D")
-    .replace(/ /g, "")
+    .replace(/ /g, "-")
     .replace(/[:!@#$%^&*()?;/]/g, "");
 
   return str.toLowerCase();
@@ -42,6 +42,10 @@ const valueMap: {
   "Tại phòng khám": "green",
   "Tại nhà": "lime",
   "Tư vấn trực tuyến": "orange",
+  nam: "green",
+  nữ: "orange",
+  yes: "green",
+  no: "red",
 };
 
 export const getValue = (value: string) => {

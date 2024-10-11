@@ -31,10 +31,14 @@ export const getUser = async (req: AuthRequest, res: Response) => {
       // If customer is not found, create a new one
       const user = await User.findById(userId);
       if (!user) {
-        return res.status(404).json({ message: "Không tìm thấy thông tin người dùng" });
+        return res
+          .status(404)
+          .json({ message: "Không tìm thấy thông tin người dùng" });
       }
       const newCustomer = await Customer.create({ userId: user._id });
-      customer = await Customer.findById(newCustomer._id).populate<{ userId: IUser }>(
+      customer = await Customer.findById(newCustomer._id).populate<{
+        userId: IUser;
+      }>(
         "userId",
         "username email photoUrl fullName phoneNumber photoUrl gender"
       );
@@ -86,7 +90,7 @@ export const updateProfile = async (req: AuthRequest, res: Response) => {
 
     const formatUsername = username.toLowerCase();
 
-    await User.findOneAndUpdate(
+    const updatedUser = await User.findOneAndUpdate(
       { _id: userId },
       {
         username: formatUsername,
@@ -98,7 +102,7 @@ export const updateProfile = async (req: AuthRequest, res: Response) => {
       { new: true }
     );
 
-    await Customer.findOneAndUpdate(
+    const updatedCustomer = await Customer.findOneAndUpdate(
       { userId },
       {
         city,
@@ -109,7 +113,22 @@ export const updateProfile = async (req: AuthRequest, res: Response) => {
       { new: true }
     );
 
-    return res.status(200).json({ message: "Cập nhật thành công!" });
+    if (!updatedCustomer || !updatedUser) {
+      return res
+        .status(500)
+        .json({ message: "Có lỗi xảy ra khi cập nhật thông tin" });
+    }
+
+    const formattedUser = {
+      _id: updatedUser._id,
+      username: updatedUser.username,
+      email: updatedUser.email,
+      photoUrl: updatedUser.photoUrl,
+    };
+
+    return res
+      .status(200)
+      .json({ message: "Cập nhật thành công!", data: formattedUser });
   } catch (error: any) {
     return res.status(500).json({
       message: error.message,

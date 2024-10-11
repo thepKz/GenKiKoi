@@ -6,6 +6,7 @@ interface IDoctor {
   yearOfExperience?: number;
   movingService: boolean;
   userId: mongoose.Types.ObjectId;
+  startDate: Date;
 }
 
 const DoctorSchema = new mongoose.Schema<IDoctor>(
@@ -30,6 +31,10 @@ const DoctorSchema = new mongoose.Schema<IDoctor>(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
+    },
+    startDate: {
+      type: Date,
+      default: () => new Date(),
     },
   },
   {

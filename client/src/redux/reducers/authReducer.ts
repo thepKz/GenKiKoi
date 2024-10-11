@@ -23,8 +23,15 @@ const authSlice = createSlice({
       state.data = initialState;
       localStorage.setItem("customer_GenKiKoi", JSON.stringify({}));
     },
+    updateAuth: (state, action) => {
+      state.data = {
+        ...action.payload,
+        role: state.data.role,
+        token: state.data.token,
+      };
+    },
   },
 });
 
 export const authReducer = authSlice.reducer;
-export const { addAuth, removeAuth } = authSlice.actions;
+export const { addAuth, removeAuth, updateAuth } = authSlice.actions;

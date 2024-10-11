@@ -19,10 +19,13 @@ import { handleAPI } from "../../apis/handleAPI";
 import VietNamProvinces from "../../../data/index";
 import { uploadFile } from "../../utils";
 import { IAuth, ICustomerData } from "../../types";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { updateAuth } from "../../redux/reducers/authReducer";
 
 const Profile = () => {
   const auth: IAuth = useSelector((state: any) => state.authReducer.data);
+
+  const dispatch = useDispatch();
 
   const inpRef = useRef<any>();
 
@@ -52,6 +55,8 @@ const Profile = () => {
       }
 
       const res: any = await handleAPI(api, values, "PATCH");
+
+      dispatch(updateAuth(res.data));
 
       message.success(res.message);
     } catch (error: any) {

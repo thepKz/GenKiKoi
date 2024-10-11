@@ -17,6 +17,7 @@ const StaffSchema = new mongoose.Schema<IStaff>(
     },
     position: {
       type: String,
+      enum: ["Hỗ trợ khách hàng", "Tiếp tân", "Trợ lý", "Thu ngân"],
     },
     workShift: {
       type: String,
