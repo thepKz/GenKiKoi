@@ -3,40 +3,35 @@ import { Doctor, Service, User } from "../models";
 import Appointment from "../models/Appointment";
 import Customer from "../models/Customer";
 import { AuthRequest } from "../types";
+/**
+ * @swagger
+ * tags:
+ *   name: Appointments
+ *   description: Appointment management
+ */
 
 /**
  * @swagger
  * /api/appointments:
  *   get:
  *     summary: Retrieve user appointments
- *     description: This endpoint fetches a list of appointments associated with the authenticated user. It requires a valid bearer token for authentication.
+ *     description: Fetches a list of appointments for the authenticated user.
  *     tags: [Appointments]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: Appointment list
+ *         description: Appointment list retrieved successfully.
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 data:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/Appointment'
+ *               $ref: '#/components/schemas/AppointmentList'
  *       401:
- *         description: Authentication failed due to missing or invalid token
- *       404:
- *         description: The user account was not found
+ *         description: Unauthorized - Invalid or missing token.
  *       500:
- *         description: An internal server error occurred
- *     securitySchemes:
- *       bearerAuth:
- *         type: http
- *         scheme: bearer
- *         bearerFormat: JWT
+ *         description: Internal server error.
  */
+
 export const getAppointmentsByUser = async (
   req: AuthRequest,
   res: Response
