@@ -20,9 +20,8 @@ export const initiateVnPayPayment = async (
     });
     console.log('VNPAY payment URL response:', response);
 
-    if (response && response.paymentUrl) {
-      console.log('Opening VNPAY payment page in a new tab:', response.paymentUrl);
-      window.location.href = response.paymentUrl; // Thay đổi này
+    if (response ) { // && response.paymentUrl đỏ code
+      window.location.href = response.data.paymentUrl; // đỏ code response.paymentUrl
     } else {
       throw new Error('Invalid response from server');
     }

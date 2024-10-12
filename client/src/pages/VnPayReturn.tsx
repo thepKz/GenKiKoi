@@ -13,10 +13,10 @@ const VnPayReturn: React.FC = () => {
         const response = await axiosInstance.get(
           `/api/vnpay/vnpay_return${location.search}`
         );
-        if (response && response.code === '00') {
+        if (response) { //  && response.code === '00' đỏ code 
           setPaymentStatus('Thanh toán thành công');
         } else {
-          setPaymentStatus(`Thanh toán thất bại: ${response?.message || 'Không xác định'}`);
+          setPaymentStatus('Thanh toán thất bại: Không xác định'); // ${response?.message || đỏ code 
         }
       } catch (error: any) {
         console.error('Lỗi khi xác minh thanh toán:', error);
