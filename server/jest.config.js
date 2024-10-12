@@ -7,6 +7,11 @@ module.exports = {
   testEnvironmentOptions: {
     NODE_ENV: 'test',
   },
+  testPathIgnorePatterns: [
+    "/node_modules/",
+    "/dist/",
+    "/__tests__/api/"
+  ],
   restoreMocks: true,
   coveragePathIgnorePatterns: ['node_modules', 'src/config', 'src/app.ts', 'tests'],
   coverageReporters: ['text', 'lcov', 'clover', 'html'],
