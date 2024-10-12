@@ -9,6 +9,7 @@ interface IBill {
   appointmentDate: Date;
   servicePrice: number;
   medicinePrice?: number;
+  movingPrice?: number;
   totalPrice: number;
   status: "Đang xử lý" | "Hoàn thành" | "Lỗi thanh toán" | "Hủy";
   paymentMethod: "vnpay"; // Chỉ cho phép 'vnpay'
@@ -54,6 +55,9 @@ const BillSchema = new mongoose.Schema<IBill>(
       required: true,
     },
     medicinePrice: {
+      type: Number,
+    },
+    movingPrice: {
       type: Number,
     },
     totalPrice: {

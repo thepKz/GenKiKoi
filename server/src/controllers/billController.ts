@@ -38,6 +38,9 @@ import User from "../models/User";
  *               medicinePrice:
  *                 type: number
  *                 description: Price of the medicine (optional)
+ *               movingPrice:
+ *                 type: number
+ *                 description: Price of the moving service (optional)
  *     responses:
  *       201:
  *         description: Bill created successfully
@@ -89,7 +92,7 @@ import User from "../models/User";
  */
 export const createBill = async (req: Request, res: Response) => {
   try {
-    const { appointmentId, medicinePrice } = req.body;
+    const { appointmentId, medicinePrice, movingPrice } = req.body;
 
     // Validate appointmentId
     if (!mongoose.Types.ObjectId.isValid(appointmentId)) {
@@ -141,7 +144,7 @@ export const createBill = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "Không tìm thấy dịch vụ" });
     }
 
-    const totalPrice = service.price + (medicinePrice || 0);
+    const totalPrice = service.price + (medicinePrice || 0) + (movingPrice || 0);
 
     // Create a new Payment
     const newPayment = new Payment({
@@ -165,6 +168,7 @@ export const createBill = async (req: Request, res: Response) => {
       appointmentDate: appointment.appointmentDate,
       servicePrice: service.price,
       medicinePrice,
+      movingPrice,
       totalPrice,
       paymentMethod: 'vnpay',
       doctorName: doctorUser.fullName,
