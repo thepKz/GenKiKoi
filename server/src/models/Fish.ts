@@ -9,7 +9,6 @@ interface IFish {
   healthStatus: string;
   customerId: mongoose.Types.ObjectId;
   appointmentId: mongoose.Types.ObjectId;
-  medicalRecordId: mongoose.Types.ObjectId;
 }
 
 const FishSchema = new mongoose.Schema<IFish>(
@@ -46,11 +45,6 @@ const FishSchema = new mongoose.Schema<IFish>(
     appointmentId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Appointment",
-      required: true,
-    },
-    medicalRecordId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "MedicalRecord",
       required: true,
     },
   },
