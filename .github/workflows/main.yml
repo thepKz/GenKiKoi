@@ -34,7 +34,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  test-and-build:
     runs-on: ubuntu-latest
 
     steps:
@@ -54,13 +54,28 @@ jobs:
           MONGO_URI: ${{ secrets.MONGO_URI }}
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
 
-      - name: Run server tests with coverage
+      - name: Run server tests and generate report
         run: |
           cd server
-          npm run test -- --coverage
+          npm run test -- --coverage --coverageReporters=text-lcov > coverage.lcov
         env:
           MONGO_URI: ${{ secrets.MONGO_URI }}
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
+
+      - name: Check test results
+        run: |
+          cd server
+          node -e "
+          const results = require('./jest-results.json');
+          const totalTests = results.numTotalTests;
+          const passedTests = results.numPassedTests;
+          if (passedTests / totalTests < 0.9) {
+            console.error('Less than 90% of tests passed');
+            process.exit(1);
+          } else {
+            console.log('90% or more of tests passed');
+          }
+          "
 
       - name: Install dependencies and build client
         run: |
@@ -76,11 +91,12 @@ jobs:
           VITE_BASE_appId: ${{ secrets.VITE_BASE_APPID }}
           VITE_API_URL: ${{ secrets.VITE_API_URL }}
 
-      - name: Upload coverage report
-        uses: actions/upload-artifact@v3
+      - name: Upload coverage to Coveralls
+        uses: coverallsapp/github-action@v2
         with:
-          name: coverage-report
-          path: server/coverage
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: server/coverage/coverage.lcov
+          coveralls-repo-token: ${{ secrets.COVERALLS_REPO_TOKEN }}
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3
@@ -90,7 +106,7 @@ jobs:
 
   # Job to deploy the application to the staging environment
   deploy-staging:
-    needs: build
+    needs: test-and-build
     if: github.ref == 'refs/heads/develop'
     runs-on: ubuntu-latest
     environment: staging
@@ -116,7 +132,7 @@ jobs:
 
   # Job to deploy the application to the production environment
   deploy-production:
-    needs: build
+    needs: test-and-build
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     environment: production
@@ -142,7 +158,7 @@ jobs:
 
   # Job to deploy the application to the admin environment
   deploy-admin:
-    needs: build
+    needs: test-and-build
     if: github.ref == 'refs/heads/admin'
     runs-on: ubuntu-latest
     environment: admin
@@ -168,7 +184,7 @@ jobs:
 
   # Job to deploy the backend to Render
   deploy-backend:
-    needs: build
+    needs: [test-and-build]
     if: github.ref == 'refs/heads/develop'
     runs-on: ubuntu-latest
     steps:
