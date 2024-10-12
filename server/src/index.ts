@@ -2,7 +2,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
 import mongoose from "mongoose";
-import { specs, swaggerUi } from "./swagger";
+import { swaggerDocument, swaggerUi } from "./swagger";
 // @ts-ignore
 dotenv.config();
 
@@ -62,7 +62,7 @@ app.get("/", (_req, res) => {
   console.log("Log message on backend");
   res.send("Welcome to the GenKiKoi API");
 });
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use("/api/auth", authRoutes);
 app.use("/api/appointments", appointmentRoutes);
 app.use("/api/users", userRoutes);

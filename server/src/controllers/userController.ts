@@ -10,11 +10,7 @@ import { IUser } from "../types/user";
  *   description: User management
  */
 
-/**
- * API: api/users/
- * METHOD: GET
- * PROTECTED
- */
+
 export const getUser = async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user?._id;
@@ -74,11 +70,6 @@ export const getUser = async (req: AuthRequest, res: Response) => {
   }
 };
 
-/**
- * API: /api/users/update-profile
- * METHOD: PATCH
- * PROTECTED
- */
 export const updateProfile = async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user?._id;
