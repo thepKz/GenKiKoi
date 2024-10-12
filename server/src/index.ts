@@ -2,7 +2,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
 import mongoose from "mongoose";
-import { specs, swaggerUi } from './swagger';
+import { specs, swaggerUi } from "./swagger";
 // @ts-ignore
 dotenv.config();
 
@@ -26,25 +26,35 @@ import {
   serviceRoutes,
   staffRoutes,
   userRoutes,
-  vnpayRoutes
+  vnpayRoutes,
 } from "./routes";
-
+import doctorScheduleRoutes from "./routes/doctorScheduleRoutes";
 
 const app = express();
 
-const allowedOrigins = ['https://staginggenkikoi.netlify.app', 'http://localhost:5000', 'http://localhost:5173', 'https://productiongenkikoi.netlify.app', 'http://localhost:5174', 'https://admingenkikoi.netlify.app'];
+const allowedOrigins = [
+  "https://staginggenkikoi.netlify.app",
+  "http://localhost:5000",
+  "http://localhost:5173",
+  "https://productiongenkikoi.netlify.app",
+  "http://localhost:5174",
+  "https://admingenkikoi.netlify.app",
+];
 
-app.use(cors({
-  origin: function(origin, callback) {
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) === -1) {
-      var msg = 'The CORS policy for this site does not allow access from the specified Origin.';
-      return callback(new Error(msg), false);
-    }
-    return callback(null, true);
-  },
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.indexOf(origin) === -1) {
+        var msg =
+          "The CORS policy for this site does not allow access from the specified Origin.";
+        return callback(new Error(msg), false);
+      }
+      return callback(null, true);
+    },
+    credentials: true,
+  })
+);
 
 app.use(express.json());
 
@@ -52,15 +62,16 @@ app.get("/", (_req, res) => {
   console.log("Log message on backend");
   res.send("Welcome to the GenKiKoi API");
 });
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 app.use("/api/auth", authRoutes);
 app.use("/api/appointments", appointmentRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/services", serviceRoutes);
 app.use("/api/staffs", staffRoutes);
 app.use("/api/doctors", doctorRoutes);
-app.use('/api/vnpay', vnpayRoutes);
+app.use("/api/vnpay", vnpayRoutes);
 app.use("/api/bills", billRoutes);
+app.use("/api/doctorSchedules", doctorScheduleRoutes);
 // +++++++ ADD DATA +++++++
 // Cái này t dùng để add tạm dữ liêu!
 
