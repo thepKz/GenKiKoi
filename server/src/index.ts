@@ -21,11 +21,14 @@ import {
 import {
   appointmentRoutes,
   authRoutes,
+  billRoutes,
   doctorRoutes,
   serviceRoutes,
   staffRoutes,
   userRoutes,
+  vnpayRoutes
 } from "./routes";
+
 
 const app = express();
 
@@ -56,7 +59,8 @@ app.use("/api/users", userRoutes);
 app.use("/api/services", serviceRoutes);
 app.use("/api/staffs", staffRoutes);
 app.use("/api/doctors", doctorRoutes);
-
+app.use('/api/vnpay', vnpayRoutes);
+app.use("/api/bills", billRoutes);
 // +++++++ ADD DATA +++++++
 // Cái này t dùng để add tạm dữ liêu!
 

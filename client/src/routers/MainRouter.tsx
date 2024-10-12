@@ -7,6 +7,7 @@ import {
   AboutUs,
   Appointment,
   Booking,
+  CheckoutPage,
   ConsultingTreatment,
   Doctors,
   FAQ,
@@ -21,6 +22,7 @@ import {
   SignIn,
   SignUp,
   UnAuthorized,
+  VnPayReturn
 } from "../pages";
 import Vaccine from "../pages/services/Vaccine";
 import WaterQuality from "../pages/services/WaterQuality";
@@ -129,6 +131,8 @@ const MainRouter = () => {
             element={auth.token ? <History /> : <Navigate to="/sign-in" />}
           />
         </Route>
+        <Route path="/checkout" element={<CheckoutPage />} />
+        <Route path="/vnpay_return" element={<VnPayReturn />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
