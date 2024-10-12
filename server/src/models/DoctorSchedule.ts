@@ -1,53 +1,30 @@
-import mongoose from "mongoose";
-
-type DayOfWeek =
-  | "Thứ 2"
-  | "Thứ 3"
-  | "Thứ 4"
-  | "Thứ 5"
-  | "Thứ 6"
-  | "Thứ 7"
-  | "Chủ nhật";
-
-interface ISlot {
-  time: string;
-  isAvailable: boolean;
-  isBooked: boolean;
+import mongoose, { Schema } from "mongoose";
+interface ISchedule {
+  day: Date; // Ngày
+  startTime: string; // Thời gian bắt đầu
+  endTime: string; // Thời gian kết thúc
+  isBooked: boolean; // Trạng thái đã được đặt
 }
 
-interface IWeekSchedule {
-  dayOfWeek: DayOfWeek;
-  slots: ISlot[];
+interface IDoctorSchedule extends Document {
+  doctorId: mongoose.Types.ObjectId; // ID của bác sĩ
+  schedules: ISchedule[]; // Mảng các lịch trình
 }
 
-interface IDoctorSchedule {
-  doctorId: mongoose.Types.ObjectId;
-  weekSchedule: IWeekSchedule[];
-}
-
-const SlotSchema = new mongoose.Schema<ISlot>({
-  time: { type: String, required: true }, // Khung giờ, ví dụ: "9:00 AM - 10:00 AM"
-  isAvailable: { type: Boolean, default: true }, // Trạng thái: Có sẵn hay không
-  isBooked: { type: Boolean, default: false }, // Trạng thái: Đã được đặt hay chưa
+const ScheduleSchema = new Schema<ISchedule>({
+  day: { type: Date, required: true },
+  startTime: { type: String, required: true }, // Thời gian bắt đầu
+  endTime: { type: String, required: true }, // Thời gian kết thúc
+  isBooked: { type: Boolean, default: false }, // Trạng thái đã được đặt
 });
-
-const WeekScheduleSchema = new mongoose.Schema<IWeekSchedule>({
-  dayOfWeek: {
-    type: String,
-    enum: ["Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7", "Chủ nhật"],
-    required: true,
-  },
-  slots: [SlotSchema],
-});
-
-const DoctorScheduleSchema = new mongoose.Schema<IDoctorSchedule>(
+const DoctorScheduleSchema = new Schema<IDoctorSchedule>(
   {
     doctorId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Doctor",
       required: true,
     },
-    weekSchedule: [WeekScheduleSchema],
+    schedules: [ScheduleSchema], // Mảng các lịch trình
   },
   {
     timestamps: true,
