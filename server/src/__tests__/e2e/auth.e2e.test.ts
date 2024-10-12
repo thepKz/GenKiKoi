@@ -27,8 +27,8 @@ describe('Auth Controller', () => {
       const res = await request(app)
         .post('/api/auth/register')
         .send({
-          username: 'testuser',
-          email: 'test@example.com',
+          username: 'Customer_1',
+          email: 'customer1@example.com',
           password: 'Password123!',
           confirmPassword: 'Password123!'
         });
