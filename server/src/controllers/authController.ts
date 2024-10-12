@@ -7,7 +7,7 @@ import { randomText, signToken } from "../utils";
 /**
  * Người Làm: Thép
  * Người Test: Thép
- * Loại Test: API TEST (Đã xong), UNIT TEST (Đã xong)
+ * Loại Test: API TEST (Đã xong), UNIT TEST (Đang làm), E2E TEST (Đã làm)
  * Chỉnh Sửa Lần Cuối : 13/10/2024
 */
 

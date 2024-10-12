@@ -4,11 +4,11 @@ import { AuthRequest } from "../types";
 import { ICustomer } from "../types/customer";
 import { IUser } from "../types/user";
 /**
- * @swagger
- * tags:
- *   name: Users
- *   description: User management
- */
+ * Người Làm: Thép, Dũng
+ * Người Test: Thép
+ * Loại Test: API TEST (Đã xong), UNIT TEST (Đang làm), E2E TEST (Đang làm)
+ * Chỉnh Sửa Lần Cuối : 13/10/2024 (Thép)
+*/
 
 
 export const getUser = async (req: AuthRequest, res: Response) => {
