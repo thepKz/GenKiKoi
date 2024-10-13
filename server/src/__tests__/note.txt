@@ -10,4 +10,4 @@ Mục tiêu là mô phỏng hành vi của người dùng thực, đảm bảo t
 
 Phân biệt Unit Test và E2E Test:
 - Unit Test: Kiểm thử các hàm nhỏ, đơn lẻ, không tương tác với các thành phần khác của hệ thống.
-- E2E Test: Kiểm thử toàn bộ luồng ứng dụng, tương tác với nhiều thành phần khác nhau.
+- E2E Test: Kiểm thử toàn bộ luồng ứng dụng, tương tác với nhiều thành phần khác nhau. 

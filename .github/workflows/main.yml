@@ -18,6 +18,8 @@ on:
       - 'client/**'
       - 'server/**'
       - 'admin/**'
+      - '**/*.xml'
+      - '**/*.yml'
   pull_request:
     branches: [ main, develop ]
     paths:
