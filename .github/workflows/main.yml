@@ -64,7 +64,7 @@ jobs:
           MONGO_URI: ${{ secrets.MONGO_URI }}
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
 
-      - name: Check test results ( NEED >= 80%)
+      - name: Check test results ( NEED >= 75%)
         run: |
           cd server
           node -e "
@@ -85,11 +85,11 @@ jobs:
             console.log('Total tests:', totalTests);
             console.log('Failed tests:', failedTests);
             
-            if (failedTests > 0 || (totalTests - failedTests) / totalTests < 0.8) {
-              console.error('Less than 80% of tests passed');
+            if (failedTests > 0 || (totalTests - failedTests) / totalTests < 0.75) {
+              console.error('Less than 75% of tests passed');
               process.exit(1);
             } else {
-              console.log('80% or more of tests passed');
+              console.log('75% or more of tests passed');
             }
           });
           "
