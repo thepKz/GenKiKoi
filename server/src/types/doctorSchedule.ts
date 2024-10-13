@@ -8,7 +8,4 @@ interface DoctorSchedule {
       endTime: string;
     }>;
   }>;
-  createdAt: Date;
-  updatedAt: Date;
-  __v: number;
 }

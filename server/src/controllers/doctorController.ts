@@ -4,6 +4,13 @@ import { Doctor, User } from "../models";
 import { randomText, replaceName } from "../utils";
 
 /**
+ * @swagger
+ * tags:
+ *   name: Doctors
+ *   description: Doctor management
+ */
+
+/**
  * API: /api/doctors/
  * Method: GET
  * PROTECTED

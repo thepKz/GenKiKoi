@@ -56,8 +56,10 @@
  *       properties:
  *         login:
  *           type: string
+ *           example: Customer_minthep26
  *         password:
  *           type: string
+ *           example: Customer_minthep26
  *     RegisterInput:
  *       type: object
  *       required:
@@ -106,14 +108,6 @@
  *                       type: string
  *                     endTime:
  *                       type: string
- *         createdAt:
- *           type: string
- *           format: date-time
- *         updatedAt:
- *           type: string
- *           format: date-time
- *         __v:
- *           type: number
  *     DoctorSchema:
  *       type: object
  *       properties:
@@ -146,4 +140,101 @@
  *           type: string
  *         detailAddress:
  *           type: string
+ *     Bill:
+ *       type: object
+ *       properties:
+ *         appointmentId:
+ *           type: string
+ *           description: ID of the appointment
+ *         customerId:
+ *           type: string
+ *           description: ID of the customer
+ *         doctorId:
+ *           type: string
+ *           description: ID of the doctor
+ *         serviceId:
+ *           type: string
+ *           description: ID of the service
+ *         paymentId:
+ *           type: string
+ *           description: ID of the payment
+ *         appointmentDate:
+ *           type: string
+ *           format: date-time
+ *           description: Date of the appointment
+ *         servicePrice:
+ *           type: number
+ *           description: Price of the service
+ *         medicinePrice:
+ *           type: number
+ *           description: Price of the medicine (optional)
+ *         totalPrice:
+ *           type: number
+ *           description: Total price
+ *         status:
+ *           type: string
+ *           enum: ["Đang xử lý", "Hoàn thành", "Lỗi thanh toán", "Hủy"]
+ *           description: Status of the bill
+ *         paymentMethod:
+ *           type: string
+ *           enum: ["vnpay"]
+ *           description: Payment method
+ *         doctorName:
+ *           type: string
+ *           description: Name of the doctor
+ *         customerName:
+ *           type: string
+ *           description: Name of the customer
+ *         serviceName:
+ *           type: string
+ *           description: Name of the service
+ *         typeOfConsulting:
+ *           type: string
+ *           description: Type of consulting
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *           description: Creation timestamp
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
+ *           description: Last update timestamp
+ *     Payment:
+ *       type: object
+ *       properties:
+ *         orderId:
+ *           type: string
+ *           description: Unique order identifier
+ *         amount:
+ *           type: number
+ *           description: Payment amount
+ *         orderInfo:
+ *           type: string
+ *           description: Information about the order
+ *         orderType:
+ *           type: string
+ *           description: Type of the order
+ *         transactionNo:
+ *           type: string
+ *           description: Transaction number (optional)
+ *         transactionStatus:
+ *           type: string
+ *           enum: ['pending', 'success', 'failed']
+ *           description: Status of the transaction
+ *         paymentMethod:
+ *           type: string
+ *           enum: ['vnpay']
+ *           description: Payment method
+ *         paymentDate:
+ *           type: string
+ *           format: date-time
+ *           description: Date of payment
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *           description: Creation timestamp
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
+ *           description: Last update timestamp
  */

@@ -3,6 +3,12 @@ import { Customer, User } from "../models";
 import { AuthRequest } from "../types";
 import { ICustomer } from "../types/customer";
 import { IUser } from "../types/user";
+/**
+ * @swagger
+ * tags:
+ *   name: Users
+ *   description: User management
+ */
 
 /**
  * API: api/users/
