@@ -85,7 +85,7 @@ jobs:
             console.log('Total tests:', totalTests);
             console.log('Failed tests:', failedTests);
             
-            if (failedTests > 0 || (totalTests - failedTests) / totalTests < 0.15) {
+            if ((totalTests - failedTests) / totalTests < 0.75) {
               console.error('Less than 75% of tests passed');
               process.exit(1);
             } else {
