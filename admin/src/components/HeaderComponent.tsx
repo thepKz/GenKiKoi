@@ -38,14 +38,8 @@ const HeaderComponent = () => {
         borderRadius: "0px 0px 10px 10px",
       }}
     >
-      <div className="flex items-center justify-between">
-        <Search
-          size="large"
-          placeholder="Tìm kiếm cuộc hẹn"
-          allowClear
-          style={{ width: 300 }}
-        />
-        <div className="flex items-center gap-5">
+      <div className="flex justify-end px-2">
+        <div className="flex w-fit items-center gap-5">
           <Badge count={9} size="small" offset={[-4, 3]}>
             <Notification className="cursor-pointer" color="black" />
           </Badge>
