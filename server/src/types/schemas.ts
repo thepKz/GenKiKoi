@@ -48,43 +48,6 @@
  *           type: string
  *         role:
  *           type: string
- *     LoginInput:
- *       type: object
- *       required:
- *         - login
- *         - password
- *       properties:
- *         login:
- *           type: string
- *           example: Customer_minthep26
- *         password:
- *           type: string
- *           example: Customer_minthep26
- *     RegisterInput:
- *       type: object
- *       required:
- *         - username
- *         - email
- *         - password
- *         - confirmPassword
- *       properties:
- *         username:
- *           type: string
- *         email:
- *           type: string
- *         password:
- *           type: string
- *         confirmPassword:
- *           type: string
- *     AuthResponse:
- *       type: object
- *       properties:
- *         message:
- *           type: string
- *         data:
- *           $ref: '#/components/schemas/User'
- *         token:
- *           type: string
  *     DoctorSchedule:
  *       type: object
  *       properties:

@@ -18,6 +18,8 @@ on:
       - 'client/**'
       - 'server/**'
       - 'admin/**'
+      - '**/*.xml'
+      - '**/*.yml'
   pull_request:
     branches: [ main, develop ]
     paths:
@@ -34,7 +36,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  test-and-build:
     runs-on: ubuntu-latest
 
     steps:
@@ -53,6 +55,53 @@ jobs:
           rm -rf node_modules
           rm -f package-lock.json
 
+      - name: Install dependencies and build server
+        run: |
+          cd server
+          npm ci
+          npm run build
+        env:
+          MONGO_URI: ${{ secrets.MONGO_URI }}
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
+
+      - name: Run server tests and generate report
+        run: |
+          cd server
+          npm run test -- --coverage --coverageReporters=text-lcov > coverage.lcov
+        env:
+          MONGO_URI: ${{ secrets.MONGO_URI }}
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
+
+      - name: Check test results ( NEED >= 75%)
+        run: |
+          cd server
+          node -e "
+          const fs = require('fs');
+          const xml2js = require('xml2js');
+          const parser = new xml2js.Parser();
+          const xml = fs.readFileSync('./jest-results.xml', 'utf8');
+          
+          parser.parseString(xml, (err, result) => {
+            if (err) {
+              console.error('Error parsing XML');
+              process.exit(1);
+            }
+            
+            const totalTests = result.testsuites.$.tests;
+            const failedTests = result.testsuites.$.failures;
+            
+            console.log('Total tests:', totalTests);
+            console.log('Failed tests:', failedTests);
+            
+            if ((totalTests - failedTests) / totalTests < 0.75) {
+              console.error('Less than 75% of tests passed');
+              process.exit(1);
+            } else {
+              console.log('75% or more of tests passed');
+            }
+          });
+          "
+
       - name: Install dependencies and build client
         run: |
           cd client
@@ -67,38 +116,42 @@ jobs:
           VITE_BASE_appId: ${{ secrets.VITE_BASE_APPID }}
           VITE_API_URL: ${{ secrets.VITE_API_URL }}
 
-      - name: Install dependencies and build server
-        run: |
-          cd server
-          npm ci
-          npm run build
-        env:
-          MONGO_URI: ${{ secrets.MONGO_URI }}
-          SECRET_KEY: ${{ secrets.SECRET_KEY }}
-
-      - name: Run server tests with coverage
-        run: |
-          cd server
-          npm run test -- --coverage
-        env:
-          MONGO_URI: ${{ secrets.MONGO_URI }}
-          SECRET_KEY: ${{ secrets.SECRET_KEY }}
-
-      - name: Upload coverage report
-        uses: actions/upload-artifact@v3
-        with:
-          name: coverage-report
-          path: server/coverage
-
-      - name: Upload artifact
+      - name: Upload artifact client
         uses: actions/upload-artifact@v3
         with:
           name: dist
           path: client/dist
 
+      - name: Install dependencies and build admin
+        run: |
+          cd admin
+          npm ci
+          npm run build
+        env:
+          VITE_BASE_apiKey: ${{ secrets.VITE_BASE_APIKEY }}
+          VITE_BASE_authDomain: ${{ secrets.VITE_BASE_AUTHDOMAIN }}
+          VITE_BASE_projectId: ${{ secrets.VITE_BASE_PROJECTID }}
+          VITE_BASE_storageBucket: ${{ secrets.VITE_BASE_STORAGEBUCKET }}
+          VITE_BASE_messagingSenderId: ${{ secrets.VITE_BASE_MESSAGINGSENDERID }}
+          VITE_BASE_appId: ${{ secrets.VITE_BASE_APPID }}
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+
+      - name: Upload coverage to Coveralls
+        uses: coverallsapp/github-action@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: server/coverage.lcov
+          coveralls-repo-token: ${{ secrets.COVERALLS_REPO_TOKEN }}
+
+      - name: Upload artifact admin
+        uses: actions/upload-artifact@v3
+        with:
+          name: dist
+          path: admin/dist
+      
   # Job to deploy the application to the staging environment
   deploy-staging:
-    needs: build
+    needs: test-and-build
     if: github.ref == 'refs/heads/develop'
     runs-on: ubuntu-latest
     environment: staging
@@ -124,7 +177,7 @@ jobs:
 
   # Job to deploy the application to the production environment
   deploy-production:
-    needs: build
+    needs: test-and-build
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     environment: production
@@ -150,8 +203,8 @@ jobs:
 
   # Job to deploy the application to the admin environment
   deploy-admin:
-    needs: build
-    if: github.ref == 'refs/heads/admin'
+    needs: test-and-build
+    if: github.ref == 'refs/heads/develop'
     runs-on: ubuntu-latest
     environment: admin
     steps:
@@ -161,13 +214,13 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: dist
-          path: ./client/dist
+          path: ./admin/dist
 
       - name: Deploy to Netlify (Admin)
         uses: nwtgck/actions-netlify@v2.0
         with:
-          publish-dir: './client/dist'
-          production-branch: admin
+          publish-dir: './admin/dist'
+          production-branch: develop
           github-token: ${{ secrets.GITHUB_TOKEN }}
           deploy-message: "Deploy to admin from GitHub Actions"
         env:
@@ -176,7 +229,7 @@ jobs:
 
   # Job to deploy the backend to Render
   deploy-backend:
-    needs: build
+    needs: [test-and-build]
     if: github.ref == 'refs/heads/develop'
     runs-on: ubuntu-latest
     steps:
@@ -185,3 +238,7 @@ jobs:
         env:
           MONGO_URI: ${{ secrets.MONGO_URI }}
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          TMN_CODE: ${{ secrets.TMN_CODE }}
+          vnp_HashSecret: ${{ secrets.vnp_HashSecret}}
+          VNP_URL: ${{ secrets.VNP_URL}}
+          RETURN_URL: ${{ secrets.RETURN_URL }}

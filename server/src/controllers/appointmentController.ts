@@ -4,33 +4,11 @@ import Appointment from "../models/Appointment";
 import Customer from "../models/Customer";
 import { AuthRequest } from "../types";
 /**
- * @swagger
- * tags:
- *   name: Appointments
- *   description: Appointment management
- */
-
-/**
- * @swagger
- * /api/appointments:
- *   get:
- *     summary: Retrieve user appointments
- *     description: Fetches a list of appointments for the authenticated user.
- *     tags: [Appointments]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Appointment list retrieved successfully.
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/AppointmentList'
- *       401:
- *         description: Unauthorized - Invalid or missing token.
- *       500:
- *         description: Internal server error.
- */
+ * Người Làm: ĐIỀN VÀO :) 
+ * Người Test: Thép
+ * Loại Test: API TEST (Đã xong), UNIT TEST (Đang làm), E2E TEST (Đang làm)
+ * Chỉnh Sửa Lần Cuối : 13/10/2024 (Thép)
+*/
 
 export const getAppointmentsByUser = async (
   req: AuthRequest,
@@ -83,51 +61,6 @@ export const getAppointmentsByUser = async (
   }
 };
 
-/**
- * @swagger
- * /api/appointments:
- *   post:
- *     summary: Create a new appointment
- *     description: Create a new appointment for a user
- *     tags: [Appointments]
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       description: Appointment details
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - serviceName
- *               - doctorName
- *               - typeOfConsulting
- *               - appointmentDate
- *               - slotTime
- *               - reasons
- *             properties:
- *               serviceName:
- *                 type: string
- *               doctorName:
- *                 type: string
- *               typeOfConsulting:
- *                 type: string
- *               appointmentDate:
- *                 type: string
- *                 format: date
- *               slotTime:
- *                 type: string
- *               reasons:
- *                 type: string
- *     responses:
- *       200:
- *         description: Appointment created successfully
- *       404:
- *         description: Doctor, customer, or service not found
- *       500:
- *         description: Internal server error
- */
 export const createNewAppointment = async (req: AuthRequest, res: Response) => {
   try {
     const {

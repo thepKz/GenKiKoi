@@ -1,8 +1,8 @@
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose from 'mongoose';
 import request from 'supertest';
-import { app } from '../index'; // Assuming your Express app is exported from app.ts
-import User from '../models/User';
+import { app } from '../../index'; // Assuming your Express app is exported from app.ts
+import User from '../../models/User';
 
 let mongoServer: MongoMemoryServer;
 
@@ -23,12 +23,12 @@ describe('Auth Controller', () => {
   });
 
   describe('POST /api/auth/register', () => {
-    it('should register a new user', async () => {
+    it('should register a new user (E2E)', async () => {
       const res = await request(app)
         .post('/api/auth/register')
         .send({
-          username: 'testuser',
-          email: 'test@example.com',
+          username: 'Customer_1',
+          email: 'customer1@example.com',
           password: 'Password123!',
           confirmPassword: 'Password123!'
         });
@@ -38,7 +38,7 @@ describe('Auth Controller', () => {
       expect(res.body.data).toHaveProperty('token');
     });
 
-    it('should return error for existing username', async () => {
+    it('should return error for existing username (E2E)', async () => {
       await User.create({
         username: 'existinguser',
         email: 'existing@example.com',
@@ -68,9 +68,7 @@ describe('Auth Controller', () => {
       });
     });
     
-
-
-    it('should return error for incorrect password', async () => {
+    it('should return error for incorrect password (E2E)', async () => {
       const res = await request(app)
         .post('/api/auth/login')
         .send({
@@ -84,7 +82,7 @@ describe('Auth Controller', () => {
   });
 
   describe('POST /api/auth/check-username', () => {
-    it('should return true for existing username', async () => {
+    it('should return true for existing username (E2E)', async () => {
       await User.create({
         username: 'existinguser',
         email: 'existing@example.com',
@@ -99,7 +97,7 @@ describe('Auth Controller', () => {
       expect(res.body.exists).toBe(true);
     });
 
-    it('should return false for non-existing username', async () => {
+    it('should return false for non-existing username (E2E)', async () => {
       const res = await request(app)
         .post('/api/auth/check-username')
         .send({ username: 'nonexistinguser' });
@@ -110,7 +108,7 @@ describe('Auth Controller', () => {
   });
 
   describe('POST /api/auth/check-email', () => {
-    it('should return true for existing email', async () => {
+    it('should return true for existing email (E2E)', async () => {
       await User.create({
         username: 'testuser',
         email: 'existing@example.com',
@@ -125,7 +123,7 @@ describe('Auth Controller', () => {
       expect(res.body.exists).toBe(true);
     });
 
-    it('should return false for non-existing email', async () => {
+    it('should return false for non-existing email (E2E)', async () => {
       const res = await request(app)
         .post('/api/auth/check-email')
         .send({ email: 'nonexisting@example.com' });
@@ -136,4 +134,3 @@ describe('Auth Controller', () => {
   });
 });
 
-    

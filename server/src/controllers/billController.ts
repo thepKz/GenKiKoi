@@ -7,89 +7,13 @@ import Doctor from "../models/Doctor"; // Import Doctor model
 import Payment from "../models/Payment";
 import Service from "../models/Service";
 import User from "../models/User";
-
 /**
- * @swagger
- * tags:
- *   name: Bills
- *   description: Bill management
- */
+ * Người Làm: Thép
+ * Người Test: Thép
+ * Loại Test: API TEST (Đã xong), UNIT TEST (Đang làm), E2E TEST (Đã làm)
+ * Chỉnh Sửa Lần Cuối : 13/10/2024
+*/
 
-/**
- * @swagger
- * /api/bills/create:
- *   post:
- *     summary: Create a new bill (MANAGER, STAFF)
- *     tags: [Bills]
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - appointmentId
- *             properties:
- *               appointmentId:
- *                 type: string
- *                 description: ID of the appointment
- *               medicinePrice:
- *                 type: number
- *                 description: Price of the medicine (optional)
- *               movingPrice:
- *                 type: number
- *                 description: Price of the moving service (optional)
- *     responses:
- *       201:
- *         description: Bill created successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "Tạo hóa đơn thành công"
- *                 bill:
- *                   $ref: '#/components/schemas/Bill'
- *                 payment:
- *                   $ref: '#/components/schemas/Payment'
- *       400:
- *         description: Bad Request (e.g., missing fullName)
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "Tên bác sĩ không được để trống"
- *       404:
- *         description: Appointment, doctor, or customer not found
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "Không tìm thấy thông tin bác sĩ, khách hàng hoặc dịch vụ"
- *       500:
- *         description: Server error
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "Lỗi server"
- *                 error:
- *                   type: string
- *                   example: "Detailed error message"
- */
 export const createBill = async (req: Request, res: Response) => {
   try {
     const { appointmentId, medicinePrice, movingPrice } = req.body;
@@ -187,66 +111,6 @@ export const createBill = async (req: Request, res: Response) => {
   }
 };
 
-/**
- * @swagger
- * /api/bills/update-status:
- *   patch:
- *     summary: Update bill status (MANAGER, STAFF)
- *     tags: [Bills]
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - billId
- *               - status
- *             properties:
- *               billId:
- *                 type: string
- *               status:
- *                 type: string
- *                 enum: [Đang xử lý, Hoàn thành, Lỗi thanh toán, Hủy]
- *     responses:
- *       200:
- *         description: Bill status updated successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "Cập nhật trạng thái thành công"
- *                 bill:
- *                   $ref: '#/components/schemas/Bill'
- *       404:
- *         description: Bill not found
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "Không tìm thấy hóa đơn"
- *       500:
- *         description: Server error
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "Lỗi server"
- *                 error:
- *                   type: string
- *                   example: "Detailed error message"
- */
 export const updateBillStatus = async (req: Request, res: Response) => {
   try {
     const { billId, status } = req.body;
@@ -279,54 +143,6 @@ export const updateBillStatus = async (req: Request, res: Response) => {
   }
 };
 
-/**
- * @swagger
- * /api/bills/customer/{customerId}:
- *   get:
- *     summary: Get bills by customer ID (ALL)
- *     tags: [Bills]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: customerId
- *         required: true
- *         schema:
- *           type: string
- *         description: ID of the customer
- *     responses:
- *       200:
- *         description: List of bills for the customer
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Bill'
- *       400:
- *         description: Invalid customerId format
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "Invalid customerId format"
- *       500:
- *         description: Server error
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: "Lỗi server"
- *                 error:
- *                   type: string
- *                   example: "Detailed error message"
- */
 export const getBillsByCustomer = async (req: Request, res: Response) => {
   try {
     const customerId = req.params.customerId;

@@ -1,38 +1,8 @@
-import swaggerJsdoc from 'swagger-jsdoc';
+import path from 'path';
 import swaggerUi from 'swagger-ui-express';
+import YAML from 'yamljs';
 
-const options = {
-  definition: {
-    openapi: '3.0.0',
-    info: {
-      title: 'GenKiKoi API',
-      version: '1.0.0',
-      description: 'API documentation for GenKiKoi service',
-    },
-    components: {
-      securitySchemes: {
-        bearerAuth: {
-          type: 'http',
-          scheme: 'bearer',
-          bearerFormat: 'JWT',
-        },
-      },
-    },
-    security: [
-      {
-        bearerAuth: [],
-      },
-    ],
-    servers: [
-      {
-        url: 'http://localhost:5000',
-        description: 'Development server',
-      },
-    ],
-  },
-  apis: ['./src/controllers/*.ts', './src/types/*.ts'],
-};
+const swaggerDocument = YAML.load(path.join(__dirname, '__tests__/api/swagger.yaml'));
 
-const specs = swaggerJsdoc(options);
+export { swaggerDocument, swaggerUi };
 
-export { specs, swaggerUi };
