@@ -11,7 +11,7 @@ import { useEffect, useState } from "react";
 import { handleAPI } from "../../apis/handleAPI";
 import { IAuth } from "../../types";
 import { useSelector } from "react-redux";
-import { message } from "antd";
+import { message, Spin } from "antd";
 
 const DoctorCalendar = () => {
   const auth: IAuth = useSelector((state: any) => state.authReducer.data);
@@ -66,7 +66,11 @@ const DoctorCalendar = () => {
   }, [events]);
 
   if (isLoading) {
-    return <div>Loading</div>;
+    return (
+      <div className="container mx-auto my-5 flex h-[calc(100vh-115px)] items-center justify-center rounded-md bg-white p-5 shadow-sm lg:w-[95%]">
+        <Spin size="large" />
+      </div>
+    );
   }
 
   return (

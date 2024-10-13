@@ -3,7 +3,6 @@ import {
   Badge,
   ConfigProvider,
   Dropdown,
-  Input,
   Layout,
   MenuProps,
 } from "antd";
@@ -13,8 +12,6 @@ import { removeAuth } from "../redux/reducers/authReducer";
 import { IAuth } from "../types";
 
 const { Header } = Layout;
-
-const { Search } = Input;
 
 const HeaderComponent = () => {
   const dispatch = useDispatch();

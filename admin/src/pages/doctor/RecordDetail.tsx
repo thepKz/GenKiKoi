@@ -8,12 +8,10 @@ import {
   Row,
 } from "antd";
 import { Stickynote } from "iconsax-react";
-import { Link, useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { GiCirclingFish } from "react-icons/gi";
 
 const RecordDetail = () => {
-  const { id } = useParams();
-
   const medicines = [
     { name: "Paracetamol", quantity: 10 },
     { name: "Vitamin C", quantity: 20 },

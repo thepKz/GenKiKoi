@@ -1,18 +1,7 @@
-import {
-  Input,
-  Divider,
-  Modal,
-  Switch,
-  TableProps,
-  Tabs,
-  TabsProps,
-  Tag,
-} from "antd";
+import { Divider, Modal, Switch, TableProps, Tabs, TabsProps, Tag } from "antd";
 import { CustomTable } from "../../share";
 import { getValue } from "../../utils";
 import { HeaderPage } from "../../components";
-
-const { Search } = Input;
 
 const Appointments = () => {
   const handleCheck = (checked: boolean, appointmentId: string) => {
