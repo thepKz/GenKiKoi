@@ -66,15 +66,27 @@ jobs:
         run: |
           cd server
           node -e "
-          const results = require('./jest-results.json');
-          const totalTests = results.numTotalTests;
-          const passedTests = results.numPassedTests;
-          if (passedTests / totalTests < 0.9) {
-            console.error('Less than 90% of tests passed');
-            process.exit(1);
-          } else {
-            console.log('90% or more of tests passed');
-          }
+          const fs = require('fs');
+          const xml2js = require('xml2js');
+          const parser = new xml2js.Parser();
+          const xml = fs.readFileSync('./jest-results.xml', 'utf8');
+          
+          parser.parseString(xml, (err, result) => {
+            if (err) {
+              console.error('Error parsing XML');
+              process.exit(1);
+            }
+            
+            const totalTests = result.testsuites.$.tests;
+            const failedTests = result.testsuites.$.failures;
+            
+            if (failedTests > 0 || (totalTests - failedTests) / totalTests < 0.9) {
+              console.error('Less than 90% of tests passed');
+              process.exit(1);
+            } else {
+              console.log('90% or more of tests passed');
+            }
+          });
           "
 
       - name: Install dependencies and build client
@@ -90,6 +102,7 @@ jobs:
           VITE_BASE_messagingSenderId: ${{ secrets.VITE_BASE_MESSAGINGSENDERID }}
           VITE_BASE_appId: ${{ secrets.VITE_BASE_APPID }}
           VITE_API_URL: ${{ secrets.VITE_API_URL }}
+      
 
       - name: Upload coverage to Coveralls
         uses: coverallsapp/github-action@v2
