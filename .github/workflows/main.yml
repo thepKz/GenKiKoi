@@ -47,6 +47,14 @@ jobs:
         with:
           node-version: '18'
 
+      - name: Clear npm cache
+        run: npm cache clean --force
+
+      - name: Remove node_modules and package-lock.json
+        run: |
+          rm -rf node_modules
+          rm -f package-lock.json
+
       - name: Install dependencies and build server
         run: |
           cd server
@@ -129,13 +137,18 @@ jobs:
           path-to-lcov: server/coverage.lcov
           coveralls-repo-token: ${{ secrets.COVERALLS_REPO_TOKEN }}
 
-      - name: Upload artifact client and admin
+      - name: Upload artifact client
         uses: actions/upload-artifact@v3
         with:
           name: dist
-          path: |
-            client/dist
-            admin/dist
+          path: client/dist
+
+      - name: Upload artifact admin
+        uses: actions/upload-artifact@v3
+        with:
+          name: dist
+          path: admin/dist
+      
   # Job to deploy the application to the staging environment
   deploy-staging:
     needs: test-and-build
