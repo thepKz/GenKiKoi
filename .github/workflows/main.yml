@@ -18,6 +18,8 @@ on:
       - 'client/**'
       - 'server/**'
       - 'admin/**'
+      - '**/*.xml'
+      - '**/*.yml'
   pull_request:
     branches: [ main, develop ]
     paths:
@@ -34,7 +36,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  test-and-build:
     runs-on: ubuntu-latest
 
     steps:
@@ -45,13 +47,52 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Clear npm cache
-        run: npm cache clean --force
-
-      - name: Remove node_modules and package-lock.json
+      - name: Install dependencies and build server
         run: |
-          rm -rf node_modules
-          rm -f package-lock.json
+          cd server
+          npm ci
+          npm run build
+        env:
+          MONGO_URI: ${{ secrets.MONGO_URI }}
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
+
+      - name: Run server tests and generate report
+        run: |
+          cd server
+          npm run test -- --coverage --coverageReporters=text-lcov > coverage.lcov
+        env:
+          MONGO_URI: ${{ secrets.MONGO_URI }}
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
+
+      - name: Check test results ( NEED >= 75%)
+        run: |
+          cd server
+          node -e "
+          const fs = require('fs');
+          const xml2js = require('xml2js');
+          const parser = new xml2js.Parser();
+          const xml = fs.readFileSync('./jest-results.xml', 'utf8');
+          
+          parser.parseString(xml, (err, result) => {
+            if (err) {
+              console.error('Error parsing XML');
+              process.exit(1);
+            }
+            
+            const totalTests = result.testsuites.$.tests;
+            const failedTests = result.testsuites.$.failures;
+            
+            console.log('Total tests:', totalTests);
+            console.log('Failed tests:', failedTests);
+            
+            if ((totalTests - failedTests) / totalTests < 0.75) {
+              console.error('Less than 75% of tests passed');
+              process.exit(1);
+            } else {
+              console.log('75% or more of tests passed');
+            }
+          });
+          "
 
       - name: Install dependencies and build client
         run: |
@@ -66,29 +107,14 @@ jobs:
           VITE_BASE_messagingSenderId: ${{ secrets.VITE_BASE_MESSAGINGSENDERID }}
           VITE_BASE_appId: ${{ secrets.VITE_BASE_APPID }}
           VITE_API_URL: ${{ secrets.VITE_API_URL }}
+      
 
-      - name: Install dependencies and build server
-        run: |
-          cd server
-          npm ci
-          npm run build
-        env:
-          MONGO_URI: ${{ secrets.MONGO_URI }}
-          SECRET_KEY: ${{ secrets.SECRET_KEY }}
-
-      - name: Run server tests with coverage
-        run: |
-          cd server
-          npm run test -- --coverage
-        env:
-          MONGO_URI: ${{ secrets.MONGO_URI }}
-          SECRET_KEY: ${{ secrets.SECRET_KEY }}
-
-      - name: Upload coverage report
-        uses: actions/upload-artifact@v3
+      - name: Upload coverage to Coveralls
+        uses: coverallsapp/github-action@v2
         with:
-          name: coverage-report
-          path: server/coverage
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: server/coverage.lcov
+          coveralls-repo-token: ${{ secrets.COVERALLS_REPO_TOKEN }}
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3
@@ -98,7 +124,7 @@ jobs:
 
   # Job to deploy the application to the staging environment
   deploy-staging:
-    needs: build
+    needs: test-and-build
     if: github.ref == 'refs/heads/develop'
     runs-on: ubuntu-latest
     environment: staging
@@ -124,7 +150,7 @@ jobs:
 
   # Job to deploy the application to the production environment
   deploy-production:
-    needs: build
+    needs: test-and-build
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     environment: production
@@ -150,7 +176,7 @@ jobs:
 
   # Job to deploy the application to the admin environment
   deploy-admin:
-    needs: build
+    needs: test-and-build
     if: github.ref == 'refs/heads/admin'
     runs-on: ubuntu-latest
     environment: admin
@@ -176,7 +202,7 @@ jobs:
 
   # Job to deploy the backend to Render
   deploy-backend:
-    needs: build
+    needs: [test-and-build]
     if: github.ref == 'refs/heads/develop'
     runs-on: ubuntu-latest
     steps:

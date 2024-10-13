@@ -4,17 +4,13 @@ import { AuthRequest } from "../types";
 import { ICustomer } from "../types/customer";
 import { IUser } from "../types/user";
 /**
- * @swagger
- * tags:
- *   name: Users
- *   description: User management
- */
+ * Người Làm: Thép, Dũng
+ * Người Test: Thép
+ * Loại Test: API TEST (Đã xong), UNIT TEST (Đang làm), E2E TEST (Đang làm)
+ * Chỉnh Sửa Lần Cuối : 13/10/2024 (Thép)
+*/
 
-/**
- * API: api/users/
- * METHOD: GET
- * PROTECTED
- */
+
 export const getUser = async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user?._id;
@@ -74,11 +70,6 @@ export const getUser = async (req: AuthRequest, res: Response) => {
   }
 };
 
-/**
- * API: /api/users/update-profile
- * METHOD: PATCH
- * PROTECTED
- */
 export const updateProfile = async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user?._id;

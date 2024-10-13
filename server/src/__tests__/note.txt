@@ -1,0 +1,13 @@
+Unit Test:
+Kiểm thử một thành phần cụ thể của ứng dụng, thường là các hàm hoặc phương thức, mà không quan tâm đến sự tương tác của nó với các thành phần khác.
+Mục tiêu là đảm bảo một đơn vị (unit) code hoạt động chính xác.
+Không có hoặc rất ít phụ thuộc vào cơ sở dữ liệu, API bên ngoài, hay các phần khác của hệ thống.
+
+E2E Test:
+Kiểm thử toàn bộ luồng ứng dụng từ đầu đến cuối, bao gồm cả việc tương tác với cơ sở dữ liệu, API, UI, và các thành phần khác.
+Mục tiêu là mô phỏng hành vi của người dùng thực, đảm bảo tất cả các thành phần của ứng dụng hoạt động chính xác khi kết hợp với nhau.
+
+
+Phân biệt Unit Test và E2E Test:
+- Unit Test: Kiểm thử các hàm nhỏ, đơn lẻ, không tương tác với các thành phần khác của hệ thống.
+- E2E Test: Kiểm thử toàn bộ luồng ứng dụng, tương tác với nhiều thành phần khác nhau. 

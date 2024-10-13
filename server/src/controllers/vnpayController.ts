@@ -5,6 +5,13 @@ import qs from 'qs';
 import Payment from '../models/Payment';
 dotenv.config();
 
+/**
+ * Người Làm: Thép
+ * Người Test: Thép
+ * Loại Test: API TEST (Đang làm), UNIT TEST (Đang làm), E2E TEST (Đang làm)
+ * Chỉnh Sửa Lần Cuối : 13/10/2024 
+*/
+
 const tmnCode = process.env.TMN_CODE!;
 const vnp_HashSecret = process.env.vnp_HashSecret!;
 const vnpUrl = process.env.VNP_URL!;
@@ -19,65 +26,6 @@ function sortObject(obj: Record<string, any>) {
   }
   return sorted;
 }
-/**
- * @swagger
- * tags:
- *   name: VNPay
- *   description: VNPay payment operations
- */
-
-/**
- * @swagger
- * /api/vnpay/create_payment_url:
- *   post:
- *     summary: Create a VNPay payment URL
- *     tags: [VNPay]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - amount
- *               - orderDescription
- *             properties:
- *               amount:
- *                 type: number
- *                 description: The amount to be paid
- *               orderDescription:
- *                 type: string
- *                 description: Description of the order
- *               orderType:
- *                 type: string
- *                 description: Type of the order
- *                 default: 'other'
- *               language:
- *                 type: string
- *                 description: Language for the payment page
- *                 default: 'vn'
- *           example:
- *             amount: 100000
- *             orderDescription: "Thanh toán dịch vụ khám bệnh cho cá Koi"
- *             orderType: "billpayment"
- *             language: "vn"
- *     responses:
- *       200:
- *         description: Successfully created payment URL
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: number
- *                 paymentUrl:
- *                   type: string
- *       400:
- *         description: Bad request
- *       500:
- *         description: Server error
- */
 
 export const createPayment = async (req: Request, res: Response) => {
   console.log('Received VNPAY payment request:', req.body);
@@ -170,47 +118,6 @@ function dateFormat(date: Date) {
   return `${year}${month}${day}${hour}${minute}${second}`;
 }
 
-/**
- * @swagger
- * /api/vnpay/vnpay_return:
- *   get:
- *     summary: Handle VNPay payment return
- *     tags: [VNPay]
- *     parameters:
- *       - in: query
- *         name: vnp_TxnRef
- *         schema:
- *           type: string
- *         required: true
- *         description: Transaction reference
- *       - in: query
- *         name: vnp_ResponseCode
- *         schema:
- *           type: string
- *         required: true
- *         description: Response code from VNPay
- *       - in: query
- *         name: vnp_SecureHash
- *         schema:
- *           type: string
- *         required: true
- *         description: Secure hash for verification
- *     responses:
- *       200:
- *         description: Successfully processed payment return
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 code:
- *                   type: string
- *                   description: Response code
- *       400:
- *         description: Bad request
- *       500:
- *         description: Server error
- */
 export const vnpayReturn = async (req: Request, res: Response) => {
   console.log('Received VNPAY return request:', req.query);
 
