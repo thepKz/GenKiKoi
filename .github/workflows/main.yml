@@ -72,7 +72,7 @@ jobs:
           MONGO_URI: ${{ secrets.MONGO_URI }}
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
 
-      - name: Check test results ( NEED >= 75%)
+      - name: Check test results in server ( NEED >= 75%)
         run: |
           cd server
           node -e "
