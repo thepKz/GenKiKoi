@@ -9,7 +9,8 @@
     "postinstall": "npm run build",
     "client": "cd client && npm run dev",
     "server": "cd server && npm run dev",
-    "dev": "concurrently \"npm run server\" \"npm run client\""
+    "admin": "cd admin && npm run dev",
+    "dev": "concurrently \"npm run server\" \"npm run client\" \"npm run admin\""
   },
   "engines": {
     "node": "20.x"

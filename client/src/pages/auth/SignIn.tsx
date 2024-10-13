@@ -1,5 +1,4 @@
 import { Button, ConfigProvider, Divider, Form, Input, message } from "antd";
-import { Heart } from "iconsax-react";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
@@ -58,10 +57,6 @@ const SignIn = () => {
               <h1 className="heading-2 text-blue-primary">Đăng nhập</h1>
               <div className="flex items-center gap-2">
                 <p className="my-2 text-slate-500">Chọn sức khỏe, chọn GenKiKoi</p>
-                <Heart
-                  variant="Bold"
-                  color="#f7776d"
-                />
               </div>
             </div>
             <Form

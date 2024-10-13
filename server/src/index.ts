@@ -2,6 +2,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
 import mongoose from "mongoose";
+import { specs, swaggerUi } from './swagger';
 // @ts-ignore
 dotenv.config();
 
@@ -28,7 +29,7 @@ import {
 
 const app = express();
 
-const allowedOrigins = ['https://staginggenkikoi.netlify.app', 'http://localhost:5173', 'https://productiongenkikoi.netlify.app'];
+const allowedOrigins = ['https://staginggenkikoi.netlify.app', 'http://localhost:5000', 'http://localhost:5173', 'https://productiongenkikoi.netlify.app', 'http://localhost:5174', 'https://admingenkikoi.netlify.app'];
 
 app.use(cors({
   origin: function(origin, callback) {
@@ -48,7 +49,7 @@ app.get("/", (_req, res) => {
   console.log("Log message on backend");
   res.send("Welcome to the GenKiKoi API");
 });
-
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 app.use("/api/auth", authRoutes);
 app.use("/api/appointments", appointmentRoutes);
 app.use("/api/users", userRoutes);
