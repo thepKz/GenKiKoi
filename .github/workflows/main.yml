@@ -119,7 +119,7 @@ jobs:
       - name: Upload artifact client
         uses: actions/upload-artifact@v3
         with:
-          name: dist
+          name: client-dist
           path: client/dist
 
       - name: Install dependencies and build admin
@@ -146,7 +146,7 @@ jobs:
       - name: Upload artifact admin
         uses: actions/upload-artifact@v3
         with:
-          name: dist
+          name: admin-dist
           path: admin/dist
       
   # Job to deploy the application to the staging environment
@@ -161,7 +161,7 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v3
         with:
-          name: dist
+          name: client-dist
           path: ./client/dist
 
       - name: Deploy to Netlify (Staging)
@@ -187,7 +187,7 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v3
         with:
-          name: dist
+          name: client-dist
           path: ./client/dist
 
       - name: Deploy to Netlify (Production)
@@ -213,7 +213,7 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v3
         with:
-          name: dist
+          name: admin-dist
           path: ./admin/dist
 
       - name: Deploy to Netlify (Admin)
