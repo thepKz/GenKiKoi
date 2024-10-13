@@ -46,23 +46,20 @@ const MedicalRecord = () => {
               </div>
               <div className="flex flex-col justify-between">
                 <p>
-                  <span className="font-semibold">Tên con cá:</span> MeoMeo
+                  <span className="font-semibold">Tuổi:</span> 10
                 </p>
                 <p>
                   <span className="font-semibold">Giống loại:</span> Kohaku
                 </p>
                 <p>
-                  <span className="font-semibold">Tuổi:</span> 10
-                </p>
-                <p>
-                  <span className="font-semibold">Số lần điều trị:</span> 10
-                </p>
-                <p>
-                  <span className="font-semibold">Ngày điều trị gần nhất:</span> 20-09-2024
+                  <span className="font-semibold">Kích thước:</span> 30cm
                 </p>
                 <p>
                   <span className="font-semibold">Tình trạng sức khỏe hiện tại:</span>{" "}
                   <Tag color="green">Đang điều trị</Tag>
+                </p>
+                <p>
+                  <span className="font-semibold">Mô tả đặc điểm:</span> Một con cá cực kỳ mập đuỵt
                 </p>
               </div>
             </div>
@@ -78,23 +75,20 @@ const MedicalRecord = () => {
               </div>
               <div className="flex flex-col justify-between">
                 <p>
-                  <span className="font-semibold">Tên con cá:</span> MeoMeo
+                  <span className="font-semibold">Tuổi:</span> 10
                 </p>
                 <p>
                   <span className="font-semibold">Giống loại:</span> Kohaku
                 </p>
                 <p>
-                  <span className="font-semibold">Tuổi:</span> 10
-                </p>
-                <p>
-                  <span className="font-semibold">Số lần điều trị:</span> 10
-                </p>
-                <p>
-                  <span className="font-semibold">Ngày điều trị gần nhất:</span> 20-09-2024
+                  <span className="font-semibold">Kích thước:</span> 30cm
                 </p>
                 <p>
                   <span className="font-semibold">Tình trạng sức khỏe hiện tại:</span>{" "}
                   <Tag color="green">Đang điều trị</Tag>
+                </p>
+                <p>
+                  <span className="font-semibold">Mô tả đặc điểm:</span> Một con cá cực kỳ mập đuỵt
                 </p>
               </div>
             </div>
@@ -110,23 +104,20 @@ const MedicalRecord = () => {
               </div>
               <div className="flex flex-col justify-between">
                 <p>
-                  <span className="font-semibold">Tên con cá:</span> MeoMeo
+                  <span className="font-semibold">Tuổi:</span> 10
                 </p>
                 <p>
                   <span className="font-semibold">Giống loại:</span> Kohaku
                 </p>
                 <p>
-                  <span className="font-semibold">Tuổi:</span> 10
-                </p>
-                <p>
-                  <span className="font-semibold">Số lần điều trị:</span> 10
-                </p>
-                <p>
-                  <span className="font-semibold">Ngày điều trị gần nhất:</span> 20-09-2024
+                  <span className="font-semibold">Kích thước:</span> 30cm
                 </p>
                 <p>
                   <span className="font-semibold">Tình trạng sức khỏe hiện tại:</span>{" "}
                   <Tag color="green">Đang điều trị</Tag>
+                </p>
+                <p>
+                  <span className="font-semibold">Mô tả đặc điểm:</span> Một con cá cực kỳ mập đuỵt
                 </p>
               </div>
             </div>
