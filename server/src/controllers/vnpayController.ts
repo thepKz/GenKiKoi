@@ -28,7 +28,6 @@ function sortObject(obj: Record<string, any>) {
 }
 
 export const createPayment = async (req: Request, res: Response) => {
-  console.log('Received VNPAY payment request:', req.body);
 
   // Sử dụng thời gian hiện tại
   const date = new Date();
@@ -45,8 +44,6 @@ export const createPayment = async (req: Request, res: Response) => {
   const expireDate = dateFormat(new Date(date.getTime() + 15 * 60 * 1000));
 
   const orderId = date.getTime().toString();
-
-  console.log('Generated orderId:', orderId);
 
   const amount = req.body.amount;
   const orderInfo = req.body.orderDescription;
@@ -97,13 +94,11 @@ export const createPayment = async (req: Request, res: Response) => {
 
   try {
     await newPayment.save();
-    console.log('Payment document created:', newPayment);
 
     const fullUrl = vnpUrl + '?' + qs.stringify(vnp_Params, { encode: false });
     console.log('Generated VNPAY URL:', fullUrl);
     res.json({ status: 200, paymentUrl: fullUrl });
   } catch (error) {
-    console.error('Error saving payment:', error);
     res.status(500).json({ status: 500, message: 'Error creating payment' });
   }
 };
@@ -119,7 +114,6 @@ function dateFormat(date: Date) {
 }
 
 export const vnpayReturn = async (req: Request, res: Response) => {
-  console.log('Received VNPAY return request:', req.query);
 
   let vnp_Params = req.query;
   const secureHash = vnp_Params['vnp_SecureHash'];
@@ -133,15 +127,10 @@ export const vnpayReturn = async (req: Request, res: Response) => {
   const hmac = crypto.createHmac("sha512", vnp_HashSecret);
   const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest("hex");
 
-  console.log('Calculated secure hash:', signed);
-  console.log('Received secure hash:', secureHash);
-
   if (secureHash === signed) {
-    console.log('Secure hash verification successful');
     // Check payment status
     const orderId = vnp_Params['vnp_TxnRef'];
     const rspCode = vnp_Params['vnp_ResponseCode'];
-    console.log('Payment result:', { orderId, rspCode });
 
     // Cập nhật trạng thái thanh toán trong MongoDB
     const payment = await Payment.findOne({ orderId });
@@ -149,15 +138,11 @@ export const vnpayReturn = async (req: Request, res: Response) => {
       payment.transactionNo = vnp_Params['vnp_TransactionNo'] as string;
       payment.transactionStatus = rspCode === '00' ? 'success' : 'failed';
       await payment.save();
-      console.log('Payment updated:', payment);
-    } else {
-      console.log('Payment not found for orderId:', orderId);
     }
 
     // Perform actions based on the payment result
     res.json({ code: vnp_Params['vnp_ResponseCode'] });
   } else {
-    console.log('Secure hash verification failed');
     res.json({ code: '97' });
   }
 };

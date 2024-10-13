@@ -12,18 +12,22 @@ export const initiateVnPayPayment = async (
 ) => {
   console.log('Initiating VNPAY payment:', { amount, orderInfo });
   try {
-    const response = await axiosInstance.post('/api/vnpay/create_payment_url', {
+    const response = await axiosInstance.post<{ paymentUrl: string }>('/api/vnpay/create_payment_url', {
       amount,
       orderDescription: orderInfo,
       orderType: 'billpayment',
       language: 'vn',
     });
+    
+    // Log toàn bộ response để kiểm tra
     console.log('VNPAY payment URL response:', response);
 
-    if (response ) { // && response.paymentUrl đỏ code
-      window.location.href = response.data.paymentUrl; // đỏ code response.paymentUrl
+    // Đúng cách lấy paymentUrl sau khi interceptor đã trả về response.data
+    if ((response as unknown as { paymentUrl: string }).paymentUrl) {
+      console.log("Redirecting to:", (response as unknown as { paymentUrl: string }).paymentUrl);
+      window.location.href = (response as unknown as { paymentUrl: string }).paymentUrl;
     } else {
-      throw new Error('Invalid response from server');
+      throw new Error('paymentUrl not found in response');
     }
   } catch (error) {
     console.error('Error initiating VnPay payment:', error);
