@@ -21,9 +21,9 @@ module.exports = {
   coverageReporters: ['text', 'lcov', 'clover', 'html'],
   globalTeardown: './jest.teardown.js',
 
-  // Thêm reporters để xuất kết quả test ra file JSON
+  // Thêm reporters để xuất kết quả test ra file XML
   reporters: [
     'default',
-    ['jest-junit', { outputDirectory: './', outputName: 'jest-results.json' }]
+    ['jest-junit', { outputDirectory: './', outputName: 'jest-results.xml' }]
   ],
 };
