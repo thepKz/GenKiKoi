@@ -107,7 +107,20 @@ jobs:
           VITE_BASE_messagingSenderId: ${{ secrets.VITE_BASE_MESSAGINGSENDERID }}
           VITE_BASE_appId: ${{ secrets.VITE_BASE_APPID }}
           VITE_API_URL: ${{ secrets.VITE_API_URL }}
-      
+
+      - name: Install dependencies and build admin
+        run: |
+          cd admin
+          npm ci
+          npm run build
+        env:
+          VITE_BASE_apiKey: ${{ secrets.VITE_BASE_APIKEY }}
+          VITE_BASE_authDomain: ${{ secrets.VITE_BASE_AUTHDOMAIN }}
+          VITE_BASE_projectId: ${{ secrets.VITE_BASE_PROJECTID }}
+          VITE_BASE_storageBucket: ${{ secrets.VITE_BASE_STORAGEBUCKET }}
+          VITE_BASE_messagingSenderId: ${{ secrets.VITE_BASE_MESSAGINGSENDERID }}
+          VITE_BASE_appId: ${{ secrets.VITE_BASE_APPID }}
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
 
       - name: Upload coverage to Coveralls
         uses: coverallsapp/github-action@v2
@@ -116,12 +129,13 @@ jobs:
           path-to-lcov: server/coverage.lcov
           coveralls-repo-token: ${{ secrets.COVERALLS_REPO_TOKEN }}
 
-      - name: Upload artifact
+      - name: Upload artifact client and admin
         uses: actions/upload-artifact@v3
         with:
           name: dist
-          path: client/dist
-
+          path: |
+            client/dist
+            admin/dist
   # Job to deploy the application to the staging environment
   deploy-staging:
     needs: test-and-build
@@ -177,7 +191,7 @@ jobs:
   # Job to deploy the application to the admin environment
   deploy-admin:
     needs: test-and-build
-    if: github.ref == 'refs/heads/admin'
+    if: github.ref == 'refs/heads/develop'
     runs-on: ubuntu-latest
     environment: admin
     steps:
@@ -187,12 +201,12 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: dist
-          path: ./client/dist
+          path: ./admin/dist
 
       - name: Deploy to Netlify (Admin)
         uses: nwtgck/actions-netlify@v2.0
         with:
-          publish-dir: './client/dist'
+          publish-dir: './admin/dist'
           production-branch: admin
           github-token: ${{ secrets.GITHUB_TOKEN }}
           deploy-message: "Deploy to admin from GitHub Actions"
