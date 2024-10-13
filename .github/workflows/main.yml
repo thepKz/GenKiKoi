@@ -239,6 +239,6 @@ jobs:
           MONGO_URI: ${{ secrets.MONGO_URI }}
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
           TMN_CODE: ${{ secrets.TMN_CODE }}
-          vnp_HashSecret: ${{ secrets.vnp_HashSecret}}
-          VNP_URL: ${{ secrets.VNP_URL}}
+          VNP_HASHSECRET: ${{ secrets.VNP_HASHSECRET }}
+          VNP_URL: ${{ secrets.VNP_URL }}
           RETURN_URL: ${{ secrets.RETURN_URL }}
