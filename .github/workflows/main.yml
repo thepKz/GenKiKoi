@@ -82,6 +82,9 @@ jobs:
             const totalTests = result.testsuites.$.tests;
             const failedTests = result.testsuites.$.failures;
             
+            console.log('Total tests:', totalTests);
+            console.log('Failed tests:', failedTests);
+            
             if (failedTests > 0 || (totalTests - failedTests) / totalTests < 0.8) {
               console.error('Less than 80% of tests passed');
               process.exit(1);
