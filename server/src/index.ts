@@ -39,6 +39,7 @@ const allowedOrigins = [
   "https://productiongenkikoi.netlify.app",
   "http://localhost:5174",
   "https://admingenkikoi.netlify.app",
+  "https://genkikoi-backend.onrender.com"
 ];
 
 app.use(
