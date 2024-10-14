@@ -44,7 +44,7 @@ const Footer = () => {
   }, []);
 
   return (
-    <footer className="section bg-blue-primary text-white py-8">
+    <footer className="section bg-blue-primary text-white py-8 z-50">
       <div className="container mx-auto px-4">
         <div className="flex flex-wrap justify-center">
           {/* Cột 1: Thông tin phòng khám */}

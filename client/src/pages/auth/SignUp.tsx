@@ -1,7 +1,7 @@
 import { Button, ConfigProvider, Divider, Form, Input, message } from "antd";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { handleAPI } from "../../apis/handleAPI";
 import Banner from "../../assets/banner.jpg";
 import Logo from "../../assets/logo-transparent.png";
@@ -16,6 +16,7 @@ const SignUp = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleSubmit = async (values: SignUpData) => {
     const api = `/api/auth/register`;
@@ -25,6 +26,7 @@ const SignUp = () => {
       if (res.data) {
         message.success(res.message);
         dispatch(addAuth(res.data));
+        navigate('/'); // Redirect to home page or dashboard
       }
     } catch (error: any) {
       form.setFields([

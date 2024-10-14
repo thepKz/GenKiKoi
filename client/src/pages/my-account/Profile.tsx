@@ -16,11 +16,11 @@ import { User } from "iconsax-react";
 import { useEffect, useRef, useState } from "react";
 import { handleAPI } from "../../apis/handleAPI";
 
-import VietNamProvinces from "../../../data/index";
-import { uploadFile } from "../../utils";
-import { IAuth, ICustomerData } from "../../types";
 import { useDispatch, useSelector } from "react-redux";
+import VietNamProvinces from "../../../data/index";
 import { updateAuth } from "../../redux/reducers/authReducer";
+import { IAuth, ICustomerData } from "../../types";
+import { uploadFile } from "../../utils";
 
 const Profile = () => {
   const auth: IAuth = useSelector((state: any) => state.authReducer.data);
@@ -113,8 +113,9 @@ const Profile = () => {
         const res = await handleAPI(api, undefined, "GET");
         setProfile(res.data);
       } catch (error: any) {
-        console.log(error);
-        message.error(error.message);
+        if (error.message !== 'Forbidden: Email not verified') {
+          message.error(error.message || 'Có lỗi xảy ra khi tải lịch hẹn');
+        }
       } finally {
         setIsLoading(false);
       }

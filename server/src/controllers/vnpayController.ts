@@ -9,7 +9,7 @@ dotenv.config();
  * Người Làm: Thép
  * Người Test: Thép
  * Loại Test: API TEST (Đang làm), UNIT TEST (Đang làm), E2E TEST (Đang làm)
- * Chỉnh Sửa Lần Cuối : 13/10/2024 
+ * Chỉnh Sửa Lần Cuối : 14/10/2024 
 */
 const tmnCode = process.env.TMN_CODE!;
 const vnp_HashSecret = process.env.vnp_HashSecret!;
@@ -95,8 +95,6 @@ export const createPayment = async (req: Request, res: Response) => {
     await newPayment.save();
 
     const fullUrl = vnpUrl + '?' + qs.stringify(vnp_Params, { encode: false });
-    console.log('Generated VNPAY URL:', fullUrl);
-
     console.log('Generated VNPAY URL:', fullUrl);
     return res.status(200).json({ 
       data: {

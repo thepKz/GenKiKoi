@@ -75,6 +75,7 @@ export const register = async (req: Request, res: Response) => {
       username: formatUsername,
       email: formatEmail,
       password: hashedPass,
+      isVerified: false, // Set to true since we're skipping email verification
     });
 
     // Create new customer
@@ -88,6 +89,7 @@ export const register = async (req: Request, res: Response) => {
       username: newUser.username,
       email: newUser.email,
       role: newUser.role,
+      isVerified: newUser.isVerified,
     });
 
     return res.status(201).json({
@@ -97,6 +99,7 @@ export const register = async (req: Request, res: Response) => {
         username: newUser.username,
         email: newUser.email,
         role: newUser.role,
+        isVerified: newUser.isVerified,
         token,
       },
     });
@@ -149,6 +152,7 @@ export const login = async (req: Request, res: Response) => {
       username: user.username,
       email: user.email,
       role: user.role,
+      isVerified: user.isVerified,
     });
 
     return res.status(200).json({
@@ -158,6 +162,7 @@ export const login = async (req: Request, res: Response) => {
         username: user.username,
         email: user.email,
         role: user.role,
+        isVerified: user.isVerified,
         token,
       },
     });
@@ -188,6 +193,7 @@ export const loginWithGoogle = async (req: Request, res: Response) => {
         email: formatEmail,
         password: hashedPass,
         photoUrl,
+        isVerified: true, // Set isVerified to true for Google logins
       });
 
       // Create a new customer
@@ -201,6 +207,7 @@ export const loginWithGoogle = async (req: Request, res: Response) => {
       username: user.username,
       email: user.email,
       role: user.role,
+      isVerified: user.isVerified,
     });
 
     return res.status(200).json({
@@ -211,6 +218,7 @@ export const loginWithGoogle = async (req: Request, res: Response) => {
         email: user.email,
         role: user.role,
         photoUrl: user.photoUrl || photoUrl,
+        isVerified: user.isVerified,
         token,
       },
     });
@@ -265,6 +273,7 @@ export const loginAdmin = async (req: Request, res: Response) => {
       username: user.username,
       email: user.email,
       role: user.role,
+      isVerified: user.isVerified,
     });
 
     return res.status(200).json({

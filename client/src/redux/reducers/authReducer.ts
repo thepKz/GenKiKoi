@@ -7,6 +7,7 @@ const initialState = {
   email: "",
   role: "",
   token: "",
+  isVerified: false,
 };
 
 const authSlice = createSlice({
@@ -19,6 +20,7 @@ const authSlice = createSlice({
       state.data = action.payload;
       localStorage.setItem("customer_GenKiKoi", JSON.stringify(action.payload));
     },
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     removeAuth: (state, _action) => {
       state.data = initialState;
       localStorage.setItem("customer_GenKiKoi", JSON.stringify({}));
@@ -28,6 +30,7 @@ const authSlice = createSlice({
         ...action.payload,
         role: state.data.role,
         token: state.data.token,
+        isVerified: state.data.isVerified,
       };
     },
   },

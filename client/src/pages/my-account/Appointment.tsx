@@ -11,10 +11,12 @@ import {
   Tag,
 } from "antd";
 import { CalendarCircle, Sort } from "iconsax-react";
+import { useCallback, useEffect, useState } from "react";
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { handleAPI } from "../../apis/handleAPI";
 import { AppointmentData } from "../../models/DataModels";
 import { getValue } from "../../utils";
-import { useEffect, useState } from "react";
-import { handleAPI } from "../../apis/handleAPI";
 
 const columns: TableProps<AppointmentData>["columns"] = [
   {
@@ -70,24 +72,44 @@ const columns: TableProps<AppointmentData>["columns"] = [
 const Appointment = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [appointments, setAppointments] = useState([]);
+  const auth = useSelector((state: any) => state.authReducer.data);
+  console.log("auth:", auth);
+  const navigate = useNavigate();
+
+  const getAppointments = useCallback(async () => {
+    if (!auth.token) {
+      navigate('/login');
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      const api = `/api/appointments/`;
+      const res: any = await handleAPI(api, undefined, "GET");
+      setAppointments(res.data);
+    } catch (error: any) {
+      if (error.message !== 'Forbidden: Email not verified') {
+        message.error(error.message || 'Có lỗi xảy ra khi tải lịch hẹn');
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  }, [auth.token, navigate]);
 
   useEffect(() => {
-    const getAppointments = async () => {
-      try {
-        setIsLoading(true);
-        const api = `/api/appointments/`;
-        const res: any = await handleAPI(api, undefined, "GET");
-        setAppointments(res.data);
-      } catch (error: any) {
-        console.log(error);
-        message.error(error.message);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+    console.log('Verify email:', auth.isVerified);
+    console.log('Role:', auth.role);
+    // Nếu không xác thực email hoặc không là manager, doctor, staff
+    // ví dụ nó là 3 roles này thì không cần xác thực email
+    if (!auth.isVerified && !['manager', 'doctor', 'staff'].includes(auth.role)) {
+      console.log('test verify');
+      // message.warning('Vui lòng xác thực email trước khi xem lịch hẹn.');
+      navigate('/verify-email');
+      return;
+    }
 
     getAppointments();
-  }, []);
+  }, [auth.isVerified, auth.role, getAppointments, navigate]);
 
   if (isLoading) {
     return (

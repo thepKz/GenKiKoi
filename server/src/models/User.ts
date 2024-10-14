@@ -8,6 +8,7 @@ interface IUser {
   phoneNumber: string;
   role: "customer" | "staff" | "doctor" | "manager";
   gender: "nam" | "nữ";
+  isVerified: boolean;
 }
 
 const userSchema = new mongoose.Schema<IUser>(
@@ -27,6 +28,7 @@ const userSchema = new mongoose.Schema<IUser>(
       type: String,
       enum: ["nam", "nữ"],
     },
+    isVerified: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

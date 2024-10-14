@@ -16,9 +16,10 @@ import NotFound from "./NotFound";
 import ConsultingTreatment from "./services/ConsultingTreatment";
 import Services from "./services/Services";
 import UnAuthorized from "./UnAuthorized";
+import VerifyEmail from "./VerifyEmail";
 import VnPayReturn from "./VnPayReturn";
 export {
   AboutUs, Appointment, Booking, CheckoutPage, ConsultingTreatment, Doctors, FAQ, History, Home, Images, InspectionRecord, MedicalRecord, NotFound, Profile, Services, SignIn,
-  SignUp, UnAuthorized, VnPayReturn
+  SignUp, UnAuthorized, VerifyEmail, VnPayReturn
 };
 

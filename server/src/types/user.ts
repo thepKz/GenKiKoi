@@ -7,4 +7,5 @@ export interface IUser {
   phoneNumber: string;
   role: "customer" | "staff" | "doctor" | "manager";
   gender: "nam" | "nữ";
+  isVerified: boolean;
 }

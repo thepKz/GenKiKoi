@@ -12,11 +12,11 @@ const AboutUs = () => {
     window.scrollTo(0, 0);
   }, []);
   return (
-    <div>
+    <div className="items-center justify-center min-h-screen bg-gradient-to-br from-[#0C3C54] to-[#1A5F7A]">
 
-      
+
       {/* Why? Section */}
-      <div className="section bg-green-dark text-center text-white ">
+      <div className="section text-center text-white ">
 
         <div className="container mx-auto lg:px-40">
           <AnimatedSection
@@ -33,36 +33,36 @@ const AboutUs = () => {
             }}
           >
 
-            <div className=" bg-green-dark text-white p-6 text-center">
-  <div className="text-center my-10">
-    <h1 className="text-5xl font-bold mr-3 pb-6 text-orange-400">GenKiKoi</h1>
-    <p className="text-xl ">Chăm sóc cá Koi toàn diện, quản lý dịch vụ dễ dàng</p>
-  </div>
-</div>
+            <div className=" text-white p-6 text-center">
+              <div className="text-center my-10">
+                <h1 className="text-5xl font-bold mr-3 pb-6 text-orange-400">GenKiKoi</h1>
+                <p className="text-xl ">Chăm sóc cá Koi toàn diện, quản lý dịch vụ dễ dàng</p>
+              </div>
+            </div>
 
-            
+
 
           </AnimatedSection>
           <AnimatedSection
-                variants={{
-                  hidden: {
-                    opacity: 0,
-                    x: 100,
-                  },
-                  visible: {
-                    opacity: 1,
-                    x: 0,
-                    transition: { duration: 1.5, delay: 0.5 },
-                  },
-                }}
-              >
-                <div className="flex justify-center">
-                  <img className="rounded-2xl w-full"
-                        src={FishBanner2}
-                        alt=""
-                      />
-                </div>
-              </AnimatedSection>
+            variants={{
+              hidden: {
+                opacity: 0,
+                x: 100,
+              },
+              visible: {
+                opacity: 1,
+                x: 0,
+                transition: { duration: 1.5, delay: 0.5 },
+              },
+            }}
+          >
+            <div className="flex justify-center">
+              <img className="rounded-2xl w-full"
+                src={FishBanner2}
+                alt=""
+              />
+            </div>
+          </AnimatedSection>
 
           <AnimatedSection
             variants={{
@@ -121,10 +121,9 @@ const AboutUs = () => {
           </AnimatedSection>
         </div>
       </div>
-      <DividerComponent />
 
       {/* Expected */}
-      <div className="section bg-green-dark text-center text-white">
+      <div className="section text-center text-white">
         <div className="container mx-auto lg:px-40">
 
           <div className="my-10 flex">

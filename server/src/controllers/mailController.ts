@@ -1,5 +1,14 @@
 import { Request, Response } from 'express';
+import OTP from '../models/OTP';
+import User from '../models/User'; // Import User model
 import { sendVerificationEmail } from '../services/emailService';
+
+/**
+ * Người Làm: Thép
+ * Người Test: Thép
+ * Loại Test: API TEST (Đã xong), UNIT TEST (Đang làm), E2E TEST (Đã làm)
+ * Chỉnh Sửa Lần Cuối : 13/10/2024
+*/
 
 // In-memory storage for OTPs (replace with database in production)
 const otpStorage: { [email: string]: { otp: string; expires: Date } } = {};
@@ -25,27 +34,14 @@ export const sendVerificationEmailController = async (req: Request, res: Respons
     return res.status(400).json({ message: 'Invalid email format' });
   }
 
-  const now = Date.now();
-  const lastSent = lastEmailSent[email] || 0;
-
-  // Check if email was sent in the last minute
-  if (now - lastSent < 60000) { // 60000 ms = 1 minute
-    return res.status(429).json({ message: 'Please wait before requesting another verification email' });
-  }
-
   try {
-    // Generate OTP
     const otp = generateOTP();
 
-    // Store OTP with expiration (10 minutes)
-    const expirationTime = new Date(now + 10 * 60000);
-    otpStorage[email] = { otp, expires: expirationTime };
+    // Lưu OTP vào MongoDB
+    await OTP.create({ email, otp });
 
-    // Send verification email
+    // Gửi email xác thực
     await sendVerificationEmail(email, otp);
-
-    // Update last email sent time
-    lastEmailSent[email] = now;
 
     res.status(200).json({ message: 'Verification email sent successfully' });
   } catch (error) {
@@ -54,32 +50,41 @@ export const sendVerificationEmailController = async (req: Request, res: Respons
   }
 };
 
-export const verifyOTPController = (req: Request, res: Response) => {
+export const verifyOTPController = async (req: Request, res: Response) => {
   const { email, otp } = req.body;
 
   if (!email || !otp) {
     return res.status(400).json({ message: 'Email and OTP are required' });
   }
 
-  const storedOTPData = otpStorage[email];
+  try {
+    const otpRecord = await OTP.findOne({ email, otp });
 
-  if (!storedOTPData) {
-    return res.status(400).json({ message: 'No OTP found for this email' });
+    if (!otpRecord) {
+      return res.status(400).json({ message: 'Invalid OTP' });
+    }
+
+    // Check if OTP has expired
+    if (otpRecord.createdAt.getTime() + 600000 < Date.now()) {
+      await OTP.deleteOne({ _id: otpRecord._id });
+      return res.status(400).json({ message: 'OTP has expired' });
+    }
+
+    // OTP is valid, delete it from the database
+    await OTP.deleteOne({ _id: otpRecord._id });
+
+    // Find the user by email and update isVerified
+    const user = await User.findOneAndUpdate({ email }, { isVerified: true }, { new: true });
+    
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.status(200).json({ message: 'Email verified successfully' });
+  } catch (error) {
+    console.error('Error in verifyOTPController:', error);
+    res.status(500).json({ message: 'Error verifying OTP' });
   }
-
-  if (new Date() > storedOTPData.expires) {
-    delete otpStorage[email];
-    return res.status(400).json({ message: 'OTP has expired' });
-  }
-
-  if (otp !== storedOTPData.otp) {
-    return res.status(400).json({ message: 'Invalid OTP' });
-  }
-
-  // OTP is valid
-  delete otpStorage[email];
-
-  res.status(200).json({ message: 'Email verified successfully' });
 };
 // Reset rate limit
 export const resetRateLimit = (req: Request, res: Response) => {
@@ -91,3 +96,5 @@ export const resetRateLimit = (req: Request, res: Response) => {
     res.status(400).json({ message: 'Email is required' });
   }
 };
+
+

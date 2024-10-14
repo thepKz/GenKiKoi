@@ -1,8 +1,9 @@
 import { NextFunction, Response } from "express";
 import jwt from "jsonwebtoken";
+import User from "../models/User"; // Import User model
 import { AuthRequest } from "../types";
 
-export const authMiddleware = (
+export const authMiddleware = async (
   req: AuthRequest,
   res: Response,
   next: NextFunction
@@ -23,6 +24,16 @@ export const authMiddleware = (
       _id: string;
       role: string;
     };
+
+    const user = await User.findById(decoded._id);
+    if (!user) {
+      return res.status(401).json({ message: "Unauthorized: User not found" });
+    }
+
+    const allowedRoles = ["staff", "doctor", "manager"];
+    if (!user.isVerified && !allowedRoles.includes(user.role)) {
+      return res.status(403).json({ message: "Forbidden: Email not verified" });
+    }
 
     req.user = decoded;
 

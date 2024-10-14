@@ -1,5 +1,6 @@
 import { Avatar, Badge, Button, Dropdown, MenuProps } from "antd";
 import { CalendarEdit, Logout, Notification, User } from "iconsax-react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Logo from "../assets/logo.jpg";
@@ -11,7 +12,22 @@ const Header = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [isLoading, setIsLoading] = useState(true);
+  const showVerifyButton = (!auth.isVerified && auth.role === "customer");
+  console.log('Auth state:', auth);
+console.log('Is verified:', auth.isVerified);
+console.log('Role:', auth.role);
+console.log('Show verify button:', (!auth.isVerified && auth.role === "customer"));
 
+
+  useEffect(() => {
+    setIsLoading(false);
+    console.log("Verify email button visibility:", showVerifyButton);
+  }, [auth, showVerifyButton]);
+
+  const handleVerifyClick = () => {
+    navigate("/verify-email"); // Adjust this route as needed
+  };
   // Mục đích ???
   const handleNavClick = (e: React.MouseEvent, path: string) => {
     if (location.pathname === path) {
@@ -186,24 +202,17 @@ const Header = () => {
             </div>
           ) : (
             <div className="flex items-center gap-3">
-              <Link
-                to="/booking"
-                className="cursor-pointer"
-              >
-                <CalendarEdit
-                  color="white"
-                  size={24}
-                />
+              
+              {!isLoading && showVerifyButton && (
+                <Button size="large" type="primary" onClick={handleVerifyClick}>
+                  Xác thực email
+                </Button>
+              )}
+              <Link to="/booking" className="cursor-pointer">
+                <CalendarEdit color="white" size={24} />
               </Link>
-              <Badge
-                count={9}
-                size="small"
-                offset={[-4, 3]}
-              >
-                <Notification
-                  className="cursor-pointer"
-                  color="white"
-                />
+              <Badge count={9} size="small" offset={[-4, 3]}>
+                <Notification className="cursor-pointer" color="white" />
               </Badge>
               <Dropdown menu={{ items: profile }}>
                 <Avatar

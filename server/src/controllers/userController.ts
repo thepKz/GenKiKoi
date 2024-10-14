@@ -1,13 +1,15 @@
+import bcrypt from 'bcrypt';
 import { Response } from "express";
 import { Customer, User } from "../models";
 import { AuthRequest } from "../types";
 import { ICustomer } from "../types/customer";
 import { IUser } from "../types/user";
+
 /**
  * Người Làm: Thép, Dũng
  * Người Test: Thép
  * Loại Test: API TEST (Đã xong), UNIT TEST (Đang làm), E2E TEST (Đang làm)
- * Chỉnh Sửa Lần Cuối : 13/10/2024 (Thép)
+ * Chỉnh Sửa Lần Cuối : 14/10/2024 (Thép)
 */
 
 
@@ -23,7 +25,7 @@ export const getUser = async (req: AuthRequest, res: Response) => {
     let customer: ICustomer | null = await Customer.findOne({ userId: userId })
       .populate(
         "userId",
-        "username email photoUrl fullName phoneNumber photoUrl gender"
+        "username email photoUrl fullName phoneNumber photoUrl gender isVerified"
       )
       .select("detailAddress city district ward");
 
@@ -56,6 +58,7 @@ export const getUser = async (req: AuthRequest, res: Response) => {
       phoneNumber: customer?.userId.phoneNumber,
       photoUrl: customer?.userId.photoUrl,
       gender: customer?.userId.gender,
+      isVerified: customer?.userId.isVerified,
       city: customer?.city || null,
       district: customer?.district || null,
       ward: customer?.ward || null,
@@ -130,5 +133,44 @@ export const updateProfile = async (req: AuthRequest, res: Response) => {
     return res.status(500).json({
       message: error.message,
     });
+  }
+};
+
+export const changePassword = async (req: AuthRequest, res: Response) => {
+  try {
+    const userId = req.user?._id;
+    const { currentPassword, newPassword, confirmNewPassword } = req.body;
+
+    if (!userId) {
+      return res.status(401).json({ message: "Không tìm thấy ID người dùng" });
+    }
+
+    if (!currentPassword || !newPassword || !confirmNewPassword) {
+      return res.status(400).json({ message: "Vui lòng điền đầy đủ thông tin" });
+    }
+
+    if (newPassword !== confirmNewPassword) {
+      return res.status(400).json({ message: "Mật khẩu mới không khớp" });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "Không tìm thấy người dùng" });
+    }
+
+    const isPasswordCorrect = await bcrypt.compare(currentPassword, user.password);
+    if (!isPasswordCorrect) {
+      return res.status(401).json({ message: "Mật khẩu hiện tại không đúng" });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedNewPassword = await bcrypt.hash(newPassword, salt);
+
+    user.password = hashedNewPassword;
+    await user.save();
+
+    return res.status(200).json({ message: "Mật khẩu đã được thay đổi thành công" });
+  } catch (error: any) {
+    return res.status(500).json({ message: error.message });
   }
 };

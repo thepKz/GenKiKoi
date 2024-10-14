@@ -21,6 +21,7 @@ export const signToken = async (payload: {
   email: string;
   username: string;
   role: string;
+  isVerified: boolean;
 }) => {
   const token = jwt.sign(payload, process.env.SECRET_KEY as string);
   return token;

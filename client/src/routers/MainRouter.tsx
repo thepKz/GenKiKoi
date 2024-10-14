@@ -22,6 +22,7 @@ import {
   SignIn,
   SignUp,
   UnAuthorized,
+  VerifyEmail,
   VnPayReturn
 } from "../pages";
 import Vaccine from "../pages/services/Vaccine";
@@ -105,6 +106,7 @@ const MainRouter = () => {
             path="unauthorized"
             element={<UnAuthorized />}
           />
+          <Route path="verify-email" element={<VerifyEmail />} />
         </Route>
         <Route
           path="/my-account"
@@ -133,6 +135,7 @@ const MainRouter = () => {
         </Route>
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/vnpay_return" element={<VnPayReturn />} />
+    
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
