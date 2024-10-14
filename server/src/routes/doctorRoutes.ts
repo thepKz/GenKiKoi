@@ -3,7 +3,9 @@ import {
   addNewDoctor,
   deleteDoctorById,
   getAllDoctors,
+  getAllDoctorSchedules,
   getAllDoctorsForBooking,
+  getScheduleById,
   updateDoctorById,
 } from "../controllers/doctorController";
 import { authMiddleware, roleMiddleware } from "../middleware";
@@ -11,6 +13,22 @@ import { authMiddleware, roleMiddleware } from "../middleware";
 const router = express.Router();
 
 router.get("/", getAllDoctors);
+router.get("/all", getAllDoctorsForBooking);
+
+router.get(
+  "/schedules",
+  authMiddleware,
+  roleMiddleware(["doctor"]),
+  getAllDoctorSchedules
+);
+
+router.get(
+  "/schedule/:id",
+  authMiddleware,
+  roleMiddleware(["doctor"]),
+  getScheduleById
+);
+
 router.post("/", authMiddleware, roleMiddleware(["manager"]), addNewDoctor);
 router.patch(
   "/:id",
@@ -24,6 +42,5 @@ router.delete(
   roleMiddleware(["manager"]),
   deleteDoctorById
 );
-router.get("/all", getAllDoctorsForBooking);
 
 export default router;

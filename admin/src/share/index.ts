@@ -1,4 +1,5 @@
 import CustomTable from "./CustomTable";
+import QuantityButton from "./QuantityButton";
 import SocialButton from "./SocialButton";
 
-export { SocialButton, CustomTable };
+export { SocialButton, CustomTable, QuantityButton };

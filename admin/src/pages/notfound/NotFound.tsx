@@ -13,9 +13,11 @@ const NotFound = (props: Props) => {
       title="404"
       subTitle="Xin lỗi, bạn đang truy cập vào trang không tồn tại!"
       extra={
-        <Button size="large" type="primary">
-          <Link to={to}>Trang chủ</Link>
-        </Button>
+        <Link to={to}>
+          <Button size="large" type="primary">
+            Trang chủ
+          </Button>
+        </Link>
       }
     />
   );

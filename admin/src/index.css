@@ -68,3 +68,19 @@
   align-items: center;
   padding: 100px 32px;
 }
+
+/* Calendar */
+.sx-react-calendar-wrapper {
+  width: 100%;
+  max-width: 100vw;
+  height: calc(100vh - 160px);
+  max-height: 90vh;
+}
+
+.sx__week-grid__hour {
+  height: 70px !important;
+}
+
+:root {
+  --sx-week-grid-height: 910px !important;
+}

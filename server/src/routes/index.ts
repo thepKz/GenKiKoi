@@ -8,7 +8,11 @@ import userRoutes from "./userRoutes";
 import { vnpayRoutes } from "./vnpayRoutes";
 export {
   appointmentRoutes,
-  authRoutes, billRoutes, doctorRoutes, serviceRoutes,
-  staffRoutes, userRoutes, vnpayRoutes
+  authRoutes,
+  billRoutes,
+  doctorRoutes,
+  serviceRoutes,
+  staffRoutes,
+  userRoutes,
+  vnpayRoutes,
 };
-

@@ -67,8 +67,8 @@ const SiderComponent = () => {
       icon: <Stickynote size={20} />,
     },
     {
-      key: "create-record",
-      label: <Link to={"/doctor/create-record"}>Tạo hồ sơ bệnh án</Link>,
+      key: "create-records",
+      label: <Link to={"/doctor/create-records"}>Tạo hồ sơ bệnh án</Link>,
       icon: <NoteAdd size={20} />,
     },
     {
@@ -151,7 +151,7 @@ const SiderComponent = () => {
                     )?.key,
                   ] as string[])
                 : ([
-                    staffItems.find(
+                    doctorItems.find(
                       (item) => item?.key === location.pathname.split("/")[2],
                     )?.key,
                   ] as string[])
