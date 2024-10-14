@@ -26,9 +26,8 @@ function sortObject(obj: Record<string, any>) {
   return sorted;
 }
 
-
-
 export const createPayment = async (req: Request, res: Response) => {
+
   // Sử dụng thời gian hiện tại
   const date = new Date();
 
@@ -73,7 +72,7 @@ export const createPayment = async (req: Request, res: Response) => {
     vnp_ReturnUrl: returnUrl,
     vnp_IpAddr: ipAddr,
     vnp_CreateDate: createDate,
-    vnp_ExpireDate: expireDate,
+    vnp_ExpireDate: expireDate, // Thêm tham số vnp_ExpireDate
   };
 
   const sortedParams = sortObject(vnp_Params);
@@ -95,13 +94,15 @@ export const createPayment = async (req: Request, res: Response) => {
   try {
     await newPayment.save();
 
-    const paymentUrl = vnpUrl + '?' + qs.stringify(sortedParams, { encode: false });
-    console.log('Generated VNPAY URL:', paymentUrl);
+    const fullUrl = vnpUrl + '?' + qs.stringify(vnp_Params, { encode: false });
+    console.log('Generated VNPAY URL:', fullUrl);
+
+    console.log('Generated VNPAY URL:', fullUrl);
     return res.status(200).json({ 
       data: {
         status: 'success',
         message: 'Payment URL created successfully',
-        paymentUrl: paymentUrl
+        paymentUrl: fullUrl
       }
     });
   } catch (error) {
