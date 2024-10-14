@@ -22,10 +22,9 @@ export const initiateVnPayPayment = async (
     // Log toàn bộ response để kiểm tra
     console.log('VNPAY payment URL response:', response);
 
-    // Đúng cách lấy paymentUrl sau khi interceptor đã trả về response.data
-    if ((response as unknown as { paymentUrl: string }).paymentUrl) {
-      console.log("Redirecting to:", (response as unknown as { paymentUrl: string }).paymentUrl);
-      window.location.href = (response as unknown as { paymentUrl: string }).paymentUrl;
+    if (response.data.paymentUrl) {
+      console.log("Redirecting to:", response.data.paymentUrl);
+      window.location.href = response.data.paymentUrl;
     } else {
       throw new Error('paymentUrl not found in response');
     }
