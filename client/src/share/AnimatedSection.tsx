@@ -1,6 +1,6 @@
 import { motion, Variants } from "framer-motion";
-import { useAnimationHook } from "../hooks";
 import { ReactNode } from "react";
+import { useAnimationHook } from "../hooks";
 
 interface Props {
   children: ReactNode;

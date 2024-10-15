@@ -62,14 +62,16 @@ export const addNewDoctor = async (req: Request, res: Response) => {
       movingService,
     } = req.body;
 
+    console.log('Received doctor data:', req.body); // Add this line for debugging
+
     if (
       !fullName ||
       !gender ||
       !specialization ||
       !email ||
       !licenseNumber ||
-      !yearOfExperience ||
-      !movingService
+      yearOfExperience === undefined ||
+      movingService === undefined
     ) {
       return res
         .status(400)
@@ -149,6 +151,7 @@ export const addNewDoctor = async (req: Request, res: Response) => {
       data: formatDoctor,
     });
   } catch (error: any) {
+    console.error('Error in addNewDoctor:', error); // Add this line for debugging
     return res.status(500).json({ message: error.message });
   }
 };

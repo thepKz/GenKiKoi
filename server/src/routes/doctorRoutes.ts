@@ -12,33 +12,32 @@ import { authMiddleware, roleMiddleware } from "../middleware";
 
 const router = express.Router();
 
+// Apply authMiddleware to all routes
+router.use(authMiddleware);
+
 router.get("/", getAllDoctors);
 router.get("/all", getAllDoctorsForBooking);
 
 router.get(
   "/schedules",
-  authMiddleware,
   roleMiddleware(["doctor"]),
   getAllDoctorSchedules
 );
 
 router.get(
   "/schedule/:id",
-  authMiddleware,
   roleMiddleware(["doctor"]),
   getScheduleById
 );
 
-router.post("/", authMiddleware, roleMiddleware(["manager"]), addNewDoctor);
+router.post("/", roleMiddleware(["manager"]), addNewDoctor);
 router.patch(
   "/:id",
-  authMiddleware,
   roleMiddleware(["manager"]),
   updateDoctorById
 );
 router.delete(
   "/:id",
-  authMiddleware,
   roleMiddleware(["manager"]),
   deleteDoctorById
 );

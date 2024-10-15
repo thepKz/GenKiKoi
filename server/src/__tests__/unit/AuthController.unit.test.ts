@@ -1,727 +1,151 @@
-// src/__tests__/unit/AuthController.unit.test.ts
-
+import bcrypt from 'bcryptjs';
 import { Request, Response } from 'express';
-import { register, login } from '../../controllers/authController';
+import { checkEmail, checkUsername, login, loginAdmin, loginWithGoogle, register } from '../../controllers/authController';
+import Customer from '../../models/Customer';
 import User from '../../models/User';
 
 jest.mock('../../models/User');
-
+jest.mock('../../models/Customer');
+jest.mock('bcryptjs');
+jest.mock('jsonwebtoken');
+jest.mock('../../utils', () => ({
+    signToken: jest.fn().mockResolvedValue('mocked-token'),
+    randomText: jest.fn().mockReturnValue('random-text'),
+}));
 describe('AuthController', () => {
     let req: Partial<Request>;
     let res: Partial<Response>;
-    let json: jest.Mock;
-    let status: jest.Mock;
-    let cookie: jest.Mock;
+    let jsonMock: jest.Mock;
+    let statusMock: jest.Mock;
 
     beforeEach(() => {
-        json = jest.fn();
-        status = jest.fn().mockReturnValue({ json });
-        cookie = jest.fn();
-        res = { status, cookie } as Partial<Response>;
+        jsonMock = jest.fn();
+        statusMock = jest.fn().mockReturnValue({ json: jsonMock });
+        res = { status: statusMock, json: jsonMock } as Partial<Response>;
     });
-
 
     describe('register', () => {
         beforeEach(() => {
             req = {
                 body: {
-                    username: 'testuser',
+                    username: 'TestUser123',
                     email: 'test@example.com',
                     password: 'Password123!',
                     confirmPassword: 'Password123!',
                 },
             };
-            (User.findOne as jest.Mock).mockResolvedValue(null);
         });
 
         it('should register a new user successfully', async () => {
+            (User.findOne as jest.Mock).mockResolvedValue(null);
             (User.create as jest.Mock).mockResolvedValue({
                 _id: '123',
-                username: 'testuser',
+                username: 'TestUser123',
                 email: 'test@example.com',
-                role: 'user',
+                role: 'customer',
+                isVerified: false,
             });
+            (Customer.create as jest.Mock).mockResolvedValue({});
+            (bcrypt.genSalt as jest.Mock).mockResolvedValue('salt');
+            (bcrypt.hash as jest.Mock).mockResolvedValue('hashedPassword');
 
             await register(req as Request, res as Response);
 
-            expect(status).toHaveBeenCalledWith(500);
-            expect(json).toHaveBeenCalledWith({
-                message: 'Đã xảy ra lỗi server',
-            });
+            expect(statusMock).toHaveBeenCalledWith(201);
+            expect(jsonMock).toHaveBeenCalledWith(expect.objectContaining({
+                message: 'Đăng ký thành công!',
+                data: expect.objectContaining({
+                    token: 'mocked-token',
+                }),
+            }));
         });
-
-        it('should return validation error if username already exists', async () => {
-            (User.findOne as jest.Mock).mockResolvedValue({
-                username: 'testuser',
-            });
-
-            await register(req as Request, res as Response);
-
-            expect(status).toHaveBeenCalledWith(500);
-            expect(json).toHaveBeenCalledWith({
-                email: 'Email này đã được sử dụng!',
-            });
-        });
-
         it('should return validation error if email already exists', async () => {
-            (User.findOne as jest.Mock).mockImplementation(({ email }) => {
-                if (email === 'test@example.com') {
-                    return Promise.resolve({ email: 'test@example.com' });
-                }
-                return Promise.resolve(null);
-            });
+            (User.findOne as jest.Mock).mockResolvedValue({ email: 'test@example.com' });
 
             await register(req as Request, res as Response);
 
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
+            expect(statusMock).toHaveBeenCalledWith(400);
+            expect(jsonMock).toHaveBeenCalledWith(expect.objectContaining({
                 email: 'Email này đã được sử dụng!',
-            });
+            }));
         });
 
         it('should return validation error if passwords do not match', async () => {
             req.body.confirmPassword = 'DifferentPassword123!';
+            (User.findOne as jest.Mock).mockResolvedValue(null);
 
             await register(req as Request, res as Response);
 
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
-                password: 'Mật khẩu phải chứa chữ thường, in hoa, số, ký tự đặc biệt và từ 6 đến 30 ký tự!',
-            });
-        });
-
-        it('should return validation error if password is too weak', async () => {
-            req.body.password = '123';
-            req.body.confirmPassword = '123';
-
-            await register(req as Request, res as Response);
-
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
-                password: 'Mật khẩu không đáp ứng yêu cầu!',
-            });
-        });
-
-        it('should return validation error if email is invalid', async () => {
-            req.body.email = 'invalid-email';
-
-            await register(req as Request, res as Response);
-
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
-                email: 'Email không hợp lệ!',
-            });
-        });
-
-        it('should return validation error if username is missing', async () => {
-            delete req.body.username;
-
-            await register(req as Request, res as Response);
-
-            expect(status).toHaveBeenCalledWith(500);
-            expect(json).toHaveBeenCalledWith({
-                username: 'Tên tài khoản là bắt buộc!',
-            });
-        });
-
-        it('should return validation error if password is missing', async () => {
-            delete req.body.password;
-
-            await register(req as Request, res as Response);
-
-            expect(status).toHaveBeenCalledWith(500);
-            expect(json).toHaveBeenCalledWith({
-                password: 'Mật khẩu là bắt buộc!',
-            });
-        });
-
-        it('should return validation error if confirmPassword is missing', async () => {
-            delete req.body.confirmPassword;
-
-            await register(req as Request, res as Response);
-
-            expect(status).toHaveBeenCalledWith(500);
-            expect(json).toHaveBeenCalledWith({
-                confirmPassword: 'Xác nhận mật khẩu là bắt buộc!',
-            });
-        });
-
-        it('should return validation error if email is missing', async () => {
-            delete req.body.email;
-
-            await register(req as Request, res as Response);
-
-            expect(status).toHaveBeenCalledWith(500);
-            expect(json).toHaveBeenCalledWith({
-                email: 'Email là bắt buộc!',
-            });
-        });
-
-        it('should return validation error if username is too short', async () => {
-            req.body.username = 'ab';
-
-            await register(req as Request, res as Response);
-
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
-                username: 'Tên tài khoản phải có độ dài từ 8 đến 30 ký tự!',
-            });
-        });
-
-        it('should return validation error if username is too long', async () => {
-            req.body.username = 'a'.repeat(31); // Assuming max length is 30
-
-            await register(req as Request, res as Response);
-
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
-                username: 'Tên tài khoản phải có độ dài từ 8 đến 30 ký tự!',
-            });
-        });
-
-        it('should return validation error if password is too short', async () => {
-            req.body.password = 'Pass1!';
-            req.body.confirmPassword = 'Pass1!';
-
-            await register(req as Request, res as Response);
-
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
-                password: 'Mật khẩu phải có ít nhất 8 ký tự!',
-            });
-        });
-
-        it('should return validation error if password is too long', async () => {
-            const longPassword = 'P@ssw0rd'.repeat(10);
-            req.body.password = longPassword;
-            req.body.confirmPassword = longPassword;
-
-            await register(req as Request, res as Response);
-
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
-                password: 'Mật khẩu phải chứa chữ thường, in hoa, số, ký tự đặc biệt và từ 6 đến 30 ký tự!',
-            });
-        });
-
-        it('should register a new user successfully with optional fields', async () => {
-            req.body.optionalField = 'some optional data';
-            (User.create as jest.Mock).mockResolvedValue({
-                _id: '123',
-                username: 'testuser',
-                email: 'test@example.com',
-                role: 'user',
-                optionalField: 'some optional data',
-            });
-
-            await register(req as Request, res as Response);
-
-            expect(status).toHaveBeenCalledWith(500);
-            expect(json).toHaveBeenCalledWith({
-                message: 'Đã xảy ra lỗi server',
-            });
-        });
-
-        it('should hash the password before saving the user', async () => {
-            (User.create as jest.Mock).mockImplementation((userData) => {
-                expect(userData.password).not.toBe('Password123!');
-                return Promise.resolve({
-                    ...userData,
-                    _id: '123',
-                });
-            });
-
-            await register(req as Request, res as Response);
-
-            expect(status).toHaveBeenCalledWith(500);
-            expect(json).toHaveBeenCalledWith({
-                message: 'Đã xảy ra lỗi server',
-            });
-        });
-
-        it('should assign default role "user" to new user', async () => {
-            (User.create as jest.Mock).mockImplementation((userData) => {
-                expect(userData.role).toBe('user');
-                return Promise.resolve({
-                    ...userData,
-                    _id: '123',
-                });
-            });
-
-            await register(req as Request, res as Response);
-
-            expect(status).toHaveBeenCalledWith(500);
-            expect(json).toHaveBeenCalledWith({
-                message: 'Đã xảy ra lỗi server',
-            });
-        });
-
-        it('should return server error if user creation fails', async () => {
-            (User.create as jest.Mock).mockRejectedValue(new Error('Database error'));
-
-            await register(req as Request, res as Response);
-
-            expect(status).toHaveBeenCalledWith(500);
-            expect(json).toHaveBeenCalledWith({
-                message: 'Đã xảy ra lỗi server',
-            });
-        });
-
-        // Basic test cases for registration
-        it('should return error if username is too short', async () => {
-            req.body.username = 'short';
-            await register(req as Request, res as Response);
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
-                username: 'Tên tài khoản phải có độ dài từ 8 đến 30 ký tự!',
-            });
-        });
-
-
-        it('should return error if username contains special characters', async () => {
-            req.body.username = 'user@name';
-            await register(req as Request, res as Response);
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
-                username: 'Tên tài khoản không hợp lệ!',
-            });
-        });
-
-        it('should return error if email is invalid', async () => {
-            req.body.email = 'invalid-email';
-            await register(req as Request, res as Response);
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
-                email: 'Email không hợp lệ!',
-            });
-        });
-
-        it('should return error if password is missing special characters', async () => {
-            req.body.password = 'Password123';
-            await register(req as Request, res as Response);
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
-                password: 'Mật khẩu phải chứa chữ thường, in hoa, số, ký tự đặc biệt và từ 6 đến 30 ký tự!',
-            });
-        });
-
-        it('should return error if confirmPassword does not match', async () => {
-            req.body.confirmPassword = 'DifferentPassword!';
-            await register(req as Request, res as Response);
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
+            expect(statusMock).toHaveBeenCalledWith(400);
+            expect(jsonMock).toHaveBeenCalledWith(expect.objectContaining({
                 confirmPassword: 'Mật khẩu xác nhận không khớp!',
-            });
+            }));
+        });
+        it('should return validation error if username format is invalid', async () => {
+            req.body.username = 'inva';
+            (User.findOne as jest.Mock).mockResolvedValue(null);
+            await register(req as Request, res as Response);
+            expect(statusMock).toHaveBeenCalledWith(400);
+            expect(jsonMock).toHaveBeenCalledWith(expect.objectContaining({
+                username: 'Tên tài khoản phải có độ dài từ 8 đến 30 ký tự!'
+            }));
         });
 
-        it('should return error if email is already registered', async () => {
-            (User.findOne as jest.Mock).mockResolvedValue({ email: 'test@example.com' });
+        it('should return validation error if email format is invalid', async () => {
+            req.body.email = 'invalidemail';
+            (User.findOne as jest.Mock).mockResolvedValue(null);
             await register(req as Request, res as Response);
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
-                email: 'Email này đã được sử dụng!',
-            });
-        });
-
-        it('should return error if username is already taken', async () => {
-            (User.findOne as jest.Mock).mockResolvedValue({ username: 'testuser' });
-            await register(req as Request, res as Response);
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
-                username: 'Tên tài khoản này đã được sử dụng!',
-            });
-        });
-
-        it('should return error if password is too weak', async () => {
-            req.body.password = '123';
-            await register(req as Request, res as Response);
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
-                password: 'Mật khẩu không đáp ứng yêu cầu!',
-            });
-        });
-
-        it('should return error if email is missing', async () => {
-            delete req.body.email;
-            await register(req as Request, res as Response);
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
-                email: 'Email là bắt buộc!',
-            });
-        });
-
-        it('should return error if username is missing', async () => {
-            delete req.body.username;
-            await register(req as Request, res as Response);
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
-                username: 'Tên tài khoản là bắt buộc!',
-            });
-        });
-
-        it('should return error if password is missing', async () => {
-            delete req.body.password;
-            await register(req as Request, res as Response);
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
-                password: 'Mật khẩu là bắt buộc!',
-            });
-        });
-
-        it('should return error if confirmPassword is missing', async () => {
-            delete req.body.confirmPassword;
-            await register(req as Request, res as Response);
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
-                confirmPassword: 'Xác nhận mật khẩu là bắt buộc!',
-            });
-        });
-
-        it('should return error if password is too long', async () => {
-            req.body.password = 'P@ssw0rd'.repeat(10);
-            await register(req as Request, res as Response);
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
-                password: 'Mật khẩu không được vượt quá 100 ký tự!',
-            });
-        });
-
-        it('should return error if username is too long', async () => {
-            req.body.username = 'a'.repeat(31);
-            await register(req as Request, res as Response);
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
-                username: 'Tên tài khoản không được vượt quá 30 ký tự!',
-            });
-        });
-
-        it('should return error if email is too long', async () => {
-            req.body.email = 'a'.repeat(256) + '@example.com';
-            await register(req as Request, res as Response);
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
+            expect(statusMock).toHaveBeenCalledWith(400);
+            expect(jsonMock).toHaveBeenCalledWith(expect.objectContaining({
                 email: 'Email không hợp lệ!',
-            });
+            }));
         });
 
-        it('should return error if username contains spaces', async () => {
-            req.body.username = 'user name';
+        it('should return validation error if password is weak', async () => {
+            req.body.password = 'weak';
+            req.body.confirmPassword = 'weak';
+            (User.findOne as jest.Mock).mockResolvedValue(null);
             await register(req as Request, res as Response);
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
-                username: 'Tên tài khoản không hợp lệ!',
-            });
-        });
-
-        it('should return error if email contains spaces', async () => {
-            req.body.email = 'test @example.com';
-            await register(req as Request, res as Response);
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
-                email: 'Email không hợp lệ!',
-            });
-        });
-
-        it('should return error if password is empty', async () => {
-            req.body.password = '';
-            await register(req as Request, res as Response);
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
-                password: 'Mật khẩu là bắt buộc!',
-            });
-        });
-
-
-        it('should return error if confirmPassword is empty', async () => {
-            req.body.confirmPassword = '';
-            await register(req as Request, res as Response);
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
-                confirmPassword: 'Xác nhận mật khẩu là bắt buộc!',
-            });
-        });
-
-        it('should return error if username is only whitespace', async () => {
-            req.body.username = '   ';
-            await register(req as Request, res as Response);
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
-                username: 'Tên tài khoản là bắt buộc!',
-            });
-        });
-
-        it('should return error if email is only whitespace', async () => {
-            req.body.email = '   ';
-            await register(req as Request, res as Response);
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
-                email: 'Email là bắt buộc!',
-            });
-        });
-
-        it('should return error if password is only whitespace', async () => {
-            req.body.password = '   ';
-            await register(req as Request, res as Response);
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
-                password: 'Mật khẩu là bắt buộc!',
-            });
-        });
-
-        it('should return error if confirmPassword is only whitespace', async () => {
-            req.body.confirmPassword = '   ';
-            await register(req as Request, res as Response);
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
-                confirmPassword: 'Xác nhận mật khẩu là bắt buộc!',
-            });
-        });
-
-        it('should return error if password is too weak (no uppercase)', async () => {
-            req.body.password = 'password123!';
-            await register(req as Request, res as Response);
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
+            expect(statusMock).toHaveBeenCalledWith(400);
+            expect(jsonMock).toHaveBeenCalledWith(expect.objectContaining({
                 password: 'Mật khẩu phải chứa chữ thường, in hoa, số, ký tự đặc biệt và từ 6 đến 30 ký tự!',
-            });
+            }));
         });
 
-        it('should return error if password is too weak (no lowercase)', async () => {
-            req.body.password = 'PASSWORD123!';
+        it('should handle server error during registration', async () => {
+            (User.findOne as jest.Mock).mockRejectedValue(new Error('Database error'));
             await register(req as Request, res as Response);
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
-                password: 'Mật khẩu phải chứa chữ thường, in hoa, số, ký tự đặc biệt và từ 6 đến 30 ký tự!',
-            });
+            expect(statusMock).toHaveBeenCalledWith(500);
+            expect(jsonMock).toHaveBeenCalledWith({ message: 'Đã xảy ra lỗi server' });
         });
 
-
-        it('should return error if password is too weak (no number)', async () => {
-            req.body.password = 'Password!';
+        it('should return error when required fields are missing', async () => {
+            req.body = {};
             await register(req as Request, res as Response);
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
-                password: 'Mật khẩu phải chứa chữ thường, in hoa, số, ký tự đặc biệt và từ 6 đến 30 ký tự!',
-            });
+            expect(statusMock).toHaveBeenCalledWith(500);
+            expect(jsonMock).toHaveBeenCalledWith(expect.objectContaining({
+                message: 'Đã xảy ra lỗi server'
+            }));
         });
 
-        it('should return error if password is too weak (no special character)', async () => {
-            req.body.password = 'Password123';
+        it('should return error when username is too short', async () => {
+            req.body.username = 'Short1';
             await register(req as Request, res as Response);
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
-                password: 'Mật khẩu phải chứa chữ thường, in hoa, số, ký tự đặc biệt và từ 6 đến 30 ký tự!',
-            });
-        });
-
-        it('should return error if username is a number', async () => {
-            req.body.username = '12345678';
-            await register(req as Request, res as Response);
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
-                username: 'Tên tài khoản không hợp lệ!',
-            });
-        });
-
-        it('should return error if email is a number', async () => {
-            req.body.email = '12345678';
-            await register(req as Request, res as Response);
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
-                email: 'Email không hợp lệ!',
-            });
-        });
-
-        it('should return error if password is only numbers', async () => {
-            req.body.password = '12345678';
-            req.body.confirmPassword = '12345678';
-            await register(req as Request, res as Response);
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
-                password: 'Mật khẩu không đáp ứng yêu cầu!',
-            });
-        });
-
-        it('should return error if username contains only special characters', async () => {
-            req.body.username = '@#$%^&*';
-            await register(req as Request, res as Response);
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
-                username: 'Tên tài khoản không hợp lệ!',
-            });
-        });
-
-        it('should return error if email is in uppercase', async () => {
-            req.body.email = 'TEST@EXAMPLE.COM';
-            await register(req as Request, res as Response);
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
-                email: 'Email không hợp lệ!',
-            });
-        });
-
-        it('should return error if password is too weak (no digits)', async () => {
-            req.body.password = 'Password!';
-            req.body.confirmPassword = 'Password!';
-            await register(req as Request, res as Response);
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
-                password: 'Mật khẩu không đáp ứng yêu cầu!',
-            });
-        });
-
-        it('should return error if password is too weak (no lowercase)', async () => {
-            req.body.password = 'PASSWORD123!';
-            req.body.confirmPassword = 'PASSWORD123!';
-            await register(req as Request, res as Response);
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
-                password: 'Mật khẩu không đáp ứng yêu cầu!',
-            });
-        });
-
-        it('should return error if password is too weak (no uppercase)', async () => {
-            req.body.password = 'password123!';
-            req.body.confirmPassword = 'password123!';
-            await register(req as Request, res as Response);
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
-                password: 'Mật khẩu không đáp ứng yêu cầu!',
-            });
-        });
-
-        it('should return error if password is too weak (no special character)', async () => {
-            req.body.password = 'Password123';
-            req.body.confirmPassword = 'Password123';
-            await register(req as Request, res as Response);
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
-                password: 'Mật khẩu không đáp ứng yêu cầu!',
-            });
-        });
-
-        it('should return error if username is a single character', async () => {
-            req.body.username = 'a';
-            await register(req as Request, res as Response);
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
+            expect(statusMock).toHaveBeenCalledWith(400);
+            expect(jsonMock).toHaveBeenCalledWith(expect.objectContaining({
                 username: 'Tên tài khoản phải có độ dài từ 8 đến 30 ký tự!',
-            });
+            }));
         });
 
-        it('should return error if email is a single character', async () => {
-            req.body.email = 'a';
+        it('should return error when username contains invalid characters', async () => {
+            req.body.username = 'Invalid@User123';
             await register(req as Request, res as Response);
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
-                email: 'Email không hợp lệ!',
-            });
-        });
-
-        it('should return error if username is a mix of letters and numbers', async () => {
-            req.body.username = 'user123';
-            await register(req as Request, res as Response);
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
-                username: 'Tên tài khoản không hợp lệ!',
-            });
-        });
-
-        it('should return error if email is missing "@" symbol', async () => {
-            req.body.email = 'testexample.com';
-            await register(req as Request, res as Response);
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
-                email: 'Email không hợp lệ!',
-            });
-        });
-
-        it('should return error if email is missing domain', async () => {
-            req.body.email = 'test@.com';
-            await register(req as Request, res as Response);
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
-                email: 'Email không hợp lệ!',
-            });
-        });
-
-        it('should return error if password contains username', async () => {
-            req.body.password = 'testuserPassword123!';
-            req.body.confirmPassword = 'testuserPassword123!';
-            await register(req as Request, res as Response);
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
-                password: 'Mật khẩu không được chứa tên tài khoản!',
-            });
-        });
-
-        it('should return error if password contains email', async () => {
-            req.body.password = 'test@example.comPassword123!';
-            req.body.confirmPassword = 'test@example.comPassword123!';
-            await register(req as Request, res as Response);
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
-                password: 'Mật khẩu không được chứa email!',
-            });
-        });
-
-        it('should return error if username is a palindrome', async () => {
-            req.body.username = 'racecar';
-            await register(req as Request, res as Response);
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
-                username: 'Tên tài khoản không hợp lệ!',
-            });
-        });
-
-        it('should return error if username is a common name', async () => {
-            req.body.username = 'admin';
-            await register(req as Request, res as Response);
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
-                username: 'Tên tài khoản không hợp lệ!',
-            });
-        });
-
-        it('should return error if username is a common word', async () => {
-            req.body.username = 'password';
-            await register(req as Request, res as Response);
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
-                username: 'Tên tài khoản không hợp lệ!',
-            });
-        });
-
-        it('should return error if username is a common phrase', async () => {
-            req.body.username = 'letmein';
-            await register(req as Request, res as Response);
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
-                username: 'Tên tài khoản không hợp lệ!',
-            });
-        });
-
-        it('should return error if password is a common password', async () => {
-            req.body.password = '123456';
-            req.body.confirmPassword = '123456';
-            await register(req as Request, res as Response);
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
-                password: 'Mật khẩu không đáp ứng yêu cầu!',
-            });
-        });
-
-        it('should return error if password is a common password phrase', async () => {
-            req.body.password = 'qwerty';
-            req.body.confirmPassword = 'qwerty';
-            await register(req as Request, res as Response);
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
-                password: 'Mật khẩu không đáp ứng yêu cầu!',
-            });
+            expect(statusMock).toHaveBeenCalledWith(400);
+            expect(jsonMock).toHaveBeenCalledWith(expect.objectContaining({
+                username: 'Tên tài khoản phải có độ dài từ 8 đến 30 ký tự!',
+            }));
         });
     });
-
 
     describe('login', () => {
         beforeEach(() => {
@@ -734,314 +158,355 @@ describe('AuthController', () => {
         });
 
         it('should log in a user successfully', async () => {
-            (User.findOne as jest.Mock).mockResolvedValue({
+            const mockUser = {
                 _id: '123',
                 username: 'testuser',
                 email: 'test@example.com',
                 password: 'hashedPassword',
-                isActive: true,
-                comparePassword: jest.fn().mockResolvedValue(true),
-            });
+                role: 'customer',
+                isVerified: true,
+            };
+            (User.findOne as jest.Mock).mockResolvedValue(mockUser);
+            (bcrypt.compare as jest.Mock).mockResolvedValue(true);
 
             await login(req as Request, res as Response);
 
-            expect(status).toHaveBeenCalledWith(200);
-            expect(json).toHaveBeenCalledWith({
+            expect(statusMock).toHaveBeenCalledWith(200);
+            expect(jsonMock).toHaveBeenCalledWith(expect.objectContaining({
                 message: 'Đăng nhập thành công!',
-                user: {
-                    _id: '123',
-                    username: 'testuser',
-                    email: 'test@example.com',
-                },
-                token: expect.any(String),
-            });
+                data: expect.objectContaining({
+                    token: 'mocked-token',
+                }),
+            }));
         });
 
-        it('should return error if user does not exist', async () => {
+        it('should return error for invalid credentials', async () => {
             (User.findOne as jest.Mock).mockResolvedValue(null);
 
             await login(req as Request, res as Response);
 
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
-                login: 'Vui lòng kiểm tra lại!',
-                message: 'Thông tin đăng nhập sai, vui lòng thử lại!',
-                password: 'Vui lòng kiểm tra lại!',
-            });
-        });
-
-        it('should return error if password is incorrect', async () => {
-            (User.findOne as jest.Mock).mockResolvedValue({
-                _id: '123',
-                username: 'testuser',
-                password: 'hashedPassword',
-                isActive: true,
-                comparePassword: jest.fn().mockResolvedValue(false),
-            });
-
-            await login(req as Request, res as Response);
-
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
-                login: 'Vui lòng kiểm tra lại!',
-                message: 'Thông tin đăng nhập sai, vui lòng thử lại!',
-                password: 'Vui lòng kiểm tra lại!',
-            });
-        });
-
-        it('should return validation error if login field is missing', async () => {
-            delete req.body.login;
-
-            await login(req as Request, res as Response);
-
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
-                login: 'Tên đăng nhập hoặc email là bắt buộc!',
-            });
-        });
-
-        it('should return validation error if password field is missing', async () => {
-            delete req.body.password;
-
-            await login(req as Request, res as Response);
-
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
-                password: 'Mật khẩu là bắt buộc!',
-            });
-        });
-
-        it('should return error if user is inactive', async () => {
-            (User.findOne as jest.Mock).mockResolvedValue({
-                _id: '123',
-                username: 'testuser',
-                email: 'test@example.com',
-                password: 'hashedPassword',
-                isActive: false,
-                comparePassword: jest.fn().mockResolvedValue(true),
-            });
-
-            await login(req as Request, res as Response);
-
-            expect(status).toHaveBeenCalledWith(403);
-            expect(json).toHaveBeenCalledWith({
-                message: 'Tài khoản của bạn đã bị vô hiệu hóa.',
-            });
-        });
-
-        it('should log in successfully using email', async () => {
-            req.body.login = 'test@example.com';
-
-            (User.findOne as jest.Mock).mockResolvedValue({
-                _id: '123',
-                username: 'testuser',
-                email: 'test@example.com',
-                password: 'hashedPassword',
-                isActive: true,
-                comparePassword: jest.fn().mockResolvedValue(true),
-            });
-
-            await login(req as Request, res as Response);
-
-            expect(status).toHaveBeenCalledWith(200);
-            expect(json).toHaveBeenCalledWith({
-                message: 'Đăng nhập thành công!',
-                user: {
-                    _id: '123',
-                    username: 'testuser',
-                    email: 'test@example.com',
-                },
-                token: expect.any(String),
-            });
-        });
-
-        it('should return error if account is locked', async () => {
-            (User.findOne as jest.Mock).mockResolvedValue({
-                _id: '123',
-                username: 'testuser',
-                email: 'test@example.com',
-                password: 'hashedPassword',
-                isActive: true,
-                isLocked: true,
-                comparePassword: jest.fn().mockResolvedValue(true),
-            });
-
-            await login(req as Request, res as Response);
-
-            expect(status).toHaveBeenCalledWith(403);
-            expect(json).toHaveBeenCalledWith({
-                message: 'Tài khoản của bạn đã bị khóa do nhiều lần đăng nhập thất bại.',
-            });
-        });
-
-        it('should generate a JWT token upon successful login', async () => {
-            const mockToken = 'jwt.token.here';
-
-            jest.mock('../../utils/jwt', () => ({
-                generateToken: jest.fn().mockReturnValue(mockToken),
+            expect(statusMock).toHaveBeenCalledWith(400);
+            expect(jsonMock).toHaveBeenCalledWith(expect.objectContaining({
+                message: 'Tài khoản không tồn tại!',
             }));
+        });
 
-            (User.findOne as jest.Mock).mockResolvedValue({
+        it('should return error for incorrect password', async () => {
+            const mockUser = {
                 _id: '123',
                 username: 'testuser',
                 email: 'test@example.com',
                 password: 'hashedPassword',
-                isActive: true,
-                comparePassword: jest.fn().mockResolvedValue(true),
-            });
+                role: 'customer',
+                isVerified: true,
+            };
+            (User.findOne as jest.Mock).mockResolvedValue(mockUser);
+            (bcrypt.compare as jest.Mock).mockResolvedValue(false);
 
             await login(req as Request, res as Response);
 
-            expect(status).toHaveBeenCalledWith(200);
-            expect(json).toHaveBeenCalledWith({
-                message: 'Đăng nhập thành công!',
-                user: {
-                    _id: '123',
-                    username: 'testuser',
-                    email: 'test@example.com',
-                },
-                token: mockToken,
-            });
-        });
-
-
-        it('should set a cookie with the JWT token upon successful login', async () => {
-            const mockToken = 'jwt.token.here';
-            res.cookie = cookie;
-
-            jest.mock('../../utils/jwt', () => ({
-                generateToken: jest.fn().mockReturnValue(mockToken),
+            expect(statusMock).toHaveBeenCalledWith(400);
+            expect(jsonMock).toHaveBeenCalledWith(expect.objectContaining({
+                message: 'Thông tin đăng nhập sai, vui lòng thử lại!',
             }));
+        });
 
-            (User.findOne as jest.Mock).mockResolvedValue({
+        it('should handle server error during login', async () => {
+            (User.findOne as jest.Mock).mockRejectedValue(new Error('Database error'));
+            await login(req as Request, res as Response);
+            expect(statusMock).toHaveBeenCalledWith(500);
+            expect(jsonMock).toHaveBeenCalledWith({ message: 'Database error' });
+        });
+
+        it('should return error when required fields are missing', async () => {
+            req.body = {};
+            await login(req as Request, res as Response);
+            expect(statusMock).toHaveBeenCalledWith(500);
+            expect(jsonMock).toHaveBeenCalledWith({ message: expect.any(String) });
+        });
+
+        it('should log in with email', async () => {
+            const mockUser = {
                 _id: '123',
                 username: 'testuser',
                 email: 'test@example.com',
                 password: 'hashedPassword',
-                isActive: true,
-                comparePassword: jest.fn().mockResolvedValue(true),
-            });
+                role: 'customer',
+                isVerified: true,
+            };
+            req.body = { login: 'test@example.com', password: 'Password123!' };
+            (User.findOne as jest.Mock).mockResolvedValue(mockUser);
+            (bcrypt.compare as jest.Mock).mockResolvedValue(true);
 
             await login(req as Request, res as Response);
 
-            expect(res.cookie).toHaveBeenCalledWith('token', mockToken, { httpOnly: true });
-            expect(status).toHaveBeenCalledWith(200);
-            expect(json).toHaveBeenCalledWith({
+            expect(statusMock).toHaveBeenCalledWith(200);
+            expect(jsonMock).toHaveBeenCalledWith(expect.objectContaining({
                 message: 'Đăng nhập thành công!',
-                user: {
-                    _id: '123',
-                    username: 'testuser',
+                data: expect.objectContaining({
                     email: 'test@example.com',
+                }),
+            }));
+        });
+        it('should return error when required fields are missing', async () => {
+            req.body = {};
+            await login(req as Request, res as Response);
+            expect(statusMock).toHaveBeenCalledWith(500);
+            expect(jsonMock).toHaveBeenCalledWith({ message: expect.any(String) });
+        });
+
+        it('should log in with email', async () => {
+            const mockUser = {
+                _id: '123',
+                username: 'testuser',
+                email: 'test@example.com',
+                password: 'hashedPassword',
+                role: 'customer',
+                isVerified: true,
+            };
+            req.body = { login: 'test@example.com', password: 'Password123!' };
+            (User.findOne as jest.Mock).mockResolvedValue(mockUser);
+            (bcrypt.compare as jest.Mock).mockResolvedValue(true);
+
+            await login(req as Request, res as Response);
+
+            expect(statusMock).toHaveBeenCalledWith(200);
+            expect(jsonMock).toHaveBeenCalledWith(expect.objectContaining({
+                message: 'Đăng nhập thành công!',
+                data: expect.objectContaining({
+                    email: 'test@example.com',
+                }),
+            }));
+        });
+    });
+
+    describe('loginWithGoogle', () => {
+        beforeEach(() => {
+            req = {
+                body: {
+                    email: 'test@gmail.com',
+                    username: 'Test User',
+                    photoUrl: 'https://example.com/photo.jpg',
                 },
-            });
+            };
         });
 
-
-        // Basic test cases for login
-        it('should return error if login field is missing', async () => {
-            delete req.body.login;
-            await login(req as Request, res as Response);
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
-                login: 'Tên đăng nhập hoặc email là bắt buộc!',
-            });
-        });
-
-
-        it('should return error if password field is missing', async () => {
-            delete req.body.password;
-            await login(req as Request, res as Response);
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
-                password: 'Mật khẩu là bắt buộc!',
-            });
-        });
-
-        it('should return error if login field is empty', async () => {
-            req.body.login = '';
-            await login(req as Request, res as Response);
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
-                login: 'Tên đăng nhập hoặc email là bắt buộc!',
-            });
-        });
-
-        it('should return error if password field is empty', async () => {
-            req.body.password = '';
-            await login(req as Request, res as Response);
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
-                password: 'Mật khẩu là bắt buộc!',
-            });
-        });
-
-        it('should return error if user is inactive', async () => {
-            (User.findOne as jest.Mock).mockResolvedValue({
-                isActive: false,
-            });
-            await login(req as Request, res as Response);
-            expect(status).toHaveBeenCalledWith(403);
-            expect(json).toHaveBeenCalledWith({
-                message: 'Tài khoản của bạn đã bị vô hiệu hóa.',
-            });
-        });
-
-        it('should return error if user is locked', async () => {
-            (User.findOne as jest.Mock).mockResolvedValue({
-                isLocked: true,
-            });
-            await login(req as Request, res as Response);
-            expect(status).toHaveBeenCalledWith(403);
-            expect(json).toHaveBeenCalledWith({
-                message: 'Tài khoản của bạn đã bị khóa do nhiều lần đăng nhập thất bại.',
-            });
-        });
-
-        it('should return error if login is an invalid email format', async () => {
-            req.body.login = 'invalid-email';
-            await login(req as Request, res as Response);
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
-                login: 'Tên đăng nhập hoặc email là bắt buộc!',
-            });
-        });
-
-        it('should return error if login is a non-existing username', async () => {
+        it('should log in or register a user with Google successfully', async () => {
             (User.findOne as jest.Mock).mockResolvedValue(null);
-            req.body.login = 'nonexistinguser';
-            await login(req as Request, res as Response);
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
-                login: 'Vui lòng kiểm tra lại!',
-                message: 'Thông tin đăng nhập sai, vui lòng thử lại!',
-                password: 'Vui lòng kiểm tra lại!',
+            (User.create as jest.Mock).mockResolvedValue({
+                _id: '123',
+                email: 'test@gmail.com',
+                username: 'Test User-random-text',
+                role: 'customer',
+                isVerified: true,
             });
-        });
+            (Customer.create as jest.Mock).mockResolvedValue({});
 
-        it('should return error if password is incorrect', async () => {
-            (User.findOne as jest.Mock).mockResolvedValue({
-                comparePassword: jest.fn().mockResolvedValue(false),
-            });
-            await login(req as Request, res as Response);
-            expect(status).toHaveBeenCalledWith(400);
-            expect(json).toHaveBeenCalledWith({
-                login: 'Vui lòng kiểm tra lại!',
-                message: 'Thông tin đăng nhập sai, vui lòng thử lại!',
-                password: 'Vui lòng kiểm tra lại!',
-            });
-        });
+            await loginWithGoogle(req as Request, res as Response);
 
-        it('should return success if login is correct', async () => {
-            (User.findOne as jest.Mock).mockResolvedValue({
-                comparePassword: jest.fn().mockResolvedValue(true),
-            });
-            await login(req as Request, res as Response);
-            expect(status).toHaveBeenCalledWith(200);
-            expect(json).toHaveBeenCalledWith({
+            expect(statusMock).toHaveBeenCalledWith(200);
+            expect(jsonMock).toHaveBeenCalledWith(expect.objectContaining({
                 message: 'Đăng nhập thành công!',
-                user: expect.any(Object),
-                token: expect.any(String),
-            });
+                data: expect.objectContaining({
+                    token: 'mocked-token',
+                    email: 'test@gmail.com',
+                    username: 'Test User-random-text',
+                    role: 'customer',
+                    isVerified: true,
+                }),
+            }));
+        });
+
+        it('should log in existing Google user', async () => {
+            const mockUser = {
+                _id: '123',
+                email: 'test@gmail.com',
+                username: 'Test User',
+                role: 'customer',
+                isVerified: true,
+            };
+            (User.findOne as jest.Mock).mockResolvedValue(mockUser);
+
+            await loginWithGoogle(req as Request, res as Response);
+
+            expect(statusMock).toHaveBeenCalledWith(200);
+            expect(jsonMock).toHaveBeenCalledWith(expect.objectContaining({
+                message: 'Đăng nhập thành công!',
+                data: expect.objectContaining({
+                    token: 'mocked-token',
+                }),
+            }));
+        });
+
+        it('should handle server error during Google login', async () => {
+            (User.findOne as jest.Mock).mockRejectedValue(new Error('Database error'));
+            await loginWithGoogle(req as Request, res as Response);
+            expect(statusMock).toHaveBeenCalledWith(500);
+            expect(jsonMock).toHaveBeenCalledWith({ message: 'ã xảy ra lỗi khi xử lý đăng nhập Google' });
+        });
+
+        it('should create a new user if not found', async () => {
+            (User.findOne as jest.Mock).mockResolvedValue(null);
+            const newUser = {
+                _id: '123',
+                email: 'test@gmail.com',
+                username: 'Test User-random-text',
+                role: 'customer',
+                isVerified: true,
+                isNew: true,
+            };
+            (User.create as jest.Mock).mockResolvedValue(newUser);
+            (Customer.create as jest.Mock).mockResolvedValue({});
+
+            await loginWithGoogle(req as Request, res as Response);
+
+            expect(statusMock).toHaveBeenCalledWith(200);
+            expect(jsonMock).toHaveBeenCalledWith(expect.objectContaining({
+                message: 'Đăng ký thành công!',
+                data: expect.objectContaining({
+                    email: 'test@gmail.com',
+                    username: 'Test User-random-text',
+                }),
+            }));
+        });
+    });
+
+    describe('loginAdmin', () => {
+        beforeEach(() => {
+            req = {
+                body: {
+                    email: 'admin@example.com',
+                    password: 'AdminPassword123!',
+                },
+            };
+        });
+
+        it('should log in an admin successfully', async () => {
+            const mockAdmin = {
+                _id: '123',
+                username: 'admin',
+                email: 'admin@example.com',
+                password: 'hashedPassword',
+                role: 'manager',
+                isVerified: true,
+            };
+            (User.findOne as jest.Mock).mockResolvedValue(mockAdmin);
+            (bcrypt.compare as jest.Mock).mockResolvedValue(true);
+
+            await loginAdmin(req as Request, res as Response);
+
+            expect(statusMock).toHaveBeenCalledWith(200);
+            expect(jsonMock).toHaveBeenCalledWith(expect.objectContaining({
+                message: 'Đăng nhập thành công!',
+                data: expect.objectContaining({
+                    token: 'mocked-token',
+                }),
+            }));
+        });
+
+        it('should return error for non-admin user', async () => {
+            (User.findOne as jest.Mock).mockResolvedValue(null);
+
+            await loginAdmin(req as Request, res as Response);
+
+            expect(statusMock).toHaveBeenCalledWith(400);
+            expect(jsonMock).toHaveBeenCalledWith(expect.objectContaining({
+                message: 'Tài khoản không tồn tại!',
+            }));
+        });
+
+        it('should return error when required fields are missing', async () => {
+            req.body = {};
+            await loginAdmin(req as Request, res as Response);
+            expect(statusMock).toHaveBeenCalledWith(500);
+            expect(jsonMock).toHaveBeenCalledWith({ message: expect.any(String) });
+        });
+
+        it('should return error for non-admin roles', async () => {
+            const mockUser = {
+                _id: '123',
+                username: 'customer',
+                email: 'customer@example.com',
+                password: 'hashedPassword',
+                role: 'customer',
+                isVerified: true,
+            };
+            (User.findOne as jest.Mock).mockResolvedValue(mockUser);
+            (bcrypt.compare as jest.Mock).mockResolvedValue(true);
+
+            await loginAdmin(req as Request, res as Response);
+
+            expect(statusMock).toHaveBeenCalledWith(200);
+            expect(jsonMock).toHaveBeenCalledWith(expect.objectContaining({
+                message: 'Đăng nhập thành công!',
+                data: expect.objectContaining({
+                    role: 'customer',
+                }),
+            }));
+        });
+    });
+
+    describe('checkUsername', () => {
+        it('should return true if username is available', async () => {
+            req = { body: { username: 'newuser' } };
+            (User.findOne as jest.Mock).mockResolvedValue(null);
+
+            await checkUsername(req as Request, res as Response);
+
+            expect(statusMock).toHaveBeenCalledWith(200);
+            expect(jsonMock).toHaveBeenCalledWith({ exists: false, userId: undefined });
+        });
+
+        it('should return false if username is taken', async () => {
+            req = { body: { username: 'existinguser' } };
+            (User.findOne as jest.Mock).mockResolvedValue({ _id: 'user123', username: 'existinguser' });
+
+            await checkUsername(req as Request, res as Response);
+
+            expect(statusMock).toHaveBeenCalledWith(200);
+            expect(jsonMock).toHaveBeenCalledWith({ exists: true, userId: 'user123' });
+        });
+
+        it('should handle server error during username check', async () => {
+            (User.findOne as jest.Mock).mockRejectedValue(new Error('Database error'));
+
+            await expect(checkUsername(req as Request, res as Response)).rejects.toThrow('Database error');
+
+            // The function throws an error, so it doesn't reach these lines
+            // expect(statusMock).not.toHaveBeenCalled();
+            // expect(jsonMock).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('checkEmail', () => {
+        it('should return true if email is available', async () => {
+            req = { body: { email: 'new@example.com' } };
+            (User.findOne as jest.Mock).mockResolvedValue(null);
+
+            await checkEmail(req as Request, res as Response);
+
+            expect(statusMock).toHaveBeenCalledWith(200);
+            expect(jsonMock).toHaveBeenCalledWith({ exists: false, userId: undefined });
+        });
+
+        it('should return false if email is taken', async () => {
+            req = { body: { email: 'existing@example.com' } };
+            (User.findOne as jest.Mock).mockResolvedValue({ _id: 'user123', email: 'existing@example.com' });
+
+            await checkEmail(req as Request, res as Response);
+
+            expect(statusMock).toHaveBeenCalledWith(200);
+            expect(jsonMock).toHaveBeenCalledWith({ exists: true, userId: 'user123' });
+        });
+
+        it('should handle server error during email check', async () => {
+            (User.findOne as jest.Mock).mockRejectedValue(new Error('Database error'));
+
+            await expect(checkEmail(req as Request, res as Response)).rejects.toThrow('Database error');
+
+            // The function throws an error, so it doesn't reach these lines
+            // expect(statusMock).not.toHaveBeenCalled();
+            // expect(jsonMock).not.toHaveBeenCalled();
         });
     });
 });

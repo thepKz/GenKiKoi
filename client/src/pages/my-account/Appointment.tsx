@@ -72,7 +72,7 @@ const columns: TableProps<AppointmentData>["columns"] = [
 const Appointment = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [appointments, setAppointments] = useState([]);
-  const auth = useSelector((state: any) => state.authReducer.data);
+  const auth = useSelector((state: any) => state.authReducer);
   console.log("auth:", auth);
   const navigate = useNavigate();
 
