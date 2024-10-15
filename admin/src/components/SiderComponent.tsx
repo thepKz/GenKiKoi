@@ -16,27 +16,27 @@ const { Sider } = Layout;
 
 import Logo from "../assets/logo-transparent.png";
 import { useSelector } from "react-redux";
-import { AuthState } from "../models/AuthModels";
+import { IAuth } from "../types";
 
 const SiderComponent = () => {
-  const auth: AuthState = useSelector((state: any) => state.authReducer.data);
+  const auth: IAuth = useSelector((state: any) => state.authReducer.data);
 
   const location = useLocation();
 
   const managerItems: MenuProps["items"] = [
     {
       key: "dashboard",
-      label: <Link to={"/dashboard"}>Bảng điều khiển</Link>,
+      label: <Link to={"/manager/dashboard"}>Bảng điều khiển</Link>,
       icon: <HomeTrendUp size={20} />,
     },
     {
-      key: "manage-services",
-      label: <Link to={"/manage-services"}>Danh sách dịch vụ</Link>,
+      key: "services",
+      label: <Link to={"/manager/services"}>Danh sách dịch vụ</Link>,
       icon: <Lamp size={20} />,
     },
     {
-      key: "manage-staffs",
-      label: <Link to={"/manage-staffs"}>Danh sách nhân viên</Link>,
+      key: "staffs",
+      label: <Link to={"/manager/staffs"}>Danh sách nhân viên</Link>,
       icon: <Profile2User size={20} />,
     },
     {
@@ -52,28 +52,28 @@ const SiderComponent = () => {
 
   const doctorItems: MenuProps["items"] = [
     {
-      key: "doctor-calendar",
-      label: <Link to={"/doctor-calendar"}>Lịch làm việc</Link>,
+      key: "calendar",
+      label: <Link to={"/doctor/calendar"}>Lịch làm việc</Link>,
       icon: <Calendar size={20} />,
     },
     {
-      key: "view-appointment",
-      label: <Link to={"/view-appointment"}>Xem cuộc hẹn</Link>,
+      key: "appointments",
+      label: <Link to={"/doctor/appointments"}>Xem cuộc hẹn</Link>,
       icon: <CalendarSearch size={20} />,
     },
     {
-      key: "view-record",
-      label: <Link to={"/view-record"}>Hồ sơ khách hàng</Link>,
+      key: "view-records",
+      label: <Link to={"/doctor/view-records"}>Hồ sơ khách hàng</Link>,
       icon: <Stickynote size={20} />,
     },
     {
-      key: "create-record",
-      label: <Link to={"/create-record"}>Tạo hồ sơ bệnh án</Link>,
+      key: "create-records",
+      label: <Link to={"/doctor/create-records"}>Tạo hồ sơ bệnh án</Link>,
       icon: <NoteAdd size={20} />,
     },
     {
       key: "feedbacks",
-      label: <Link to={"/feedbacks"}>Phản hồi khách hàng</Link>,
+      label: <Link to={"/doctor/feedbacks"}>Phản hồi khách hàng</Link>,
       icon: <Grammerly size={20} />,
     },
     {
@@ -89,15 +89,15 @@ const SiderComponent = () => {
 
   const staffItems: MenuProps["items"] = [
     {
-      key: "manage-doctor-calendar",
+      key: "doctor-calendar",
       label: (
-        <Link to={"/manage-doctor-calendar"}>Lịch làm việc của bác sĩ</Link>
+        <Link to={"/staff/doctor-calendar"}>Lịch làm việc của bác sĩ</Link>
       ),
       icon: <Calendar size={20} />,
     },
     {
-      key: "view-appointment",
-      label: <Link to={"/view-appointment"}>Cuộc hẹn khách hàng</Link>,
+      key: "appointments",
+      label: <Link to={"/staff/appointments"}>Cuộc hẹn khách hàng</Link>,
       icon: <CalendarSearch size={20} />,
     },
     {
@@ -141,18 +141,18 @@ const SiderComponent = () => {
             auth.role === "manager"
               ? ([
                   managerItems.find(
-                    (item) => item?.key === location.pathname.split("/")[1],
+                    (item) => item?.key === location.pathname.split("/")[2],
                   )?.key,
                 ] as string[])
               : auth.role === "staff"
                 ? ([
                     staffItems.find(
-                      (item) => item?.key === location.pathname.split("/")[1],
+                      (item) => item?.key === location.pathname.split("/")[2],
                     )?.key,
                   ] as string[])
                 : ([
-                    staffItems.find(
-                      (item) => item?.key === location.pathname.split("/")[1],
+                    doctorItems.find(
+                      (item) => item?.key === location.pathname.split("/")[2],
                     )?.key,
                   ] as string[])
           }

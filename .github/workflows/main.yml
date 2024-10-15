@@ -1,80 +1,169 @@
+# This is the main workflow for the CI/CD pipeline.
+# It is triggered on push to main, develop, or feature/* branches,
+# and on pull requests to main or develop branches.
+# It also has a manual trigger for workflow_dispatch.
 name: CI/CD
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, develop, feature/* ]
+    paths:
+      - '**/*.tsx'
+      - '**/*.ts'
+      - '**/*.js'
+      - '**/*.json'
+      - 'vite.config.*'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'client/**'
+      - 'server/**'
+      - 'admin/**'
+      - '**/*.xml'
+      - '**/*.yml'
   pull_request:
     branches: [ main, develop ]
+    paths:
+      - '**/*.tsx'
+      - '**/*.ts'
+      - '**/*.js'
+      - '**/*.json'
+      - 'vite.config.*'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'client/**'
+      - 'server/**'
+      - 'admin/**'
+  workflow_dispatch:
 
 jobs:
-  build:
+  test-and-build:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Use Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18'
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
 
-    - name: Clear npm cache
-      run: npm cache clean --force
+      - name: Clear npm cache
+        run: npm cache clean --force
 
-    - name: Remove node_modules and package-lock.json
-      run: |
-        rm -rf node_modules
-        rm -f package-lock.json
+      - name: Remove node_modules and package-lock.json
+        run: |
+          rm -rf node_modules
+          rm -f package-lock.json
 
-    - name: Install dependencies and build client
-      run: |
-        cd client
-        npm ci
-        npm run build
-      env:
-        VITE_BASE_apiKey: ${{ secrets.VITE_BASE_APIKEY }}
-        VITE_BASE_authDomain: ${{ secrets.VITE_BASE_AUTHDOMAIN }}
-        VITE_BASE_projectId: ${{ secrets.VITE_BASE_PROJECTID }}
-        VITE_BASE_storageBucket: ${{ secrets.VITE_BASE_STORAGEBUCKET }}
-        VITE_BASE_messagingSenderId: ${{ secrets.VITE_BASE_MESSAGINGSENDERID }}
-        VITE_BASE_appId: ${{ secrets.VITE_BASE_APPID }}
-        VITE_API_URL: ${{ secrets.VITE_API_URL }}
+      - name: Install dependencies and build server
+        run: |
+          cd server
+          npm ci
+          npm run build
+        env:
+          MONGO_URI: ${{ secrets.MONGO_URI }}
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
 
-    - name: Install dependencies and build server
-      run: |
-        cd server
-        npm ci
-        npm run build
-      env:
-        MONGO_URI: ${{ secrets.MONGO_URI }}
-        SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      - name: Run server tests and generate report
+        run: |
+          cd server
+          npm run test -- --coverage --coverageReporters=text-lcov > coverage.lcov
+        env:
+          MONGO_URI: ${{ secrets.MONGO_URI }}
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
 
-    - name: Run server tests
-      run: |
-        cd server
-        npm run test
-      env:
-        MONGO_URI: ${{ secrets.MONGO_URI }}
-        SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      - name: Check test results in server ( NEED >= 75%)
+        run: |
+          cd server
+          node -e "
+          const fs = require('fs');
+          const xml2js = require('xml2js');
+          const parser = new xml2js.Parser();
+          const xml = fs.readFileSync('./jest-results.xml', 'utf8');
+          
+          parser.parseString(xml, (err, result) => {
+            if (err) {
+              console.error('Error parsing XML');
+              process.exit(1);
+            }
+            
+            const totalTests = result.testsuites.$.tests;
+            const failedTests = result.testsuites.$.failures;
+            
+            console.log('Total tests:', totalTests);
+            console.log('Failed tests:', failedTests);
+            
+            if ((totalTests - failedTests) / totalTests < 0.75) {
+              console.error('Less than 75% of tests passed');
+              process.exit(1);
+            } else {
+              console.log('75% or more of tests passed');
+            }
+          });
+          "
 
-    - name: Upload artifact
-      uses: actions/upload-artifact@v3
-      with:
-        name: dist
-        path: client/dist
+      - name: Install dependencies and build client
+        run: |
+          cd client
+          npm ci
+          npm run build
+        env:
+          VITE_BASE_apiKey: ${{ secrets.VITE_BASE_APIKEY }}
+          VITE_BASE_authDomain: ${{ secrets.VITE_BASE_AUTHDOMAIN }}
+          VITE_BASE_projectId: ${{ secrets.VITE_BASE_PROJECTID }}
+          VITE_BASE_storageBucket: ${{ secrets.VITE_BASE_STORAGEBUCKET }}
+          VITE_BASE_messagingSenderId: ${{ secrets.VITE_BASE_MESSAGINGSENDERID }}
+          VITE_BASE_appId: ${{ secrets.VITE_BASE_APPID }}
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
 
+      - name: Upload artifact client
+        uses: actions/upload-artifact@v3
+        with:
+          name: client-dist
+          path: client/dist
+
+      - name: Install dependencies and build admin
+        run: |
+          cd admin
+          npm ci
+          npm run build
+        env:
+          VITE_BASE_apiKey: ${{ secrets.VITE_BASE_APIKEY }}
+          VITE_BASE_authDomain: ${{ secrets.VITE_BASE_AUTHDOMAIN }}
+          VITE_BASE_projectId: ${{ secrets.VITE_BASE_PROJECTID }}
+          VITE_BASE_storageBucket: ${{ secrets.VITE_BASE_STORAGEBUCKET }}
+          VITE_BASE_messagingSenderId: ${{ secrets.VITE_BASE_MESSAGINGSENDERID }}
+          VITE_BASE_appId: ${{ secrets.VITE_BASE_APPID }}
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+
+      - name: Upload coverage to Coveralls
+        uses: coverallsapp/github-action@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: server/coverage.lcov
+          coveralls-repo-token: ${{ secrets.COVERALLS_REPO_TOKEN }}
+
+      - name: Upload artifact admin
+        uses: actions/upload-artifact@v3
+        with:
+          name: admin-dist
+          path: admin/dist
+      
+  # Job to deploy the application to the staging environment
   deploy-staging:
-    needs: build
+    needs: test-and-build
     if: github.ref == 'refs/heads/develop'
     runs-on: ubuntu-latest
     environment: staging
     steps:
       - uses: actions/checkout@v4
+
       - name: Download artifact
         uses: actions/download-artifact@v3
         with:
-          name: dist
+          name: client-dist
           path: ./client/dist
+
       - name: Deploy to Netlify (Staging)
         uses: nwtgck/actions-netlify@v2.0
         with:
@@ -86,18 +175,21 @@ jobs:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_STAGING_SITE_ID }}
 
+  # Job to deploy the application to the production environment
   deploy-production:
-    needs: build
+    needs: test-and-build
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     environment: production
     steps:
       - uses: actions/checkout@v4
+
       - name: Download artifact
         uses: actions/download-artifact@v3
         with:
-          name: dist
+          name: client-dist
           path: ./client/dist
+
       - name: Deploy to Netlify (Production)
         uses: nwtgck/actions-netlify@v2.0
         with:
@@ -109,13 +201,44 @@ jobs:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_PRODUCTION_SITE_ID }}
 
+  # Job to deploy the application to the admin environment
+  deploy-admin:
+    needs: test-and-build
+    if: github.ref == 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    environment: admin
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: admin-dist
+          path: ./admin/dist
+
+      - name: Deploy to Netlify (Admin)
+        uses: nwtgck/actions-netlify@v2.0
+        with:
+          publish-dir: './admin/dist'
+          production-branch: develop
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          deploy-message: "Deploy to admin from GitHub Actions"
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_ADMIN_SITE_ID }}
+
+  # Job to deploy the backend to Render
   deploy-backend:
-    needs: build
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+    needs: [test-and-build]
+    if: github.ref == 'refs/heads/develop'
     runs-on: ubuntu-latest
     steps:
       - name: Deploy to Render
         run: curl ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
-    env:
-      MONGO_URI: ${{ secrets.MONGO_URI }}
-      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+        env:
+          MONGO_URI: ${{ secrets.MONGO_URI }}
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          TMN_CODE: ${{ secrets.TMN_CODE }}
+          vnp_HashSecret: ${{ secrets.VNP_HASHSECRET }}
+          VNP_URL: ${{ secrets.VNP_URL }}
+          RETURN_URL: ${{ secrets.RETURN_URL }}

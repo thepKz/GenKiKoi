@@ -1,4 +1,4 @@
-import { StrictMode } from "react";
+// import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
@@ -7,7 +7,7 @@ import store from "./redux/store.ts";
 import { ConfigProvider } from "antd";
 
 createRoot(document.getElementById("root")!).render(
-  <StrictMode>
+  // <StrictMode>
     <ConfigProvider
       theme={{
         token: {
@@ -17,6 +17,10 @@ createRoot(document.getElementById("root")!).render(
           Divider: {
             marginLG: 15,
           },
+          Result: {
+            titleFontSize: 70,
+            subtitleFontSize: 22,
+          },
         },
       }}
     >
@@ -24,5 +28,5 @@ createRoot(document.getElementById("root")!).render(
         <App />
       </Provider>
     </ConfigProvider>
-  </StrictMode>,
+  // </StrictMode>,
 );

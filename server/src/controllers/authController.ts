@@ -3,14 +3,14 @@ import { Request, Response } from "express";
 import { ValidationError } from "../errors/ValidationError";
 import { Customer } from "../models";
 import User from "../models/User";
-import { isStrongPassword, randomText, signToken } from "../utils";
-
+import { randomText, signToken } from "../utils";
 /**
- * API: api/auth/register
- * METHOD: POST
- * UNPROTECTED
- * TEST: 10.9.2024 (QuangDung)
- */
+ * Người Làm: Thép
+ * Người Test: Thép
+ * Loại Test: API TEST (Đã xong), UNIT TEST (Đang làm), E2E TEST (Đã làm)
+ * Chỉnh Sửa Lần Cuối : 13/10/2024
+*/
+
 export const register = async (req: Request, res: Response) => {
   try {
     const { username, email, password, confirmPassword } = req.body;
@@ -22,13 +22,24 @@ export const register = async (req: Request, res: Response) => {
 
     const errors: any = {};
 
-    if (
-      !formatUsername ||
-      !formatEmail ||
-      !formatPassword ||
-      !formatConfirmPassword
-    ) {
+    if (!formatUsername || !formatEmail || !formatPassword || !formatConfirmPassword) {
       errors.message = "Vui lòng điền đầy đủ các trường!";
+      throw new ValidationError(errors);
+    }
+
+    // Check username format
+    if (formatUsername.length < 8 || formatUsername.length > 30) {
+      errors.username = "Tên tài khoản phải có độ dài từ 8 đến 30 ký tự!";
+      throw new ValidationError(errors);
+    }
+    if (!/^(?:[a-zA-Z0-9_]{8,30})$/.test(formatUsername)) {
+      errors.username = "Tên tài khoản phải có độ dài từ 8 đến 30 ký tự!";
+      throw new ValidationError(errors);
+    }
+
+    // Check email format
+    if (!/^[A-Za-z0-9\._%+\-]+@[A-Za-z0-9\.\-]+\.[A-Za-z]{2,}$/.test(formatEmail)) {
+      errors.email = "Email không hợp lệ!";
       throw new ValidationError(errors);
     }
 
@@ -37,18 +48,18 @@ export const register = async (req: Request, res: Response) => {
     });
 
     if (existingUser) {
-      const errors: any = {};
-      if (existingUser.username === username) {
+      if (existingUser.username === formatUsername) {
         errors.username = "Tên tài khoản này đã được sử dụng!";
       }
-      if (existingUser.email === email) {
+      if (existingUser.email === formatEmail) {
         errors.email = "Email này đã được sử dụng!";
       }
       throw new ValidationError(errors);
     }
 
-    if (!isStrongPassword(formatPassword)) {
-      errors.password = "Mật khẩu không đủ mạnh!";
+    // Check password strength
+    if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>/?]).{6,30}$/.test(formatPassword)) {
+      errors.password = "Mật khẩu phải chứa chữ thường, in hoa, số, ký tự đặc biệt và từ 6 đến 30 ký tự!";
       throw new ValidationError(errors);
     }
 
@@ -59,7 +70,7 @@ export const register = async (req: Request, res: Response) => {
 
     // Create new user
     const salt = await bcrypt.genSalt(10);
-    const hashedPass = await bcrypt.hash(password, salt);
+    const hashedPass = await bcrypt.hash(formatPassword, salt);
     const newUser = await User.create({
       username: formatUsername,
       email: formatEmail,
@@ -97,12 +108,6 @@ export const register = async (req: Request, res: Response) => {
   }
 };
 
-/**
- * API: api/auth/login
- * METHOD: POST
- * UNPROTECTED
- * TEST: 10.9.2024 (QuangDung)
- */
 export const login = async (req: Request, res: Response) => {
   try {
     const { login, password } = req.body;
@@ -166,12 +171,6 @@ export const login = async (req: Request, res: Response) => {
   }
 };
 
-/**
- * API: api/auth/login-google
- * METHOD: POST
- * UNPROTECTED
- * TEST: 10.9.2024 (QuangDung)
- */
 export const loginWithGoogle = async (req: Request, res: Response) => {
   try {
     const { email, username, photoUrl } = req.body;
@@ -217,17 +216,11 @@ export const loginWithGoogle = async (req: Request, res: Response) => {
     });
   } catch (error: any) {
     res.status(500).json({
-      message: "Đã xảy ra lỗi khi xử lý đăng nhập Google",
+      message: "ã xảy ra lỗi khi xử lý đăng nhập Google",
     });
   }
 };
 
-/**
- * API: api/auth/login-admin
- * METHOD: POST
- * UNPROTECTED
- * TEST: 10.9.2024 (QuangDung)
- */
 export const loginAdmin = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
@@ -294,12 +287,6 @@ export const loginAdmin = async (req: Request, res: Response) => {
   }
 };
 
-/**
- * API: api/auth/check-username
- * Method: POST
- * UNPROTECTED
- * TEST: 10.9.2024 (QuangDung)
- */
 export const checkUsername = async (req: Request, res: Response) => {
   const { username } = req.body;
 
@@ -308,13 +295,7 @@ export const checkUsername = async (req: Request, res: Response) => {
   const user = await User.findOne({ username: formatUsername });
   return res.status(200).json({ exists: !!user, userId: user?._id });
 };
-
-/**
- * API: api/auth/check-email
- * Method: POST
- * UNPROTECTED
- * TEST: 10.9.2024 (QuangDung)
- */
+// Check email (Update later)
 export const checkEmail = async (req: Request, res: Response) => {
   const { email } = req.body;
 

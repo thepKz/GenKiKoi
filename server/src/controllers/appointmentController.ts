@@ -3,12 +3,13 @@ import { Doctor, Service, User } from "../models";
 import Appointment from "../models/Appointment";
 import Customer from "../models/Customer";
 import { AuthRequest } from "../types";
-
 /**
- * API: /api/appointments/
- * Method: GET
- * PROTECTED
- */
+ * Người Làm: ĐIỀN VÀO :) 
+ * Người Test: Thép
+ * Loại Test: API TEST (Đã xong), UNIT TEST (Đang làm), E2E TEST (Đang làm)
+ * Chỉnh Sửa Lần Cuối : 13/10/2024 (Thép)
+*/
+
 export const getAppointmentsByUser = async (
   req: AuthRequest,
   res: Response
@@ -60,11 +61,6 @@ export const getAppointmentsByUser = async (
   }
 };
 
-/**
- * API: /api/appointments/
- * Method: PUT
- * PROTECTED
- */
 export const createNewAppointment = async (req: AuthRequest, res: Response) => {
   try {
     const {
