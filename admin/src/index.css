@@ -60,6 +60,10 @@
   height: calc(100vh - 342px);
 }
 
+.doctor-view .ant-table-container {
+  height: calc(100vh - 315px);
+}
+
 .ant-result {
   height: 100vh;
   display: flex;
@@ -82,5 +86,20 @@
 }
 
 :root {
-  --sx-week-grid-height: 910px !important;
+  --sx-week-grid-height: 1050px !important;
+}
+
+.staff-view .sx-react-calendar-wrapper {
+  width: 100%;
+  max-width: 100vw;
+  height: calc(100vh - 190px);
+  max-height: 90vh;
+}
+
+.staff-view .sx__week-grid__hour {
+  height: 60px !important;
+}
+
+:root .staff-view {
+  --sx-week-grid-height: 900px !important;
 }

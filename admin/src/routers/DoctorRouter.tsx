@@ -5,6 +5,9 @@ import {
   Appointments,
   CreateRecord,
   DoctorCalendar,
+  ListFishes,
+  ListFishRecords,
+  Profile,
   RecordDetail,
   Records,
 } from "../pages/doctor";
@@ -17,8 +20,17 @@ const DoctorRouter = () => {
         <Route path="calendar" element={<DoctorCalendar />} />
         <Route path="appointments" element={<Appointments />} />
         <Route path="view-records" element={<Records />} />
-        <Route path="view-records/:id" element={<RecordDetail />} />
+        <Route path="view-records/fishes" element={<ListFishes />} />
+        <Route
+          path="view-records/fishes/records"
+          element={<ListFishRecords />}
+        />
+        <Route
+          path="view-records/fishes/records/:id"
+          element={<RecordDetail />}
+        />
         <Route path="create-records" element={<CreateRecord />} />
+        <Route path="profile" element={<Profile />} />
       </Route>
       <Route path="*" element={<NotFound to="/doctor" />} />
     </Routes>

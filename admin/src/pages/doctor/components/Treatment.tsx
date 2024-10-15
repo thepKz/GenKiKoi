@@ -59,8 +59,8 @@ const Treatment = () => {
         <Form form={form} layout="vertical" size="large">
           <Row gutter={24}>
             <Col span={6}>
-              <Form.Item label="Tên khách">
-                <Input placeholder="Tên khách" />
+              <Form.Item label="Số điện thoại">
+                <Input placeholder="Số điện thoại" />
               </Form.Item>
               <Form.Item label="Khám bệnh / Tái khám">
                 <Select

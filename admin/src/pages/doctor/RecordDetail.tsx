@@ -28,14 +28,14 @@ const RecordDetail = () => {
       }}
     >
       {/* Render tạm 2 giao diện */}
-      {!true ? (
+      {true ? (
         <div className="container mx-auto my-5 h-[calc(100vh-115px)] rounded-md bg-white p-5 shadow-sm lg:w-[95%]">
           <Breadcrumb
             separator=">"
             items={[
               {
                 title: (
-                  <Link to="/doctor">
+                  <Link to="/doctor/view-records">
                     <div className="flex items-center gap-2">
                       <Stickynote size={20} />
                       Hồ sơ khách hàng
@@ -44,10 +44,18 @@ const RecordDetail = () => {
                 ),
               },
               {
-                title: <Link to="/doctor/view-records">Hồ sơ bệnh án</Link>,
+                title: "Hồ sơ bệnh án",
               },
               {
-                title: `Chi tiết hồ sơ`,
+                title: (
+                  <Link to={"/doctor/view-records/fishes"}>Danh sách cá</Link>
+                ),
+              },
+              {
+                title: "67069dv2b5759828c4f9e611",
+              },
+              {
+                title: "67sn43j",
               },
             ]}
           />
@@ -175,7 +183,7 @@ const RecordDetail = () => {
             items={[
               {
                 title: (
-                  <Link to="/doctor">
+                  <Link to="/doctor/view-records">
                     <div className="flex items-center gap-2">
                       <Stickynote size={20} />
                       Hồ sơ khách hàng
@@ -184,10 +192,18 @@ const RecordDetail = () => {
                 ),
               },
               {
-                title: <Link to="/doctor/view-records">Hồ sơ bệnh án</Link>,
+                title: "Hồ sơ bệnh án",
               },
               {
-                title: `Chi tiết hồ sơ`,
+                title: (
+                  <Link to={"/doctor/view-records/fishes"}>Danh sách cá</Link>
+                ),
+              },
+              {
+                title: "67069dv2b5759828c4f9e611",
+              },
+              {
+                title: "67sn43j",
               },
             ]}
           />

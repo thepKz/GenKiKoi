@@ -1,6 +1,7 @@
 import { Layout, Menu, MenuProps } from "antd";
 import {
   Calendar,
+  CalendarAdd,
   CalendarSearch,
   Grammerly,
   HomeTrendUp,
@@ -82,7 +83,7 @@ const SiderComponent = () => {
     },
     {
       key: "profile",
-      label: <Link to={"/my-account/profile"}>Hồ sơ cá nhân</Link>,
+      label: <Link to={"/doctor/profile"}>Hồ sơ cá nhân</Link>,
       icon: <User size={20} />,
     },
   ];
@@ -99,6 +100,11 @@ const SiderComponent = () => {
       key: "appointments",
       label: <Link to={"/staff/appointments"}>Cuộc hẹn khách hàng</Link>,
       icon: <CalendarSearch size={20} />,
+    },
+    {
+      key: "create-appointment",
+      label: <Link to={"/staff/create-appointment"}>Tạo cuộc hẹn</Link>,
+      icon: <CalendarAdd size={20} />,
     },
     {
       key: "divider",
