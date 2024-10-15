@@ -1,37 +1,41 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-const initialState = {
-  _id: "",
+interface AuthState {
+  id: string;
+  username: string;
+  photoUrl: string;
+  email: string;
+  role: string;
+  token: string;
+  isVerified: boolean;
+}
+
+const initialState: AuthState = {
+  id: "",
   username: "",
   photoUrl: "",
   email: "",
   role: "",
   token: "",
-  isVerified: false,
+  isVerified: true,
 };
 
 const authSlice = createSlice({
   name: "auth",
-  initialState: {
-    data: initialState,
-  },
+  initialState,
   reducers: {
-    addAuth: (state, action) => {
-      state.data = action.payload;
+    addAuth: (state, action: PayloadAction<AuthState>) => {
+      Object.assign(state, action.payload);
       localStorage.setItem("customer_GenKiKoi", JSON.stringify(action.payload));
     },
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    removeAuth: (state, _action) => {
-      state.data = initialState;
+    removeAuth: (state) => {
+      Object.assign(state, initialState);
       localStorage.setItem("customer_GenKiKoi", JSON.stringify({}));
     },
-    updateAuth: (state, action) => {
-      state.data = {
-        ...action.payload,
-        role: state.data.role,
-        token: state.data.token,
-        isVerified: state.data.isVerified,
-      };
+    updateAuth: (state, action: PayloadAction<Partial<AuthState>>) => {
+      Object.assign(state, action.payload);
+      const updatedState = { ...state, ...action.payload };
+      localStorage.setItem("customer_GenKiKoi", JSON.stringify(updatedState));
     },
   },
 });

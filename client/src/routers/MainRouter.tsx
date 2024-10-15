@@ -28,13 +28,14 @@ import {
 import Vaccine from "../pages/services/Vaccine";
 import WaterQuality from "../pages/services/WaterQuality";
 import { addAuth } from "../redux/reducers/authReducer";
-import { IAuth } from "../types";
+import { useAuthSync } from '../utils/useAuthSync';
 
 const MainRouter = () => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const auth: IAuth = useSelector((state: any) => state.authReducer.data);
+  const auth = useSelector((state: any) => state.authReducer);
 
   const dispatch = useDispatch();
+
+  useAuthSync(); // Use the custom hook here
 
   useEffect(() => {
     const getData = () => {
@@ -45,6 +46,8 @@ const MainRouter = () => {
     };
     getData();
   }, [dispatch]);
+
+
 
   return (
     <BrowserRouter>

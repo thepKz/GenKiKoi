@@ -1,29 +1,33 @@
 import { Avatar, Badge, Button, Dropdown, MenuProps } from "antd";
+import axios from 'axios';
 import { CalendarEdit, Logout, Notification, User } from "iconsax-react";
-import { useEffect, useState } from "react";
+import { useQuery } from 'react-query';
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Logo from "../assets/logo.jpg";
 import { removeAuth } from "../redux/reducers/authReducer";
 import { IAuth } from "../types";
-
+const fetchData = async () => {
+  const response = await axios.get('/api/users/');
+  return response.data;
+};
 const Header = () => {
-  const auth: IAuth = useSelector((state: any) => state.authReducer.data);
+  const auth: IAuth = useSelector((state: any) => state.authReducer);
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [isLoading, setIsLoading] = useState(true);
   const showVerifyButton = (!auth.isVerified && auth.role === "customer");
   console.log('Auth state:', auth);
-console.log('Is verified:', auth.isVerified);
-console.log('Role:', auth.role);
-console.log('Show verify button:', (!auth.isVerified && auth.role === "customer"));
+  console.log('Is verified:', auth.isVerified);
+  console.log('Role:', auth.role);
+  console.log('Show verify button:', (!auth.isVerified && auth.role === "customer"));
 
+  const { data, error, isLoading } = useQuery('home', fetchData, {
+    refetchInterval: 5000, // Refetch every 5 seconds
+  });
 
-  useEffect(() => {
-    setIsLoading(false);
-    console.log("Verify email button visibility:", showVerifyButton);
-  }, [auth, showVerifyButton]);
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error as string}</div>;
 
   const handleVerifyClick = () => {
     navigate("/verify-email"); // Adjust this route as needed
@@ -100,6 +104,7 @@ console.log('Show verify button:', (!auth.isVerified && auth.role === "customer"
 
   return (
     <header className="fixed z-50 w-full bg-blue-primary shadow-lg">
+
       <div className="container mx-auto lg:px-40">
         <div className="flex items-center justify-between">
           <div className="h-20 w-20 cursor-pointer">

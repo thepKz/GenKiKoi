@@ -8,7 +8,7 @@ import { randomText, signToken } from "../utils";
  * Người Làm: Thép
  * Người Test: Thép
  * Loại Test: API TEST (Đã xong), UNIT TEST (Đang làm), E2E TEST (Đã làm)
- * Chỉnh Sửa Lần Cuối : 13/10/2024
+ * Chỉnh Sửa Lần Cuối : 15/10/2024
 */
 
 export const register = async (req: Request, res: Response) => {
