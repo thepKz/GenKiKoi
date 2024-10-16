@@ -1,16 +1,16 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
-interface IPayment {
-    orderId: string;
-    amount: number;
-    orderInfo: string;
-    orderType: string;
-    transactionNo?: string;
-    transactionStatus: 'pending' | 'success' | 'failed';
-    paymentMethod: 'vnpay';
-    paymentDate: Date;
-  }
-  
+export interface IPayment {
+  orderId: string;
+  amount: number;
+  orderInfo: string;
+  orderType: string;
+  transactionNo?: string;
+  transactionStatus: "pending" | "success" | "failed";
+  paymentMethod: "vnpay";
+  paymentDate: Date;
+}
+
 const PaymentSchema = new mongoose.Schema<IPayment>(
   {
     orderId: {
@@ -35,13 +35,13 @@ const PaymentSchema = new mongoose.Schema<IPayment>(
     },
     transactionStatus: {
       type: String,
-      enum: ['pending', 'success', 'failed'],
-      default: 'pending',
+      enum: ["pending", "success", "failed"],
+      default: "pending",
     },
     paymentMethod: {
       type: String,
-      enum: ['vnpay'],
-      default: 'vnpay',
+      enum: ["vnpay"],
+      default: "vnpay",
     },
     paymentDate: {
       type: Date,
@@ -51,5 +51,5 @@ const PaymentSchema = new mongoose.Schema<IPayment>(
   { timestamps: true }
 );
 
-const Payment = mongoose.model<IPayment>('Payment', PaymentSchema);
+const Payment = mongoose.model<IPayment>("Payment", PaymentSchema);
 export default Payment;

@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-interface IAppointment {
+export interface IAppointment {
   doctorId: mongoose.Types.ObjectId;
   customerId: mongoose.Types.ObjectId;
   serviceId: mongoose.Types.ObjectId;

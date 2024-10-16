@@ -29,6 +29,7 @@ import {
   vnpayRoutes,
 } from "./routes";
 import medicalRecordRoutes from "./routes/medicalRecord";
+import pondRoutes from "./routes/pondRoutes";
 
 const app = express();
 
@@ -73,6 +74,7 @@ app.use("/api/doctors", doctorRoutes);
 app.use("/api/vnpay", vnpayRoutes);
 app.use("/api/bills", billRoutes);
 app.use("/api/medicalRecords", medicalRecordRoutes);
+app.use("/api/ponds", pondRoutes);
 
 // app.use("/api/doctorSchedules", doctorScheduleRoutes);
 // +++++++ ADD DATA +++++++

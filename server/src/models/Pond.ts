@@ -1,12 +1,13 @@
 import mongoose from "mongoose";
+import { ICustomer } from "./Customer";
+import { IDoctor } from "./Doctor";
 
 export interface IPond {
-  customerId: mongoose.Types.ObjectId; // Tham chiếu đến Customer
-  doctorId: mongoose.Types.ObjectId; // Tham chiếu đến Doctor
+  customerId: ICustomer; // Tham chiếu đến Customer
+  doctorId: IDoctor; // Tham chiếu đến Doctor
   status: "Tệ" | "Rất tệ" | "Bình thường" | "Tốt"; // Trạng thái hồ
   images?: string[]; // Mảng chứa URL hình ảnh
   ph?: number; // Giá trị pH
-  temperature?: number; // Nhiệt độ
   ammoniaLevel?: number; // Mức độ amoniac
   nitrateLevel?: number; // Mức độ nitrat
   oxygenLevel?: number; // Mức độ oxy
@@ -40,9 +41,7 @@ const PondSchema = new mongoose.Schema<IPond>({
   ph: {
     type: Number,
   },
-  temperature: {
-    type: Number,
-  },
+
   ammoniaLevel: {
     type: Number,
   },
