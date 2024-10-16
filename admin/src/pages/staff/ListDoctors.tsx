@@ -9,9 +9,8 @@ const ListDoctors = () => {
       <div className="container mx-auto my-5 h-[calc(100vh-115px)] rounded-md bg-white p-5 shadow-sm lg:w-[95%]">
         <HeaderPage
           heading="Danh sách lịch làm việc"
-          placeholder="Tìm lịch làm việc"
+          placeholder="Tìm bác sĩ"
         />
-        <Divider />
         <div className="flex h-[calc(100vh-230px)] flex-col gap-5 overflow-y-auto">
           {Array.from({ length: 3 }).map((_, i) => (
             <Card

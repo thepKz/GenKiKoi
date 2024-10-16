@@ -9,7 +9,6 @@ const ListFishes = () => {
     <div>
       <div className="container mx-auto my-5 h-[calc(100vh-115px)] rounded-md bg-white p-5 shadow-sm lg:w-[95%]">
         <HeaderPage heading="Danh sách cá" placeholder="Tìm hồ sơ cá" />
-        <Divider />
         <Breadcrumb
           separator=">"
           items={[

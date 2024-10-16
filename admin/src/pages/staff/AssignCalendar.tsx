@@ -95,14 +95,14 @@ const AssignCalendar = () => {
                 <Divider />
                 <div className="gap-2">
                   <Form.Item label="Ngày làm việc">
-                    <DatePicker open maxTagCount="responsive" multiple />
+                    <DatePicker maxTagCount="responsive" multiple />
                   </Form.Item>
                 </div>
               </div>
             </Col>
             <Col span={8}>
               <div className="">
-                <h4 className="heading-4">Chỉnh lịch</h4>
+                <h4 className="heading-4">Di chuyển</h4>
                 <Divider />
                 <div className="">
                   <Form.Item label="Di chuyển">

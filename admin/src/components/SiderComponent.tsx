@@ -46,7 +46,7 @@ const SiderComponent = () => {
     },
     {
       key: "profile",
-      label: <Link to={"/my-account/profile"}>Hồ sơ cá nhân</Link>,
+      label: <Link to={"/manager/profile"}>Hồ sơ cá nhân</Link>,
       icon: <User size={20} />,
     },
   ];
@@ -97,8 +97,8 @@ const SiderComponent = () => {
       icon: <Calendar size={20} />,
     },
     {
-      key: "appointments",
-      label: <Link to={"/staff/appointments"}>Cuộc hẹn khách hàng</Link>,
+      key: "customers",
+      label: <Link to={"/staff/customers"}>Cuộc hẹn khách hàng</Link>,
       icon: <CalendarSearch size={20} />,
     },
     {
@@ -112,7 +112,7 @@ const SiderComponent = () => {
     },
     {
       key: "profile",
-      label: <Link to={"/my-account/profile"}>Hồ sơ cá nhân</Link>,
+      label: <Link to={"/staff/profile"}>Hồ sơ cá nhân</Link>,
       icon: <User size={20} />,
     },
   ];
@@ -127,12 +127,10 @@ const SiderComponent = () => {
       }}
       className="shadow-sm"
     >
-      <Link to={"/"}>
-        <div className="py-5 text-center">
-          <img src={Logo} className="mx-auto w-20" alt="" />
-          <h3 className="text-blue-primary text-2xl font-bold">GenKiKoi</h3>
-        </div>
-      </Link>
+      <div className="py-5 text-center">
+        <img src={Logo} className="mx-auto w-20" alt="" />
+        <h3 className="text-blue-primary text-2xl font-bold">GenKiKoi</h3>
+      </div>
       <div className="flex h-[calc(100vh-160px)] flex-col justify-between">
         <Menu
           mode="inline"

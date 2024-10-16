@@ -5,6 +5,7 @@ import {
   Appointments,
   CreateRecord,
   DoctorCalendar,
+  Feedback,
   ListFishes,
   ListFishRecords,
   Profile,
@@ -30,6 +31,7 @@ const DoctorRouter = () => {
           element={<RecordDetail />}
         />
         <Route path="create-records" element={<CreateRecord />} />
+        <Route path="feedbacks" element={<Feedback />} />
         <Route path="profile" element={<Profile />} />
       </Route>
       <Route path="*" element={<NotFound to="/doctor" />} />

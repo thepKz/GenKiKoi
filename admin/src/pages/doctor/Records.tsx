@@ -100,7 +100,6 @@ const Records = () => {
     <div>
       <div className="container mx-auto my-5 h-[calc(100vh-115px)] rounded-md bg-white p-5 shadow-sm lg:w-[95%]">
         <HeaderPage heading="Danh sách hồ sơ" placeholder="Tìm kiếm hồ sơ" />
-        <Divider />
         <Tabs defaultActiveKey="1" items={items} />
       </div>
     </div>

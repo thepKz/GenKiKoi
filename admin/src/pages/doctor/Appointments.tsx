@@ -122,7 +122,6 @@ const Appointments = () => {
           heading="Danh sách cuộc hẹn"
           placeholder="Tìm kiếm cuộc hẹn"
         />
-        <Divider />
         <Tabs defaultActiveKey="1" items={items} />
       </div>
     </div>

@@ -51,6 +51,11 @@
   }
 }
 
+/* Ant Design */
+.ant-menu-inline {
+  border-inline-end: none !important;
+}
+
 /* ======== ADDITIONAL CSS ======== */
 .ant-table-container {
   height: calc(100vh - 280px);

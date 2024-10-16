@@ -177,7 +177,10 @@ const Profile = () => {
                   </Form.Item>
                 </Col>
                 <Col span={12}>
-                  <Form.Item label="Giới thiệu">
+                  <Form.Item
+                    tooltip="Hãy giới thiệu một các đầy đủ rõ ràng về bản thân của mình!"
+                    label="Giới thiệu"
+                  >
                     <TextArea placeholder="Giới thiệu về bản thân" rows={16} />
                   </Form.Item>
                 </Col>

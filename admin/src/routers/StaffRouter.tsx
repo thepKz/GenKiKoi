@@ -1,16 +1,37 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import { MainLayout } from "../layouts";
 import { NotFound } from "../pages/notfound";
-import { AssignCalendar, DoctorCalendar, ListDoctors } from "../pages/staff";
+import {
+  AppointmentDetail,
+  Appointments,
+  AssignCalendar,
+  CreateAppointment,
+  Customers,
+  DoctorCalendar,
+  ListDoctors,
+} from "../pages/staff";
 
 const StaffRouter = () => {
   return (
     <Routes>
       <Route path="/" element={<MainLayout />}>
         <Route index element={<Navigate to={"doctor-calendar"} replace />} />
-        <Route path="doctor-calendar" element={<ListDoctors />} />
-        <Route path="doctor-calendar/:id" element={<DoctorCalendar />} />
-        <Route path="doctor-calendar/assign/:id" element={<AssignCalendar />} />
+        <Route path="doctor-calendar">
+          <Route index element={<ListDoctors />} />
+          <Route path=":id" element={<DoctorCalendar />} />
+          <Route path="assign/:id" element={<AssignCalendar />} />
+        </Route>
+        <Route path="create-appointment" element={<CreateAppointment />} />
+        <Route path="customers">
+          <Route index element={<Customers />} />
+          <Route path=":userId/appointments">
+            <Route index element={<Appointments />} />
+            <Route
+              path=":appointmentId"
+              element={<AppointmentDetail />}
+            />
+          </Route>
+        </Route>
       </Route>
       <Route path="*" element={<NotFound to="/staff" />} />
     </Routes>
