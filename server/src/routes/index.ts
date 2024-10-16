@@ -1,6 +1,7 @@
 import appointmentRoutes from "./appointmentRoutes";
 import authRoutes from "./authRoutes";
 import billRoutes from "./billRoutes";
+import distanceRoutes from "./distanceRoutes";
 import doctorRoutes from "./doctorRoutes";
 import serviceRoutes from "./serviceRoutes";
 import staffRoutes from "./staffRoutes";
@@ -9,10 +10,9 @@ import { vnpayRoutes } from "./vnpayRoutes";
 export {
   appointmentRoutes,
   authRoutes,
-  billRoutes,
-  doctorRoutes,
-  serviceRoutes,
+  billRoutes, distanceRoutes, doctorRoutes, serviceRoutes,
   staffRoutes,
   userRoutes,
-  vnpayRoutes,
+  vnpayRoutes
 };
+
