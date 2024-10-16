@@ -42,11 +42,6 @@ const FishSchema = new mongoose.Schema<IFish>(
       ref: "Customer",
       required: true,
     },
-    appointmentId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Appointment",
-      required: true,
-    },
   },
   {
     timestamps: true,
