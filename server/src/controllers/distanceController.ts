@@ -57,76 +57,7 @@ export const calculateRoute = async (req: Request, res: Response) => {
         }
 
         // Tìm tọa độ của địa chỉ xuất phát
-        const originResponse = await axios.get(`${NOMINATIM_BASE_URL}/search?q=${address}&format=json&limit=1`);
-        const originData: any = await originResponse.data;
-        console.log(originData);
-        if (originData.length === 0) {
-            return res.status(404).json({ error: 'Không tìm thấy địa chỉ xuất phát' });
-        }
-
-        const origin: Location = {
-            lat: originData[0].lat,
-            lon: originData[0].lon
-        };
-
-        // Tìm tọa độ của Genkikoi
-        const destinationResponse = await axios.get(`${NOMINATIM_BASE_URL}/search?q=${encodeURIComponent(GENKIKOI_ADDRESS)}&format=json&limit=1`);
-        const destinationData: any = await destinationResponse.data;
-
-        if (!Array.isArray(destinationData) || destinationData.length === 0) {
-            return res.status(404).json({ error: 'Không tìm thy địa chỉ Genkikoi' });
-        }
-
-        const destination: Location = {
-            lat: destinationData[0].lat,
-            lon: destinationData[0].lon
-        };
-
-        // Tính toán tuyến đường
-        const routeResponse = await axios.get(`${OSRM_BASE_URL}/${origin.lon},${origin.lat};${destination.lon},${destination.lat}`);
-        const routeData: any = await routeResponse.data;
-
-        if (!routeData || !routeData.routes || routeData.routes.length === 0) {
-            return res.status(404).json({ error: 'Không tìm thấy tuyến đường' });
-        }
-
-        const route = routeData.routes[0];
-        const distance = route.distance / 1000; // Chuyển đổi từ mét sang km
-        const duration = Math.round(route.duration / 60); // Chuyển đổi từ giây sang phút
-
-        res.json({
-            origin,
-            destination: {
-                ...destination,
-                name: GENKIKOI_NAME
-            },
-            distance,
-            duration,
-            route: route.geometry.coordinates
-        });
-    } catch (error) {
-        console.error('Lỗi khi tính toán tuyến đường:', error);
-        res.status(500).json({ error: 'Đã xảy ra lỗi khi tính toán tuyến đường' });
-    }
-};
-
-interface OSRMResponse {
-    routes: {
-        distance: number;
-        duration: number;
-    }[];
-}
-
-export const getRouteInfo = async (req: Request, res: Response) => {
-    try {
-        const { address } = req.body;
-
-        if (!address) {
-            return res.status(400).json({ error: 'Vui lòng cung cấp địa chỉ hợp lệ' });
-        }
-
-        // Lấy tọa độ của địa chỉ đã nhập
-        const originResponse = await axios.get<NominatimResponse[]>(`https://nominatim.openstreetmap.org/search`, {
+        const originResponse = await axios.get<NominatimResponse[]>(`${NOMINATIM_BASE_URL}/search`, {
             params: {
                 q: address,
                 format: 'json',
@@ -158,20 +89,32 @@ export const getRouteInfo = async (req: Request, res: Response) => {
         const distance = route.distance / 1000; // Chuyển đổi từ mét sang km
 
         // Điều chỉnh thời gian ước tính
-        const averageSpeedKmh = 30; // Giả sử tốc độ trung bình trong đô thị là 25 km/h
+        const averageSpeedKmh = 30; // Giả sử tốc độ trung bình trong đô thị là 30 km/h
         const adjustmentFactor = 1.2; // Hệ số điều chỉnh để tính đến đèn giao thông, tắc đường, etc.
         const estimatedDurationHours = (distance / averageSpeedKmh) * adjustmentFactor;
         const estimatedDurationMinutes = Math.round(estimatedDurationHours * 60);
 
         res.json({
+            origin,
+            destination: {
+                ...destination,
+                name: GENKIKOI_NAME
+            },
             distance: distance.toFixed(2),
-            duration: formatDuration(estimatedDurationMinutes)
+            duration: formatDuration(estimatedDurationMinutes),
         });
     } catch (error) {
-        console.error('Lỗi khi tính toán thông tin tuyến đường:', error);
-        res.status(500).json({ error: 'Đã xảy ra lỗi khi tính toán thông tin tuyến đường' });
+        console.error('Lỗi khi tính toán tuyến đường:', error);
+        res.status(500).json({ error: 'Đã xảy ra lỗi khi tính toán tuyến đường' });
     }
 };
+
+interface OSRMResponse {
+    routes: {
+        distance: number;
+        duration: number;
+    }[];
+}
 
 function formatDuration(minutes: number): string {
     const hours = Math.floor(minutes / 60);
