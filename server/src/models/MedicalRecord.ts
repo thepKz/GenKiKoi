@@ -9,9 +9,9 @@ export interface IMedicalRecord {
 
   examType: "Khám bệnh" | "Tái khám" | "Tiêm Phòng" | "Điều Trị";
   diagnosis: string; // Chuẩn đoán
-  treatment: string; // Phác đồ điều trị
-  medicines: { name: string; quantity: number }[]; // Danh sách thuốc
-  images: string[]; //mang cac hinh anh dieu tri
+  treatment?: string; // Phác đồ điều trị
+  medicines?: { name: string; quantity: number }[]; // Danh sách thuốc
+  images?: string[]; //mang cac hinh anh dieu tri
   createdAt: Date;
 }
 
