@@ -1,4 +1,4 @@
-import { Button, Divider, TableProps, Tabs, TabsProps, Tag } from "antd";
+import { Button, TableProps, Tabs, TabsProps, Tag } from "antd";
 import { CustomTable } from "../../share";
 import { getValue } from "../../utils";
 import { HeaderPage } from "../../components";
@@ -51,7 +51,7 @@ const Records = () => {
       width: 150,
       render: (_text: any, record: any) => (
         <div className="text-center">
-          <Link to={`/doctor/view-records/fishes`}>
+          <Link to={`/doctor/customers/345/fishes`}>
             <Button type="primary">Xem chi tiết</Button>
           </Link>
         </div>
@@ -75,30 +75,34 @@ const Records = () => {
       key: "1",
       label: "Điều trị",
       children: (
-        <CustomTable
-          columns={columns}
-          dataSource={demoData}
-          scroll="calc(100vh - 410px)"
-          className="staff-table"
-        />
+        <div className="doctor-view">
+          <CustomTable
+            columns={columns}
+            dataSource={demoData}
+            scroll="calc(100vh - 410px)"
+            className="staff-table"
+          />
+        </div>
       ),
     },
     {
       key: "2",
       label: "Kiểm định",
       children: (
-        <CustomTable
-          columns={columns}
-          dataSource={demoData}
-          scroll="calc(100vh - 410px)"
-          className="staff-table"
-        />
+        <div className="doctor-view">
+          <CustomTable
+            columns={columns}
+            dataSource={demoData}
+            scroll="calc(100vh - 410px)"
+            className="staff-table"
+          />
+        </div>
       ),
     },
   ];
   return (
     <div>
-      <div className="container mx-auto my-5 h-[calc(100vh-115px)] rounded-md bg-white p-5 shadow-sm lg:w-[95%]">
+      <div className="section">
         <HeaderPage heading="Danh sách hồ sơ" placeholder="Tìm kiếm hồ sơ" />
         <Tabs defaultActiveKey="1" items={items} />
       </div>

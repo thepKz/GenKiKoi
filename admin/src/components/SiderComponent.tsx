@@ -1,4 +1,4 @@
-import { Layout, Menu, MenuProps } from "antd";
+import { Avatar, Layout, Menu, MenuProps } from "antd";
 import {
   Calendar,
   CalendarAdd,
@@ -6,6 +6,7 @@ import {
   Grammerly,
   HomeTrendUp,
   Lamp,
+  Logout,
   NoteAdd,
   Profile2User,
   Stickynote,
@@ -16,13 +17,16 @@ import { Link, useLocation } from "react-router-dom";
 const { Sider } = Layout;
 
 import Logo from "../assets/logo-transparent.png";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { IAuth } from "../types";
+import { removeAuth } from "../redux/reducers/authReducer";
 
 const SiderComponent = () => {
   const auth: IAuth = useSelector((state: any) => state.authReducer.data);
 
   const location = useLocation();
+
+  const dispatch = useDispatch();
 
   const managerItems: MenuProps["items"] = [
     {
@@ -44,10 +48,18 @@ const SiderComponent = () => {
       key: "divider",
       type: "divider",
     },
+    // {
+    //   key: "profile",
+    //   label: <Link to={"/manager/profile"}>Hồ sơ cá nhân</Link>,
+    //   icon: (
+    //     <Avatar icon={<User size={16} color="white" />} src={auth.photoUrl} />
+    //   ),
+    // },
     {
-      key: "profile",
-      label: <Link to={"/manager/profile"}>Hồ sơ cá nhân</Link>,
-      icon: <User size={20} />,
+      key: "logout",
+      label: "Đăng xuất",
+      icon: <Logout size={20} />,
+      onClick: () => dispatch(removeAuth({})),
     },
   ];
 
@@ -63,8 +75,8 @@ const SiderComponent = () => {
       icon: <CalendarSearch size={20} />,
     },
     {
-      key: "view-records",
-      label: <Link to={"/doctor/view-records"}>Hồ sơ khách hàng</Link>,
+      key: "customers",
+      label: <Link to={"/doctor/customers"}>Hồ sơ khách hàng</Link>,
       icon: <Stickynote size={20} />,
     },
     {
@@ -84,7 +96,15 @@ const SiderComponent = () => {
     {
       key: "profile",
       label: <Link to={"/doctor/profile"}>Hồ sơ cá nhân</Link>,
-      icon: <User size={20} />,
+      icon: (
+        <Avatar icon={<User size={16} color="white" />} src={auth.photoUrl} />
+      ),
+    },
+    {
+      key: "logout",
+      label: "Đăng xuất",
+      icon: <Logout size={20} />,
+      onClick: () => dispatch(removeAuth({})),
     },
   ];
 
@@ -113,7 +133,15 @@ const SiderComponent = () => {
     {
       key: "profile",
       label: <Link to={"/staff/profile"}>Hồ sơ cá nhân</Link>,
-      icon: <User size={20} />,
+      icon: (
+        <Avatar icon={<User size={16} color="white" />} src={auth.photoUrl} />
+      ),
+    },
+    {
+      key: "logout",
+      label: "Đăng xuất",
+      icon: <Logout size={20} />,
+      onClick: () => dispatch(removeAuth({})),
     },
   ];
 

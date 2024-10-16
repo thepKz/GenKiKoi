@@ -1,4 +1,4 @@
-import { Breadcrumb, Button, Card, Divider, Tag } from "antd";
+import { Breadcrumb, Button, Card, Tag } from "antd";
 import { Stickynote } from "iconsax-react";
 import { Link } from "react-router-dom";
 import { getValue } from "../../utils";
@@ -7,14 +7,14 @@ import { HeaderPage } from "../../components";
 const ListFishes = () => {
   return (
     <div>
-      <div className="container mx-auto my-5 h-[calc(100vh-115px)] rounded-md bg-white p-5 shadow-sm lg:w-[95%]">
+      <div className="section">
         <HeaderPage heading="Danh sách cá" placeholder="Tìm hồ sơ cá" />
         <Breadcrumb
           separator=">"
           items={[
             {
               title: (
-                <Link to="/doctor/view-records">
+                <Link to="/doctor/customers">
                   <div className="flex items-center gap-2">
                     <Stickynote size={20} />
                     Hồ sơ khách hàng
@@ -23,14 +23,14 @@ const ListFishes = () => {
               ),
             },
             {
-              title: "Hồ sơ bệnh án",
+              title: <Link to="/doctor/customers">Hồ sơ bệnh án</Link>,
             },
             {
               title: "Danh sách cá",
             },
           ]}
         />
-        <div className="mt-3 flex h-[calc(100vh-270px)] flex-col gap-5 overflow-y-auto">
+        <div className="mt-3 flex h-[calc(100vh-200px)] flex-col gap-5 overflow-y-auto">
           {Array.from({ length: 3 }).map((_, i) => (
             <Card
               key={i}
@@ -73,7 +73,7 @@ const ListFishes = () => {
                     </p>
                   </div>
                   <div className="flex w-1/5 flex-col gap-2 text-right">
-                    <Link to={"/doctor/view-records/fishes/records"}>
+                    <Link to={"/doctor/customers/345/fishes/453/records"}>
                       <Button type="primary">Xem chi tiết</Button>
                     </Link>
                   </div>

@@ -20,16 +20,16 @@ const DoctorRouter = () => {
         <Route index element={<Navigate to="calendar" replace />} />
         <Route path="calendar" element={<DoctorCalendar />} />
         <Route path="appointments" element={<Appointments />} />
-        <Route path="view-records" element={<Records />} />
-        <Route path="view-records/fishes" element={<ListFishes />} />
-        <Route
-          path="view-records/fishes/records"
-          element={<ListFishRecords />}
-        />
-        <Route
-          path="view-records/fishes/records/:id"
-          element={<RecordDetail />}
-        />
+        <Route path="customers">
+          <Route index element={<Records />} />
+          <Route path=":userId/fishes">
+            <Route index element={<ListFishes />} />
+            <Route path=":fishId/records">
+              <Route index element={<ListFishRecords />} />
+              <Route path=":recordId" element={<RecordDetail />} />
+            </Route>
+          </Route>
+        </Route>
         <Route path="create-records" element={<CreateRecord />} />
         <Route path="feedbacks" element={<Feedback />} />
         <Route path="profile" element={<Profile />} />

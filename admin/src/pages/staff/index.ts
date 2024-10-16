@@ -5,6 +5,7 @@ import CreateAppointment from "./CreateAppointment";
 import Customers from "./Customers";
 import DoctorCalendar from "./DoctorCalendar";
 import ListDoctors from "./ListDoctors";
+import Profile from "./Profile";
 
 export {
   DoctorCalendar,
@@ -14,4 +15,5 @@ export {
   Customers,
   Appointments,
   AppointmentDetail,
+  Profile,
 };

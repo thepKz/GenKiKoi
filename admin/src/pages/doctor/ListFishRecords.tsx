@@ -1,4 +1,4 @@
-import { Breadcrumb, Button, Divider, TableProps } from "antd";
+import { Breadcrumb, Button, TableProps } from "antd";
 import { HeaderPage } from "../../components";
 import { CustomTable } from "../../share";
 import { Link } from "react-router-dom";
@@ -46,9 +46,9 @@ const ListFishRecords = () => {
       key: "Chi tiết",
       title: "Chi tiết",
       width: 150,
-      render: (_text: any, record: any) => (
+      render: (_text: any, _record: any) => (
         <div className="text-center">
-          <Link to={`/doctor/view-records/fishes/records/sncbf`}>
+          <Link to={`/doctor/customers/345/fishes/453/records/453`}>
             <Button type="primary">Xem chi tiết</Button>
           </Link>
         </div>
@@ -67,14 +67,14 @@ const ListFishRecords = () => {
     },
   ];
   return (
-    <div className="container mx-auto my-5 h-[calc(100vh-115px)] rounded-md bg-white p-5 shadow-sm lg:w-[95%]">
+    <div className="section">
       <HeaderPage heading="Danh sách hồ sơ" placeholder="Tìm hồ sơ" />
       <Breadcrumb
         separator=">"
         items={[
           {
             title: (
-              <Link to="/doctor/view-records">
+              <Link to="/doctor/customers">
                 <div className="flex items-center gap-2">
                   <Stickynote size={20} />
                   Hồ sơ khách hàng
@@ -83,19 +83,17 @@ const ListFishRecords = () => {
             ),
           },
           {
-            title: "Hồ sơ bệnh án",
+            title: <Link to="/doctor/customers">Hồ sơ bệnh án</Link>,
           },
           {
-            title: (
-              <Link to={"/doctor/view-records/fishes"}>Danh sách cá</Link>
-            ),
+            title: <Link to={"/doctor/customers/345/fishes"}>Danh sách cá</Link>,
           },
           {
-            title: "67069dv2b5759828c4f9e611",
+            title: "Danh sách hồ sơ bệnh án",
           },
         ]}
       />
-      <div className="mt-3 doctor-view">
+      <div className="doctor-view fish-record mt-3">
         <CustomTable columns={columns} dataSource={dataSource} />
       </div>
     </div>

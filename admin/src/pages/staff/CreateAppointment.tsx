@@ -198,7 +198,7 @@ const CreateAppointment = () => {
   }
 
   return (
-    <div className="container mx-auto my-5 h-[calc(100vh-115px)] rounded-md bg-white p-5 shadow-sm lg:w-[95%]">
+    <div className="section">
       <HeaderPage heading="Tạo lịch khám bệnh" />
       <ConfigProvider
         theme={{
@@ -212,174 +212,189 @@ const CreateAppointment = () => {
           },
         }}
       >
-        <Form size="large" layout="vertical">
-          <div className="flex gap-10">
-            <div className="lg:w-1/5">
-              <Form.Item name="serviceName" label="Loại dịch vụ" required>
-                <Select
-                  placeholder="Chọn loại dịch vụ"
-                  style={{ width: "100%" }}
-                  options={services.map((service: any) => ({
-                    value: service.serviceName,
-                    label: service.serviceName,
-                  }))}
-                  onChange={handleServiceChange}
-                />
-              </Form.Item>
-              <Form.Item name="doctorName" label="Bác sĩ" required>
-                <Select
-                  style={{ width: "100%" }}
-                  placeholder="Chọn bác sĩ"
-                  options={doctors.map((doctor: any) => ({
-                    value: doctor.fullName,
-                    label: "Bs. " + doctor.fullName,
-                  }))}
-                />
-              </Form.Item>
-              <Form.Item
-                name="typeOfConsulting"
-                label="Hình thức khám"
-                required
-              >
-                <Select
-                  placeholder="Chọn hình thức khám"
-                  style={{ width: "100%" }}
-                  options={consultingOptions}
-                />
-              </Form.Item>
-            </div>
-            <div className="lg:w-[30%]">
-              <Form.Item name="appointmentDate" label="Thời gian khám" required>
-                <CustomCalendar setDate={setDate} />
-              </Form.Item>
-              <Form.Item name="slotTime" className="mt-3">
-                <div className="flex flex-wrap gap-2">
-                  {demoSlots.map((slotTime) => (
-                    <Card
-                      key={slotTime.id}
-                      style={{ width: 60, textAlign: "center" }}
-                      onClick={() => setSlot(slotTime.id)}
-                      className={
-                        slot === slotTime.id
-                          ? "bg-green-dark text-white"
-                          : "hover:bg-green-dark hover:text-white"
-                      }
+        <div className="flex h-[calc(100vh-145px)] flex-col justify-between">
+          <Form size="large" layout="vertical">
+            <div className="grid grid-cols-[220px_350px_1fr] gap-10">
+              <div className="">
+                <Form.Item name="serviceName" label="Loại dịch vụ" required>
+                  <Select
+                    placeholder="Chọn loại dịch vụ"
+                    style={{ width: "100%" }}
+                    options={services.map((service: any) => ({
+                      value: service.serviceName,
+                      label: service.serviceName,
+                    }))}
+                    onChange={handleServiceChange}
+                  />
+                </Form.Item>
+                <Form.Item name="doctorName" label="Bác sĩ" required>
+                  <Select
+                    style={{ width: "100%" }}
+                    placeholder="Chọn bác sĩ"
+                    options={doctors.map((doctor: any) => ({
+                      value: doctor.fullName,
+                      label: "Bs. " + doctor.fullName,
+                    }))}
+                  />
+                </Form.Item>
+                <Form.Item
+                  name="typeOfConsulting"
+                  label="Hình thức khám"
+                  required
+                >
+                  <Select
+                    placeholder="Chọn hình thức khám"
+                    style={{ width: "100%" }}
+                    options={consultingOptions}
+                  />
+                </Form.Item>
+              </div>
+              <div className="">
+                <Form.Item
+                  name="appointmentDate"
+                  label="Thời gian khám"
+                  required
+                >
+                  <CustomCalendar setDate={setDate} />
+                </Form.Item>
+                <Form.Item name="slotTime" className="mt-3">
+                  <div className="flex flex-wrap gap-2">
+                    {demoSlots.map((slotTime) => (
+                      <Card
+                        key={slotTime.id}
+                        style={{ width: 60, textAlign: "center" }}
+                        onClick={() => setSlot(slotTime.id)}
+                        className={
+                          slot === slotTime.id
+                            ? "bg-[#1677ff] text-white"
+                            : "hover:bg-[#1677ff] hover:text-white"
+                        }
+                      >
+                        {slotTime.time}
+                      </Card>
+                    ))}
+                  </div>
+                </Form.Item>
+              </div>
+              <div className="">
+                <Row gutter={24}>
+                  <Col span={24}>
+                    <Form.Item required name="fullName" label="Họ và tên">
+                      <Input
+                        defaultValue={profile?.fullName}
+                        placeholder="Họ và tên"
+                      />
+                    </Form.Item>
+                  </Col>
+                </Row>
+                <Row gutter={24}>
+                  <Col span={12}>
+                    <Form.Item
+                      required
+                      name="phoneNumber"
+                      label="Số điện thoại"
                     >
-                      {slotTime.time}
-                    </Card>
-                  ))}
-                </div>
-              </Form.Item>
-            </div>
-            <div className="lg:flex-1">
-              <Row gutter={24}>
-                <Col span={24}>
-                  <Form.Item required name="fullName" label="Họ và tên">
-                    <Input
-                      defaultValue={profile?.fullName}
-                      placeholder="Họ và tên"
-                    />
-                  </Form.Item>
-                </Col>
-              </Row>
-              <Row gutter={24}>
-                <Col span={12}>
-                  <Form.Item required name="phoneNumber" label="Số điện thoại">
-                    <Input
-                      className="addon-input"
-                      addonBefore="+84"
-                      placeholder="Số điện thoại"
-                      defaultValue={profile?.phoneNumber}
-                    />
-                  </Form.Item>
-                </Col>
-                <Col span={12}>
-                  <Form.Item name="gender" label="Giới tính">
-                    <Select
-                      placeholder="Giới tính"
-                      defaultValue={
-                        profile?.gender === undefined
-                          ? null
-                          : profile?.gender === true
-                            ? "Nam"
-                            : "Nữ"
-                      }
-                      options={[
-                        { value: "nữ", label: "Nữ" },
-                        { value: "nam", label: "Nam" },
+                      <Input
+                        className="addon-input"
+                        addonBefore="+84"
+                        placeholder="Số điện thoại"
+                        defaultValue={profile?.phoneNumber}
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col span={12}>
+                    <Form.Item name="gender" label="Giới tính">
+                      <Select
+                        placeholder="Giới tính"
+                        defaultValue={
+                          profile?.gender === undefined
+                            ? null
+                            : profile?.gender === true
+                              ? "Nam"
+                              : "Nữ"
+                        }
+                        options={[
+                          { value: "nữ", label: "Nữ" },
+                          { value: "nam", label: "Nam" },
+                        ]}
+                      />
+                    </Form.Item>
+                  </Col>
+                </Row>
+                <Row gutter={24}>
+                  <Col span={8}>
+                    <Form.Item name="city" label="Tỉnh">
+                      <Select
+                        placeholder="Thành phố"
+                        value={city}
+                        defaultValue={profile?.city}
+                        onChange={(e) => {
+                          setCity(e);
+                        }}
+                        options={cities}
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col span={8}>
+                    <Form.Item name="district" label="Quận / Huyện">
+                      <Select
+                        placeholder="Quận / Huyện"
+                        defaultValue={profile?.district}
+                        onChange={(e) => {
+                          setDistrict(e);
+                        }}
+                        options={districts}
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col span={8}>
+                    <Form.Item name="ward" label="Phường / Xã">
+                      <Select
+                        placeholder="Phường / Xã"
+                        defaultValue={profile?.ward}
+                        value={ward}
+                        onChange={(e) => setWard(e)}
+                        options={wards}
+                      />
+                    </Form.Item>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col span={24}>
+                    <Form.Item name="address" label="Địa chỉ">
+                      <Input
+                        placeholder="Địa chỉ"
+                        defaultValue={profile?.detailAddress}
+                      />
+                    </Form.Item>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col span={24}>
+                    <Form.Item
+                      tooltip="Hãy mô tả kỹ lý do khám cho cá của bạn nhé"
+                      name="reasons"
+                      label="Lý do khám"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Vui lòng nhập lý do khám!",
+                        },
                       ]}
-                    />
-                  </Form.Item>
-                </Col>
-              </Row>
-              <Row gutter={24}>
-                <Col span={8}>
-                  <Form.Item name="city" label="Tỉnh">
-                    <Select
-                      placeholder="Thành phố"
-                      value={city}
-                      defaultValue={profile?.city}
-                      onChange={(e) => {
-                        setCity(e);
-                      }}
-                      options={cities}
-                    />
-                  </Form.Item>
-                </Col>
-                <Col span={8}>
-                  <Form.Item name="district" label="Quận / Huyện">
-                    <Select
-                      placeholder="Quận / Huyện"
-                      defaultValue={profile?.district}
-                      onChange={(e) => {
-                        setDistrict(e);
-                      }}
-                      options={districts}
-                    />
-                  </Form.Item>
-                </Col>
-                <Col span={8}>
-                  <Form.Item name="ward" label="Phường / Xã">
-                    <Select
-                      placeholder="Phường / Xã"
-                      defaultValue={profile?.ward}
-                      value={ward}
-                      onChange={(e) => setWard(e)}
-                      options={wards}
-                    />
-                  </Form.Item>
-                </Col>
-              </Row>
-              <Row>
-                <Col span={24}>
-                  <Form.Item name="address" label="Địa chỉ">
-                    <Input
-                      placeholder="Địa chỉ"
-                      defaultValue={profile?.detailAddress}
-                    />
-                  </Form.Item>
-                </Col>
-              </Row>
-              <Row>
-                <Col span={24}>
-                  <Form.Item
-                    tooltip="Hãy mô tả kỹ lý do khám cho cá của bạn nhé"
-                    name="reasons"
-                    label="Lý do khám"
-                    rules={[
-                      { required: true, message: "Vui lòng nhập lý do khám!" },
-                    ]}
-                  >
-                    <TextArea placeholder="Lý do khám" rows={4} />
-                  </Form.Item>
-                </Col>
-              </Row>
+                    >
+                      <TextArea placeholder="Lý do khám" rows={6} />
+                    </Form.Item>
+                  </Col>
+                </Row>
+              </div>
             </div>
-          </div>
+          </Form>
           <div className="text-right">
-            <Button type="primary">Tạo cuộc hẹn</Button>
+            <Button size="large" type="primary">
+              Tạo cuộc hẹn
+            </Button>
           </div>
-        </Form>
+        </div>
       </ConfigProvider>
     </div>
   );

@@ -290,33 +290,37 @@ const Staffs = () => {
       key: "1",
       label: "Nhân viên",
       children: (
-        <CustomTable
-          loading={isLoading}
-          columns={staffColumn}
-          dataSource={staffs}
-          scroll="calc(100vh - 410px)"
-          className="staff-table"
-        />
+        <div className="staff-view staff">
+          <CustomTable
+            loading={isLoading}
+            columns={staffColumn}
+            dataSource={staffs}
+            scroll="calc(100vh - 410px)"
+            className="staff-table"
+          />
+        </div>
       ),
     },
     {
       key: "2",
       label: "Bác sĩ",
       children: (
-        <CustomTable
-          loading={isLoading}
-          columns={doctorColumn}
-          dataSource={doctors}
-          scroll="calc(100vh - 410px)"
-          className="staff-table"
-        />
+        <div className="staff-view staff">
+          <CustomTable
+            loading={isLoading}
+            columns={doctorColumn}
+            dataSource={doctors}
+            scroll="calc(100vh - 410px)"
+            className="staff-table"
+          />
+        </div>
       ),
     },
   ];
 
   return (
     <div>
-      <div className="container mx-auto my-5 h-[calc(100vh-115px)] rounded-md bg-white p-5 shadow-sm lg:w-[95%]">
+      <div className="section">
         {/* Header */}
         <div className="flex items-center justify-between">
           <h1 className="heading-3">Danh sách nhân viên và bác sĩ</h1>

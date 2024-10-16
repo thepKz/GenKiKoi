@@ -9,6 +9,7 @@ import {
   Customers,
   DoctorCalendar,
   ListDoctors,
+  Profile,
 } from "../pages/staff";
 
 const StaffRouter = () => {
@@ -26,12 +27,10 @@ const StaffRouter = () => {
           <Route index element={<Customers />} />
           <Route path=":userId/appointments">
             <Route index element={<Appointments />} />
-            <Route
-              path=":appointmentId"
-              element={<AppointmentDetail />}
-            />
+            <Route path=":appointmentId" element={<AppointmentDetail />} />
           </Route>
         </Route>
+        <Route path="profile" element={<Profile />} />
       </Route>
       <Route path="*" element={<NotFound to="/staff" />} />
     </Routes>

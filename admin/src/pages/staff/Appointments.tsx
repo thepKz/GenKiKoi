@@ -3,7 +3,7 @@ import { HeaderPage } from "../../components";
 import { CustomTable } from "../../share";
 import { Link } from "react-router-dom";
 import { getValue } from "../../utils";
-import { Calendar, CalendarSearch, Profile2User } from "iconsax-react";
+import { Calendar, CalendarSearch } from "iconsax-react";
 
 const Appointments = () => {
   const columns: TableProps["columns"] = [
@@ -39,7 +39,7 @@ const Appointments = () => {
     {
       key: "Chi tiết",
       title: "Chi tiết",
-      render: (_text: any, record: any) => (
+      render: (_text: any, _record: any) => (
         <div className="text-center">
           <Link to={"/staff/customers/348/appointments/485"}>
             <Button type="primary">Xem chi tiết</Button>
@@ -59,7 +59,7 @@ const Appointments = () => {
     },
   ];
   return (
-    <div className="container mx-auto my-5 h-[calc(100vh-115px)] rounded-md bg-white p-5 shadow-sm lg:w-[95%]">
+    <div className="section">
       <HeaderPage heading="Danh sách cuộc hẹn" placeholder="Tìm cuộc hẹn" />
       <Breadcrumb
         separator=">"

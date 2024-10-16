@@ -66,7 +66,7 @@ const Customers = () => {
   ];
 
   return (
-    <div className="container mx-auto my-5 h-[calc(100vh-115px)] rounded-md bg-white p-5 shadow-sm lg:w-[95%]">
+    <div className="section">
       <HeaderPage heading="Danh sách khách hàng" placeholder="Tìm khách hàng" />
       <Breadcrumb
         separator=">"

@@ -27,32 +27,30 @@ const DoctorCalendar = () => {
     plugins: [createEventModalPlugin()],
   });
   return (
-    <div>
-      <div className="container mx-auto my-5 h-[calc(100vh-115px)] rounded-md bg-white p-5 shadow-sm lg:w-[95%]">
-        <Breadcrumb
-          separator=">"
-          items={[
-            {
-              title: (
-                <Link to="/staff">
-                  <div className="flex items-center gap-2">
-                    <Calendar size={20} />
-                    Lịch làm việc của bác sĩ
-                  </div>
-                </Link>
-              ),
-            },
-            {
-              title: "Xem lịch",
-            },
-            {
-              title: "Bs. Đỗ Quang Dũng",
-            },
-          ]}
-        />
-        <div className="staff-view mt-2">
-          <ScheduleXCalendar calendarApp={calendar} />
-        </div>
+    <div className="section">
+      <Breadcrumb
+        separator=">"
+        items={[
+          {
+            title: (
+              <Link to="/staff/doctor-calendar">
+                <div className="flex items-center gap-2">
+                  <Calendar size={20} />
+                  Lịch làm việc của bác sĩ
+                </div>
+              </Link>
+            ),
+          },
+          {
+            title: <Link to="/staff/doctor-calendar">Danh sách bác sĩ</Link>,
+          },
+          {
+            title: "Bs. Đỗ Quang Dũng",
+          },
+        ]}
+      />
+      <div className="staff-view mt-2">
+        <ScheduleXCalendar calendarApp={calendar} />
       </div>
     </div>
   );

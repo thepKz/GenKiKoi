@@ -189,7 +189,7 @@ const Services = () => {
 
   return (
     <div>
-      <div className="container mx-auto my-5 h-[calc(100vh-115px)] rounded-md bg-white p-5 shadow-sm lg:w-[95%]">
+      <div className="section">
         {/* Header */}
         <div className="flex items-center justify-between">
           <h1 className="heading-3">Danh sách dịch vụ</h1>
@@ -198,7 +198,7 @@ const Services = () => {
           </Button>
         </div>
         <Divider />
-        <div className="">
+        <div className="staff-view">
           <CustomTable
             loading={isLoading}
             columns={columns}

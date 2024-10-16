@@ -25,7 +25,7 @@
 
 @layer components {
   .section {
-    @apply py-20;
+    @apply container mx-auto my-5 h-[calc(100vh-40px)] rounded-md bg-white p-5 shadow-sm lg:w-[95%];
   }
 
   .item-hover {
@@ -57,16 +57,34 @@
 }
 
 /* ======== ADDITIONAL CSS ======== */
-.ant-table-container {
-  height: calc(100vh - 280px);
+
+::-webkit-scrollbar {
+  display: none;
 }
 
-.staff-table .ant-table-container {
-  height: calc(100vh - 342px);
+/* ::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 10px;
+} */
+
+.ant-table-container {
+  height: calc(100vh - 230px);
+}
+
+.staff-view .ant-table-container {
+  height: calc(100vh - 200px);
+}
+
+.staff-view.staff .ant-table-container {
+  height: calc(100vh - 260px);
 }
 
 .doctor-view .ant-table-container {
-  height: calc(100vh - 315px);
+  height: calc(100vh - 260px);
+}
+
+.doctor-view.fish-record .ant-table-container {
+  height: calc(100vh - 240px);
 }
 
 .ant-result {
@@ -82,7 +100,14 @@
 .sx-react-calendar-wrapper {
   width: 100%;
   max-width: 100vw;
-  height: calc(100vh - 160px);
+  height: 83vh;
+  max-height: 90vh;
+}
+
+.doctor-view .sx-react-calendar-wrapper {
+  width: 100%;
+  max-width: 100vw;
+  height: calc(100vh - 80px);
   max-height: 90vh;
 }
 
@@ -93,7 +118,7 @@
 :root {
   --sx-week-grid-height: 1050px !important;
 }
-
+/* 
 .staff-view .sx-react-calendar-wrapper {
   width: 100%;
   max-width: 100vw;
@@ -107,4 +132,4 @@
 
 :root .staff-view {
   --sx-week-grid-height: 900px !important;
-}
+} */
