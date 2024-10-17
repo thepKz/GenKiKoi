@@ -28,10 +28,10 @@ import {
   staffRoutes,
   userRoutes,
   vnpayRoutes,
+  medicalRecordRoutes,
+  pondRoutes,
+  fishRoutes,
 } from "./routes";
-import medicalRecordRoutes from "./routes/medicalRecord";
-import pondRoutes from "./routes/pondRoutes";
-import fishRoutes from "./routes/fishRoutes";
 
 const app = express();
 

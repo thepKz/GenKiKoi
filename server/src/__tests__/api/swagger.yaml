@@ -479,11 +479,11 @@ paths:
                 orderType:
                   type: string
                   description: Type of the order
-                  default: 'other'
+                  default: "other"
                 language:
                   type: string
                   description: Language for the payment page
-                  default: 'vn'
+                  default: "vn"
             example:
               amount: 100000
               orderDescription: "Thanh toán dịch vụ khám bệnh cho cá Koi"
@@ -618,6 +618,7 @@ paths:
           description: Doctor, customer, or service not found
         500:
           description: Internal server error
+
   /api/distance/autocomplete:
     get:
       summary: Address autocomplete

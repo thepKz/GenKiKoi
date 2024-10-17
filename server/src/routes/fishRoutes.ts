@@ -3,10 +3,15 @@ import {
   getAllFish,
   getFishByPhoneNumber,
 } from "../controllers/fishController";
+import { authMiddleware } from "../middleware";
 
 const router = Router();
 
-router.get("/all", getAllFish);
-router.get("/getFishByPhoneNumber/:phoneNumber", getFishByPhoneNumber);
+router.get("/all", authMiddleware, getAllFish);
+router.get(
+  "/getFishByPhoneNumber/:phoneNumber",
+  authMiddleware,
+  getFishByPhoneNumber
+);
 
 export default router;
