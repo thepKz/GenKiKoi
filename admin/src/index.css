@@ -87,6 +87,10 @@
   height: calc(100vh - 240px);
 }
 
+.doctor-view.appointments .ant-table-container {
+  height: calc(100vh - 200px);
+}
+
 .ant-result {
   height: 100vh;
   display: flex;

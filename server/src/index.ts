@@ -70,7 +70,7 @@ app.use("/api/staffs", staffRoutes);
 app.use("/api/doctors", doctorRoutes);
 app.use("/api/vnpay", vnpayRoutes);
 app.use("/api/bills", billRoutes);
-// app.use("/api/doctorSchedules", doctorScheduleRoutes);
+
 // +++++++ ADD DATA +++++++
 // Cái này t dùng để add tạm dữ liêu!
 

@@ -89,36 +89,6 @@ const Appointments = () => {
     },
   ];
 
-  const items: TabsProps["items"] = [
-    {
-      key: "1",
-      label: "Trung tâm",
-      children: (
-        <div className="doctor-view">
-          <CustomTable
-            columns={columns}
-            dataSource={demoData}
-            scroll="calc(100vh - 410px)"
-            className="staff-table"
-          />
-        </div>
-      ),
-    },
-    {
-      key: "2",
-      label: "Hẹn trước",
-      children: (
-        <div className="doctor-view">
-          <CustomTable
-            columns={columns}
-            dataSource={demoData}
-            scroll="calc(100vh - 410px)"
-            className="staff-table"
-          />
-        </div>
-      ),
-    },
-  ];
   return (
     <div>
       <div className="section">
@@ -126,7 +96,14 @@ const Appointments = () => {
           heading="Danh sách cuộc hẹn"
           placeholder="Tìm kiếm cuộc hẹn"
         />
-        <Tabs defaultActiveKey="1" items={items} />
+        <div className="doctor-view appointments">
+          <CustomTable
+            columns={columns}
+            dataSource={demoData}
+            scroll="calc(100vh - 410px)"
+            className="staff-table"
+          />
+        </div>
       </div>
     </div>
   );
