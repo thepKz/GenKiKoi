@@ -25,6 +25,7 @@ tags:
     description: Need JWT TOKENS
   - name: Appointments
     description: Need JWT TOKENS
+  
 paths:
   /api/auth/register:
     post:
@@ -996,3 +997,195 @@ paths:
           description: Doctor, customer, or service not found
         500:
           description: Internal server error
+
+
+  /api/ponds/all:
+    get:
+      summary: Retrieve all ponds
+      tags: [Ponds]
+      responses:
+        200:
+          description: A list of ponds
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Pond'
+        500:
+          description: Server error
+
+  /api/ponds/getPondByID/{id}:
+    get:
+      summary: Retrieve a pond by ID
+      tags: [Ponds]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: ID of the pond
+          schema:
+            type: string
+      responses:
+        200:
+          description: Pond details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PondDetails'
+        400:
+          description: Pond not found
+        500:
+          description: Server error
+
+  /api/ponds/create:
+    post:
+      summary: Create a new pond
+      tags: [Ponds]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - doctorId
+                - phoneNumber
+                - status
+                - images
+                - ph
+                - ammoniaLevel
+                - nitrateLevel
+                - oxygenLevel
+                - waterTemperature
+                - cleanliness
+                - filtrationSystem
+                - pondSize
+                - notes
+                - diagnosis
+              properties:
+                doctorId:
+                  type: string
+                phoneNumber:
+                  type: string
+                status:
+                  type: string
+                  enum: ["Tệ", "Rất tệ", "Bình thường", "Tốt"]
+                images:
+                  type: array
+                  items:
+                    type: string
+                ph:
+                  type: number
+                ammoniaLevel:
+                  type: number
+                nitrateLevel:
+                  type: number
+                oxygenLevel:
+                  type: number
+                waterTemperature:
+                  type: number
+                cleanliness:
+                  type: string
+                  enum: ["Tệ", "Rất tệ", "Bình thường", "Tốt"]
+                filtrationSystem:
+                  type: string
+                  enum: ["Lớn", "Vừa", "Nhỏ"]
+                pondSize:
+                  type: number
+                notes:
+                  type: string
+                diagnosis:
+                  type: string
+      responses:
+        200:
+          description: Pond created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/Pond'
+        400:
+          description: Validation error
+        500:
+          description: Server error
+
+components:
+  schemas:
+    Pond:
+      type: object
+      properties:
+        customerId:
+          type: string
+        doctorId:
+          type: string
+        status:
+          type: string
+        images:
+          type: array
+          items:
+            type: string
+        ph:
+          type: number
+        ammoniaLevel:
+          type: number
+        nitrateLevel:
+          type: number
+        oxygenLevel:
+          type: number
+        waterTemperature:
+          type: number
+        cleanliness:
+          type: string
+        filtrationSystem:
+          type: string
+        pondSize:
+          type: number
+        notes:
+          type: string
+        diagnosis:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    PondDetails:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date-time
+        images:
+          type: array
+          items:
+            type: string
+        ph:
+          type: number
+        ammoniaLevel:
+          type: number
+        nitrateLevel:
+          type: number
+        oxygenLevel:
+          type: number
+        waterTemperature:
+          type: number
+        cleanliness:
+          type: string
+        filtrationSystem:
+          type: string
+        pondSize:
+          type: number
+        notes:
+          type: string
+        diagnosis:
+          type: string

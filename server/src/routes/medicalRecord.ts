@@ -5,13 +5,14 @@ import {
   createMedicalRecord,
   getMedicalRecordById,
 } from "../controllers/medicalRecordController";
+import { authMiddleware } from "../middleware";
 
 const router = express.Router();
 
-router.get("/all", getAllMedicalRecords);
-router.get("/getByID/:id", getMedicalRecordById);
-router.get("/getByFishId/:id", getMedicalRecordByFishId);
+router.get("/all", authMiddleware, getAllMedicalRecords);
+router.get("/getByID/:id", authMiddleware, getMedicalRecordById);
+router.get("/getByFishId/:id", authMiddleware, getMedicalRecordByFishId);
 
-router.post("/create", createMedicalRecord);
+router.post("/create", authMiddleware, createMedicalRecord);
 
 export default router;

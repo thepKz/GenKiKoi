@@ -200,4 +200,41 @@
  *           type: string
  *           format: date-time
  *           description: Last update timestamp
+ *  Pond:
+      type: object
+      properties:
+        customerId:
+          type: string
+        doctorId:
+          type: string
+        status:
+          type: string
+        images:
+          type: array
+          items:
+            type: string
+        ph:
+          type: number
+        ammoniaLevel:
+          type: number
+        nitrateLevel:
+          type: number
+        oxygenLevel:
+          type: number
+        waterTemperature:
+          type: number
+        cleanliness:
+          type: string
+        filtrationSystem:
+          type: string
+        pondSize:
+          type: number
+        notes:
+          type: string
+        diagnosis:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
  */

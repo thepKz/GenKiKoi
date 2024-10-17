@@ -93,8 +93,8 @@ export const getMedicalRecordById = async (req: Request, res: Response) => {
 export const createMedicalRecord = async (req: Request, res: Response) => {
   let {
     phoneNumber,
-    fishId, // ben FE nhap vao nen khong can kiem tra co ton tai hay khong ?
-    doctorId, //  ben FE nhap vao nen khong can kiem tra co ton tai hay khong ?
+    fishId,
+    doctorId,
     examType,
     images,
     diagnosis,
@@ -102,7 +102,16 @@ export const createMedicalRecord = async (req: Request, res: Response) => {
     medicines,
   } = req.body;
   try {
-    if (!examType || !images || !diagnosis || !treatment || !medicines) {
+    if (
+      !examType ||
+      !images ||
+      !diagnosis ||
+      !treatment ||
+      !medicines ||
+      !phoneNumber ||
+      !fishId ||
+      !doctorId
+    ) {
       return res
         .status(400)
         .json({ message: "Vui lòng điền đầy đủ thông tin" });
