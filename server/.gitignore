@@ -13,7 +13,7 @@ dist-ssr
 *.local
 .env
 
-
+coverage/*
 .gitignore
 
 .vscode/*
