@@ -1,14 +1,16 @@
 import mongoose from "mongoose";
+import { ICustomer } from "./Customer";
+import { IAppointment } from "./Appointment";
 
 interface IFish {
   description?: string;
   size: number;
   age: number;
   photoUrl?: string;
-  numberOfTreatments: number;
+  numberOfTreatments?: number;
   healthStatus: string;
-  customerId: mongoose.Types.ObjectId;
-  appointmentId: mongoose.Types.ObjectId;
+  customerId: ICustomer;
+  appointmentId: IAppointment;
 }
 
 const FishSchema = new mongoose.Schema<IFish>(

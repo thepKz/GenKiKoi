@@ -7,7 +7,7 @@ export interface IDoctor {
   yearOfExperience?: number;
   movingService: boolean;
   userId: IUser;
-  startDate: Date;
+  startDate?: Date;
 }
 
 const DoctorSchema = new mongoose.Schema<IDoctor>(

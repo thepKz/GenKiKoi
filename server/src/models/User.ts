@@ -3,11 +3,11 @@ export interface IUser {
   username: string;
   email: string;
   password: string;
-  photoUrl: string;
-  fullName: string;
-  phoneNumber: string;
+  photoUrl?: string;
+  fullName?: string;
+  phoneNumber?: string;
   role: "customer" | "staff" | "doctor" | "manager";
-  gender: "nam" | "nữ";
+  gender?: "nam" | "nữ";
 }
 
 const userSchema = new mongoose.Schema<IUser>(

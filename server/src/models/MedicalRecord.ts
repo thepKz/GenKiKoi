@@ -7,8 +7,8 @@ export interface IMedicalRecord {
   customerId: ICustomer;
   fishId: mongoose.Types.ObjectId;
 
-  examType: "Khám bệnh" | "Tái khám" | "Tiêm Phòng" | "Điều Trị";
-  diagnosis: string; // Chuẩn đoán
+  examType?: "Khám bệnh" | "Tái khám" | "Tiêm Phòng" | "Điều Trị";
+  diagnosis?: string; // Chuẩn đoán
   treatment?: string; // Phác đồ điều trị
   medicines?: { name: string; quantity: number }[]; // Danh sách thuốc
   images?: string[]; //mang cac hinh anh dieu tri
