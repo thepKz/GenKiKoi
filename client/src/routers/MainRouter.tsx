@@ -28,6 +28,7 @@ import Vaccine from "../pages/services/Vaccine";
 import WaterQuality from "../pages/services/WaterQuality";
 import { addAuth } from "../redux/reducers/authReducer";
 import { IAuth } from "../types";
+import DoctorDetail from "../pages/DoctorDetail";
 
 const MainRouter = () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -72,6 +73,10 @@ const MainRouter = () => {
           <Route
             path="doctors"
             element={<Doctors />}
+          />
+          <Route
+            path="doctors/:id"
+            element={<DoctorDetail />}
           />
           <Route
             path="images"
