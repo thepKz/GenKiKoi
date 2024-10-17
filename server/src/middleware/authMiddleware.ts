@@ -1,6 +1,12 @@
-import { NextFunction, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import { AuthRequest } from "../types";
+export interface AuthRequest extends Request {
+  user?: {
+    _id: string;
+    role: string;
+  };
+}
+
 
 export const authMiddleware = (
   req: AuthRequest,
