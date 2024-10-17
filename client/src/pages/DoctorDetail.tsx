@@ -1,31 +1,11 @@
-import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
-import { Avatar, Button, Card, ConfigProvider, Divider } from 'antd'
+
+import { Avatar, Button, Card, ConfigProvider } from 'antd'
 import { ArrowRight2 } from 'iconsax-react'
-import { AnimatedSection, DividerComponent } from "../share";
+import { AnimatedSection } from "../share";
 import Doctor1 from "../assets/doctor1.webp";
 
 const DoctorDetail = () => {
-//   const { id } = useParams();
-//   const [doctor, setDoctor] = useState(null);
 
-//   useEffect(() => {
-//     window.scrollTo(0, 0);
-//     // Fetch doctor details using the id
-//     // This is just a placeholder, replace with your actual API call
-//     const fetchDoctorDetails = async () => {
-//       try {
-//         const response = await fetch(`/api/doctors/${id}`);
-//         const data = await response.json();
-//         setDoctor(data);
-//       } catch (error) {
-//         console.error('Error fetching doctor details:', error);
-//       }
-//     };
-//     fetchDoctorDetails();
-//   }, [id]);
-
-//   if (!doctor) return <div>Loading...</div>;
 
   return (
     <div className="bg-green-dark text-white">

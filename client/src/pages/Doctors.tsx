@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { Button, Card, Avatar, Rate } from 'antd';
+import { useEffect, useState } from 'react';
+import { Button, Card, Rate } from 'antd';
 import { ArrowRight2 } from 'iconsax-react';
 import { AnimatedSection, DividerComponent } from "../share";
 import Doctor1 from "../assets/doctor1.webp";
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 // import Doctor2 from "../assets/doctor2.png";
 
 const Doctors = () => {
@@ -13,7 +13,7 @@ const Doctors = () => {
     window.scrollTo(0, 0);
   }, []);
 
-  const [doctors, setDoctors] = useState([
+  const [doctors] = useState([
     {
       id: 'D1',
       name: 'Dr. Nguyễn Văn A',
