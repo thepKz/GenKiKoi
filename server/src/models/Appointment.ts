@@ -1,14 +1,17 @@
 import mongoose from "mongoose";
+import { IDoctor } from "./Doctor";
+import { ICustomer } from "./Customer";
+import { IService } from "./Service";
 
-interface IAppointment {
-  doctorId: mongoose.Types.ObjectId;
-  customerId: mongoose.Types.ObjectId;
-  serviceId: mongoose.Types.ObjectId;
+export interface IAppointment {
+  doctorId: IDoctor;
+  customerId: ICustomer;
+  serviceId: IService;
   appointmentDate: Date;
   typeOfConsulting: string;
   slotTime: string;
   status: string;
-  reasons: string;
+  reasons?: string;
   notes?: string;
 }
 

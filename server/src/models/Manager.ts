@@ -1,9 +1,10 @@
 import mongoose from "mongoose";
+import { IUser } from "./User";
 
 interface IManager {
-  userId: mongoose.Types.ObjectId;
+  userId: IUser;
   position?: string;
-  startDate: Date;
+  startDate?: Date;
 }
 
 const ManagerSchema = new mongoose.Schema<IManager>(

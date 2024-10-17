@@ -1,12 +1,13 @@
 import mongoose from "mongoose";
+import { IUser } from "./User";
 
-interface IDoctor {
+export interface IDoctor {
   specialization: string;
   licenseNumber: string;
   yearOfExperience?: number;
   movingService: boolean;
-  userId: mongoose.Types.ObjectId;
-  startDate: Date;
+  userId: IUser;
+  startDate?: Date;
 }
 
 const DoctorSchema = new mongoose.Schema<IDoctor>(

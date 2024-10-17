@@ -29,6 +29,9 @@ import {
   userRoutes,
   vnpayRoutes,
 } from "./routes";
+import medicalRecordRoutes from "./routes/medicalRecord";
+import pondRoutes from "./routes/pondRoutes";
+import fishRoutes from "./routes/fishRoutes";
 
 const app = express();
 
@@ -39,7 +42,7 @@ const allowedOrigins = [
   "https://productiongenkikoi.netlify.app",
   "http://localhost:5174",
   "https://admingenkikoi.netlify.app",
-  "https://genkikoi-backend.onrender.com"
+  "https://genkikoi-backend.onrender.com",
 ];
 
 app.use(
@@ -72,7 +75,11 @@ app.use("/api/staffs", staffRoutes);
 app.use("/api/doctors", doctorRoutes);
 app.use("/api/vnpay", vnpayRoutes);
 app.use("/api/bills", billRoutes);
+app.use("/api/medicalRecords", medicalRecordRoutes);
+app.use("/api/ponds", pondRoutes);
+app.use("/api/fishes", fishRoutes);
 app.use("/api/distance", distanceRoutes);
+
 // app.use("/api/doctorSchedules", doctorScheduleRoutes);
 // +++++++ ADD DATA +++++++
 // Cái này t dùng để add tạm dữ liêu!

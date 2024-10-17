@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 type AvailableAt = "Tại phòng khám" | "Tại nhà" | "Tư vấn trực tuyến";
 
-interface IService {
+export interface IService {
   serviceName: string;
   price: number;
   availableAt: AvailableAt[];

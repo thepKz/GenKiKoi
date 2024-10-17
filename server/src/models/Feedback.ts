@@ -1,7 +1,8 @@
 import mongoose from "mongoose";
+import { IAppointment } from "./Appointment";
 
 interface IFeedback {
-  appointmentId: mongoose.Types.ObjectId;
+  appointmentId: IAppointment;
   userId: mongoose.Types.ObjectId;
   rating: 1 | 2 | 3 | 4 | 5;
   comment?: string;

@@ -12,7 +12,7 @@ import User from "../models/User";
  * Người Test: Thép
  * Loại Test: API TEST (Đã xong), UNIT TEST (Đang làm), E2E TEST (Đã làm)
  * Chỉnh Sửa Lần Cuối : 13/10/2024
-*/
+ */
 
 export const createBill = async (req: Request, res: Response) => {
   try {
@@ -25,59 +25,75 @@ export const createBill = async (req: Request, res: Response) => {
 
     // Fetch the appointment with populated doctorId, customerId, and serviceId
     const appointment = await Appointment.findById(appointmentId)
-      .populate('doctorId')
-      .populate('customerId')
-      .populate('serviceId');
+      .populate("doctorId")
+      .populate("customerId")
+      .populate("serviceId");
 
     if (!appointment) {
       return res.status(404).json({ message: "Không tìm thấy cuộc hẹn" });
     }
 
     // Ensure doctorId and customerId are populated
-    if (!appointment.doctorId || !appointment.customerId || !appointment.serviceId) {
-      return res.status(404).json({ message: "Không tìm thấy thông tin bác sĩ, khách hàng hoặc dịch vụ" });
+    if (
+      !appointment.doctorId ||
+      !appointment.customerId ||
+      !appointment.serviceId
+    ) {
+      return res.status(404).json({
+        message: "Không tìm thấy thông tin bác sĩ, khách hàng hoặc dịch vụ",
+      });
     }
 
     // Fetch Doctor and Customer documents
-    const doctorRecord = await Doctor.findById(appointment.doctorId._id);
-    const customerRecord = await Customer.findById(appointment.customerId._id);
+    const doctorRecord = await Doctor.findById(appointment.doctorId);
+    const customerRecord = await Customer.findById(appointment.customerId);
 
     if (!doctorRecord || !customerRecord) {
-      return res.status(404).json({ message: "Không tìm thấy thông tin bác sĩ hoặc khách hàng" });
+      return res
+        .status(404)
+        .json({ message: "Không tìm thấy thông tin bác sĩ hoặc khách hàng" });
     }
 
     // Fetch User documents for Doctor and Customer
-    const doctorUser = await User.findById(doctorRecord.userId, 'fullName');
-    const customerUser = await User.findById(customerRecord.userId, 'fullName');
+    const doctorUser = await User.findById(doctorRecord.userId, "fullName");
+    const customerUser = await User.findById(customerRecord.userId, "fullName");
 
     if (!doctorUser || !customerUser) {
-      return res.status(404).json({ message: "Không tìm thấy thông tin người dùng của bác sĩ hoặc khách hàng" });
+      return res.status(404).json({
+        message:
+          "Không tìm thấy thông tin người dùng của bác sĩ hoặc khách hàng",
+      });
     }
 
     // Check if fullName fields are populated
     if (!doctorUser.fullName) {
-      return res.status(400).json({ message: "Tên bác sĩ không được để trống" });
+      return res
+        .status(400)
+        .json({ message: "Tên bác sĩ không được để trống" });
     }
 
     if (!customerUser.fullName) {
-      return res.status(400).json({ message: "Tên khách hàng không được để trống" });
+      return res
+        .status(400)
+        .json({ message: "Tên khách hàng không được để trống" });
     }
 
-    const service = await Service.findById(appointment.serviceId._id);
+    const service = await Service.findById(appointment.serviceId);
     if (!service) {
       return res.status(404).json({ message: "Không tìm thấy dịch vụ" });
     }
 
-    const totalPrice = service.price + (medicinePrice || 0) + (movingPrice || 0);
+    const totalPrice =
+      service.price + (medicinePrice || 0) + (movingPrice || 0);
 
     // Create a new Payment
     const newPayment = new Payment({
       orderId: `ORD-${Date.now()}`,
       amount: totalPrice,
       orderInfo: `Thanh toán cho cuộc hẹn ${appointmentId}`,
-      orderType: 'billpayment',
-      transactionStatus: 'pending',
-      paymentMethod: 'vnpay',
+      orderType: "billpayment",
+      transactionStatus: "pending",
+      paymentMethod: "vnpay",
     });
 
     const savedPayment = await newPayment.save();
@@ -94,7 +110,7 @@ export const createBill = async (req: Request, res: Response) => {
       medicinePrice,
       movingPrice,
       totalPrice,
-      paymentMethod: 'vnpay',
+      paymentMethod: "vnpay",
       doctorName: doctorUser.fullName,
       customerName: customerUser.fullName,
       serviceName: service.serviceName,
@@ -104,7 +120,11 @@ export const createBill = async (req: Request, res: Response) => {
 
     await newBill.save();
 
-    res.status(201).json({ message: "Tạo hóa đơn thành công", bill: newBill, payment: savedPayment });
+    res.status(201).json({
+      message: "Tạo hóa đơn thành công",
+      bill: newBill,
+      payment: savedPayment,
+    });
   } catch (error: any) {
     console.error(error);
     res.status(500).json({ message: "Lỗi server", error: error.message });
@@ -136,7 +156,9 @@ export const updateBillStatus = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "Không tìm thấy hóa đơn" });
     }
 
-    res.status(200).json({ message: "Cập nhật trạng thái thành công", bill: updatedBill });
+    res
+      .status(200)
+      .json({ message: "Cập nhật trạng thái thành công", bill: updatedBill });
   } catch (error: any) {
     console.error(error);
     res.status(500).json({ message: "Lỗi server", error: error.message });
@@ -153,9 +175,9 @@ export const getBillsByCustomer = async (req: Request, res: Response) => {
     }
 
     const bills = await Bill.find({ customerId })
-      .populate('serviceId')
-      .populate('doctorId')
-      .populate('paymentId');
+      .populate("serviceId")
+      .populate("doctorId")
+      .populate("paymentId");
 
     res.status(200).json(bills);
   } catch (error: any) {

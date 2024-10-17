@@ -1,7 +1,8 @@
 import mongoose from "mongoose";
+import { IUser } from "./User";
 
 interface IStaff {
-  userId: mongoose.Types.ObjectId;
+  userId: IUser;
   position?: string;
   workShift: "Morning" | "Afternoon" | "Night";
   isAvailable: boolean;

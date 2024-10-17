@@ -1,12 +1,13 @@
 import mongoose, { Schema, Document } from "mongoose";
+import { IDoctor } from "./Doctor";
 
 interface IDoctorSchedule extends Document {
-  doctorId: mongoose.Types.ObjectId; // ID của bác sĩ
+  doctorId: IDoctor; // ID của bác sĩ
   scheduleId: string; // ID của lịch trình
-  title: string; // Tiêu đề
+  title?: string; // Tiêu đề
   start: Date; // Thời gian bắt đầu
   end: Date; // Thời gian kết thúc
-  description: string; // Mô tả
+  description?: string; // Mô tả
   isBooked: boolean; // Trạng thái đã được đặt
 }
 

@@ -1,22 +1,19 @@
 import mongoose from "mongoose";
+import { IAppointment } from "./Appointment";
+import { ICustomer } from "./Customer";
+import { IDoctor } from "./Doctor";
+import { IService } from "./Service";
+import { IPayment } from "./Payment";
 
 interface IBill {
-  appointmentId: mongoose.Types.ObjectId;
-  customerId: mongoose.Types.ObjectId;
-  doctorId: mongoose.Types.ObjectId;
-  serviceId: mongoose.Types.ObjectId;
-  paymentId: mongoose.Types.ObjectId;
+  appointmentId: IAppointment;
+  paymentId: IPayment;
   appointmentDate: Date;
   servicePrice: number;
-  medicinePrice?: number;
-  movingPrice?: number;
+  movingPrice: number;
   totalPrice: number;
   status: "Đang xử lý" | "Hoàn thành" | "Lỗi thanh toán" | "Hủy";
   paymentMethod: "vnpay"; // Chỉ cho phép 'vnpay'
-  doctorName: string;
-  customerName: string;
-  serviceName: string;
-  typeOfConsulting: string;
 }
 
 const BillSchema = new mongoose.Schema<IBill>(
@@ -26,21 +23,6 @@ const BillSchema = new mongoose.Schema<IBill>(
       ref: "Appointment",
       required: true,
     },
-    customerId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Customer",
-      required: true,
-    },
-    doctorId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Doctor",
-      required: true,
-    },
-    serviceId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Service",
-      required: true,
-    },
     paymentId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Payment",
@@ -48,14 +30,11 @@ const BillSchema = new mongoose.Schema<IBill>(
     },
     appointmentDate: {
       type: Date,
-      required: true,
+      default: Date.now,
     },
     servicePrice: {
       type: Number,
       required: true,
-    },
-    medicinePrice: {
-      type: Number,
     },
     movingPrice: {
       type: Number,
@@ -74,22 +53,6 @@ const BillSchema = new mongoose.Schema<IBill>(
       type: String,
       enum: ["vnpay"], // Chỉ cho phép 'vnpay'
       default: "vnpay",
-      required: true,
-    },
-    doctorName: {
-      type: String,
-      required: true,
-    },
-    customerName: {
-      type: String,
-      required: true,
-    },
-    serviceName: {
-      type: String,
-      required: true,
-    },
-    typeOfConsulting: {
-      type: String,
       required: true,
     },
   },
