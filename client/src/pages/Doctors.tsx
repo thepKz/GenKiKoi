@@ -3,18 +3,19 @@ import { Button, Card, Avatar, Rate } from 'antd';
 import { ArrowRight2 } from 'iconsax-react';
 import { AnimatedSection, DividerComponent } from "../share";
 import Doctor1 from "../assets/doctor1.webp";
+import { Link, useNavigate } from 'react-router-dom';
 // import Doctor2 from "../assets/doctor2.png";
 
-
-
 const Doctors = () => {
+  const navigate = useNavigate();
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
   const [doctors, setDoctors] = useState([
     {
-      id: 1,
+      id: 'D1',
       name: 'Dr. Nguyễn Văn A',
       specialty: 'Chuyên gia cá Koi',
       rating: 4.8,
@@ -22,7 +23,7 @@ const Doctors = () => {
       description: 'Bác sĩ Nguyễn Văn A có hơn 10 năm kinh nghiệm trong lĩnh vực chăm sóc cá Koi.',
     },
     {
-      id: 2,
+      id: 'D2',
       name: 'Dr. Trần Thị B',
       specialty: 'Chuyên gia bệnh lý thủy sinh',
       rating: 4.9,
@@ -31,6 +32,10 @@ const Doctors = () => {
     },
     // Add more doctors as needed
   ]);
+
+  const handleViewDetails = (doctorId: string) => {
+    navigate(`/doctors/${doctorId}`);
+  };
 
   return (
     <div>
@@ -91,12 +96,12 @@ const Doctors = () => {
                     }
                   />
                   <p className="mt-4 text-gray-300">{doctor.description}</p>
-                  <Button type="link" className="mt-4 text-white hover:text-blue-300">
+                  <Button onClick={() => handleViewDetails(doctor.id)} type="link" className="mt-4 text-white hover:text-blue-300">
                     Xem chi tiết <ArrowRight2 size={18} />
                   </Button>
-                  <Button type="link" className="mt-4 text-white hover:text-blue-300">
+                  <Button onClick={() => handleViewDetails(doctor.id)} type="link" className="mt-4 text-white hover:text-blue-300">
                     Đặt lịch <ArrowRight2 size={18} />
-                  </Button>
+                  </Button> 
                 </Card>
               </AnimatedSection>
             ))}
