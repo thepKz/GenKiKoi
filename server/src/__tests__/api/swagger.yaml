@@ -19,11 +19,13 @@ tags:
     description: No need JWT TOKENS
   - name: Users
     description: Need JWT TOKENS
-  - name: Bills
-    description: Need JWT TOKENS
   - name: VNPay
     description: Need JWT TOKENS
   - name: Appointments
+    description: Need JWT TOKENS
+  - name: Distance
+    description: No need JWT TOKENS
+  - name: Bills
     description: Need JWT TOKENS
 paths:
   /api/auth/register:
@@ -453,390 +455,7 @@ paths:
           description: User information not found
         500:
           description: Server error
-  /api/bills/create:
-    post:
-      summary: Create a new bill (MANAGER, STAFF)
-      tags: [Bills]
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - appointmentId
-              properties:
-                appointmentId:
-                  type: string
-                  description: ID of the appointment
-                medicinePrice:
-                  type: number
-                  description: Price of the medicine (optional)
-                movingPrice:
-                  type: number
-                  description: Price of the moving service (optional)
-      responses:
-        201:
-          description: Bill created successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Tạo hóa đơn thành công"
-                  bill:
-                    type: object
-                    properties:
-                      appointmentId:
-                        type: string
-                        description: ID of the appointment
-                      customerId:
-                        type: string
-                        description: ID of the customer
-                      doctorId:
-                        type: string
-                        description: ID of the doctor
-                      serviceId:
-                        type: string
-                        description: ID of the service
-                      paymentId:
-                        type: string
-                        description: ID of the payment
-                      appointmentDate:
-                        type: string
-                        format: date-time
-                        description: Date of the appointment
-                      servicePrice:
-                        type: number
-                        description: Price of the service
-                      medicinePrice:
-                        type: number
-                        description: Price of the medicine (optional)
-                      totalPrice:
-                        type: number
-                        description: Total price
-                      status:
-                        type: string
-                        enum:
-                          ["Đang xử lý", "Hoàn thành", "Lỗi thanh toán", "Hủy"]
-                        description: Status of the bill
-                      paymentMethod:
-                        type: string
-                        enum: ["vnpay"]
-                        description: Payment method
-                      doctorName:
-                        type: string
-                        description: Name of the doctor
-                      customerName:
-                        type: string
-                        description: Name of the customer
-                      serviceName:
-                        type: string
-                        description: Name of the service
-                      typeOfConsulting:
-                        type: string
-                        description: Type of consulting
-                      createdAt:
-                        type: string
-                        format: date-time
-                        description: Creation timestamp
-                      updatedAt:
-                        type: string
-                        format: date-time
-                        description: Last update timestamp
-                  payment:
-                    type: object
-                    properties:
-                      orderId:
-                        type: string
-                        description: Unique order identifier
-                      amount:
-                        type: number
-                        description: Payment amount
-                      orderInfo:
-                        type: string
-                        description: Information about the order
-                      orderType:
-                        type: string
-                        description: Type of the order
-                      transactionNo:
-                        type: string
-                        description: Transaction number (optional)
-                      transactionStatus:
-                        type: string
-                        enum: ["pending", "success", "failed"]
-                        description: Status of the transaction
-                      paymentMethod:
-                        type: string
-                        enum: ["vnpay"]
-                        description: Payment method
-                      paymentDate:
-                        type: string
-                        format: date-time
-                        description: Date of payment
-                      createdAt:
-                        type: string
-                        format: date-time
-                        description: Creation timestamp
-                      updatedAt:
-                        type: string
-                        format: date-time
-                        description: Last update timestamp
-        400:
-          description: Bad Request (e.g., missing fullName)
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Tên bác sĩ không được để trống"
-        404:
-          description: Appointment, doctor, or customer not found
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Không tìm thấy thông tin bác sĩ, khách hàng hoặc dịch vụ"
-        500:
-          description: Server error
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Lỗi server"
-                  error:
-                    type: string
-                    example: "Detailed error message"
-  /api/bills/update-status:
-    patch:
-      summary: Update bill status (MANAGER, STAFF)
-      tags: [Bills]
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - billId
-                - status
-              properties:
-                billId:
-                  type: string
-                status:
-                  type: string
-                  enum: [Đang xử lý, Hoàn thành, Lỗi thanh toán, Hủy]
-      responses:
-        200:
-          description: Bill status updated successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Cập nhật trạng thái thành công"
-                  bill:
-                    type: object
-                    properties:
-                      appointmentId:
-                        type: string
-                        description: ID of the appointment
-                      customerId:
-                        type: string
-                        description: ID of the customer
-                      doctorId:
-                        type: string
-                        description: ID of the doctor
-                      serviceId:
-                        type: string
-                        description: ID of the service
-                      paymentId:
-                        type: string
-                        description: ID of the payment
-                      appointmentDate:
-                        type: string
-                        format: date-time
-                        description: Date of the appointment
-                      servicePrice:
-                        type: number
-                        description: Price of the service
-                      medicinePrice:
-                        type: number
-                        description: Price of the medicine (optional)
-                      totalPrice:
-                        type: number
-                        description: Total price
-                      status:
-                        type: string
-                        enum:
-                          ["Đang xử lý", "Hoàn thành", "Lỗi thanh toán", "Hủy"]
-                        description: Status of the bill
-                      paymentMethod:
-                        type: string
-                        enum: ["vnpay"]
-                        description: Payment method
-                      doctorName:
-                        type: string
-                        description: Name of the doctor
-                      customerName:
-                        type: string
-                        description: Name of the customer
-                      serviceName:
-                        type: string
-                        description: Name of the service
-                      typeOfConsulting:
-                        type: string
-                        description: Type of consulting
-                      createdAt:
-                        type: string
-                        format: date-time
-                        description: Creation timestamp
-                      updatedAt:
-                        type: string
-                        format: date-time
-                        description: Last update timestamp
-        404:
-          description: Bill not found
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Không tìm thấy hóa đơn"
-        500:
-          description: Server error
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Lỗi server"
-                  error:
-                    type: string
-                    example: "Detailed error message"
-  /api/bills/customer/{customerId}:
-    get:
-      summary: Get bills by customer ID (ALL EXCEPT GUEST)
-      tags: [Bills]
-      security:
-        - bearerAuth: []
-      parameters:
-        - in: path
-          name: customerId
-          required: true
-          schema:
-            type: string
-          description: ID of the customer
-      responses:
-        200:
-          description: List of bills for the customer
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    appointmentId:
-                      type: string
-                      description: ID of the appointment
-                    customerId:
-                      type: string
-                      description: ID of the customer
-                    doctorId:
-                      type: string
-                      description: ID of the doctor
-                    serviceId:
-                      type: string
-                      description: ID of the service
-                    paymentId:
-                      type: string
-                      description: ID of the payment
-                    appointmentDate:
-                      type: string
-                      format: date-time
-                      description: Date of the appointment
-                    servicePrice:
-                      type: number
-                      description: Price of the service
-                    medicinePrice:
-                      type: number
-                      description: Price of the medicine (optional)
-                    totalPrice:
-                      type: number
-                      description: Total price
-                    status:
-                      type: string
-                      enum:
-                        ["Đang xử lý", "Hoàn thành", "Lỗi thanh toán", "Hủy"]
-                      description: Status of the bill
-                    paymentMethod:
-                      type: string
-                      enum: ["vnpay"]
-                      description: Payment method
-                    doctorName:
-                      type: string
-                      description: Name of the doctor
-                    customerName:
-                      type: string
-                      description: Name of the customer
-                    serviceName:
-                      type: string
-                      description: Name of the service
-                    typeOfConsulting:
-                      type: string
-                      description: Type of consulting
-                    createdAt:
-                      type: string
-                      format: date-time
-                      description: Creation timestamp
-                    updatedAt:
-                      type: string
-                      format: date-time
-                      description: Last update timestamp
-        400:
-          description: Invalid customerId format
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Invalid customerId format"
-        500:
-          description: Server error
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Lỗi server"
-                  error:
-                    type: string
-                    example: "Detailed error message"
+
   /api/vnpay/create_payment_url:
     post:
       summary: Create a VNPay payment URL (CUSTOMER, STAFF, MANAGER)
@@ -999,3 +618,336 @@ paths:
           description: Doctor, customer, or service not found
         500:
           description: Internal server error
+
+  /api/distance/autocomplete:
+    get:
+      summary: Address autocomplete
+      description: Provides address suggestions based on user input. This endpoint helps users to quickly find and select addresses by providing a list of possible matches based on their input.
+      tags: [Distance]
+      parameters:
+        - in: query
+          name: query
+          required: true
+          schema:
+            type: string
+          description: The address query string
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    place_id:
+                      type: number
+                    licence:
+                      type: string
+                    osm_type:
+                      type: string
+                    osm_id:
+                      type: number
+                    boundingbox:
+                      type: array
+                      items:
+                        type: string
+                    lat:
+                      type: string
+                    lon:
+                      type: string
+                    display_name:
+                      type: string
+                    class:
+                      type: string
+                    type:
+                      type: string
+                    importance:
+                      type: number
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        500:
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /api/distance/calculate-route:
+    get:
+      summary: Calculate route
+      description: Calculates the route between a given address and Genkikoi. This endpoint helps users to find the best route from their starting address to Genkikoi, providing details such as distance, duration, and the route itself.
+      tags: [Distance]
+      parameters:
+        - in: query
+          name: address
+          required: true
+          schema:
+            type: string
+          description: The starting address
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  origin:
+                    type: object
+                    properties:
+                      lat:
+                        type: number
+                      lon:
+                        type: number
+                  destination:
+                    type: object
+                    properties:
+                      lat:
+                        type: number
+                      lon:
+                        type: number
+                      name:
+                        type: string
+                  distance:
+                    type: string
+                    description: Distance in kilometers
+                  duration:
+                    type: string
+                    description: Estimated duration in hours and minutes
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        404:
+          description: Address not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        500:
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /api/bills/create:
+    post:
+      summary: Create a new bill (MANAGER, STAFF)
+      tags: [Bills]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - appointmentId
+                - medicinePrice
+                - movingPrice
+              properties:
+                appointmentId:
+                  type: string
+                  description: ID of the associated appointment
+                medicinePrice:
+                  type: number
+                  description: Price of medicines
+                movingPrice:
+                  type: number
+                  description: Price for moving services
+      responses:
+        201:
+          description: Bill created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  bill:
+                    type: object
+                    properties:
+                      _id:
+                        type: string
+                      appointmentId:
+                        type: string
+                      paymentId:
+                        type: string
+                      appointmentDate:
+                        type: string
+                        format: date-time
+                      servicePrice:
+                        type: number
+                      movingPrice:
+                        type: number
+                      totalPrice:
+                        type: number
+                      status:
+                        type: string
+                        enum: ["Đang xử lý", "Hoàn thành", "Lỗi thanh toán", "Hủy"]
+                      paymentMethod:
+                        type: string
+                        enum: ["vnpay"]
+                      createdAt:
+                        type: string
+                        format: date-time
+                      updatedAt:
+                        type: string
+                        format: date-time
+        400:
+          description: Bad request
+        404:
+          description: Appointment, doctor, customer, or service not found
+        500:
+          description: Server error
+
+  /api/bills/update-status:
+    patch:
+      summary: Update bill status (MANAGER, STAFF)
+      tags: [Bills]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - billId
+                - status
+              properties:
+                billId:
+                  type: string
+                  description: ID of the bill to update
+                status:
+                  type: string
+                  enum: ["Đang xử lý", "Hoàn thành", "Lỗi thanh toán", "Hủy"]
+                  description: New status of the bill
+      responses:
+        200:
+          description: Bill status updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  bill:
+                    type: object
+                    properties:
+                      _id:
+                        type: string
+                      appointmentId:
+                        type: string
+                      paymentId:
+                        type: string
+                      appointmentDate:
+                        type: string
+                        format: date-time
+                      servicePrice:
+                        type: number
+                      movingPrice:
+                        type: number
+                      totalPrice:
+                        type: number
+                      status:
+                        type: string
+                        enum: ["Đang xử lý", "Hoàn thành", "Lỗi thanh toán", "Hủy"]
+                      paymentMethod:
+                        type: string
+                        enum: ["vnpay"]
+                      createdAt:
+                        type: string
+                        format: date-time
+                      updatedAt:
+                        type: string
+                        format: date-time
+        400:
+          description: Bad request
+        404:
+          description: Bill not found
+        500:
+          description: Server error
+
+  /api/bills/customer/{customerId}:
+    get:
+      summary: Get bills for a customer (CUSTOMER)
+      tags: [Bills]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: customerId
+          required: true
+          schema:
+            type: string
+          description: ID of the customer
+      responses:
+        200:
+          description: Bills retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                    appointmentId:
+                      type: string
+                    paymentId:
+                      type: string
+                    appointmentDate:
+                      type: string
+                      format: date-time
+                    servicePrice:
+                      type: number
+                    movingPrice:
+                      type: number
+                    totalPrice:
+                      type: number
+                    status:
+                      type: string
+                      enum: ["Đang xử lý", "Hoàn thành", "Lỗi thanh toán", "Hủy"]
+                    paymentMethod:
+                      type: string
+                      enum: ["vnpay"]
+                    createdAt:
+                      type: string
+                      format: date-time
+                    updatedAt:
+                      type: string
+                      format: date-time
+        400:
+          description: Bad request
+        500:
+          description: Server error

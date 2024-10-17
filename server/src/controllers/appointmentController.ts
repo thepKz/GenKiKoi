@@ -1,14 +1,19 @@
-import { Response } from "express";
+import { Request, Response } from "express";
 import { Doctor, Service, User } from "../models";
 import Appointment from "../models/Appointment";
 import Customer from "../models/Customer";
-import { AuthRequest } from "../types";
 /**
  * Người Làm: ĐIỀN VÀO :) 
  * Người Test: Thép
  * Loại Test: API TEST (Đã xong), UNIT TEST (Đang làm), E2E TEST (Đang làm)
  * Chỉnh Sửa Lần Cuối : 13/10/2024 (Thép)
 */
+export interface AuthRequest extends Request {
+  user?: {
+    _id: string;
+    role: string;
+  };
+}
 
 export const getAppointmentsByUser = async (
   req: AuthRequest,

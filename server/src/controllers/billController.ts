@@ -8,10 +8,10 @@ import Payment from "../models/Payment";
 import Service from "../models/Service";
 import User from "../models/User";
 /**
- * Người Làm: Thép
+ * Người Làm: Thép, Hạnh
  * Người Test: Thép
  * Loại Test: API TEST (Đã xong), UNIT TEST (Đang làm), E2E TEST (Đã làm)
- * Chỉnh Sửa Lần Cuối : 13/10/2024
+ * Chỉnh Sửa Lần Cuối : 18/10/2024
  */
 
 export const createBill = async (req: Request, res: Response) => {
