@@ -7,6 +7,7 @@ const initialState = {
   email: "",
   role: "",
   token: "",
+  isVerified: false,
 };
 
 const authSlice = createSlice({
@@ -30,8 +31,15 @@ const authSlice = createSlice({
         token: state.data.token,
       };
     },
+    checkVerified: (state, _action) => {
+      state.data = {
+        ...state.data,
+        isVerified: true,
+      };
+      localStorage.setItem("customer_GenKiKoi", JSON.stringify(state.data));
+    },
   },
 });
 
 export const authReducer = authSlice.reducer;
-export const { addAuth, removeAuth, updateAuth } = authSlice.actions;
+export const { addAuth, removeAuth, updateAuth, checkVerified } = authSlice.actions;

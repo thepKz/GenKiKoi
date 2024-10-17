@@ -4,12 +4,13 @@ import { ValidationError } from "../errors/ValidationError";
 import { Customer } from "../models";
 import User from "../models/User";
 import { randomText, signToken } from "../utils";
+import { sendVerificationEmail } from "../services/emails";
 /**
  * Người Làm: Thép
  * Người Test: Thép
  * Loại Test: API TEST (Đã xong), UNIT TEST (Đang làm), E2E TEST (Đã làm)
  * Chỉnh Sửa Lần Cuối : 13/10/2024
-*/
+ */
 
 export const register = async (req: Request, res: Response) => {
   try {
@@ -22,7 +23,12 @@ export const register = async (req: Request, res: Response) => {
 
     const errors: any = {};
 
-    if (!formatUsername || !formatEmail || !formatPassword || !formatConfirmPassword) {
+    if (
+      !formatUsername ||
+      !formatEmail ||
+      !formatPassword ||
+      !formatConfirmPassword
+    ) {
       errors.message = "Vui lòng điền đầy đủ các trường!";
       throw new ValidationError(errors);
     }
@@ -38,7 +44,9 @@ export const register = async (req: Request, res: Response) => {
     }
 
     // Check email format
-    if (!/^[A-Za-z0-9\._%+\-]+@[A-Za-z0-9\.\-]+\.[A-Za-z]{2,}$/.test(formatEmail)) {
+    if (
+      !/^[A-Za-z0-9\._%+\-]+@[A-Za-z0-9\.\-]+\.[A-Za-z]{2,}$/.test(formatEmail)
+    ) {
       errors.email = "Email không hợp lệ!";
       throw new ValidationError(errors);
     }
@@ -58,8 +66,13 @@ export const register = async (req: Request, res: Response) => {
     }
 
     // Check password strength
-    if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>/?]).{6,30}$/.test(formatPassword)) {
-      errors.password = "Mật khẩu phải chứa chữ thường, in hoa, số, ký tự đặc biệt và từ 6 đến 30 ký tự!";
+    if (
+      !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>/?]).{6,30}$/.test(
+        formatPassword
+      )
+    ) {
+      errors.password =
+        "Mật khẩu phải chứa chữ thường, in hoa, số, ký tự đặc biệt và từ 6 đến 30 ký tự!";
       throw new ValidationError(errors);
     }
 
@@ -71,15 +84,22 @@ export const register = async (req: Request, res: Response) => {
     // Create new user
     const salt = await bcrypt.genSalt(10);
     const hashedPass = await bcrypt.hash(formatPassword, salt);
+
     const newUser = await User.create({
       username: formatUsername,
       email: formatEmail,
       password: hashedPass,
     });
 
+    const verificationToken = Math.floor(
+      100000 + Math.random() * 900000
+    ).toString();
+
     // Create new customer
     await Customer.create({
       userId: newUser._id,
+      verificationToken,
+      verificationTokenExpiresAt: Date.now() + 24 * 60 * 60 * 1000, // 24 hours
     });
 
     // Generate token
@@ -90,6 +110,12 @@ export const register = async (req: Request, res: Response) => {
       role: newUser.role,
     });
 
+    await sendVerificationEmail(
+      newUser.email,
+      newUser.username,
+      verificationToken
+    );
+
     return res.status(201).json({
       message: "Đăng ký thành công!",
       data: {
@@ -97,6 +123,7 @@ export const register = async (req: Request, res: Response) => {
         username: newUser.username,
         email: newUser.email,
         role: newUser.role,
+        isVerified: false,
         token,
       },
     });
@@ -105,6 +132,31 @@ export const register = async (req: Request, res: Response) => {
       return res.status(400).json(error.errors);
     }
     res.status(500).json({ message: "Đã xảy ra lỗi server" });
+  }
+};
+
+export const verifyEmail = async (req: Request, res: Response) => {
+  const { verifyCode } = req.body;
+  try {
+    const customer = await Customer.findOne({
+      verificationToken: verifyCode,
+      verificationTokenExpiresAt: { $gt: Date.now() },
+    });
+
+    if (!customer) {
+      return res.status(400).json({ message: "Mã không hợp lệ hoặc hết hạn" });
+    }
+
+    customer.isVerified = true;
+    customer.verificationToken = undefined;
+    customer.verificationTokenExpiresAt = undefined;
+
+    await customer.save();
+
+    return res.status(200).json({ message: "Xác nhận tài khoản thành công" });
+  } catch (error: any) {
+    console.log(error);
+    return res.status(500).json({ message: error.message });
   }
 };
 
@@ -127,6 +179,14 @@ export const login = async (req: Request, res: Response) => {
     });
 
     if (!user) {
+      errors.message = "Tài khoản không tồn tại!";
+      errors.login = "Vui lòng kiểm tra lại!";
+      throw new ValidationError(errors);
+    }
+
+    const customer = await Customer.findOne(user._id);
+
+    if (!customer) {
       errors.message = "Tài khoản không tồn tại!";
       errors.login = "Vui lòng kiểm tra lại!";
       throw new ValidationError(errors);
@@ -158,6 +218,7 @@ export const login = async (req: Request, res: Response) => {
         username: user.username,
         email: user.email,
         role: user.role,
+        isVerified: customer.isVerified,
         token,
       },
     });

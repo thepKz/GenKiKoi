@@ -6,6 +6,9 @@ interface ICustomer {
   district?: string;
   ward?: string;
   detailAddress?: string;
+  isVerified: boolean;
+  verificationToken?: string;
+  verificationTokenExpiresAt?: Date;
 }
 
 const CustomerSchema = new mongoose.Schema<ICustomer>(
@@ -27,6 +30,12 @@ const CustomerSchema = new mongoose.Schema<ICustomer>(
     detailAddress: {
       type: String,
     },
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
+    verificationToken: String,
+    verificationTokenExpiresAt: Date,
   },
   { timestamps: true }
 );

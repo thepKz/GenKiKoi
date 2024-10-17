@@ -186,15 +186,24 @@ const Header = () => {
             </div>
           ) : (
             <div className="flex items-center gap-3">
-              <Link
-                to="/booking"
-                className="cursor-pointer"
-              >
-                <CalendarEdit
-                  color="white"
-                  size={24}
-                />
-              </Link>
+              {auth.isVerified ? (
+                <Link
+                  to="/booking"
+                  className="cursor-pointer"
+                >
+                  <CalendarEdit
+                    color="white"
+                    size={24}
+                  />
+                </Link>
+              ) : (
+                <Button
+                  size="large"
+                  ghost
+                >
+                  Xác nhận tài khoản
+                </Button>
+              )}
               <Badge
                 count={9}
                 size="small"
