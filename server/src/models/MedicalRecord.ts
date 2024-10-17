@@ -5,8 +5,7 @@ import { IDoctor } from "./Doctor";
 export interface IMedicalRecord {
   doctorId: IDoctor;
   customerId: ICustomer;
-  fishId: mongoose.Types.ObjectId;
-
+  fishId?: mongoose.Types.ObjectId;
   examType?: "Khám bệnh" | "Tái khám" | "Tiêm Phòng" | "Điều Trị";
   diagnosis?: string; // Chuẩn đoán
   treatment?: string; // Phác đồ điều trị
@@ -20,7 +19,6 @@ const MedicalRecordSchema = new mongoose.Schema<IMedicalRecord>(
     fishId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Fish",
-      required: true,
     },
     doctorId: {
       type: mongoose.Schema.Types.ObjectId,

@@ -30,6 +30,7 @@ import {
 } from "./routes";
 import medicalRecordRoutes from "./routes/medicalRecord";
 import pondRoutes from "./routes/pondRoutes";
+import fishRoutes from "./routes/fishRoutes";
 
 const app = express();
 
@@ -75,6 +76,7 @@ app.use("/api/vnpay", vnpayRoutes);
 app.use("/api/bills", billRoutes);
 app.use("/api/medicalRecords", medicalRecordRoutes);
 app.use("/api/ponds", pondRoutes);
+app.use("/api/fishes", fishRoutes);
 
 // app.use("/api/doctorSchedules", doctorScheduleRoutes);
 // +++++++ ADD DATA +++++++

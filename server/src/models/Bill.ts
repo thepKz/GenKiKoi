@@ -10,7 +10,6 @@ interface IBill {
   paymentId: IPayment;
   appointmentDate: Date;
   servicePrice: number;
-  medicinePrice: number;
   movingPrice: number;
   totalPrice: number;
   status: "Đang xử lý" | "Hoàn thành" | "Lỗi thanh toán" | "Hủy";
@@ -36,9 +35,6 @@ const BillSchema = new mongoose.Schema<IBill>(
     servicePrice: {
       type: Number,
       required: true,
-    },
-    medicinePrice: {
-      type: Number,
     },
     movingPrice: {
       type: Number,

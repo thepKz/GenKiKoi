@@ -3,46 +3,36 @@ import { ICustomer } from "./Customer";
 import { IAppointment } from "./Appointment";
 
 interface IFish {
+  customerId: ICustomer;
   description?: string;
   size: number;
   age: number;
   photoUrl?: string;
-  numberOfTreatments?: number;
   healthStatus: string;
-  customerId: ICustomer;
-  appointmentId: IAppointment;
 }
 
 const FishSchema = new mongoose.Schema<IFish>(
   {
+    customerId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Customer",
+    },
+
     description: {
       type: String,
     },
     size: {
       type: Number,
-      required: true,
     },
     age: {
       type: Number,
-      required: true,
     },
     photoUrl: {
       type: String,
     },
-    numberOfTreatments: {
-      type: Number,
-      required: true,
-      default: 0,
-    },
     healthStatus: {
       type: String,
-      enum: ["Tốt", "Xấu", "Cần theo dõi"],
-      required: true,
-    },
-    customerId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Customer",
-      required: true,
+      enum: ["Tốt", "Xấu", "Cần theo dõi", "Chưa xác định"],
     },
   },
   {
@@ -50,5 +40,5 @@ const FishSchema = new mongoose.Schema<IFish>(
   }
 );
 
-const Fish = mongoose.model<IFish>("Fish", FishSchema);
+const Fish = mongoose.model<IFish>("Fish", FishSchema, "fishes");
 export default Fish;

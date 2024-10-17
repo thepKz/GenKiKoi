@@ -1,8 +1,13 @@
 import { Router } from "express";
-import { createPond, getAllPonds } from "../controllers/PondController";
+import {
+  createPond,
+  getAllPonds,
+  getPondByID,
+} from "../controllers/PondController";
 const router = Router();
 
 router.get("/all", getAllPonds);
-router.post("/create", createPond);
+router.get("/getPondByID/:id", getPondByID);
 
+router.post("/create", createPond);
 export default router;
