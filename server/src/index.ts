@@ -22,6 +22,7 @@ import {
   appointmentRoutes,
   authRoutes,
   billRoutes,
+  distanceRoutes,
   doctorRoutes,
   serviceRoutes,
   staffRoutes,
@@ -77,6 +78,7 @@ app.use("/api/bills", billRoutes);
 app.use("/api/medicalRecords", medicalRecordRoutes);
 app.use("/api/ponds", pondRoutes);
 app.use("/api/fishes", fishRoutes);
+app.use("/api/distance", distanceRoutes);
 
 // app.use("/api/doctorSchedules", doctorScheduleRoutes);
 // +++++++ ADD DATA +++++++

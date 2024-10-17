@@ -1,6 +1,7 @@
 import appointmentRoutes from "./appointmentRoutes";
 import authRoutes from "./authRoutes";
 import billRoutes from "./billRoutes";
+import distanceRoutes from "./distanceRoutes";
 import doctorRoutes from "./doctorRoutes";
 import serviceRoutes from "./serviceRoutes";
 import staffRoutes from "./staffRoutes";
@@ -13,6 +14,7 @@ export {
   appointmentRoutes,
   authRoutes,
   billRoutes,
+  distanceRoutes,
   doctorRoutes,
   serviceRoutes,
   staffRoutes,
