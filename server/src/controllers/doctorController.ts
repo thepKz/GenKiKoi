@@ -299,25 +299,6 @@ export const getAllDoctorsForBooking = async (req: Request, res: Response) => {
  * METHOD: GET
  * PROTECTED
  */
-export const getAllDoctorSchedules = async (req: Request, res: Response) => {
-  try {
-    const schedules = await DoctorSchedule.find().populate("doctorId");
-
-    if (!schedules || schedules.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "Không tìm thấy lịch làm việc nào" });
-    }
-
-    return res.status(200).json({ data: schedules });
-  } catch (error: any) {
-    console.log(error);
-    return res.status(500).json({
-      message: "An error occurred while fetching all schedules",
-      error: error.message,
-    });
-  }
-};
 
 export const getScheduleById = async (req: Request, res: Response) => {
   const userId = req.params.id;

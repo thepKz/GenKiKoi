@@ -3,10 +3,8 @@ import {
   addNewDoctor,
   deleteDoctorById,
   getAllDoctors,
-  getAllDoctorSchedules,
   getAllDoctorsForBooking,
   getDoctorById,
-  getScheduleById,
   updateDoctorById,
 } from "../controllers/doctorController";
 import { authMiddleware, roleMiddleware } from "../middleware";
@@ -16,20 +14,6 @@ const router = express.Router();
 router.get("/", getAllDoctors);
 router.get("/all", getAllDoctorsForBooking);
 router.get("/getById/:id", getDoctorById); // lay bac si theo id
-
-router.get(
-  "/schedules",
-  authMiddleware,
-  roleMiddleware(["doctor"]),
-  getAllDoctorSchedules
-);
-
-router.get(
-  "/schedule/:id",
-  authMiddleware,
-  roleMiddleware(["doctor"]),
-  getScheduleById
-);
 
 router.post("/", authMiddleware, roleMiddleware(["manager"]), addNewDoctor);
 router.patch(

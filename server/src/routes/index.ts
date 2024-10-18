@@ -10,6 +10,7 @@ import { vnpayRoutes } from "./vnpayRoutes";
 import medicalRecordRoutes from "./medicalRecord";
 import pondRoutes from "./pondRoutes";
 import fishRoutes from "./fishRoutes";
+import doctorScheduleRoutes from "./doctorScheduleRoutes";
 export {
   appointmentRoutes,
   authRoutes,
@@ -23,4 +24,5 @@ export {
   medicalRecordRoutes,
   pondRoutes,
   fishRoutes,
+  doctorScheduleRoutes,
 };
