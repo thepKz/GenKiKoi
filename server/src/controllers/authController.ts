@@ -96,7 +96,7 @@ export const register = async (req: Request, res: Response) => {
     ).toString();
 
     // Create new customer
-    await Customer.create({
+    const newCustomer = await Customer.create({
       userId: newUser._id,
       verificationToken,
       verificationTokenExpiresAt: Date.now() + 10 * 60 * 1000, // 10 minutes
@@ -120,6 +120,7 @@ export const register = async (req: Request, res: Response) => {
       message: "Đăng ký thành công!",
       data: {
         id: newUser._id,
+        customerId: newCustomer._id,
         username: newUser.username,
         email: newUser.email,
         role: newUser.role,
@@ -252,6 +253,7 @@ export const login = async (req: Request, res: Response) => {
       message: "Đăng nhập thành công!",
       data: {
         id: user._id,
+        customerId: customer._id,
         username: user.username,
         email: user.email,
         role: user.role,
@@ -277,6 +279,7 @@ export const loginWithGoogle = async (req: Request, res: Response) => {
     const formatUserName = username + "-" + randomText(5);
 
     let user = await User.findOne({ email: formatEmail });
+    let customer = null;
 
     if (!user) {
       const salt = await bcrypt.genSalt(10);
@@ -294,7 +297,7 @@ export const loginWithGoogle = async (req: Request, res: Response) => {
         isVerified: true,
       });
     } else {
-      const customer = await Customer.findOne({ userId: user._id });
+      customer = await Customer.findOne({ userId: user._id });
 
       if (!customer) {
         return res.status(404).json({ message: "Không tìm thấy khách hàng" });
@@ -318,6 +321,7 @@ export const loginWithGoogle = async (req: Request, res: Response) => {
       message: user.isNew ? "Đăng ký thành công!" : "Đăng nhập thành công!",
       data: {
         id: user._id,
+        customerId: customer?._id,
         username: user.username,
         email: user.email,
         role: user.role,
@@ -327,6 +331,7 @@ export const loginWithGoogle = async (req: Request, res: Response) => {
       },
     });
   } catch (error: any) {
+    console.log(error);
     res.status(500).json({
       message: "Đã xảy ra lỗi khi xử lý đăng nhập Google",
     });

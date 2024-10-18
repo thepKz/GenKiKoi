@@ -1,5 +1,6 @@
 export interface IAuth {
   id: string;
+  customerId: string;
   username: string;
   photoUrl: string;
   email: string;

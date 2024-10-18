@@ -88,7 +88,7 @@ const MainRouter = () => {
           />
           <Route
             path="booking"
-            element={<Booking />}
+            element={auth.token && auth.isVerified ? <Booking /> : <Navigate to={"/"} />}
           />
           <Route
             path="unauthorized"

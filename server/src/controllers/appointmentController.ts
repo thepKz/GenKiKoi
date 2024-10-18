@@ -1,35 +1,24 @@
-import { Response } from "express";
+import { Response, Request } from "express";
 import { Doctor, Service, User } from "../models";
 import Appointment from "../models/Appointment";
 import Customer from "../models/Customer";
 import { AuthRequest } from "../types";
 /**
- * Người Làm: ĐIỀN VÀO :) 
+ * Người Làm: ĐIỀN VÀO :)
  * Người Test: Thép
  * Loại Test: API TEST (Đã xong), UNIT TEST (Đang làm), E2E TEST (Đang làm)
  * Chỉnh Sửa Lần Cuối : 13/10/2024 (Thép)
-*/
+ */
 
-export const getAppointmentsByUser = async (
-  req: AuthRequest,
+export const getAppointmentsByCustomerId = async (
+  req: Request,
   res: Response
 ) => {
   try {
-    const userId = req.user?._id;
-
-    let customer = await Customer.findOne({ userId });
-
-    if (!customer) {
-      // If customer is not found, create a new one
-      const user = await User.findById(userId);
-      if (!user) {
-        return res.status(404).json({ message: "User not found!" });
-      }
-      customer = await Customer.create({ userId: user._id });
-    }
+    const customerId = req.params.customerId;
 
     const appointments = await Appointment.find({
-      customerId: customer._id,
+      customerId: customerId,
     })
       .populate({
         path: "doctorId",
