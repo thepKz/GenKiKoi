@@ -1,14 +1,14 @@
 import { LockOutlined, MailOutlined } from "@ant-design/icons";
-import { Button, Form, Input, message, Space, Typography } from "antd";
+import { Button, Form, Input, message, Typography } from "antd";
 import { InputRef } from "antd/lib/input";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { addAuth, checkVerified, updateAuth } from "../redux/reducers/authReducer";
+import { checkVerified } from "../redux/reducers/authReducer";
 import { IAuth } from "../types";
 import { handleAPI } from "../apis/handleAPI";
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
 
 const VerifyAccount: React.FC = () => {
   const [form] = Form.useForm();
@@ -16,26 +16,34 @@ const VerifyAccount: React.FC = () => {
   const [isSendingOTP, setIsSendingOTP] = useState(false);
   const [countdown, setCountdown] = useState(0);
   const [otp, setOtp] = useState(Array(6).fill(""));
-  const [otpError, setOtpError] = useState("");
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const auth: IAuth = useSelector((state: any) => state.authReducer.data);
 
   const inputRefs = useRef<(InputRef | null)[]>([]);
 
-  // const sendOTP = async () => {
-  //   try {
-  //     setIsSendingOTP(true);
-  //     // await axiosInstance.post("/api/mail/send-verification", { auth.email });
-  //     message.success("Mã OTP đã được gửi đến email của bạn");
-  //     setCountdown(60);
-  //   } catch (error) {
-  //     console.error("Lỗi khi gửi OTP:", error);
-  //     message.error("Có lỗi xảy ra khi gửi mã OTP");
-  //   } finally {
-  //     setIsSendingOTP(false);
-  //   }
-  // };
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (countdown > 0) {
+      timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+    }
+    return () => clearTimeout(timer);
+  }, [countdown]);
+
+  const sendOTP = async () => {
+    try {
+      setIsSendingOTP(true);
+      const api = `/api/auth/new-verify`;
+      const res: any = await handleAPI(api, { email: auth.email, username: auth.username }, "POST");
+      message.success(res.message);
+      setCountdown(60);
+    } catch (error) {
+      console.error("Lỗi khi gửi OTP:", error);
+      message.error("Có lỗi xảy ra khi gửi mã OTP");
+    } finally {
+      setIsSendingOTP(false);
+    }
+  };
 
   const handleOtpChange = (index: number, value: string) => {
     const newOtp = [...otp];
@@ -129,7 +137,6 @@ const VerifyAccount: React.FC = () => {
               ))}
             </div>
           </Form.Item>
-          {otpError && <div className="mb-4 text-red-500">{otpError}</div>}
           <Form.Item>
             <Button
               size="large"
@@ -144,25 +151,20 @@ const VerifyAccount: React.FC = () => {
           </Form.Item>
         </Form>
 
-        {/* <div className="text-center">
-          <Space
-            direction="vertical"
-            size="small"
+        <div className="text-center">
+          <Button
+            type="link"
+            onClick={sendOTP}
+            disabled={countdown > 0 || isSendingOTP}
+            loading={isSendingOTP}
+            className="text-[#1A5F7A] hover:text-[#2A7F9A]"
           >
-            <Button
-              type="link"
-              // onClick={sendOTP}
-              disabled={countdown > 0 || isSendingOTP}
-              loading={isSendingOTP}
-              className="text-[#1A5F7A] hover:text-[#2A7F9A]"
-            >
-              {countdown > 0 ? `Gửi lại sau ${countdown}s` : "Gửi OTP XÁC THỰC"}
-            </Button>
-            <Text className="text-gray-500">
-              Không nhận được mã? Kiểm tra hộp thư rác hoặc thử lại sau.
-            </Text>
-          </Space>
-        </div> */}
+            {countdown > 0 ? `Gửi lại sau ${countdown}s` : "Gửi OTP XÁC THỰC"}
+          </Button>
+          <p className="mt-2 text-center text-[14px] text-gray-600">
+            Nếu không thấy email vui lòng kiểm tra mục spam và thư rác
+          </p>
+        </div>
       </div>
     </div>
   );

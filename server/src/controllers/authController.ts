@@ -99,7 +99,7 @@ export const register = async (req: Request, res: Response) => {
     await Customer.create({
       userId: newUser._id,
       verificationToken,
-      verificationTokenExpiresAt: Date.now() + 24 * 60 * 60 * 1000, // 24 hours
+      verificationTokenExpiresAt: Date.now() + 10 * 60 * 1000, // 10 minutes
     });
 
     // Generate token
@@ -154,6 +154,43 @@ export const verifyEmail = async (req: Request, res: Response) => {
     await customer.save();
 
     return res.status(200).json({ message: "Xác nhận tài khoản thành công" });
+  } catch (error: any) {
+    console.log(error);
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+export const sendNewVerifyEmail = async (req: Request, res: Response) => {
+  const { email, username } = req.body;
+  try {
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ message: "Người dùng không tồn tại" });
+    }
+
+    const customer = await Customer.findOne({ userId: user._id });
+
+    if (!customer) {
+      return res.status(404).json({ message: "Người dùng không tồn tại" });
+    }
+
+    const verificationToken = Math.floor(
+      100000 + Math.random() * 900000
+    ).toString();
+
+    const verificationTokenExpiresAt = Date.now() + 10 * 60 * 1000; // 10 minutes
+
+    customer.verificationToken = verificationToken;
+    customer.verificationTokenExpiresAt = verificationTokenExpiresAt as any;
+
+    await customer.save();
+
+    await sendVerificationEmail(email, username, verificationToken);
+
+    return res
+      .status(200)
+      .json({ message: "Mã OTP đã được gửi đến email của bạn" });
   } catch (error: any) {
     console.log(error);
     return res.status(500).json({ message: error.message });
