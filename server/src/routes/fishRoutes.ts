@@ -9,7 +9,7 @@ const router = Router();
 
 router.get("/all", authMiddleware, getAllFish);
 router.get(
-  "/getFishByPhoneNumber/:phoneNumber",
+  "/getByPhoneNumber/:phoneNumber",
   authMiddleware,
   getFishByPhoneNumber
 );

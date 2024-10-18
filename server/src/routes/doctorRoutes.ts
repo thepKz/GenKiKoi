@@ -5,6 +5,7 @@ import {
   getAllDoctors,
   getAllDoctorSchedules,
   getAllDoctorsForBooking,
+  getDoctorById,
   getScheduleById,
   updateDoctorById,
 } from "../controllers/doctorController";
@@ -14,6 +15,7 @@ const router = express.Router();
 
 router.get("/", getAllDoctors);
 router.get("/all", getAllDoctorsForBooking);
+router.get("/getById/:id", getDoctorById); // lay bac si theo id
 
 router.get(
   "/schedules",

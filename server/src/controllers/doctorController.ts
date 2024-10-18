@@ -351,3 +351,32 @@ export const getScheduleById = async (req: Request, res: Response) => {
     });
   }
 };
+
+export const getDoctorById = async (req: Request, res: Response) => {
+  const doctorId = req.params.doctorId;
+
+  try {
+    const doctor = await Doctor.findOne({ _id: doctorId });
+    console.log(doctorId);
+
+    if (!doctor) {
+      return res.status(404).json({ message: "Không tìm thấy bác sĩ" });
+    }
+    const formatDoctor = {
+      _id: doctor._id,
+      fullName: doctor.userId.fullName,
+      gender: doctor.userId.gender,
+      movingService: doctor.movingService,
+      specialization: doctor.specialization,
+      licenseNumber: doctor.licenseNumber,
+      yearOfExperience: doctor.yearOfExperience,
+      startDate: doctor.startDate,
+      images: doctor.images,
+      introduction: doctor.introduction,
+    };
+
+    return res.status(200).json({ data: formatDoctor });
+  } catch (error: any) {
+    return res.status(500).json({ message: error.message });
+  }
+};
