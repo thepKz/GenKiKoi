@@ -84,7 +84,7 @@ const SignUp = () => {
                 label="Tên tài khoản"
                 required={false}
                 hasFeedback
-                tooltip="Tên tài khoản phải bao gồm chữ thường, in hoa, số và có thể có dấu _!"
+                tooltip="Tên tài khoản phải bao gồm chữ thường, số và có thể có dấu _!"
                 rules={[
                   {
                     validator: async (_, value) => {
