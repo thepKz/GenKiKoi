@@ -291,7 +291,20 @@ export const loginWithGoogle = async (req: Request, res: Response) => {
       // Create a new customer
       await Customer.create({
         userId: user._id,
+        isVerified: true,
       });
+    } else {
+      const customer = await Customer.findOne({ userId: user._id });
+
+      if (!customer) {
+        return res.status(404).json({ message: "Không tìm thấy khách hàng" });
+      }
+
+      customer.isVerified = true;
+      customer.verificationToken = undefined;
+      customer.verificationTokenExpiresAt = undefined;
+
+      await customer.save();
     }
 
     const token = await signToken({
@@ -309,12 +322,13 @@ export const loginWithGoogle = async (req: Request, res: Response) => {
         email: user.email,
         role: user.role,
         photoUrl: user.photoUrl || photoUrl,
+        isVerified: true,
         token,
       },
     });
   } catch (error: any) {
     res.status(500).json({
-      message: "ã xảy ra lỗi khi xử lý đăng nhập Google",
+      message: "Đã xảy ra lỗi khi xử lý đăng nhập Google",
     });
   }
 };
