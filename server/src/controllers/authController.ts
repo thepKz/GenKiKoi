@@ -221,7 +221,7 @@ export const login = async (req: Request, res: Response) => {
       throw new ValidationError(errors);
     }
 
-    const customer = await Customer.findOne(user._id);
+    const customer = await Customer.findOne({ userId: user._id });
 
     if (!customer) {
       errors.message = "Tài khoản không tồn tại!";
