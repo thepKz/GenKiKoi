@@ -154,7 +154,7 @@ export const addNewDoctor = async (req: Request, res: Response) => {
 };
 
 /**
- * API: /api/staffs/:id
+ * API: /api/doctors/:id
  * Method: PATCH
  * PROTECTED
  */
@@ -170,20 +170,6 @@ export const updateDoctorById = async (req: Request, res: Response) => {
       yearOfExperience,
       movingService,
     } = req.body;
-
-    // if (
-    //   !fullName ||
-    //   !gender ||
-    //   !specialization ||
-    //   !email ||
-    //   !licenseNumber ||
-    //   !yearOfExperience ||
-    //   !movingService
-    // ) {
-    //   return res
-    //     .status(400)
-    //     .json({ message: "Vui lòng điền đầy đủ thông tin" });
-    // }
 
     const existsDoctor = await Doctor.findById(doctorId);
 

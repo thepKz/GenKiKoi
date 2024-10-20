@@ -1,10 +1,12 @@
-import { Layout, Menu, MenuProps } from "antd";
+import { Avatar, Layout, Menu, MenuProps } from "antd";
 import {
   Calendar,
+  CalendarAdd,
   CalendarSearch,
   Grammerly,
   HomeTrendUp,
   Lamp,
+  Logout,
   NoteAdd,
   Profile2User,
   Stickynote,
@@ -15,13 +17,16 @@ import { Link, useLocation } from "react-router-dom";
 const { Sider } = Layout;
 
 import Logo from "../assets/logo-transparent.png";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { IAuth } from "../types";
+import { removeAuth } from "../redux/reducers/authReducer";
 
 const SiderComponent = () => {
   const auth: IAuth = useSelector((state: any) => state.authReducer.data);
 
   const location = useLocation();
+
+  const dispatch = useDispatch();
 
   const managerItems: MenuProps["items"] = [
     {
@@ -43,10 +48,18 @@ const SiderComponent = () => {
       key: "divider",
       type: "divider",
     },
+    // {
+    //   key: "profile",
+    //   label: <Link to={"/manager/profile"}>Hồ sơ cá nhân</Link>,
+    //   icon: (
+    //     <Avatar icon={<User size={16} color="white" />} src={auth.photoUrl} />
+    //   ),
+    // },
     {
-      key: "profile",
-      label: <Link to={"/my-account/profile"}>Hồ sơ cá nhân</Link>,
-      icon: <User size={20} />,
+      key: "logout",
+      label: "Đăng xuất",
+      icon: <Logout size={20} />,
+      onClick: () => dispatch(removeAuth({})),
     },
   ];
 
@@ -62,8 +75,8 @@ const SiderComponent = () => {
       icon: <CalendarSearch size={20} />,
     },
     {
-      key: "view-records",
-      label: <Link to={"/doctor/view-records"}>Hồ sơ khách hàng</Link>,
+      key: "customers",
+      label: <Link to={"/doctor/customers"}>Hồ sơ khách hàng</Link>,
       icon: <Stickynote size={20} />,
     },
     {
@@ -82,8 +95,16 @@ const SiderComponent = () => {
     },
     {
       key: "profile",
-      label: <Link to={"/my-account/profile"}>Hồ sơ cá nhân</Link>,
-      icon: <User size={20} />,
+      label: <Link to={"/doctor/profile"}>Hồ sơ cá nhân</Link>,
+      icon: (
+        <Avatar icon={<User size={16} color="white" />} src={auth.photoUrl} />
+      ),
+    },
+    {
+      key: "logout",
+      label: "Đăng xuất",
+      icon: <Logout size={20} />,
+      onClick: () => dispatch(removeAuth({})),
     },
   ];
 
@@ -96,9 +117,14 @@ const SiderComponent = () => {
       icon: <Calendar size={20} />,
     },
     {
-      key: "appointments",
-      label: <Link to={"/staff/appointments"}>Cuộc hẹn khách hàng</Link>,
+      key: "customers",
+      label: <Link to={"/staff/customers"}>Cuộc hẹn khách hàng</Link>,
       icon: <CalendarSearch size={20} />,
+    },
+    {
+      key: "create-appointment",
+      label: <Link to={"/staff/create-appointment"}>Tạo cuộc hẹn</Link>,
+      icon: <CalendarAdd size={20} />,
     },
     {
       key: "divider",
@@ -106,8 +132,16 @@ const SiderComponent = () => {
     },
     {
       key: "profile",
-      label: <Link to={"/my-account/profile"}>Hồ sơ cá nhân</Link>,
-      icon: <User size={20} />,
+      label: <Link to={"/staff/profile"}>Hồ sơ cá nhân</Link>,
+      icon: (
+        <Avatar icon={<User size={16} color="white" />} src={auth.photoUrl} />
+      ),
+    },
+    {
+      key: "logout",
+      label: "Đăng xuất",
+      icon: <Logout size={20} />,
+      onClick: () => dispatch(removeAuth({})),
     },
   ];
 
@@ -121,12 +155,10 @@ const SiderComponent = () => {
       }}
       className="shadow-sm"
     >
-      <Link to={"/"}>
-        <div className="py-5 text-center">
-          <img src={Logo} className="mx-auto w-20" alt="" />
-          <h3 className="text-blue-primary text-2xl font-bold">GenKiKoi</h3>
-        </div>
-      </Link>
+      <div className="py-5 text-center">
+        <img src={Logo} className="mx-auto w-20" alt="" />
+        <h3 className="text-blue-primary text-2xl font-bold">GenKiKoi</h3>
+      </div>
       <div className="flex h-[calc(100vh-160px)] flex-col justify-between">
         <Menu
           mode="inline"

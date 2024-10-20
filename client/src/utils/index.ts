@@ -38,6 +38,9 @@ const valueMap: {
   "Đã thay đổi lịch": "orange",
   "Đã hủy": "red",
   "Đã hoàn thành": "green",
+  PAID: "green",
+  PENDING: "orange",
+  CANCELLED: "red",
 };
 
 export const getValue = (value: string) => {

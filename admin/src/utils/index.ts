@@ -44,6 +44,8 @@ const valueMap: {
   "Tư vấn trực tuyến": "orange",
   nam: "green",
   nữ: "orange",
+  đực: "green",
+  cái: "orange",
   yes: "green",
   no: "red",
 };
