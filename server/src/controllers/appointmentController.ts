@@ -50,7 +50,7 @@ export const getAppointmentsByCustomerId = async (
   }
 };
 
-export const createNewAppointment = async (req: AuthRequest, res: Response) => {
+export const createNewAppointment = async (req: Request, res: Response) => {
   try {
     const {
       serviceName,
@@ -61,9 +61,9 @@ export const createNewAppointment = async (req: AuthRequest, res: Response) => {
       reasons,
     } = req.body;
 
-    const userId = req.user?._id;
+    const customerId = req.params.customerId;
 
-    const customer = await Customer.findOne({ userId });
+    const customer = await Customer.findById(customerId);
 
     const service = await Service.findOne({ serviceName });
 
@@ -94,9 +94,14 @@ export const createNewAppointment = async (req: AuthRequest, res: Response) => {
       reasons,
     });
 
-    await newAppointment.save();
+    const savedAppointment = await newAppointment.save();
 
-    return res.status(200).json({ message: "Cuộc hẹn được tạo thành công!" });
+    return res.status(200).json({
+      message: "Cuộc hẹn được tạo thành công!",
+      data: {
+        appointmentId: savedAppointment._id,
+      },
+    });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "Lỗi khi tạo cuộc hẹn" });

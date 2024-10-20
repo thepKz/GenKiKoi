@@ -5,6 +5,6 @@ import { authMiddleware } from "../middleware/authMiddleware";
 const router = express.Router();
 
 router.get("/:customerId", authMiddleware, getAppointmentsByCustomerId);
-router.put('/', authMiddleware, createNewAppointment)
+router.post('/:customerId', authMiddleware, createNewAppointment)
 
 export default router;

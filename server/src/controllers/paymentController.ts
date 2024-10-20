@@ -13,7 +13,7 @@ const payOS = new PayOS(
 );
 
 export const createPayment = async (req: Request, res: Response) => {
-  const { totalPrice, customerId, serviceName } = req.body;
+  const { totalPrice, customerId, serviceName, appointmentId } = req.body;
   try {
     const body = {
       orderCode: Number(String(Date.now()).slice(-6)),
@@ -28,6 +28,7 @@ export const createPayment = async (req: Request, res: Response) => {
     await Payment.create({
       customerId: customerId,
       serviceName,
+      appointmentId,
       date: new Date(),
       totalPrice,
       status: paymentLinkResponse.status,

@@ -184,40 +184,37 @@ const Booking = () => {
   };
 
   const handleSubmit = async (values: any) => {
-    // try {
-    //   setIsLoadingForm(true);
-    //   const api = `/api/appointments/`;
-
-    //   if (date) {
-    //     values.appointmentDate = date;
-    //   }
-
-    //   if (slot) {
-    //     values.slotTime = demoSlots[slot - 1].time;
-    //   }
-
-    //   const res: any = await handleAPI(api, values, "PUT");
-
-    //   message.success(res.message);
-    // } catch (error: any) {
-    //   console.log(error);
-    //   message.error(error.message);
-    // } finally {
-    //   setIsLoadingForm(false);
-    // }
     try {
       setIsLoadingForm(true);
-      const api = `/api/payments/create-payment`;
+      const appointmentApi = `/api/appointments/${auth.customerId}`;
 
-      const res = await handleAPI(
-        api,
-        { totalPrice: totalPrice, customerId: auth.customerId, serviceName: service.serviceName },
-        "POST",
-      );
-      if (res.data.checkoutUrl) {
-        window.open(res.data.checkoutUrl, "_blank");
-      } else {
-        message.error("Không thể tạo liên kết thanh toán");
+      if (date) {
+        values.appointmentDate = date;
+      }
+
+      if (slot) {
+        values.slotTime = demoSlots[slot - 1].time;
+      }
+
+      const appointmentRes: any = await handleAPI(appointmentApi, values, "POST");
+
+      if (appointmentRes.data.appointmentId) {
+        const paymentApi = `/api/payments/create-payment`;
+        const paymentRes = await handleAPI(
+          paymentApi,
+          {
+            totalPrice: totalPrice,
+            customerId: auth.customerId,
+            serviceName: service.serviceName,
+            appointmentId: appointmentRes.data.appointmentId,
+          },
+          "POST",
+        );
+        if (paymentRes.data.checkoutUrl) {
+          window.open(paymentRes.data.checkoutUrl, "_blank");
+        } else {
+          message.error("Không thể tạo liên kết thanh toán");
+        }
       }
     } catch (error: any) {
       console.log(error);
