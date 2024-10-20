@@ -179,9 +179,12 @@ export const sendNewVerifyEmail = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "Người dùng không tồn tại" });
     }
 
-    const verificationToken = Math.floor(
-      100000 + Math.random() * 900000
-    ).toString();
+    // const verificationToken = Math.floor(
+    //   100000 + Math.random() * 900000
+    // ).toString();
+
+    // For testing
+    const verificationToken = "123456";
 
     const verificationTokenExpiresAt = Date.now() + 10 * 60 * 1000; // 10 minutes
 
