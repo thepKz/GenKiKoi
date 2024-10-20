@@ -16,7 +16,7 @@ router.get("/", authMiddleware, getAllMedicalRecords);
 router.get("/:id", authMiddleware, getMedicalRecordById);
 
 // Lấy bệnh án theo ID của cá
-router.get("/:fishId/fishes", authMiddleware, getMedicalRecordByFishId);
+router.get("/fishes/:fishId/", authMiddleware, getMedicalRecordByFishId);
 
 // Tạo bệnh án mới
 router.post("/", authMiddleware, createMedicalRecord);
