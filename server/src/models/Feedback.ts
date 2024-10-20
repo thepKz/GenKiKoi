@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { IAppointment } from "./Appointment";
 
-interface IFeedback {
+export interface IFeedback {
   userId: mongoose.Types.ObjectId;
   feedbackDate: Date;
   rating: 1 | 2 | 3 | 4 | 5;

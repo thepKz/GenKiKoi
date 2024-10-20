@@ -12,6 +12,6 @@ router.get("/", authMiddleware, getAllFish);
 
 router.get("/:customerId", authMiddleware, getAllFishesByCustomerId);
 
-router.get("/phones/:phoneNumber/", authMiddleware, getFishByPhoneNumber);
+router.get("/phone/:phoneNumber/", authMiddleware, getFishByPhoneNumber);
 
 export default router;

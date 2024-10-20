@@ -3,12 +3,14 @@ import { IDoctor } from "./Doctor";
 import { ICustomer } from "./Customer";
 import { IService } from "./Service";
 import { IDoctorSchedule } from "./DoctorSchedule";
+import { IFeedback } from "./Feedback";
 
 export interface IAppointment {
   doctorScheduleId: IDoctorSchedule;
+  doctorId: IDoctor;
   customerId: ICustomer;
   serviceId: IService;
-  feedback?: string;
+  feedback?: IFeedback;
   appointmentDate: Date;
   status: string;
   reasons?: string;
@@ -22,6 +24,11 @@ const AppointmentSchema = new mongoose.Schema<IAppointment>(
       ref: "DoctorSchedule",
       required: true,
     },
+    doctorId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Doctor",
+      required: true,
+    },
     customerId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Customer",
@@ -31,6 +38,10 @@ const AppointmentSchema = new mongoose.Schema<IAppointment>(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Service",
       required: true,
+    },
+    feedback: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Feedback",
     },
     appointmentDate: {
       type: Date,

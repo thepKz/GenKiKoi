@@ -8,6 +8,112 @@ import Customer from "../models/Customer";
  * Loại Test: API TEST (Đã xong), UNIT TEST (Đang làm), E2E TEST (Đang làm)
  * Chỉnh Sửa Lần Cuối : 13/10/2024 (Thép)
  */
+
+export const getAllAppointments = async (req: Request, res: Response) => {
+  try {
+    const appointments = await Appointment.find();
+
+    return res.status(200).json({ data: appointments });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Lỗi khi lấy danh sách cuộc hẹn" });
+  }
+};
+
+// Lấy danh sách cuộc hẹn theo doctorId
+export const getAllAppointmentsByDoctorId = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const doctorId = req.params.doctorId;
+
+    const appointments = await Appointment.find({ doctorId })
+      .populate({
+        path: "doctorId",
+        select: "userId",
+        populate: {
+          path: "userId",
+          select: "fullName",
+        },
+      })
+      .populate({
+        path: "serviceId",
+        select: "serviceName",
+      })
+      .populate({
+        path: "customerId",
+        select: "userId",
+        populate: {
+          path: "userId",
+          select: "fullName phoneNumber gender",
+        },
+      })
+      .populate({
+        path: "doctorScheduleId",
+        select: "start end",
+      })
+      .select("_id appointmentDate status notes");
+    if (!appointments) {
+      return res.status(404).json({ message: "Không tìm thấy cuộc hẹn" });
+    }
+
+    const formattedAppointment = appointments.map((appointment: any) => ({
+      appointmentId: appointment._id,
+      serviceName: appointment.serviceId.serviceName,
+      doctorFullName: appointment.doctorId.userId.fullName,
+      customerFullName: appointment.customerId.userId.fullName,
+      customerPhoneNumber: appointment.customerId.userId.phoneNumber,
+      customerGender: appointment.customerId.userId.gender,
+      start: appointment.doctorScheduleId.start,
+      end: appointment.doctorScheduleId.end,
+      status: appointment.status,
+      notes: appointment.notes,
+    }));
+
+    return res.status(200).json({ data: formattedAppointment });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Lỗi khi lấy danh sách cuộc hẹn" });
+  }
+};
+export const updateCompletedAppointment = async (
+  req: Request,
+  res: Response
+) => {
+  const appointmentId = req.params.appointmentId;
+  let { completed } = req.body;
+  try {
+    // Lấy cuộc hẹn hiện tại
+    const appointment = await Appointment.findById(appointmentId);
+    if (!appointment) {
+      return res.status(404).json({ message: "Cuộc hẹn không tìm thấy." });
+    }
+
+    // Cập nhật trạng thái và completed
+    completed = !completed; // Đảo ngược giá trị completed
+    const updatedAppointment = await Appointment.findByIdAndUpdate(
+      appointmentId,
+      {
+        status: completed ? "Đã hoàn thành" : "Đang chờ xử lý",
+      },
+      { new: true } // Trả về tài liệu đã cập nhật
+    );
+    const formattedAppointment = {
+      appointmentId: updatedAppointment?._id,
+      status: updatedAppointment?.status,
+      completed,
+    };
+
+    return res
+      .status(200)
+      .json({ message: "Đã cập nhật cuộc hẹn", data: formattedAppointment });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Lỗi khi cập nhật cuộc hẹn" });
+  }
+};
+
 export const getAppointmentsByCustomerId = async (
   req: Request,
   res: Response
