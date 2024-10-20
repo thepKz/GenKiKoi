@@ -193,7 +193,7 @@ export const sendNewVerifyEmail = async (req: Request, res: Response) => {
 
     await customer.save();
 
-    await sendVerificationEmail(email, username, verificationToken);
+    // await sendVerificationEmail(email, username, verificationToken);
 
     return res
       .status(200)
