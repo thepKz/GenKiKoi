@@ -3,6 +3,7 @@ import {
   Card,
   Col,
   ConfigProvider,
+  Divider,
   Form,
   Input,
   message,
@@ -17,6 +18,8 @@ import VietNamProvinces from "../../data";
 import { handleAPI } from "../apis/handleAPI";
 import { CustomerData } from "../models/DataModels";
 import { CustomCalendar } from "../share";
+import { useSelector } from "react-redux";
+import { IAuth } from "../types";
 
 const { TextArea } = Input;
 
@@ -37,6 +40,8 @@ const Booking = () => {
     window.scrollTo(0, 0);
   }, []);
 
+  const auth: IAuth = useSelector((state: any) => state.authReducer.data);
+
   const [form] = Form.useForm();
   const [isLoadingForm, setIsLoadingForm] = useState(false);
 
@@ -56,6 +61,10 @@ const Booking = () => {
   const [services, setServices] = useState([]);
   const [doctors, setDoctors] = useState([]);
   const [consultingOptions, setConsultingOptions] = useState([]);
+
+  const [service, setService] = useState<any>(null);
+  const [price, setPrice] = useState<number>(0);
+  const [totalPrice, setTotalPrice] = useState<number>(0);
 
   useEffect(() => {
     const res = VietNamProvinces.map((item: any) => ({
@@ -128,6 +137,7 @@ const Booking = () => {
       try {
         const api = `/api/services/`;
         const res = await handleAPI(api, undefined, "GET");
+        console.log(res.data);
         setServices(res.data);
       } catch (error: any) {
         console.log(error);
@@ -151,9 +161,16 @@ const Booking = () => {
     getAllDoctors();
   }, []);
 
+  useEffect(() => {
+    setTotalPrice(0);
+    setTotalPrice((prevPrice) => prevPrice + price);
+  }, [price]);
+
   const handleServiceChange = (value: string) => {
     form.setFieldValue("typeOfConsulting", undefined);
     const selectedService: any = services.find((service: any) => service.serviceName === value);
+    setService(selectedService);
+    setPrice(selectedService.price);
     if (selectedService) {
       setConsultingOptions(
         selectedService.availableAt.map((option: any) => ({
@@ -169,7 +186,7 @@ const Booking = () => {
   const handleSubmit = async (values: any) => {
     try {
       setIsLoadingForm(true);
-      const api = `/api/appointments/`;
+      const appointmentApi = `/api/appointments/${auth.customerId}`;
 
       if (date) {
         values.appointmentDate = date;
@@ -179,9 +196,26 @@ const Booking = () => {
         values.slotTime = demoSlots[slot - 1].time;
       }
 
-      const res: any = await handleAPI(api, values, "PUT");
+      const appointmentRes: any = await handleAPI(appointmentApi, values, "POST");
 
-      message.success(res.message);
+      if (appointmentRes.data.appointmentId) {
+        const paymentApi = `/api/payments/create-payment`;
+        const paymentRes = await handleAPI(
+          paymentApi,
+          {
+            totalPrice: totalPrice,
+            customerId: auth.customerId,
+            serviceName: service.serviceName,
+            appointmentId: appointmentRes.data.appointmentId,
+          },
+          "POST",
+        );
+        if (paymentRes.data.checkoutUrl) {
+          window.open(paymentRes.data.checkoutUrl, "_blank");
+        } else {
+          message.error("Không thể tạo liên kết thanh toán");
+        }
+      }
     } catch (error: any) {
       console.log(error);
       message.error(error.message);
@@ -199,269 +233,293 @@ const Booking = () => {
   }
 
   return (
-    <div>
-      <div className="bg-green-dark py-36 pb-16 text-white">
-        <div className="container mx-auto lg:px-28">
-          <div className="rounded-md bg-blue-primary p-5 px-10">
+    <div className="booking bg-green-dark py-36 pb-16 text-white">
+      <div className="container mx-auto lg:px-28">
+        <div className="rounded-md bg-blue-primary p-5 px-10">
+          <ConfigProvider
+            theme={{
+              token: {
+                fontFamily: "Pro-Rounded",
+              },
+              components: {
+                Form: {
+                  labelColor: "white",
+                  fontSize: 17,
+                },
+                Divider: {
+                  marginLG: 8,
+                },
+              },
+            }}
+          >
+            <Form
+              form={form}
+              disabled={isLoadingForm}
+              onFinish={handleSubmit}
+              size="large"
+              layout="vertical"
+            >
+              <h3 className="heading-3 text-white">Nội dung chi tiết đặt hẹn</h3>
+              <div className="my-5 flex gap-10">
+                <div className="lg:w-1/5">
+                  <Form.Item
+                    name="serviceName"
+                    label="Loại dịch vụ"
+                    required
+                  >
+                    <Select
+                      placeholder="Chọn loại dịch vụ"
+                      style={{ width: "100%" }}
+                      options={services.map((service: any) => ({
+                        value: service.serviceName,
+                        label: service.serviceName,
+                      }))}
+                      onChange={handleServiceChange}
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    name="doctorName"
+                    label="Bác sĩ"
+                    required
+                  >
+                    <Select
+                      style={{ width: "100%" }}
+                      placeholder="Chọn bác sĩ"
+                      options={doctors.map((doctor: any) => ({
+                        value: doctor.fullName,
+                        label: "Bs. " + doctor.fullName,
+                      }))}
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    name="typeOfConsulting"
+                    label="Hình thức khám"
+                    required
+                  >
+                    <Select
+                      placeholder="Chọn hình thức khám"
+                      style={{ width: "100%" }}
+                      options={consultingOptions}
+                    />
+                  </Form.Item>
+                  <div className="mt-20">
+                    <h1 className="text-2xl font-semibold text-white">Thanh toán</h1>
+                    <Divider style={{ borderColor: "white" }} />
+                    <div className="flex items-center justify-between text-white">
+                      <span>Giá dịch vụ:</span>
+                      <span>
+                        {new Intl.NumberFormat("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        }).format(price)}
+                      </span>
+                    </div>
+                    <Divider style={{ borderColor: "white" }} />
+                    <div className="flex items-center justify-between text-white">
+                      <span>Tổng tiền:</span>
+                      <span>
+                        {new Intl.NumberFormat("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        }).format(totalPrice)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div className="lg:w-[30%]">
+                  <Form.Item
+                    name="appointmentDate"
+                    label="Thời gian khám"
+                    required
+                  >
+                    <CustomCalendar setDate={setDate} />
+                  </Form.Item>
+                  <Form.Item
+                    name="slotTime"
+                    className="mt-5"
+                  >
+                    <div className="flex flex-wrap gap-4">
+                      {demoSlots.map((slotTime) => (
+                        <ConfigProvider
+                          theme={{
+                            components: {
+                              Card: {
+                                paddingLG: 5,
+                              },
+                            },
+                          }}
+                        >
+                          <Card
+                            key={slotTime.id}
+                            style={{ width: 70, textAlign: "center" }}
+                            onClick={() => setSlot(slotTime.id)}
+                            className={
+                              slot === slotTime.id
+                                ? "bg-green-dark text-white"
+                                : "hover:bg-green-dark hover:text-white"
+                            }
+                          >
+                            {slotTime.time}
+                          </Card>
+                        </ConfigProvider>
+                      ))}
+                    </div>
+                  </Form.Item>
+                  <p className="text-justify text-base text-white">
+                    Lưu ý: Thời gian khám trên chỉ là thời gian dự kiến, tổng đài sẽ liên hệ xác
+                    nhận thời gian khám chính xác tới quý khách sau khi quý khách đặt hẹn.
+                  </p>
+                </div>
+                <div className="lg:flex-1">
+                  <Row gutter={24}>
+                    <Col span={24}>
+                      <Form.Item
+                        required
+                        name="fullName"
+                        label="Họ và tên"
+                      >
+                        <Input
+                          defaultValue={profile?.fullName}
+                          placeholder="Họ và tên"
+                        />
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                  <Row gutter={24}>
+                    <Col span={12}>
+                      <Form.Item
+                        required
+                        name="phoneNumber"
+                        label="Số điện thoại"
+                      >
+                        <Input
+                          className="addon-input"
+                          addonBefore="+84"
+                          placeholder="Số điện thoại"
+                          defaultValue={profile?.phoneNumber}
+                        />
+                      </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                      <Form.Item
+                        name="gender"
+                        label="Giới tính"
+                      >
+                        <Select
+                          placeholder="Giới tính"
+                          defaultValue={
+                            profile?.gender === undefined
+                              ? null
+                              : profile?.gender === true
+                                ? "Nam"
+                                : "Nữ"
+                          }
+                          options={[
+                            { value: "nam", label: "Nam" },
+                            { value: "nữ", label: "Nữ" },
+                          ]}
+                        />
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                  <Row gutter={24}>
+                    <Col span={8}>
+                      <Form.Item
+                        name="city"
+                        label="Tỉnh"
+                      >
+                        <Select
+                          placeholder="Thành phố"
+                          value={city}
+                          defaultValue={profile?.city}
+                          onChange={(e) => {
+                            setCity(e);
+                          }}
+                          options={cities}
+                        />
+                      </Form.Item>
+                    </Col>
+                    <Col span={8}>
+                      <Form.Item
+                        name="district"
+                        label="Quận / Huyện"
+                      >
+                        <Select
+                          placeholder="Quận / Huyện"
+                          defaultValue={profile?.district}
+                          onChange={(e) => {
+                            setDistrict(e);
+                          }}
+                          options={districts}
+                        />
+                      </Form.Item>
+                    </Col>
+                    <Col span={8}>
+                      <Form.Item
+                        name="ward"
+                        label="Phường / Xã"
+                      >
+                        <Select
+                          placeholder="Phường / Xã"
+                          defaultValue={profile?.ward}
+                          value={ward}
+                          onChange={(e) => setWard(e)}
+                          options={wards}
+                        />
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col span={24}>
+                      <Form.Item
+                        name="address"
+                        label="Địa chỉ"
+                      >
+                        <Input
+                          placeholder="Địa chỉ"
+                          defaultValue={profile?.detailAddress}
+                        />
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col span={24}>
+                      <Form.Item
+                        tooltip="Hãy mô tả kỹ lý do khám cho cá của bạn nhé"
+                        name="reasons"
+                        label="Lý do khám"
+                        rules={[{ required: true, message: "Vui lòng nhập lý do khám!" }]}
+                      >
+                        <TextArea
+                          placeholder="Lý do khám"
+                          rows={4}
+                        />
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                </div>
+              </div>
+            </Form>
+          </ConfigProvider>
+          <div className="text-right">
             <ConfigProvider
               theme={{
+                inherit: false,
                 token: {
                   fontFamily: "Pro-Rounded",
                 },
-                components: {
-                  Form: {
-                    labelColor: "white",
-                    fontSize: 17,
-                  },
-                },
               }}
             >
-              <Form
-                form={form}
-                disabled={isLoadingForm}
-                onFinish={handleSubmit}
+              <Button
                 size="large"
-                layout="vertical"
+                type="primary"
+                loading={isLoadingForm}
+                className="mt-3 w-fit"
+                onClick={() => form.submit()}
               >
-                <h3 className="heading-3 text-white">Nội dung chi tiết đặt hẹn</h3>
-                <div className="my-5 flex gap-10">
-                  <div className="lg:w-1/5">
-                    <Form.Item
-                      name="serviceName"
-                      label="Loại dịch vụ"
-                      required
-                    >
-                      <Select
-                        placeholder="Chọn loại dịch vụ"
-                        style={{ width: "100%" }}
-                        options={services.map((service: any) => ({
-                          value: service.serviceName,
-                          label: service.serviceName,
-                        }))}
-                        onChange={handleServiceChange}
-                      />
-                    </Form.Item>
-                    <Form.Item
-                      name="doctorName"
-                      label="Bác sĩ"
-                      required
-                    >
-                      <Select
-                        style={{ width: "100%" }}
-                        placeholder="Chọn bác sĩ"
-                        options={doctors.map((doctor: any) => ({
-                          value: doctor.fullName,
-                          label: "Bs. " + doctor.fullName,
-                        }))}
-                      />
-                    </Form.Item>
-                    <Form.Item
-                      name="typeOfConsulting"
-                      label="Hình thức khám"
-                      required
-                    >
-                      <Select
-                        placeholder="Chọn hình thức khám"
-                        style={{ width: "100%" }}
-                        options={consultingOptions}
-                      />
-                    </Form.Item>
-                  </div>
-                  <div className="lg:w-[30%]">
-                    <Form.Item
-                      name="appointmentDate"
-                      label="Thời gian khám"
-                      required
-                    >
-                      <CustomCalendar setDate={setDate} />
-                    </Form.Item>
-                    <Form.Item
-                      name="slotTime"
-                      className="mt-5"
-                    >
-                      <div className="flex flex-wrap gap-4">
-                        {demoSlots.map((slotTime) => (
-                          <ConfigProvider
-                            theme={{
-                              components: {
-                                Card: {
-                                  paddingLG: 5,
-                                },
-                              },
-                            }}
-                          >
-                            <Card
-                              key={slotTime.id}
-                              style={{ width: 70, textAlign: "center" }}
-                              onClick={() => setSlot(slotTime.id)}
-                              className={
-                                slot === slotTime.id
-                                  ? "bg-green-dark text-white"
-                                  : "hover:bg-green-dark hover:text-white"
-                              }
-                            >
-                              {slotTime.time}
-                            </Card>
-                          </ConfigProvider>
-                        ))}
-                      </div>
-                    </Form.Item>
-                    <p className="text-justify text-base text-white">
-                      Lưu ý: Thời gian khám trên chỉ là thời gian dự kiến, tổng đài sẽ liên hệ xác
-                      nhận thời gian khám chính xác tới quý khách sau khi quý khách đặt hẹn.
-                    </p>
-                  </div>
-                  <div className="lg:flex-1">
-                    <Row gutter={24}>
-                      <Col span={24}>
-                        <Form.Item
-                          required
-                          name="fullName"
-                          label="Họ và tên"
-                        >
-                          <Input
-                            defaultValue={profile?.fullName}
-                            placeholder="Họ và tên"
-                          />
-                        </Form.Item>
-                      </Col>
-                    </Row>
-                    <Row gutter={24}>
-                      <Col span={12}>
-                        <Form.Item
-                          required
-                          name="phoneNumber"
-                          label="Số điện thoại"
-                        >
-                          <Input
-                            className="addon-input"
-                            addonBefore="+84"
-                            placeholder="Số điện thoại"
-                            defaultValue={profile?.phoneNumber}
-                          />
-                        </Form.Item>
-                      </Col>
-                      <Col span={12}>
-                        <Form.Item
-                          name="gender"
-                          label="Giới tính"
-                        >
-                          <Select
-                            placeholder="Giới tính"
-                            defaultValue={
-                              profile?.gender === undefined
-                                ? null
-                                : profile?.gender === true
-                                  ? "Nam"
-                                  : "Nữ"
-                            }
-                            options={[
-                              { value: "nữ", label: "Nữ" },
-                              { value: "nam", label: "Nam" },
-                            ]}
-                          />
-                        </Form.Item>
-                      </Col>
-                    </Row>
-                    <Row gutter={24}>
-                      <Col span={8}>
-                        <Form.Item
-                          name="city"
-                          label="Tỉnh"
-                        >
-                          <Select
-                            placeholder="Thành phố"
-                            value={city}
-                            defaultValue={profile?.city}
-                            onChange={(e) => {
-                              setCity(e);
-                            }}
-                            options={cities}
-                          />
-                        </Form.Item>
-                      </Col>
-                      <Col span={8}>
-                        <Form.Item
-                          name="district"
-                          label="Quận / Huyện"
-                        >
-                          <Select
-                            placeholder="Quận / Huyện"
-                            defaultValue={profile?.district}
-                            onChange={(e) => {
-                              setDistrict(e);
-                            }}
-                            options={districts}
-                          />
-                        </Form.Item>
-                      </Col>
-                      <Col span={8}>
-                        <Form.Item
-                          name="ward"
-                          label="Phường / Xã"
-                        >
-                          <Select
-                            placeholder="Phường / Xã"
-                            defaultValue={profile?.ward}
-                            value={ward}
-                            onChange={(e) => setWard(e)}
-                            options={wards}
-                          />
-                        </Form.Item>
-                      </Col>
-                    </Row>
-                    <Row>
-                      <Col span={24}>
-                        <Form.Item
-                          name="address"
-                          label="Địa chỉ"
-                        >
-                          <Input
-                            placeholder="Địa chỉ"
-                            defaultValue={profile?.detailAddress}
-                          />
-                        </Form.Item>
-                      </Col>
-                    </Row>
-                    <Row>
-                      <Col span={24}>
-                        <Form.Item
-                          tooltip="Hãy mô tả kỹ lý do khám cho cá của bạn nhé"
-                          name="reasons"
-                          label="Lý do khám"
-                          rules={[{ required: true, message: "Vui lòng nhập lý do khám!" }]}
-                        >
-                          <TextArea
-                            placeholder="Lý do khám"
-                            rows={4}
-                          />
-                        </Form.Item>
-                      </Col>
-                    </Row>
-                  </div>
-                </div>
-              </Form>
+                Thanh toán
+              </Button>
             </ConfigProvider>
-            <div className="text-right">
-              <ConfigProvider
-                theme={{
-                  inherit: false,
-                  token: {
-                    fontFamily: "Pro-Rounded",
-                  },
-                }}
-              >
-                <Button
-                  size="large"
-                  type="primary"
-                  loading={isLoadingForm}
-                  className="mt-3 w-fit"
-                  onClick={() => form.submit()}
-                >
-                  Gửi thông tin
-                </Button>
-              </ConfigProvider>
-            </div>
           </div>
         </div>
       </div>

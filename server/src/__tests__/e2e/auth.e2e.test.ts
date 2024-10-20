@@ -27,11 +27,15 @@ describe('Auth Controller', () => {
       const res = await request(app)
         .post('/api/auth/register')
         .send({
-          username: 'Customer_1',
-          email: 'customer1@example.com',
+          username: 'testuser123',  // This username meets the criteria
+          email: 'test@example.com',
           password: 'Password123!',
           confirmPassword: 'Password123!'
         });
+
+      if (res.statusCode !== 201) {
+        console.error('Registration failed:', res.body);
+      }
 
       expect(res.statusCode).toBe(201);
       expect(res.body.message).toBe('Đăng ký thành công!');
@@ -133,4 +137,3 @@ describe('Auth Controller', () => {
     });
   });
 });
-

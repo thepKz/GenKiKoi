@@ -1,40 +1,22 @@
-import { Request, Response } from "express";
+import { Response, Request } from "express";
 import { Doctor, Service, User } from "../models";
 import Appointment from "../models/Appointment";
 import Customer from "../models/Customer";
 /**
- * Người Làm: ĐIỀN VÀO :) 
+ * Người Làm: ĐIỀN VÀO :)
  * Người Test: Thép
  * Loại Test: API TEST (Đã xong), UNIT TEST (Đang làm), E2E TEST (Đang làm)
  * Chỉnh Sửa Lần Cuối : 13/10/2024 (Thép)
-*/
-export interface AuthRequest extends Request {
-  user?: {
-    _id: string;
-    role: string;
-  };
-}
-
-export const getAppointmentsByUser = async (
-  req: AuthRequest,
+ */
+export const getAppointmentsByCustomerId = async (
+  req: Request,
   res: Response
 ) => {
   try {
-    const userId = req.user?._id;
-
-    let customer = await Customer.findOne({ userId });
-
-    if (!customer) {
-      // If customer is not found, create a new one
-      const user = await User.findById(userId);
-      if (!user) {
-        return res.status(404).json({ message: "User not found!" });
-      }
-      customer = await Customer.create({ userId: user._id });
-    }
+    const customerId = req.params.customerId;
 
     const appointments = await Appointment.find({
-      customerId: customer._id,
+      customerId: customerId,
     })
       .populate({
         path: "doctorId",
@@ -66,7 +48,7 @@ export const getAppointmentsByUser = async (
   }
 };
 
-export const createNewAppointment = async (req: AuthRequest, res: Response) => {
+export const createNewAppointment = async (req: Request, res: Response) => {
   try {
     const {
       serviceName,
@@ -77,9 +59,9 @@ export const createNewAppointment = async (req: AuthRequest, res: Response) => {
       reasons,
     } = req.body;
 
-    const userId = req.user?._id;
+    const customerId = req.params.customerId;
 
-    const customer = await Customer.findOne({ userId });
+    const customer = await Customer.findById(customerId);
 
     const service = await Service.findOne({ serviceName });
 
@@ -110,9 +92,14 @@ export const createNewAppointment = async (req: AuthRequest, res: Response) => {
       reasons,
     });
 
-    await newAppointment.save();
+    const savedAppointment = await newAppointment.save();
 
-    return res.status(200).json({ message: "Cuộc hẹn được tạo thành công!" });
+    return res.status(200).json({
+      message: "Cuộc hẹn được tạo thành công!",
+      data: {
+        appointmentId: savedAppointment._id,
+      },
+    });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "Lỗi khi tạo cuộc hẹn" });

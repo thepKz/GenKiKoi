@@ -2,14 +2,14 @@ import mongoose from "mongoose";
 import { IDoctor } from "./Doctor";
 import { ICustomer } from "./Customer";
 import { IService } from "./Service";
+import { IDoctorSchedule } from "./DoctorSchedule";
 
 export interface IAppointment {
-  doctorId: IDoctor;
+  doctorScheduleId: IDoctorSchedule;
   customerId: ICustomer;
   serviceId: IService;
+  feedback?: string;
   appointmentDate: Date;
-  typeOfConsulting: string;
-  slotTime: string;
   status: string;
   reasons?: string;
   notes?: string;
@@ -17,9 +17,9 @@ export interface IAppointment {
 
 const AppointmentSchema = new mongoose.Schema<IAppointment>(
   {
-    doctorId: {
+    doctorScheduleId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Doctor",
+      ref: "DoctorSchedule",
       required: true,
     },
     customerId: {
@@ -35,11 +35,9 @@ const AppointmentSchema = new mongoose.Schema<IAppointment>(
     appointmentDate: {
       type: Date,
       required: true,
+      default: new Date(),
     },
-    typeOfConsulting: {
-      type: String,
-      required: true,
-    },
+
     status: {
       type: String,
       enum: [
@@ -53,22 +51,8 @@ const AppointmentSchema = new mongoose.Schema<IAppointment>(
     },
     reasons: {
       type: String,
-      required: true,
     },
-    slotTime: {
-      type: String,
-      enum: [
-        "8:00",
-        "9:00",
-        "10:00",
-        "11:00",
-        "12:00",
-        "13:00",
-        "14:00",
-        "15:00",
-        "16:00",
-      ],
-    },
+
     notes: {
       type: String,
     },

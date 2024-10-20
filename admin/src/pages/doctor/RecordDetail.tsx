@@ -2,7 +2,6 @@ import {
   Avatar,
   Breadcrumb,
   Col,
-  ConfigProvider,
   Divider,
   List,
   Row,
@@ -10,6 +9,7 @@ import {
 import { Stickynote } from "iconsax-react";
 import { Link } from "react-router-dom";
 import { GiCirclingFish } from "react-icons/gi";
+import { HeaderPage } from "../../components";
 
 const RecordDetail = () => {
   const medicines = [
@@ -18,24 +18,16 @@ const RecordDetail = () => {
   ];
 
   return (
-    <ConfigProvider
-      theme={{
-        components: {
-          Divider: {
-            marginLG: 10,
-          },
-        },
-      }}
-    >
-      {/* Render tạm 2 giao diện */}
-      {!true ? (
-        <div className="container mx-auto my-5 h-[calc(100vh-115px)] rounded-md bg-white p-5 shadow-sm lg:w-[95%]">
+    <div>
+      {true ? (
+        <div className="section">
+          <HeaderPage heading="Chi tiết hồ sơ" />
           <Breadcrumb
             separator=">"
             items={[
               {
                 title: (
-                  <Link to="/doctor">
+                  <Link to="/doctor/customers">
                     <div className="flex items-center gap-2">
                       <Stickynote size={20} />
                       Hồ sơ khách hàng
@@ -44,14 +36,26 @@ const RecordDetail = () => {
                 ),
               },
               {
-                title: <Link to="/doctor/view-records">Hồ sơ bệnh án</Link>,
+                title: <Link to="/doctor/customers">Hồ sơ bệnh án</Link>,
               },
               {
-                title: `Chi tiết hồ sơ`,
+                title: (
+                  <Link to={"/doctor/customers/345/fishes"}>Danh sách cá</Link>
+                ),
+              },
+              {
+                title: (
+                  <Link to={"/doctor/customers/345/fishes/453/records"}>
+                    Danh sách hồ sơ bệnh án
+                  </Link>
+                ),
+              },
+              {
+                title: "Chi tiết hồ sơ",
               },
             ]}
           />
-          <Row gutter={32} className="mt-3">
+          <Row gutter={32} className="mt-2">
             <Col span={7}>
               <div className="text-base">
                 <h4 className="heading-4">Thông tin chung</h4>
@@ -169,13 +173,14 @@ const RecordDetail = () => {
           </Row>
         </div>
       ) : (
-        <div className="container mx-auto my-5 h-[calc(100vh-115px)] rounded-md bg-white p-5 shadow-sm lg:w-[95%]">
+        <div className="section">
+          <HeaderPage heading="Chi tiết hồ sơ" />
           <Breadcrumb
             separator=">"
             items={[
               {
                 title: (
-                  <Link to="/doctor">
+                  <Link to="/doctor/customers">
                     <div className="flex items-center gap-2">
                       <Stickynote size={20} />
                       Hồ sơ khách hàng
@@ -184,14 +189,22 @@ const RecordDetail = () => {
                 ),
               },
               {
-                title: <Link to="/doctor/view-records">Hồ sơ bệnh án</Link>,
+                title: "Hồ sơ bệnh án",
               },
               {
-                title: `Chi tiết hồ sơ`,
+                title: (
+                  <Link to={"/doctor/customers/fishes"}>Danh sách cá</Link>
+                ),
+              },
+              {
+                title: "67069dv2b5759828c4f9e611",
+              },
+              {
+                title: "67sn43j",
               },
             ]}
           />
-          <Row gutter={32} className="mt-3">
+          <Row gutter={32} className="">
             <Col span={7}>
               <div className="text-base">
                 <h4 className="heading-4">Thông tin chung</h4>
@@ -338,7 +351,7 @@ const RecordDetail = () => {
           </Row>
         </div>
       )}
-    </ConfigProvider>
+    </div>
   );
 };
 

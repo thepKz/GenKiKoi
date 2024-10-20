@@ -290,181 +290,179 @@ const Staffs = () => {
       key: "1",
       label: "Nhân viên",
       children: (
-        <CustomTable
-          loading={isLoading}
-          columns={staffColumn}
-          dataSource={staffs}
-          scroll="calc(100vh - 410px)"
-          className="staff-table"
-        />
+        <div className="staff-view staff">
+          <CustomTable
+            loading={isLoading}
+            columns={staffColumn}
+            dataSource={staffs}
+            scroll="calc(100vh - 410px)"
+            className="staff-table"
+          />
+        </div>
       ),
     },
     {
       key: "2",
       label: "Bác sĩ",
       children: (
-        <CustomTable
-          loading={isLoading}
-          columns={doctorColumn}
-          dataSource={doctors}
-          scroll="calc(100vh - 410px)"
-          className="staff-table"
-        />
+        <div className="staff-view staff">
+          <CustomTable
+            loading={isLoading}
+            columns={doctorColumn}
+            dataSource={doctors}
+            scroll="calc(100vh - 410px)"
+            className="staff-table"
+          />
+        </div>
       ),
     },
   ];
 
   return (
-    <div>
-      <div className="container mx-auto my-5 h-[calc(100vh-115px)] rounded-md bg-white p-5 shadow-sm lg:w-[95%]">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <h1 className="heading-3">Danh sách nhân viên và bác sĩ</h1>
-          <Button
-            type="primary"
-            onClick={() => handleOpenModal(undefined, currentTab)}
-          >
-            Thêm {currentTab === "staff" ? "nhân viên" : "bác sĩ"}
-          </Button>
-        </div>
-        <Divider />
-        <Tabs
-          defaultActiveKey="1"
-          items={items}
-          onChange={(key) => setCurrentTab(key === "1" ? "staff" : "doctor")}
-        />
-
-        {/* Add/Edit modal */}
-        <Modal
-          open={isModalOpen}
-          style={{ top: 60 }}
-          onCancel={() => setIsModalOpen(false)}
-          onClose={() => setIsModalOpen(false)}
-          onOk={() => form.submit()}
-          cancelText="Hủy"
-          okText={editingPerson ? "Cập nhật" : "Thêm mới"}
+    <div className="section">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <h1 className="heading-3">Danh sách nhân viên và bác sĩ</h1>
+        <Button
+          type="primary"
+          onClick={() => handleOpenModal(undefined, currentTab)}
         >
-          <div className="p-5 pb-0">
-            <h3 className="heading-4">
-              {editingPerson
-                ? `Cập nhật ${currentTab === "staff" ? "nhân viên" : "bác sĩ"}`
-                : `Thêm ${currentTab === "staff" ? "nhân viên" : "bác sĩ"}`}
-            </h3>
-            <Divider />
-            <div>
-              <Form
-                onFinish={handleSubmit}
-                disabled={isLoadingForm}
-                form={form}
-                size="large"
-                layout="vertical"
-              >
-                <Form.Item name="fullName" label="Họ và tên" required>
-                  <Input
-                    allowClear
-                    placeholder={`Nhập tên ${currentTab === "staff" ? "nhân viên" : "bác sĩ"}`}
-                  />
-                </Form.Item>
+          Thêm {currentTab === "staff" ? "nhân viên" : "bác sĩ"}
+        </Button>
+      </div>
+      <Divider />
+      <Tabs
+        defaultActiveKey="1"
+        items={items}
+        onChange={(key) => setCurrentTab(key === "1" ? "staff" : "doctor")}
+      />
 
-                <Form.Item name="email" label="Email" required>
-                  <Input allowClear placeholder="Nhập email" />
-                </Form.Item>
+      {/* Add/Edit modal */}
+      <Modal
+        open={isModalOpen}
+        style={{ top: 60 }}
+        onCancel={() => setIsModalOpen(false)}
+        onClose={() => setIsModalOpen(false)}
+        onOk={() => form.submit()}
+        cancelText="Hủy"
+        okText={editingPerson ? "Cập nhật" : "Thêm mới"}
+      >
+        <div className="p-5 pb-0">
+          <h3 className="heading-4">
+            {editingPerson
+              ? `Cập nhật ${currentTab === "staff" ? "nhân viên" : "bác sĩ"}`
+              : `Thêm ${currentTab === "staff" ? "nhân viên" : "bác sĩ"}`}
+          </h3>
+          <Divider />
+          <div>
+            <Form
+              onFinish={handleSubmit}
+              disabled={isLoadingForm}
+              form={form}
+              size="large"
+              layout="vertical"
+            >
+              <Form.Item name="fullName" label="Họ và tên" required>
+                <Input
+                  allowClear
+                  placeholder={`Nhập tên ${currentTab === "staff" ? "nhân viên" : "bác sĩ"}`}
+                />
+              </Form.Item>
 
-                <Form.Item name="gender" label="Giới tính" required>
+              <Form.Item name="email" label="Email" required>
+                <Input allowClear placeholder="Nhập email" />
+              </Form.Item>
+
+              <Form.Item name="gender" label="Giới tính" required>
+                <Select
+                  placeholder="Chọn giới tính"
+                  options={[
+                    { value: "nam", label: "Nam" },
+                    { value: "nữ", label: "Nữ" },
+                  ]}
+                />
+              </Form.Item>
+              {currentTab === "staff" && (
+                <Form.Item name="position" label="Vị trí" required>
                   <Select
-                    placeholder="Chọn giới tính"
+                    placeholder="Chọn vị trí"
                     options={[
-                      { value: "nam", label: "Nam" },
-                      { value: "nữ", label: "Nữ" },
+                      {
+                        value: "Hỗ trợ khách hàng",
+                        label: "Hỗ trợ khách hàng",
+                      },
+                      { value: "Tiếp tân", label: "Tiếp tân" },
+                      { value: "Trợ lý", label: "Trợ lý" },
+                      { value: "Thu ngân", label: "Thu ngân" },
                     ]}
                   />
                 </Form.Item>
-                {currentTab === "staff" && (
-                  <Form.Item name="position" label="Vị trí" required>
-                    <Select
-                      placeholder="Chọn vị trí"
-                      options={[
-                        {
-                          value: "Hỗ trợ khách hàng",
-                          label: "Hỗ trợ khách hàng",
-                        },
-                        { value: "Tiếp tân", label: "Tiếp tân" },
-                        { value: "Trợ lý", label: "Trợ lý" },
-                        { value: "Thu ngân", label: "Thu ngân" },
-                      ]}
-                    />
-                  </Form.Item>
-                )}
+              )}
 
-                {currentTab === "staff" && (
-                  <Form.Item name="workShift" label="Ca làm" required>
-                    <Select
-                      placeholder="Chọn ca làm"
-                      options={[
-                        { value: "Morning", label: "Sáng" },
-                        { value: "Afternoon", label: "Chiều" },
-                        { value: "Night", label: "Tối" },
-                      ]}
-                    />
-                  </Form.Item>
-                )}
+              {currentTab === "staff" && (
+                <Form.Item name="workShift" label="Ca làm" required>
+                  <Select
+                    placeholder="Chọn ca làm"
+                    options={[
+                      { value: "Morning", label: "Sáng" },
+                      { value: "Afternoon", label: "Chiều" },
+                      { value: "Night", label: "Tối" },
+                    ]}
+                  />
+                </Form.Item>
+              )}
 
-                {currentTab === "doctor" && (
-                  <Row gutter={16}>
-                    <Col span={12}>
-                      <Form.Item
-                        name="specialization"
-                        label="Chứng chỉ"
-                        required
-                      >
-                        <Input placeholder="Tên chứng chỉ" />
-                      </Form.Item>
-                    </Col>
-                    <Col span={12}>
-                      <Form.Item
-                        name="licenseNumber"
-                        label="Mã số chứng chỉ"
-                        required
-                      >
-                        <Input placeholder="Mã số chứng chỉ" />
-                      </Form.Item>
-                    </Col>
-                  </Row>
-                )}
+              {currentTab === "doctor" && (
+                <Row gutter={16}>
+                  <Col span={12}>
+                    <Form.Item name="specialization" label="Chứng chỉ" required>
+                      <Input placeholder="Tên chứng chỉ" />
+                    </Form.Item>
+                  </Col>
+                  <Col span={12}>
+                    <Form.Item
+                      name="licenseNumber"
+                      label="Mã số chứng chỉ"
+                      required
+                    >
+                      <Input placeholder="Mã số chứng chỉ" />
+                    </Form.Item>
+                  </Col>
+                </Row>
+              )}
 
-                {currentTab === "doctor" && (
-                  <Row gutter={16}>
-                    <Col span={12}>
-                      <Form.Item
-                        name="movingService"
-                        label="Dịch vụ di động"
-                        required
-                      >
-                        <Select
-                          placeholder="Chọn dịch vụ di động"
-                          options={[
-                            { value: true, label: "Có" },
-                            { value: false, label: "Không" },
-                          ]}
-                        />
-                      </Form.Item>
-                    </Col>
-                    <Col span={12}>
-                      <Form.Item
-                        name="yearOfExperience"
-                        label="Năm kinh nghiệm"
-                        required
-                      >
-                        <Input placeholder="Số năm kinh nghiệm" />
-                      </Form.Item>
-                    </Col>
-                  </Row>
-                )}
-              </Form>
-            </div>
+              {currentTab === "doctor" && (
+                <Row gutter={16}>
+                  <Col span={12}>
+                    <Form.Item
+                      name="movingService"
+                      label="Dịch vụ di động"
+                      required
+                    >
+                      <Select
+                        placeholder="Chọn dịch vụ di động"
+                        options={[
+                          { value: true, label: "Có" },
+                          { value: false, label: "Không" },
+                        ]}
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col span={12}>
+                    <Form.Item
+                      name="yearOfExperience"
+                      label="Năm kinh nghiệm"
+                      required
+                    >
+                      <Input placeholder="Số năm kinh nghiệm" />
+                    </Form.Item>
+                  </Col>
+                </Row>
+              )}
+            </Form>
           </div>
-        </Modal>
-      </div>
+        </div>
+      </Modal>
     </div>
   );
 };

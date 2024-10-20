@@ -4,7 +4,6 @@ import {
   Divider,
   Dropdown,
   MenuProps,
-  message,
   Spin,
   Table,
   TableProps,
@@ -15,6 +14,8 @@ import { AppointmentData } from "../../models/DataModels";
 import { getValue } from "../../utils";
 import { useEffect, useState } from "react";
 import { handleAPI } from "../../apis/handleAPI";
+import { useSelector } from "react-redux";
+import { IAuth } from "../../types";
 
 const columns: TableProps<AppointmentData>["columns"] = [
   {
@@ -71,16 +72,17 @@ const Appointment = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [appointments, setAppointments] = useState([]);
 
+  const auth: IAuth = useSelector((state: any) => state.authReducer.data);
+
   useEffect(() => {
     const getAppointments = async () => {
       try {
         setIsLoading(true);
-        const api = `/api/appointments/`;
+        const api = `/api/appointments/${auth.customerId}`;
         const res: any = await handleAPI(api, undefined, "GET");
         setAppointments(res.data);
       } catch (error: any) {
         console.log(error);
-        message.error(error.message);
       } finally {
         setIsLoading(false);
       }
