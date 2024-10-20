@@ -1,5 +1,4 @@
 import Appointment from "./Appointment";
-import Bill from "./Bill";
 import Customer from "./Customer";
 import Doctor from "./Doctor";
 import DoctorSchedule from "./DoctorSchedule";
@@ -13,7 +12,6 @@ import User from "./User";
 
 export {
   Appointment,
-  Bill,
   Customer,
   Doctor,
   Feedback,

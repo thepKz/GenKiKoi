@@ -13,6 +13,7 @@ import InspectionRecord from "./my-account/InspectionRecord";
 import MedicalRecord from "./my-account/MedicalRecord";
 import Profile from "./my-account/Profile";
 import NotFound from "./NotFound";
+import { PaymentCancel, PaymentSuccess } from "./payment";
 import ConsultingTreatment from "./services/ConsultingTreatment";
 import Services from "./services/Services";
 import UnAuthorized from "./UnAuthorized";
@@ -39,4 +40,6 @@ export {
   UnAuthorized,
   VnPayReturn,
   VerifyAccount,
+  PaymentCancel,
+  PaymentSuccess
 };

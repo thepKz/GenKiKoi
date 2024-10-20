@@ -15,6 +15,8 @@ import {
   InspectionRecord,
   MedicalRecord,
   NotFound,
+  PaymentCancel,
+  PaymentSuccess,
   Profile,
   Services,
   SignIn,
@@ -99,6 +101,14 @@ const MainRouter = () => {
             element={auth.token && auth.isVerified ? <Navigate to={"/"} /> : <VerifyAccount />}
           />
         </Route>
+        <Route
+          path="payment-success"
+          element={<PaymentSuccess />}
+        />
+        <Route
+          path="payment-cancel"
+          element={<PaymentCancel />}
+        />
 
         <Route
           path="/sign-in"

@@ -1,7 +1,7 @@
 import { Avatar, Badge, Button, Dropdown, MenuProps } from "antd";
 import { CalendarEdit, Logout, Notification, User } from "iconsax-react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Logo from "../assets/logo.jpg";
 import { removeAuth } from "../redux/reducers/authReducer";
 import { IAuth } from "../types";

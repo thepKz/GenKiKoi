@@ -18,6 +18,8 @@ import VietNamProvinces from "../../data";
 import { handleAPI } from "../apis/handleAPI";
 import { CustomerData } from "../models/DataModels";
 import { CustomCalendar } from "../share";
+import { useSelector } from "react-redux";
+import { IAuth } from "../types";
 
 const { TextArea } = Input;
 
@@ -37,6 +39,8 @@ const Booking = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  const auth: IAuth = useSelector((state: any) => state.authReducer.data);
 
   const [form] = Form.useForm();
   const [isLoadingForm, setIsLoadingForm] = useState(false);
@@ -58,6 +62,7 @@ const Booking = () => {
   const [doctors, setDoctors] = useState([]);
   const [consultingOptions, setConsultingOptions] = useState([]);
 
+  const [service, setService] = useState<any>(null);
   const [price, setPrice] = useState<number>(0);
   const [totalPrice, setTotalPrice] = useState<number>(0);
 
@@ -157,12 +162,14 @@ const Booking = () => {
   }, []);
 
   useEffect(() => {
+    setTotalPrice(0);
     setTotalPrice((prevPrice) => prevPrice + price);
   }, [price]);
 
   const handleServiceChange = (value: string) => {
     form.setFieldValue("typeOfConsulting", undefined);
     const selectedService: any = services.find((service: any) => service.serviceName === value);
+    setService(selectedService);
     setPrice(selectedService.price);
     if (selectedService) {
       setConsultingOptions(
@@ -177,21 +184,41 @@ const Booking = () => {
   };
 
   const handleSubmit = async (values: any) => {
+    // try {
+    //   setIsLoadingForm(true);
+    //   const api = `/api/appointments/`;
+
+    //   if (date) {
+    //     values.appointmentDate = date;
+    //   }
+
+    //   if (slot) {
+    //     values.slotTime = demoSlots[slot - 1].time;
+    //   }
+
+    //   const res: any = await handleAPI(api, values, "PUT");
+
+    //   message.success(res.message);
+    // } catch (error: any) {
+    //   console.log(error);
+    //   message.error(error.message);
+    // } finally {
+    //   setIsLoadingForm(false);
+    // }
     try {
       setIsLoadingForm(true);
-      const api = `/api/appointments/`;
+      const api = `/api/payments/create-payment`;
 
-      if (date) {
-        values.appointmentDate = date;
+      const res = await handleAPI(
+        api,
+        { totalPrice: totalPrice, customerId: auth.customerId, serviceName: service.serviceName },
+        "POST",
+      );
+      if (res.data.checkoutUrl) {
+        window.open(res.data.checkoutUrl, "_blank");
+      } else {
+        message.error("Không thể tạo liên kết thanh toán");
       }
-
-      if (slot) {
-        values.slotTime = demoSlots[slot - 1].time;
-      }
-
-      const res: any = await handleAPI(api, values, "PUT");
-
-      message.success(res.message);
     } catch (error: any) {
       console.log(error);
       message.error(error.message);
@@ -391,8 +418,8 @@ const Booking = () => {
                                 : "Nữ"
                           }
                           options={[
-                            { value: "nữ", label: "Nữ" },
                             { value: "nam", label: "Nam" },
+                            { value: "nữ", label: "Nữ" },
                           ]}
                         />
                       </Form.Item>

@@ -25,7 +25,7 @@ const History = () => {
           <Card>
             <div className="flex flex-col gap-1">
               <p>
-                <span className="font-semibold">Ngày thanh toán:</span> 10/09/2024
+                <span className="font-semibold">Ngày tạo:</span> 10/09/2024
               </p>
               <p>
                 <span className="font-semibold">Dịch vụ:</span> Kiểm định chất lượng nước
@@ -34,46 +34,17 @@ const History = () => {
                 <span className="font-semibold">Tổng tiền:</span> 200.000 vnđ
               </p>
               <p>
-                <span className="font-semibold">Hình thức thanh toán:</span> Momo
-              </p>
-              <p>
                 <span className="font-semibold">Trạng thái:</span>{" "}
                 <Tag color="green">Hoàn thành</Tag>
               </p>
-              <div className="flex items-center gap-2">
-                <span className="font-semibold">Hóa đơn:</span>{" "}
-                <div className="">
-                  <ConfigProvider
-                    theme={{
-                      inherit: false,
-                      token: {
-                        fontFamily: "Pro-Rounded",
-                      },
-                    }}
-                  >
-                    <Button
-                      size="small"
-                      type="link"
-                      style={{ marginRight: 10 }}
-                    >
-                      Xem
-                    </Button>
-                    <Button
-                      size="small"
-                      type="primary"
-                    >
-                      Tải xuống
-                    </Button>
-                  </ConfigProvider>
-                </div>
-              </div>
+
             </div>
           </Card>
 
           <Card>
             <div className="flex flex-col gap-1">
               <p>
-                <span className="font-semibold">Ngày thanh toán:</span> 10/09/2024
+                <span className="font-semibold">Ngày tạo:</span> 10/09/2024
               </p>
               <p>
                 <span className="font-semibold">Dịch vụ:</span> Kiểm định chất lượng nước
@@ -82,46 +53,17 @@ const History = () => {
                 <span className="font-semibold">Tổng tiền:</span> 200.000 vnđ
               </p>
               <p>
-                <span className="font-semibold">Hình thức thanh toán:</span> Momo
-              </p>
-              <p>
                 <span className="font-semibold">Trạng thái:</span>{" "}
                 <Tag color="green">Hoàn thành</Tag>
               </p>
-              <div className="flex items-center gap-2">
-                <span className="font-semibold">Hóa đơn:</span>{" "}
-                <div className="">
-                  <ConfigProvider
-                    theme={{
-                      inherit: false,
-                      token: {
-                        fontFamily: "Pro-Rounded",
-                      },
-                    }}
-                  >
-                    <Button
-                      size="small"
-                      type="link"
-                      style={{ marginRight: 10 }}
-                    >
-                      Xem
-                    </Button>
-                    <Button
-                      size="small"
-                      type="primary"
-                    >
-                      Tải xuống
-                    </Button>
-                  </ConfigProvider>
-                </div>
-              </div>
+
             </div>
           </Card>
 
           <Card>
             <div className="flex flex-col gap-1">
               <p>
-                <span className="font-semibold">Ngày thanh toán:</span> 10/09/2024
+                <span className="font-semibold">Ngày tạo:</span> 10/09/2024
               </p>
               <p>
                 <span className="font-semibold">Dịch vụ:</span> Kiểm định chất lượng nước
@@ -130,39 +72,9 @@ const History = () => {
                 <span className="font-semibold">Tổng tiền:</span> 200.000 vnđ
               </p>
               <p>
-                <span className="font-semibold">Hình thức thanh toán:</span> Momo
-              </p>
-              <p>
                 <span className="font-semibold">Trạng thái:</span>{" "}
                 <Tag color="green">Hoàn thành</Tag>
               </p>
-              <div className="flex items-center gap-2">
-                <span className="font-semibold">Hóa đơn:</span>{" "}
-                <div className="">
-                  <ConfigProvider
-                    theme={{
-                      inherit: false,
-                      token: {
-                        fontFamily: "Pro-Rounded",
-                      },
-                    }}
-                  >
-                    <Button
-                      size="small"
-                      type="link"
-                      style={{ marginRight: 10 }}
-                    >
-                      Xem
-                    </Button>
-                    <Button
-                      size="small"
-                      type="primary"
-                    >
-                      Tải xuống
-                    </Button>
-                  </ConfigProvider>
-                </div>
-              </div>
             </div>
           </Card>
         </div>
