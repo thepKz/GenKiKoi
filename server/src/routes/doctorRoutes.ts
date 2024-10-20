@@ -3,44 +3,36 @@ import {
   addNewDoctor,
   deleteDoctorById,
   getAllDoctors,
-  getAllDoctorSchedules,
   getAllDoctorsForBooking,
-  getScheduleById,
-  updateDoctorById,
+  getDoctorById,
+  updateByDoctorId,
 } from "../controllers/doctorController";
 import { authMiddleware, roleMiddleware } from "../middleware";
 
 const router = express.Router();
 
+// Lấy tất cả bác sĩ
 router.get("/", getAllDoctors);
 
 router.get("/all", getAllDoctorsForBooking);
 
-router.get(
-  "/schedules",
-  authMiddleware,
-  roleMiddleware(["doctor"]),
-  getAllDoctorSchedules
-);
+// Lấy thông tin bác sĩ theo Id
+router.get("/:doctorId", getDoctorById);
 
-router.get(
-  "/:id/schedules",
-  authMiddleware,
-  roleMiddleware(["doctor"]),
-  getScheduleById
-);
-
+// Thêm bác sĩ mới
 router.post("/", authMiddleware, roleMiddleware(["manager"]), addNewDoctor);
 
+// Cập nhật thông tin bác sĩ theo ID
 router.patch(
-  "/:id",
+  "/:doctorId",
   authMiddleware,
-  roleMiddleware(["manager"]),
-  updateDoctorById
+  // roleMiddleware(["manager", "doctor"]),
+  updateByDoctorId
 );
 
+// Xóa bác sĩ theo ID
 router.delete(
-  "/:id",
+  "/:doctorId",
   authMiddleware,
   roleMiddleware(["manager"]),
   deleteDoctorById

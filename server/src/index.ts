@@ -19,6 +19,7 @@ import {
   medicalRecordRoutes,
   pondRoutes,
   fishRoutes,
+  doctorScheduleRoutes,
 } from "./routes";
 
 const app = express();
@@ -67,6 +68,7 @@ app.use("/api/ponds", pondRoutes);
 app.use("/api/fishes", fishRoutes);
 app.use("/api/distance", distanceRoutes);
 app.use("/api/payments", paymentRoutes);
+app.use("/api/doctorSchedules", doctorScheduleRoutes);
 
 // Export the app for testing purposes
 export { app };

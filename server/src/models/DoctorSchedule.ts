@@ -1,7 +1,7 @@
 import mongoose, { Schema, Document } from "mongoose";
 import { IDoctor } from "./Doctor";
 
-interface IDoctorSchedule extends Document {
+export interface IDoctorSchedule extends Document {
   doctorId: IDoctor; // ID của bác sĩ
   scheduleId: string; // ID của lịch trình
   title?: string; // Tiêu đề

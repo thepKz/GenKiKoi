@@ -8,6 +8,8 @@ export interface IDoctor {
   movingService: boolean;
   userId: IUser;
   startDate?: Date;
+  images?: string[];
+  introduction?: string;
 }
 
 const DoctorSchema = new mongoose.Schema<IDoctor>(
@@ -36,6 +38,12 @@ const DoctorSchema = new mongoose.Schema<IDoctor>(
     startDate: {
       type: Date,
       default: () => new Date(),
+    },
+    images: {
+      type: [String],
+    },
+    introduction: {
+      type: String,
     },
   },
   {

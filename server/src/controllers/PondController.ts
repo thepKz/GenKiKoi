@@ -108,8 +108,8 @@ export const getPondByID = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Hồ không tồn tại" });
     }
     const formattedPond = {
-      // customerName: pond.customerId.userId.fullName,
-      //doctorName: pond.doctorId.userId.fullName,
+      customerName: pond.customerId.userId.fullName,
+      doctorName: pond.doctorId.userId.fullName,
       date: pond.createdAt,
       images: pond.images,
       ph: pond.ph,
