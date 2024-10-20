@@ -98,7 +98,13 @@ const MainRouter = () => {
           />
           <Route
             path="/verify-account"
-            element={auth.token && auth.isVerified ? <Navigate to={"/"} /> : <VerifyAccount />}
+            element={
+              (auth.token && auth.isVerified) || !auth.token ? (
+                <Navigate to={"/"} />
+              ) : (
+                <VerifyAccount />
+              )
+            }
           />
         </Route>
         <Route

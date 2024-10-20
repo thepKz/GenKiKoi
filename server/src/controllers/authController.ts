@@ -91,9 +91,12 @@ export const register = async (req: Request, res: Response) => {
       password: hashedPass,
     });
 
-    const verificationToken = Math.floor(
-      100000 + Math.random() * 900000
-    ).toString();
+    // const verificationToken = Math.floor(
+    //   100000 + Math.random() * 900000
+    // ).toString();
+
+    // For testing
+    const verificationToken = "123456";
 
     // Create new customer
     const newCustomer = await Customer.create({
@@ -110,11 +113,11 @@ export const register = async (req: Request, res: Response) => {
       role: newUser.role,
     });
 
-    await sendVerificationEmail(
-      newUser.email,
-      newUser.username,
-      verificationToken
-    );
+    // await sendVerificationEmail(
+    //   newUser.email,
+    //   newUser.username,
+    //   verificationToken
+    // );
 
     return res.status(201).json({
       message: "Đăng ký thành công!",

@@ -84,7 +84,6 @@ const Appointment = () => {
         setAppointments(res.data);
       } catch (error: any) {
         console.log(error);
-        message.error(error.message);
       } finally {
         setIsLoading(false);
       }

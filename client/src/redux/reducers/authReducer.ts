@@ -30,6 +30,7 @@ const authSlice = createSlice({
         ...action.payload,
         role: state.data.role,
         token: state.data.token,
+        isVerified: true,
       };
     },
     checkVerified: (state, _action) => {
