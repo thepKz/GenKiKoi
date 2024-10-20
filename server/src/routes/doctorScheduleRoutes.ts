@@ -7,12 +7,9 @@ import { authMiddleware, roleMiddleware } from "../middleware";
 
 const router = express.Router();
 
-router.get(
-  "/all",
-  authMiddleware,
+// Lấy tất cả lịch trình bác sĩ
+router.get("/", authMiddleware, getAllDoctorSchedules);
 
-  getAllDoctorSchedules
-);
-
-router.get("/getByUserId/:id", getScheduleByUserId);
+// Lấy lịch trình bác sĩ theo Id
+router.get("/:id", getScheduleByUserId);
 export default router;

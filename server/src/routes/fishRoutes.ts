@@ -8,14 +8,10 @@ import { authMiddleware } from "../middleware";
 
 const router = Router();
 
-router.get("/all", authMiddleware, getAllFish);
+router.get("/", authMiddleware, getAllFish);
 
 router.get("/:customerId", authMiddleware, getAllFishesByCustomerId);
 
-router.get(
-  "/getByPhoneNumber/:phoneNumber",
-  authMiddleware,
-  getFishByPhoneNumber
-);
+router.get("/:phoneNumber/phones", authMiddleware, getFishByPhoneNumber);
 
 export default router;

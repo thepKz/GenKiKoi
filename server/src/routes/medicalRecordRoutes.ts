@@ -9,9 +9,16 @@ import { authMiddleware } from "../middleware";
 
 const router = express.Router();
 
-router.get("/all", authMiddleware, getAllMedicalRecords);
-router.get("/getByID/:id", authMiddleware, getMedicalRecordById);
-router.get("/getByFishId/:id", authMiddleware, getMedicalRecordByFishId);
-router.post("/create", authMiddleware, createMedicalRecord);
+// Lấy tất cả bệnh án
+router.get("/", authMiddleware, getAllMedicalRecords);
+
+// Lấy bệnh án theo ID
+router.get("/:id", authMiddleware, getMedicalRecordById);
+
+// Lấy bệnh án theo ID của cá
+router.get("/:fishId/fishes", authMiddleware, getMedicalRecordByFishId);
+
+// Tạo bệnh án mới
+router.post("/", authMiddleware, createMedicalRecord);
 
 export default router;

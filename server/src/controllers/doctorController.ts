@@ -266,7 +266,7 @@ export const updateByDoctorId = async (req: Request, res: Response) => {
  */
 export const deleteDoctorById = async (req: Request, res: Response) => {
   try {
-    const doctorId = req.params.id;
+    const doctorId = req.params.doctorId;
 
     await Doctor.findByIdAndDelete(doctorId);
 

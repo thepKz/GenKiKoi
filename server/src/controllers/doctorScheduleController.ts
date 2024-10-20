@@ -22,7 +22,7 @@ export const getAllDoctorSchedules = async (req: Request, res: Response) => {
 };
 
 export const getScheduleByUserId = async (req: Request, res: Response) => {
-  const userId = req.params.id;
+  const userId = req.params.userId;
 
   try {
     const doctor = await Doctor.findOne({ userId });

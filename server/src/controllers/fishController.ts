@@ -20,14 +20,12 @@ export const getAllFishesByCustomerId = async (req: Request, res: Response) => {
     if (!fishes) {
       return res.status(404).json({ message: "Danh sách trống" });
     }
-
-
   } catch (error) {}
 };
 
 export const getFishByPhoneNumber = async (req: Request, res: Response) => {
   try {
-    const { phoneNumber } = req.params;
+    const phoneNumber = req.params.phoneNumber;
     const user = await User.findOne({ phoneNumber });
     if (!user) {
       return res.status(400).json({ message: "Người dùng không tồn tại" });

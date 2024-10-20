@@ -12,7 +12,7 @@ export const getAllMedicalRecords = async (req: Request, res: Response) => {
 
 // lay ra Danh Sach medicalRecord theo fishID
 export const getMedicalRecordByFishId = async (req: Request, res: Response) => {
-  const fishId = req.params.id;
+  const fishId = req.params.fishId;
   try {
     const medicalRecords = await MedicalRecord.find({ fishId })
       .populate({

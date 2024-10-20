@@ -5,10 +5,16 @@ import {
   getPondByID,
 } from "../controllers/PondController";
 import { authMiddleware } from "../middleware";
+
 const router = Router();
 
-router.get("/all", authMiddleware, getAllPonds);
-router.get("/getByID/:id", authMiddleware, getPondByID);
+// Lấy tất cả các ao
+router.get("/", authMiddleware, getAllPonds);
 
-router.post("/create", authMiddleware, createPond); // chua phonenumber
+// Lấy ao theo ID
+router.get("/:id", authMiddleware, getPondByID);
+
+// Tạo ao mới
+router.post("/", authMiddleware, createPond);
+
 export default router;

@@ -11,22 +11,28 @@ import { authMiddleware, roleMiddleware } from "../middleware";
 
 const router = express.Router();
 
+// Lấy tất cả bác sĩ
 router.get("/", getAllDoctors);
 
 router.get("/all", getAllDoctorsForBooking);
-router.get("/getById/:doctorId", getDoctorById); // lay bac si theo id
 
+// Lấy thông tin bác sĩ theo Id
+router.get("/:doctorId", getDoctorById);
+
+// Thêm bác sĩ mới
 router.post("/", authMiddleware, roleMiddleware(["manager"]), addNewDoctor);
 
+// Cập nhật thông tin bác sĩ theo ID
 router.patch(
-  "/updateByDoctorId/:doctorId",
+  "/:doctorId",
   authMiddleware,
   // roleMiddleware(["manager", "doctor"]),
   updateByDoctorId
 );
 
+// Xóa bác sĩ theo ID
 router.delete(
-  "/:id",
+  "/:doctorId",
   authMiddleware,
   roleMiddleware(["manager"]),
   deleteDoctorById
