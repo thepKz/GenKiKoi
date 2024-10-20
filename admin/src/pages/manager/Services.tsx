@@ -188,88 +188,86 @@ const Services = () => {
   };
 
   return (
-    <div>
-      <div className="container mx-auto my-5 h-[calc(100vh-115px)] rounded-md bg-white p-5 shadow-sm lg:w-[95%]">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <h1 className="heading-3">Danh sách dịch vụ</h1>
-          <Button type="primary" onClick={() => handleOpenModal()}>
-            Thêm dịch vụ
-          </Button>
-        </div>
-        <Divider />
-        <div className="">
-          <CustomTable
-            loading={isLoading}
-            columns={columns}
-            dataSource={services}
-          />
-        </div>
-        {/* Add service modal */}
-        <Modal
-          open={isModalOpen}
-          style={{ top: 60 }}
-          onCancel={() => setIsModalOpen(false)}
-          onClose={() => setIsModalOpen(false)}
-          onOk={() => form.submit()}
-          cancelText="Hủy"
-          okText={editingService ? "Cập nhật" : "Thêm mới"}
-        >
-          <div className="p-5 pb-0">
-            <h3 className="heading-4">
-              {editingService ? "Cập nhật dịch vụ" : "Thêm dịch vụ"}
-            </h3>
-            <Divider />
-            <div>
-              <Form
-                onFinish={handleSubmit}
-                disabled={isLoadingForm}
-                form={form}
-                size="large"
-                layout="vertical"
-              >
-                <Form.Item name="serviceName" label="Tên dịch vụ" required>
-                  <Input allowClear placeholder="Nhập tên dịch vụ!" />
-                </Form.Item>
-                <Form.Item name="price" label="Giá dịch vụ" required>
-                  <InputNumber<number>
-                    min={0}
-                    max={100000000}
-                    formatter={(value) =>
-                      `đ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                    }
-                    parser={(value) =>
-                      value?.replace(/\đ\s?|(,*)/g, "") as unknown as number
-                    }
-                    style={{ width: "100%" }}
-                  />
-                </Form.Item>
-                <Form.Item name="availableAt" label="Khả dụng" required>
-                  <Select
-                    mode="multiple"
-                    allowClear
-                    placeholder="Khả dụng tại ..."
-                    options={[
-                      { value: "Tại phòng khám", label: "Tại phòng khám" },
-                      { value: "Tại nhà", label: "Tại nhà" },
-                      {
-                        value: "Tư vấn trực tuyến",
-                        label: "Tư vấn trực tuyến",
-                      },
-                    ]}
-                  />
-                </Form.Item>
-                <Form.Item name="description" label="Mô tả dịch vụ" required>
-                  <TextArea
-                    placeholder="Nhập mô tả dịch vụ"
-                    autoSize={{ minRows: 4, maxRows: 4 }}
-                  />
-                </Form.Item>
-              </Form>
-            </div>
-          </div>
-        </Modal>
+    <div className="section">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <h1 className="heading-3">Danh sách dịch vụ</h1>
+        <Button type="primary" onClick={() => handleOpenModal()}>
+          Thêm dịch vụ
+        </Button>
       </div>
+      <Divider />
+      <div className="staff-view">
+        <CustomTable
+          loading={isLoading}
+          columns={columns}
+          dataSource={services}
+        />
+      </div>
+      {/* Add service modal */}
+      <Modal
+        open={isModalOpen}
+        style={{ top: 60 }}
+        onCancel={() => setIsModalOpen(false)}
+        onClose={() => setIsModalOpen(false)}
+        onOk={() => form.submit()}
+        cancelText="Hủy"
+        okText={editingService ? "Cập nhật" : "Thêm mới"}
+      >
+        <div className="p-5 pb-0">
+          <h3 className="heading-4">
+            {editingService ? "Cập nhật dịch vụ" : "Thêm dịch vụ"}
+          </h3>
+          <Divider />
+          <div>
+            <Form
+              onFinish={handleSubmit}
+              disabled={isLoadingForm}
+              form={form}
+              size="large"
+              layout="vertical"
+            >
+              <Form.Item name="serviceName" label="Tên dịch vụ" required>
+                <Input allowClear placeholder="Nhập tên dịch vụ!" />
+              </Form.Item>
+              <Form.Item name="price" label="Giá dịch vụ" required>
+                <InputNumber<number>
+                  min={0}
+                  max={100000000}
+                  formatter={(value) =>
+                    `đ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                  }
+                  parser={(value) =>
+                    value?.replace(/\đ\s?|(,*)/g, "") as unknown as number
+                  }
+                  style={{ width: "100%" }}
+                />
+              </Form.Item>
+              <Form.Item name="availableAt" label="Khả dụng" required>
+                <Select
+                  mode="multiple"
+                  allowClear
+                  placeholder="Khả dụng tại ..."
+                  options={[
+                    { value: "Tại phòng khám", label: "Tại phòng khám" },
+                    { value: "Tại nhà", label: "Tại nhà" },
+                    {
+                      value: "Tư vấn trực tuyến",
+                      label: "Tư vấn trực tuyến",
+                    },
+                  ]}
+                />
+              </Form.Item>
+              <Form.Item name="description" label="Mô tả dịch vụ" required>
+                <TextArea
+                  placeholder="Nhập mô tả dịch vụ"
+                  autoSize={{ minRows: 4, maxRows: 4 }}
+                />
+              </Form.Item>
+            </Form>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 };

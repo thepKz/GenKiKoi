@@ -15,15 +15,13 @@ const CreateRecord = () => {
     },
   ];
   return (
-    <div>
-      <div className="container mx-auto my-5 h-[calc(100vh-115px)] rounded-md bg-white p-5 shadow-sm lg:w-[95%]">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <h1 className="heading-3">Tạo hồ sơ</h1>
-        </div>
-        <Divider />
-        <Tabs defaultActiveKey="1" items={items} />
+    <div className="section">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <h1 className="heading-3">Tạo hồ sơ</h1>
       </div>
+      <Divider />
+      <Tabs defaultActiveKey="1" items={items} />
     </div>
   );
 };

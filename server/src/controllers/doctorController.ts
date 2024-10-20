@@ -154,7 +154,7 @@ export const addNewDoctor = async (req: Request, res: Response) => {
 };
 
 /**
- * API: /api/staffs/:id
+ * API: /api/doctors/:id
  * Method: PATCH
  * PROTECTED
  */

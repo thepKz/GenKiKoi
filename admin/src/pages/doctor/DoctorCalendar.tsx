@@ -21,7 +21,7 @@ const DoctorCalendar = () => {
 
   useEffect(() => {
     const getSchedule = async () => {
-      const api = `/api/doctors/schedule/${auth.id}`;
+      const api = `/api/doctors/${auth.id}/schedules`;
       try {
         setIsLoading(true);
         const res = await handleAPI(api, undefined, "GET");
@@ -74,11 +74,9 @@ const DoctorCalendar = () => {
   }
 
   return (
-    <div>
-      <div className="container mx-auto my-5 h-[calc(100vh-115px)] rounded-md bg-white p-5 shadow-sm lg:w-[95%]">
-        <div className="">
-          <ScheduleXCalendar calendarApp={calendar} />
-        </div>
+    <div className="section">
+      <div className="doctor-view">
+        <ScheduleXCalendar calendarApp={calendar} />
       </div>
     </div>
   );

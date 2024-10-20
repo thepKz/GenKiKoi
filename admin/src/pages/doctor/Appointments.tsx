@@ -1,4 +1,4 @@
-import { Divider, Modal, Switch, TableProps, Tabs, TabsProps, Tag } from "antd";
+import { Modal, Switch, TableProps, Tabs, TabsProps, Tag } from "antd";
 import { CustomTable } from "../../share";
 import { getValue } from "../../utils";
 import { HeaderPage } from "../../components";
@@ -89,41 +89,21 @@ const Appointments = () => {
     },
   ];
 
-  const items: TabsProps["items"] = [
-    {
-      key: "1",
-      label: "Trung tâm",
-      children: (
-        <CustomTable
-          columns={columns}
-          dataSource={demoData}
-          scroll="calc(100vh - 410px)"
-          className="staff-table"
-        />
-      ),
-    },
-    {
-      key: "2",
-      label: "Hẹn trước",
-      children: (
-        <CustomTable
-          columns={columns}
-          dataSource={demoData}
-          scroll="calc(100vh - 410px)"
-          className="staff-table"
-        />
-      ),
-    },
-  ];
   return (
     <div>
-      <div className="container mx-auto my-5 h-[calc(100vh-115px)] rounded-md bg-white p-5 shadow-sm lg:w-[95%]">
+      <div className="section">
         <HeaderPage
           heading="Danh sách cuộc hẹn"
           placeholder="Tìm kiếm cuộc hẹn"
         />
-        <Divider />
-        <Tabs defaultActiveKey="1" items={items} />
+        <div className="doctor-view appointments">
+          <CustomTable
+            columns={columns}
+            dataSource={demoData}
+            scroll="calc(100vh - 410px)"
+            className="staff-table"
+          />
+        </div>
       </div>
     </div>
   );

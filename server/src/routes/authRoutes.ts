@@ -6,14 +6,18 @@ import {
   loginAdmin,
   loginWithGoogle,
   register,
+  sendNewVerifyEmail,
+  verifyEmail,
 } from "../controllers/authController";
 
 const router = express.Router();
 console.log("Log message on backend");
 router.post("/register", register);
+router.post("/verify-email", verifyEmail);
+router.post("/new-verify", sendNewVerifyEmail);
 router.post("/login", login);
 router.post("/login-google", loginWithGoogle);
-router.post("/login-admin", loginAdmin)
+router.post("/login-admin", loginAdmin);
 router.post("/check-username", checkUsername);
 router.post("/check-email", checkEmail);
 

@@ -57,6 +57,10 @@
   width: 100%;
 }
 
+.booking .anticon-question-circle {
+  color: white !important;
+}
+
 /* Ant Design */
 .ant-menu-inline {
   border-inline-end: none !important;
