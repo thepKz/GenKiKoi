@@ -22,7 +22,7 @@ const PaymentCancel = () => {
     };
     updatePayment();
   }, [id]);
-  
+
   return (
     <ConfigProvider
       theme={{
@@ -43,7 +43,9 @@ const PaymentCancel = () => {
               Trang chủ
             </Button>
           </Link>,
-          <Button size="large">Xem danh sách cuộc hẹn</Button>,
+          <Link to="/my-account/history">
+            <Button size="large">Xem danh sách cuộc hẹn</Button>,
+          </Link>,
         ]}
       />
     </ConfigProvider>

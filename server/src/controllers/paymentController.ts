@@ -49,7 +49,7 @@ export const createPayment = async (req: Request, res: Response) => {
   }
 };
 
-export const getPayment = async (req: Request, res: Response) => {
+export const getPaymentById = async (req: Request, res: Response) => {
   const paymentId = req.params.paymentId;
   try {
     const paymentLink = await payOS.getPaymentLinkInformation(paymentId);
@@ -60,7 +60,27 @@ export const getPayment = async (req: Request, res: Response) => {
   }
 };
 
-export const updatePayment = async (req: Request, res: Response) => {
+export const getPaymentsByCustomerId = async (req: Request, res: Response) => {
+  const customerId = req.params.customerId;
+  try {
+    const payments = await Payment.find({ customerId });
+
+    const formattedPayments = payments.map((payment) => ({
+      date: payment.date,
+      serviceName: payment.serviceName,
+      totalPrice: payment.totalPrice,
+      status: payment.status,
+      paymentLinkId: payment.paymentLinkId,
+    }));
+
+    return res.status(200).json({ data: formattedPayments });
+  } catch (error: any) {
+    console.error(error);
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+export const updatePaymentById = async (req: Request, res: Response) => {
   const paymentId = req.params.paymentId;
   const { status } = req.body;
 
