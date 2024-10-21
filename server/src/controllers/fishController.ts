@@ -26,6 +26,7 @@ export const getAllFishesByCustomerId = async (req: Request, res: Response) => {
     console.log(error);
     return res.status(500).json({ message: error.message });
   }
+};
 
 export const getFishByPhoneNumber = async (req: Request, res: Response) => {
   try {
@@ -55,4 +56,4 @@ export const getFishByPhoneNumber = async (req: Request, res: Response) => {
   } catch (error: any) {
     return res.status(500).json({ message: error.message });
   }
-}
+};

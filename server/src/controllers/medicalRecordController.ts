@@ -156,3 +156,24 @@ export const createMedicalRecord = async (req: Request, res: Response) => {
     return res.status(500).json({ message: error.message });
   }
 };
+
+export const getAllCustomers = async (req: Request, res: Response) => {
+  try {
+    const customers = await MedicalRecord.find().populate({
+      path: "customerId",
+      select: "userId",
+      populate: {
+        path: "userId",
+        select: "username phoneNumber gender",
+      },
+    });
+    if (!customers) {
+      return res.status(404).json({ message: "Danh sách khách hàng trống" });
+    }
+
+    return res.status(200).json({ data: customers });
+  } catch (error: any) {
+    console.log(error);
+    return res.status(500).json({ message: error.message });
+  }
+};
