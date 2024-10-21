@@ -3,7 +3,6 @@ import { IDoctor } from "./Doctor";
 
 export interface IDoctorSchedule extends Document {
   doctorId: IDoctor; // ID của bác sĩ
-  scheduleId: string; // ID của lịch trình
   title?: string; // Tiêu đề
   start: Date; // Thời gian bắt đầu
   end: Date; // Thời gian kết thúc
