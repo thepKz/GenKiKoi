@@ -51,7 +51,7 @@ const Records = () => {
       width: 150,
       render: (_text: any, record: any) => (
         <div className="text-center">
-          <Link to={`/doctor/customers/345/fishes`}>
+          <Link to={`/doctor/customers/6711fdbea11c8327da32e5e5/fishes`}>
             <Button type="primary">Xem chi tiết</Button>
           </Link>
         </div>

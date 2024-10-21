@@ -7,6 +7,7 @@ const initialState = {
   email: "",
   role: "",
   token: "",
+  adminId: "",
 };
 
 const authSlice = createSlice({

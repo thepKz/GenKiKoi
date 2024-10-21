@@ -2,6 +2,7 @@ import Appointments from "./Appointments";
 import CreateRecord from "./CreateRecord";
 import DoctorCalendar from "./DoctorCalendar";
 import Feedback from "./Feedback";
+import InspectionRecord from "./InspectionRecord";
 import ListFishes from "./ListFishes";
 import ListFishRecords from "./ListFishRecords";
 import Profile from "./Profile";
@@ -18,4 +19,5 @@ export {
   ListFishRecords,
   Profile,
   Feedback,
+  InspectionRecord,
 };

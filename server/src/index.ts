@@ -20,6 +20,7 @@ import {
   pondRoutes,
   fishRoutes,
 } from "./routes";
+import { MedicalRecord } from "./models";
 
 const app = express();
 
@@ -70,6 +71,42 @@ app.use("/api/payments", paymentRoutes);
 
 // Export the app for testing purposes
 export { app };
+
+// Add medical record
+const addMedicalRecord = async () => {
+  try {
+    const newMedicalRecord = await MedicalRecord.create({
+      doctorId: "67015e789a7dce19f9fb0015",
+      customerId: "6711fdbea11c8327da32e5e5",
+      fishId: "6710abfd9145638f0eb79dde",
+      examType: "Khám bệnh",
+      serviceName: "Siêu âm",
+      diagnosis: "Bệnh viêm da",
+      treatment: "Sử dụng thuốc kháng sinh",
+      medicines: [
+        {
+          name: "Thuốc A",
+          quantity: 2,
+        },
+        {
+          name: "Thuốc B",
+          quantity: 1,
+        },
+      ],
+      images: [
+        "https://placehold.co/150x150?text=Demo1",
+        "https://placehold.co/150x150?text=Demo2",
+        "https://placehold.co/150x150?text=Demo3",
+        "https://placehold.co/150x150?text=Demo4",
+      ],
+    });
+    console.log(newMedicalRecord);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+// addMedicalRecord()
 
 // Only start the server if this file is run directly (not imported as a module)
 if (require.main === module) {
