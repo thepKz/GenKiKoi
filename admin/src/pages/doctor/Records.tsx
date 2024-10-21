@@ -7,7 +7,8 @@ import { useEffect, useState } from "react";
 import { handleAPI } from "../../apis/handleAPI";
 
 const Records = () => {
-  const [customers, setCustomers] = useState([]);
+  const [medicalCustomers, setMedicalCustomers] = useState([]);
+  const [pondCustomers, setPondCustomers] = useState([]);
 
   useEffect(() => {
     const getCustomers = async () => {
@@ -15,13 +16,25 @@ const Records = () => {
         const api = `/api/medicalRecords/customers`;
         const res = await handleAPI(api, undefined, "GET");
 
-        setCustomers(res.data);
+        setMedicalCustomers(res.data);
       } catch (error) {}
     };
     getCustomers();
   }, []);
 
-  const columns: TableProps["columns"] = [
+  useEffect(() => {
+    const getCustomers = async () => {
+      try {
+        const api = `/api/ponds/customers`;
+        const res = await handleAPI(api, undefined, "GET");
+
+        setPondCustomers(res.data);
+      } catch (error) {}
+    };
+    getCustomers();
+  }, []);
+
+  const medicalColumn: TableProps["columns"] = [
     {
       key: "#",
       title: "#",
@@ -70,13 +83,52 @@ const Records = () => {
     },
   ];
 
-  const demoData = [
+  const pondColumn: TableProps["columns"] = [
     {
-      id: 1,
-      fullName: "Đỗ Quang Dũng",
-      gender: "nam",
-      phoneNumber: "0352195876",
-      numberAppointment: 5,
+      key: "#",
+      title: "#",
+      dataIndex: "key",
+      width: 70,
+      render: (_text, _record, index) => index + 1,
+    },
+    {
+      key: "Tên khách hàng",
+      title: "Tên khách hàng",
+      dataIndex: "customerName",
+      width: 220,
+    },
+    {
+      key: "Giới tính",
+      title: "Giới tính",
+      dataIndex: "gender",
+      width: 150,
+      render: (text) => (
+        <Tag color={getValue(text)}>{text === "nam" ? "Nam" : "Nữ"}</Tag>
+      ),
+    },
+    {
+      key: "Số điện thoại",
+      title: "Số điện thoại",
+      dataIndex: "phoneNumber",
+      width: 150,
+    },
+    {
+      key: "Số hồ",
+      title: "Số hồ",
+      dataIndex: "numberPond",
+      width: 150,
+    },
+    {
+      key: "Chi tiết",
+      title: "Chi tiết",
+      width: 150,
+      render: (_text: any, record: any) => (
+        <div className="text-center">
+          <Link to={`/doctor/customers/${record._id}/ponds`}>
+            <Button type="primary">Xem chi tiết</Button>
+          </Link>
+        </div>
+      ),
     },
   ];
 
@@ -87,8 +139,8 @@ const Records = () => {
       children: (
         <div className="doctor-view">
           <CustomTable
-            columns={columns}
-            dataSource={customers}
+            columns={medicalColumn}
+            dataSource={medicalCustomers}
             scroll="calc(100vh - 410px)"
             className="staff-table"
           />
@@ -101,8 +153,8 @@ const Records = () => {
       children: (
         <div className="doctor-view">
           <CustomTable
-            columns={columns}
-            dataSource={demoData}
+            columns={pondColumn}
+            dataSource={pondCustomers}
             scroll="calc(100vh - 410px)"
             className="staff-table"
           />

@@ -113,6 +113,7 @@ export const getPondByID = async (req: Request, res: Response) => {
       date: pond.createdAt,
       images: pond.images,
       ph: pond.ph,
+      status: pond.status,
       ammoniaLevel: pond.ammoniaLevel,
       nitrateLevel: pond.nitrateLevel,
       oxygenLevel: pond.oxygenLevel,
@@ -120,11 +121,79 @@ export const getPondByID = async (req: Request, res: Response) => {
       cleanliness: pond.cleanliness,
       filtrationSystem: pond.filtrationSystem,
       pondSize: pond.pondSize,
+      treatment: pond.treatment,
       notes: pond.notes,
       diagnosis: pond.diagnosis,
     };
     return res.status(200).json({ data: formattedPond });
   } catch (error: any) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+export const getAllCustomers = async (req: Request, res: Response) => {
+  try {
+    const customers = await Pond.aggregate([
+      {
+        $lookup: {
+          from: "customers", // Tên collection của khách hàng
+          localField: "customerId", // Trường nối từ bảng hiện tại (ponds)
+          foreignField: "_id", // Trường nối từ bảng khách hàng
+          as: "customer", // Đặt tên cho mảng chứa dữ liệu khách hàng
+        },
+      },
+      { $unwind: "$customer" }, // Tách mảng customer thành object đơn
+      {
+        $lookup: {
+          from: "users", // Tên collection của user
+          localField: "customer.userId",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      { $unwind: "$user" }, // Tách mảng user thành object đơn
+      {
+        $group: {
+          _id: "$customer._id", // Gom nhóm theo ID khách hàng
+          customerName: { $first: "$user.fullName" }, // Lấy tên khách hàng
+          gender: { $first: "$user.gender" }, // Lấy giới tính của khách hàng
+          phoneNumber: { $first: "$user.phoneNumber" }, // Lấy số điện thoại của khách hàng
+          numberPond: { $sum: 1 }, // Đếm số lượng hồ cá
+        },
+      },
+    ]);
+
+    if (!customers || customers.length === 0) {
+      return res.status(404).json({ message: "Danh sách khách hàng trống" });
+    }
+
+    return res.status(200).json({ data: customers });
+  } catch (error: any) {
+    console.log(error);
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+export const getAllPondsByCustomerId = async (req: Request, res: Response) => {
+  try {
+    const customerId = req.params.customerId;
+    const ponds = await Pond.find({ customerId });
+
+    if (!ponds) {
+      return res.status(404).json({ message: "Danh sách trống" });
+    }
+
+    const formattedPond = ponds.map((pond) => ({
+      recordId: pond._id,
+      pondSize: pond.pondSize,
+      status: pond.status,
+      filtrationSystem: pond.filtrationSystem,
+      notes: pond.notes,
+    }));
+
+    return res.status(200).json({ data: formattedPond });
+  } catch (error: any) {
+    console.log(error);
     return res.status(500).json({ message: error.message });
   }
 };
