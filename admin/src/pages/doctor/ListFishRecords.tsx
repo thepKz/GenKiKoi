@@ -103,7 +103,7 @@ const ListFishRecords = () => {
           },
           {
             title: (
-              <Link to={"/doctor/customers/345/fishes"}>Danh sách cá</Link>
+              <Link to={`/doctor/customers/${customerId}/fishes`}>Danh sách cá</Link>
             ),
           },
           {

@@ -17,6 +17,8 @@ import { handleAPI } from "../../apis/handleAPI";
 
 const RecordDetail = () => {
   const { pathname } = useLocation();
+  const customerId = pathname.split("/")[3];
+  const fishId = pathname.split("/")[5];
   const medicalRecordId = pathname.split("/")[7];
 
   const [medicalRecord, setMedicalRecord] = useState<any>(null);
@@ -66,12 +68,16 @@ const RecordDetail = () => {
           },
           {
             title: (
-              <Link to={"/doctor/customers/345/fishes"}>Danh sách cá</Link>
+              <Link to={`/doctor/customers/${customerId}/fishes`}>
+                Danh sách cá
+              </Link>
             ),
           },
           {
             title: (
-              <Link to={"/doctor/customers/345/fishes/453/records"}>
+              <Link
+                to={`/doctor/customers/${customerId}/fishes/${fishId}/records`}
+              >
                 Danh sách hồ sơ bệnh án
               </Link>
             ),

@@ -3,8 +3,24 @@ import { CustomTable } from "../../share";
 import { getValue } from "../../utils";
 import { HeaderPage } from "../../components";
 import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { handleAPI } from "../../apis/handleAPI";
 
 const Records = () => {
+  const [customers, setCustomers] = useState([]);
+
+  useEffect(() => {
+    const getCustomers = async () => {
+      try {
+        const api = `/api/medicalRecords/customers`;
+        const res = await handleAPI(api, undefined, "GET");
+
+        setCustomers(res.data);
+      } catch (error) {}
+    };
+    getCustomers();
+  }, []);
+
   const columns: TableProps["columns"] = [
     {
       key: "#",
@@ -16,7 +32,7 @@ const Records = () => {
     {
       key: "Tên khách hàng",
       title: "Tên khách hàng",
-      dataIndex: "fullName",
+      dataIndex: "customerName",
       width: 220,
     },
     {
@@ -41,17 +57,12 @@ const Records = () => {
       width: 150,
     },
     {
-      key: "Ghi chú",
-      title: "Ghi chú",
-      dataIndex: "notes",
-    },
-    {
       key: "Chi tiết",
       title: "Chi tiết",
       width: 150,
       render: (_text: any, record: any) => (
         <div className="text-center">
-          <Link to={`/doctor/customers/6711fdbea11c8327da32e5e5/fishes`}>
+          <Link to={`/doctor/customers/${record._id}/fishes`}>
             <Button type="primary">Xem chi tiết</Button>
           </Link>
         </div>
@@ -65,7 +76,6 @@ const Records = () => {
       fullName: "Đỗ Quang Dũng",
       gender: "nam",
       phoneNumber: "0352195876",
-      notes: "",
       numberAppointment: 5,
     },
   ];
@@ -78,7 +88,7 @@ const Records = () => {
         <div className="doctor-view">
           <CustomTable
             columns={columns}
-            dataSource={demoData}
+            dataSource={customers}
             scroll="calc(100vh - 410px)"
             className="staff-table"
           />

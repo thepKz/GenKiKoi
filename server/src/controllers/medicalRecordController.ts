@@ -159,15 +159,37 @@ export const createMedicalRecord = async (req: Request, res: Response) => {
 
 export const getAllCustomers = async (req: Request, res: Response) => {
   try {
-    const customers = await MedicalRecord.find().populate({
-      path: "customerId",
-      select: "userId",
-      populate: {
-        path: "userId",
-        select: "username phoneNumber gender",
+    const customers = await MedicalRecord.aggregate([
+      {
+        $lookup: {
+          from: "customers", // Tên collection của khách hàng
+          localField: "customerId", // Trường nối từ bảng hiện tại (ví dụ, fish treatment hoặc appointment)
+          foreignField: "_id", // Trường nối từ bảng khách hàng
+          as: "customer", // Đặt tên cho mảng chứa dữ liệu khách hàng
+        },
       },
-    });
-    if (!customers) {
+      { $unwind: "$customer" }, // Tách mảng customer thành object đơn
+      {
+        $lookup: {
+          from: "users", // Tên collection của user
+          localField: "customer.userId",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      { $unwind: "$user" }, // Tách mảng user thành object đơn
+      {
+        $group: {
+          _id: "$customer._id", // Gom nhóm theo ID khách hàng
+          customerName: { $first: "$user.fullName" }, // Lấy tên của khách hàng
+          gender: { $first: "$user.gender" }, // Lấy giới tính của khách hàng
+          phoneNumber: { $first: "$user.phoneNumber" }, // Lấy số điện thoại của khách hàng
+          numberAppointment: { $sum: 1 }, // Đếm số lượng cuộc hẹn
+        },
+      },
+    ]);
+
+    if (!customers || customers.length === 0) {
       return res.status(404).json({ message: "Danh sách khách hàng trống" });
     }
 

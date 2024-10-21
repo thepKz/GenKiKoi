@@ -142,13 +142,13 @@ const Profile = () => {
     const api = `/api/auth/check-${field}`;
     try {
       const res: any = await handleAPI(api, { [field]: value }, "POST");
+
       if (res.exists && res.userId !== auth.id) {
         return true;
       }
       return false;
     } catch (error) {
       console.log(error);
-      return false;
     }
   };
 
