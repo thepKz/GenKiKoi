@@ -11,5 +11,5 @@ const router = express.Router();
 router.get("/", authMiddleware, getAllDoctorSchedules);
 
 // Lấy lịch trình bác sĩ theo userId
-router.get("/users/:userId/", getScheduleByUserId);
+router.get("/user/:userId/", getScheduleByUserId);
 export default router;

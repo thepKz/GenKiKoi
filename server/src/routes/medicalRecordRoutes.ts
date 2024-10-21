@@ -12,7 +12,6 @@ const router = express.Router();
 
 // Lấy tất cả bệnh án
 router.get("/", authMiddleware, getAllMedicalRecords);
-
 // Tạo bệnh án mới
 router.post("/", authMiddleware, createMedicalRecord);
 
