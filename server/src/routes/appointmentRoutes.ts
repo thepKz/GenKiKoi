@@ -17,8 +17,6 @@ router.get(
   getAppointmentsByCustomerId
 );
 router.post("/customer/:customerId", authMiddleware, createNewAppointment);
-
-//
 router.patch(
   "/completed/:appointmentId",
   authMiddleware,

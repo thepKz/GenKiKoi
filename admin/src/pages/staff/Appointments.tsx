@@ -20,9 +20,9 @@ const Appointments = () => {
       dataIndex: "serviceName",
     },
     {
-      key: "Loại khám",
-      title: "Loại khám",
-      dataIndex: "typeVisit",
+      key: "Bác sĩ",
+      title: "Bác sĩ",
+      dataIndex: "doctorFullName",
     },
     {
       key: "Ngày hẹn",
@@ -35,6 +35,11 @@ const Appointments = () => {
       title: "Trạng thái",
       dataIndex: "status",
       render: (status) => <Tag color={getValue(status)}>{status}</Tag>,
+    },
+    {
+      key: "Notes",
+      title: "Notes",
+      dataIndex: "notes",
     },
     {
       key: "Chi tiết",
@@ -53,7 +58,8 @@ const Appointments = () => {
     {
       id: 1,
       serviceName: "Tiêm phòng",
-      typeVisit: "Tái khám",
+      doctorFullName: "Đỗ Quang Dũng",
+      notes: "",
       appointmentDate: "2024-10-16T15:18:26.465+00:00",
       status: "Đang chờ xử lý",
     },
