@@ -9,12 +9,15 @@ import { authMiddleware } from "../middleware";
 
 const router = express.Router();
 
-router.get("/all", authMiddleware, getAllMedicalRecords);
-
 router.get("/:medicalRecordId", authMiddleware, getMedicalRecordById);
 
+// Lấy tất cả bệnh án
+router.get("/", authMiddleware, getAllMedicalRecords);
+
+// Lấy bệnh án theo ID của cá
 router.get("/fishes/:fishId", authMiddleware, getMedicalRecordByFishId);
 
+// Tạo bệnh án mới
 router.post("/", authMiddleware, createMedicalRecord);
 
 export default router;

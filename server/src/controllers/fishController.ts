@@ -26,11 +26,10 @@ export const getAllFishesByCustomerId = async (req: Request, res: Response) => {
     console.log(error);
     return res.status(500).json({ message: error.message });
   }
-};
 
 export const getFishByPhoneNumber = async (req: Request, res: Response) => {
   try {
-    const { phoneNumber } = req.params;
+    const phoneNumber = req.params.phoneNumber;
     const user = await User.findOne({ phoneNumber });
 
     if (!user) {
@@ -56,4 +55,4 @@ export const getFishByPhoneNumber = async (req: Request, res: Response) => {
   } catch (error: any) {
     return res.status(500).json({ message: error.message });
   }
-};
+}

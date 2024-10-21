@@ -9,8 +9,7 @@ import userRoutes from "./userRoutes";
 import medicalRecordRoutes from "./medicalRecordRoutes";
 import pondRoutes from "./pondRoutes";
 import fishRoutes from "./fishRoutes";
-import managerRoutes from "./managerRoutes";
-
+import doctorScheduleRoutes from "./doctorScheduleRoutes";
 export {
   appointmentRoutes,
   authRoutes,
@@ -22,6 +21,6 @@ export {
   medicalRecordRoutes,
   pondRoutes,
   fishRoutes,
+  doctorScheduleRoutes,
   paymentRoutes,
-  managerRoutes
 };
