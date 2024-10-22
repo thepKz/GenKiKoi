@@ -7,9 +7,9 @@ interface IFish {
   description?: string;
   size: number;
   age: number;
-  gender?: string;
   photoUrl?: string;
   healthStatus?: string;
+  gender: "đực" | "cái";
 }
 
 const FishSchema = new mongoose.Schema<IFish>(
