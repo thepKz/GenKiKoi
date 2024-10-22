@@ -1,4 +1,5 @@
 import {
+  AutoComplete,
   Button,
   Card,
   Col,
@@ -13,12 +14,15 @@ import {
   Spin,
 } from "antd";
 
+import axios from 'axios';
+import { debounce } from 'lodash'; // Thêm import này
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import VietNamProvinces from "../../data";
 import { handleAPI } from "../apis/handleAPI";
+import Map from '../components/Map';
 import { CustomerData } from "../models/DataModels";
 import { CustomCalendar } from "../share";
-import { useSelector } from "react-redux";
 import { IAuth } from "../types";
 
 const { TextArea } = Input;
@@ -65,6 +69,14 @@ const Booking = () => {
   const [service, setService] = useState<any>(null);
   const [price, setPrice] = useState<number>(0);
   const [totalPrice, setTotalPrice] = useState<number>(0);
+
+  const [addressOptions, setAddressOptions] = useState<{ value: string; label: string }[]>([]);
+  const [origin, setOrigin] = useState<L.LatLngExpression | null>(null);
+  const [destination] = useState<L.LatLngExpression>([10.8415, 106.8099]); // Tọa độ cố định của Genkikoi
+  const [route, setRoute] = useState<L.LatLngExpression[] | null>(null);
+  const [distance, setDistance] = useState<string | null>(null);
+  const [duration, setDuration] = useState<string | null>(null);
+  const [movingPrice, setMovingPrice] = useState<number>(0);
 
   useEffect(() => {
     const res = VietNamProvinces.map((item: any) => ({
@@ -166,6 +178,29 @@ const Booking = () => {
     setTotalPrice((prevPrice) => prevPrice + price);
   }, [price]);
 
+  // Thêm useEffect mới để tính toán movingPrice
+  useEffect(() => {
+    if (distance) {
+      const distanceInKm = parseFloat(distance);
+      const basePrice = 15000; // Giá cơ bản cho 1km đầu tiên
+      const additionalPrice = 10000; // Giá cho mỗi km tiếp theo
+      let calculatedPrice = 0;
+
+      if (distanceInKm <= 1) {
+        calculatedPrice = basePrice;
+      } else {
+        calculatedPrice = basePrice + (distanceInKm - 1) * additionalPrice;
+      }
+
+      setMovingPrice(Math.round(calculatedPrice / 1000) * 1000); // Làm tròn đến hàng nghìn
+    }
+  }, [distance]);
+
+  // Cập nhật useEffect cho tổng giá
+  useEffect(() => {
+    setTotalPrice(price + movingPrice);
+  }, [price, movingPrice]);
+
   const handleServiceChange = (value: string) => {
     form.setFieldValue("typeOfConsulting", undefined);
     const selectedService: any = services.find((service: any) => service.serviceName === value);
@@ -221,6 +256,37 @@ const Booking = () => {
       message.error(error.message);
     } finally {
       setIsLoadingForm(false);
+    }
+  };
+
+  // Cập nhật hàm handleAddressSearch với debounce
+  const handleAddressSearch = debounce(async (value: string) => {
+    if (value.length > 2) {
+      try {
+        const response = await axios.get(`/api/distance/autocomplete?query=${value}`);
+        const options = response.data.map((item: any) => ({
+          value: item.display_name,
+          label: item.display_name,
+        }));
+        setAddressOptions(options);
+      } catch (error) {
+        console.error('Error fetching address suggestions:', error);
+      }
+    }
+  }, 300);
+
+  // Cập nhật hàm handleAddressSelect
+  const handleAddressSelect = async (value: string) => {
+    try {
+      const response = await axios.get(`/api/distance/calculate-route?address=${value}`);
+      const { origin, distance, duration, route } = response.data;
+      setOrigin([origin.lat, origin.lon]);
+      setRoute(route);
+      setDistance(distance);
+      setDuration(duration);
+      form.setFieldsValue({ address: value });
+    } catch (error) {
+      console.error('Error calculating route:', error);
     }
   };
 
@@ -312,6 +378,16 @@ const Booking = () => {
                           style: "currency",
                           currency: "VND",
                         }).format(price)}
+                      </span>
+                    </div>
+                    <Divider style={{ borderColor: "white" }} />
+                    <div className="flex items-center justify-between text-white">
+                      <span>Phí di chuyển:</span>
+                      <span>
+                        {new Intl.NumberFormat("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        }).format(movingPrice)}
                       </span>
                     </div>
                     <Divider style={{ borderColor: "white" }} />
@@ -475,9 +551,11 @@ const Booking = () => {
                         name="address"
                         label="Địa chỉ"
                       >
-                        <Input
-                          placeholder="Địa chỉ"
-                          defaultValue={profile?.detailAddress}
+                        <AutoComplete
+                          options={addressOptions}
+                          onSearch={handleAddressSearch}
+                          onSelect={handleAddressSelect}
+                          placeholder="Nhập địa chỉ"
                         />
                       </Form.Item>
                     </Col>
@@ -495,6 +573,19 @@ const Booking = () => {
                           rows={4}
                         />
                       </Form.Item>
+                    </Col>
+                  </Row>
+                  {distance && duration && (
+                    <Row>
+                      <Col span={24}>
+                        <p>Khoảng cách: {distance}</p>
+                        <p>Thời gian ước tính: {duration}</p>
+                      </Col>
+                    </Row>
+                  )}
+                  <Row>
+                    <Col span={24}>
+                      <Map origin={origin} destination={destination} route={route} />
                     </Col>
                   </Row>
                 </div>
