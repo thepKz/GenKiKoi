@@ -246,6 +246,7 @@ const Booking = () => {
       const res = await handleAPI(api, undefined, "GET");
       setDoctorSchedules(res.data);
       setSlot(null);
+      setSlotTimes([]);
     } catch (error: any) {
       console.log(error);
       message.error(error.message);
@@ -401,11 +402,13 @@ const Booking = () => {
                         >
                           <Card
                             style={{ width: 70, textAlign: "center" }}
-                            onClick={() => isDateSelected && setSlot(slotTime._id)}
+                            onClick={() =>
+                              isDateSelected && !slotTime.isBooked && setSlot(slotTime._id)
+                            }
                             className={
                               slot === slotTime._id
                                 ? "bg-green-dark text-white"
-                                : isDateSelected
+                                : !slotTime.isBooked
                                   ? "hover:bg-green-dark hover:text-white"
                                   : "cursor-not-allowed opacity-50"
                             }
