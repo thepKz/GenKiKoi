@@ -29,6 +29,9 @@ import WaterQuality from "../pages/services/WaterQuality";
 import { addAuth } from "../redux/reducers/authReducer";
 import { IAuth } from "../types";
 import DoctorDetail from "../pages/DoctorDetail";
+import TermsOfService from "../pages/TermsOfService";
+import ServicePriceTable from "../pages/services/ServicePriceTable";
+import Feedback from "../pages/Feedback";
 
 const MainRouter = () => {
   const auth: IAuth = useSelector((state: any) => state.authReducer.data);
@@ -88,14 +91,27 @@ const MainRouter = () => {
               path="water-quality"
               element={<WaterQuality />}
             />
+            <Route
+              path="service-price-table"
+              element={<ServicePriceTable />}
+            />
+            <Route
+            path="feedback"
+            element={<Feedback />}
+          />
           </Route>
           <Route
             path="faq"
             element={<FAQ />}
           />
           <Route
+            path="terms-of-service"
+            element={<TermsOfService />}
+          />
+          
+          <Route
             path="booking"
-            element={auth.token && auth.isVerified ? <Booking /> : <Navigate to={"/"} />}
+            element={auth.token && auth.isVerified ? <Booking /> : <Navigate to={"/sign-in"} />}
           />
           <Route
             path="unauthorized"
