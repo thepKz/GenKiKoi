@@ -53,16 +53,14 @@ const PondDetail = () => {
             ),
           },
           {
-            title: "Hồ sơ bệnh án",
+            title: (
+              <Link to={`/doctor/customers/${customerId}/ponds`}>
+                Danh sách hồ cá
+              </Link>
+            ),
           },
           {
-            title: <Link to={"/doctor/customers/fishes"}>Danh sách cá</Link>,
-          },
-          {
-            title: "67069dv2b5759828c4f9e611",
-          },
-          {
-            title: "67sn43j",
+            title: "Chi tiết hồ cá",
           },
         ]}
       />

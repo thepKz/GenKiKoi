@@ -41,10 +41,7 @@ const ListPonds = () => {
             ),
           },
           {
-            title: <Link to="/doctor/customers">Danh sách hồ cá</Link>,
-          },
-          {
-            title: "Danh sách cá",
+            title: "Danh sách hồ cá",
           },
         ]}
       />
