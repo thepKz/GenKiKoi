@@ -26,6 +26,7 @@ const userSchema = new mongoose.Schema<IUser>(
     gender: {
       type: String,
       enum: ["nam", "nữ"],
+      default: "nam",
     },
   },
   { timestamps: true }

@@ -3,8 +3,8 @@ import { IUser } from "./User";
 
 interface IStaff {
   userId: IUser;
-  position?: string;
-  workShift: "Morning" | "Afternoon" | "Night";
+  position?: "Hỗ trợ khách hàng" | "Tiếp tân" | "Trợ lý" | "Thu ngân";
+  workShift: "Sáng" | "Chiều";
   isAvailable: boolean;
   startDate: Date;
 }
@@ -22,7 +22,7 @@ const StaffSchema = new mongoose.Schema<IStaff>(
     },
     workShift: {
       type: String,
-      enum: ["Morning", "Afternoon", "Night"],
+      enum: ["Sáng", "Chiều"],
       required: true,
     },
     isAvailable: { type: Boolean, default: true },
