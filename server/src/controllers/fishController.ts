@@ -60,36 +60,24 @@ export const getFishByPhoneNumber = async (req: Request, res: Response) => {
 
 export const updateFish = async (req: Request, res: Response) => {
   try {
-    const fishId = req.params.id;
-    const { description, size, age, photoUrl, healthStatus, gender } = req.body;
-    if (!description || !size || !age || !healthStatus || !gender) {
-      return res
-        .status(400)
-        .json({ message: "Vui lòng điền đầy đủ thông tin" });
-    }
-    const fish = await Fish.findByIdAndUpdate(fishId, {
-      description,
-      size,
-      age,
-      photoUrl,
-      healthStatus,
-      gender,
+    const fishId = req.params.fishId;
+    const { description, size, age, photoUrl, gender } = req.body;
+
+    const fish = await Fish.findByIdAndUpdate(
+      fishId,
+      {
+        description,
+        size,
+        age,
+        photoUrl,
+        gender,
+      },
+      { new: true, runValidators: true }
+    );
+    return res.status(200).json({
+      message: "Cập nhật thông tin cá thành công",
+      data: fish,
     });
-    const formattedFish = {
-      _id: fish?._id,
-      size: fish?.size,
-      age: fish?.age,
-      photoUrl: fish?.photoUrl,
-      healthStatus: fish?.healthStatus,
-      gender: fish?.gender,
-      description: fish?.description,
-    };
-    return res
-      .status(200)
-      .json({
-        message: "Cập nhật thông tin cá thành công",
-        data: formattedFish,
-      });
   } catch (error: any) {
     return res.status(500).json({ message: error.message });
   }

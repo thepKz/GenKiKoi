@@ -8,7 +8,6 @@ interface IFish {
   size: number;
   age: number;
   photoUrl?: string;
-  healthStatus?: string;
   gender: "đực" | "cái";
 }
 
@@ -33,10 +32,6 @@ const FishSchema = new mongoose.Schema<IFish>(
     },
     photoUrl: {
       type: String,
-    },
-    healthStatus: {
-      type: String,
-      enum: ["Tốt", "Xấu", "Cần theo dõi", "Chưa xác định"],
     },
   },
   {

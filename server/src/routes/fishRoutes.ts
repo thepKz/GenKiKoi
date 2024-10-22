@@ -13,9 +13,8 @@ router.get("/", authMiddleware, getAllFish);
 
 router.get("/:customerId", authMiddleware, getAllFishesByCustomerId);
 
+router.patch("/:fishId", authMiddleware, updateFish);
+
 router.get("/customers/:phoneNumber", authMiddleware, getFishByPhoneNumber);
-
-
-router.patch("/:id", authMiddleware, updateFish);
 
 export default router;
