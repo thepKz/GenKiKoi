@@ -8,10 +8,10 @@ export const getAllCustomers = async (req: Request, res: Response) => {
   );
   const formattedCustomers = customers.map((customer) => ({
     _id: customer._id,
-    fullName: customer?.userId.fullName,
-    email: customer?.userId.email,
-    phoneNumber: customer?.userId.phoneNumber,
-    gender: customer?.userId.gender,
+    fullName: customer?.userId?.fullName,
+    email: customer?.userId?.email,
+    phoneNumber: customer?.userId?.phoneNumber,
+    gender: customer?.userId?.gender,
   }));
   res.status(200).json(formattedCustomers);
 };
