@@ -30,19 +30,46 @@ export const getScheduleByDoctorId = async (req: Request, res: Response) => {
     if (!schedules) {
       return res.status(404).json({ message: "Không tìm thấy lịch trình" });
     }
-
-    const formatSchedule = schedules.map((schedule) => ({
-      id: schedule._id,
-      title: schedule.title,
-      start: schedule.start,
-      end: schedule.end,
-      description: schedule.description,
-    }));
-
-    return res.status(200).json({ data: formatSchedule });
+    return res.status(200).json({ data: schedules });
   } catch (error: any) {
     return res.status(500).json({
       message: "Đã xảy ra lỗi khi lấy lịch trình",
+      error: error.message,
+    });
+  }
+};
+
+export const getSlotsByDoctorAndDate = async (req: Request, res: Response) => {
+  const { doctorId } = req.params;
+  const { date } = req.query;
+
+  if (!date || typeof date !== "string") {
+    return res.status(400).json({ message: "Ngày không hợp lệ" });
+  }
+
+  try {
+    const startOfDay = new Date(date);
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date(date);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    const schedule = await DoctorSchedule.findOne({
+      doctorId,
+      start: { $gte: startOfDay, $lt: endOfDay },
+    });
+
+    if (!schedule) {
+      return res
+        .status(404)
+        .json({ message: "Không tìm thấy lịch làm việc cho ngày này" });
+    }
+
+    return res.status(200).json({ data: schedule.slots });
+  } catch (error: any) {
+    console.log(error);
+    return res.status(500).json({
+      message: "Đã xảy ra lỗi khi lấy slots",
       error: error.message,
     });
   }

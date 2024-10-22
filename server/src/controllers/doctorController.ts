@@ -327,10 +327,8 @@ export const getScheduleById = async (req: Request, res: Response) => {
 
     const formatSchedule = schedules.map((schedule) => ({
       id: schedule._id,
-      title: schedule.title,
       start: schedule.start,
       end: schedule.end,
-      description: schedule.description,
     }));
 
     return res.status(200).json({ data: formatSchedule });

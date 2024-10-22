@@ -24,17 +24,17 @@ import dayjs from "dayjs";
 
 const { TextArea } = Input;
 
-const demoSlots = [
-  { id: 1, time: "8:00" },
-  { id: 2, time: "9:00" },
-  { id: 3, time: "10:00" },
-  { id: 4, time: "11:00" },
-  { id: 5, time: "12:00" },
-  { id: 6, time: "13:00" },
-  { id: 7, time: "14:00" },
-  { id: 8, time: "15:00" },
-  { id: 9, time: "16:00" },
-];
+// const demoSlots = [
+//   { id: 1, time: "8:00" },
+//   { id: 2, time: "9:00" },
+//   { id: 3, time: "10:00" },
+//   { id: 4, time: "11:00" },
+//   { id: 5, time: "12:00" },
+//   { id: 6, time: "13:00" },
+//   { id: 7, time: "14:00" },
+//   { id: 8, time: "15:00" },
+//   { id: 9, time: "16:00" },
+// ];
 
 const Booking = () => {
   useEffect(() => {
@@ -69,6 +69,8 @@ const Booking = () => {
 
   const [doctorSchedules, setDoctorSchedules] = useState<any[]>([]);
   const [isDateSelected, setIsDateSelected] = useState(false);
+
+  const [slotTimes, setSlotTimes] = useState<any>([]);
 
   useEffect(() => {
     const res = VietNamProvinces.map((item: any) => ({
@@ -207,7 +209,7 @@ const Booking = () => {
       }
 
       if (slot) {
-        values.slotTime = demoSlots[slot - 1].time;
+        values.slotTime = slotTimes[slot - 1].slotTime;
       }
 
       const appointmentRes: any = await handleAPI(appointmentApi, values, "POST");
@@ -249,6 +251,23 @@ const Booking = () => {
       message.error(error.message);
     }
   };
+
+  useEffect(() => {
+    if (doctorSchedules[0]?.doctorId && date) {
+      const getSlots = async () => {
+        const doctorId = doctorSchedules[0].doctorId;
+        try {
+          const api = `/api/doctorSchedules/${doctorId}/slots?date=${date}`;
+          const res = await handleAPI(api, undefined, "GET");
+          setSlotTimes(res.data);
+        } catch (error: any) {
+          console.log(error);
+          message.error(error.message);
+        }
+      };
+      getSlots();
+    }
+  }, [doctorSchedules, date]);
 
   if (isLoading) {
     return (
@@ -369,9 +388,9 @@ const Booking = () => {
                     className="mt-5"
                   >
                     <div className="flex flex-wrap gap-4">
-                      {demoSlots.map((slotTime) => (
+                      {slotTimes.map((slotTime: any) => (
                         <ConfigProvider
-                          key={slotTime.id}
+                          key={slotTime._id}
                           theme={{
                             components: {
                               Card: {
@@ -382,16 +401,16 @@ const Booking = () => {
                         >
                           <Card
                             style={{ width: 70, textAlign: "center" }}
-                            onClick={() => isDateSelected && setSlot(slotTime.id)}
+                            onClick={() => isDateSelected && setSlot(slotTime._id)}
                             className={
-                              slot === slotTime.id
+                              slot === slotTime._id
                                 ? "bg-green-dark text-white"
                                 : isDateSelected
                                   ? "hover:bg-green-dark hover:text-white"
                                   : "cursor-not-allowed opacity-50"
                             }
                           >
-                            {slotTime.time}
+                            {slotTime.slotTime}
                           </Card>
                         </ConfigProvider>
                       ))}

@@ -21,7 +21,7 @@ import {
   fishRoutes,
   doctorScheduleRoutes,
 } from "./routes";
-import { MedicalRecord } from "./models";
+import { DoctorSchedule, MedicalRecord } from "./models";
 
 const app = express();
 
@@ -109,6 +109,33 @@ const addMedicalRecord = async () => {
 };
 
 // addMedicalRecord()
+
+// Add medical record
+const addDoctorSchedule = async () => {
+  try {
+    const newDoctorSchedule = await DoctorSchedule.create({
+      doctorId: "64a3f1b5e2e5c62d9c5f7b3a", // ID của bác sĩ (thay bằng ID thực tế)
+      start: new Date("2024-10-25T00:00:00Z"), // Ngày bắt đầu (ví dụ: 10/07/2023)
+      end: new Date("2024-10-25T23:59:59Z"), // Ngày kết thúc (cùng ngày)
+      slots: [
+        { slotTime: "8:00", isBooked: false },
+        { slotTime: "9:00", isBooked: false },
+        { slotTime: "10:00", isBooked: false },
+        { slotTime: "11:00", isBooked: false },
+        { slotTime: "12:00", isBooked: false },
+        { slotTime: "13:00", isBooked: false },
+        { slotTime: "14:00", isBooked: false },
+        { slotTime: "15:00", isBooked: false },
+        { slotTime: "16:00", isBooked: false },
+      ],
+    });
+    console.log(newDoctorSchedule)
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+// addDoctorSchedule()
 
 // Only start the server if this file is run directly (not imported as a module)
 if (require.main === module) {
