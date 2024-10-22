@@ -56,7 +56,7 @@ export const getValue = (value: string) => {
 
 export const uploadFile = async (
   file: any,
-  folder: "customers" | "fishes" | "staffs" | "doctors" | "records",
+  folder: "customers" | "fishes" | "staffs" | "doctors" | "records" | "ponds",
 ) => {
   const compressedFile: any = await handleResize(file);
 

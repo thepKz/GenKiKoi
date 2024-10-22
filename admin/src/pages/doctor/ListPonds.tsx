@@ -26,7 +26,7 @@ const ListPonds = () => {
 
   return (
     <div className="section">
-      <HeaderPage heading="Danh sách hồ" placeholder="Tìm hồ cá" />
+      <HeaderPage heading="Danh sách báo cáo" placeholder="Tìm hồ báo cáo" />
       <Breadcrumb
         separator=">"
         items={[
@@ -41,7 +41,7 @@ const ListPonds = () => {
             ),
           },
           {
-            title: "Danh sách hồ cá",
+            title: "Danh sách báo cáo",
           },
         ]}
       />
@@ -59,7 +59,7 @@ const ListPonds = () => {
               <div className="flex w-full">
                 <div className="flex flex-1 flex-col gap-2">
                   <p>
-                    <span className="font-semibold">Mã hồ sơ: </span>
+                    <span className="font-semibold">Mã báo cáo: </span>
                     {pond.recordId}
                   </p>
                   <p>

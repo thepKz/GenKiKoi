@@ -42,8 +42,8 @@ export const getFishByPhoneNumber = async (req: Request, res: Response) => {
     if (!customer) {
       return res.status(400).json({ message: "Khách hàng không tồn tại" });
     }
-    const fish = await Fish.find({ customerId: customer._id });
-    const formattedFish = fish.map((fish) => {
+    const fishes = await Fish.find({ customerId: customer._id });
+    const formattedFish = fishes.map((fish) => {
       return {
         id: fish._id,
         description: fish.description,

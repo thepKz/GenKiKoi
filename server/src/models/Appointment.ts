@@ -48,7 +48,6 @@ const AppointmentSchema = new mongoose.Schema<IAppointment>(
       required: true,
       default: new Date(),
     },
-
     status: {
       type: String,
       enum: [
@@ -63,7 +62,6 @@ const AppointmentSchema = new mongoose.Schema<IAppointment>(
     reasons: {
       type: String,
     },
-
     notes: {
       type: String,
     },

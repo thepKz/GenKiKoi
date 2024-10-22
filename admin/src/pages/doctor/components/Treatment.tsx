@@ -137,8 +137,6 @@ const Treatment = () => {
     return false; // Ngăn chặn tự động upload
   };
 
-  console.log(fileList);
-
   return (
     <div>
       <ConfigProvider
@@ -235,7 +233,7 @@ const Treatment = () => {
                     fileList={fileList}
                     beforeUpload={beforeUpload}
                     onChange={handleUpload}
-                    maxCount={5}
+                    maxCount={4}
                   >
                     <Button icon={<UploadOutlined />}>Upload</Button>
                   </Upload>

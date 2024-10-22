@@ -55,12 +55,12 @@ const PondDetail = () => {
           {
             title: (
               <Link to={`/doctor/customers/${customerId}/ponds`}>
-                Danh sách hồ cá
+                Danh sách báo cáo
               </Link>
             ),
           },
           {
-            title: "Chi tiết hồ cá",
+            title: "Chi tiết báo cáo",
           },
         ]}
       />
