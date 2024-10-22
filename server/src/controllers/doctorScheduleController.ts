@@ -21,17 +21,11 @@ export const getAllDoctorSchedules = async (req: Request, res: Response) => {
   }
 };
 
-export const getScheduleByUserId = async (req: Request, res: Response) => {
-  const userId = req.params.userId;
+export const getScheduleByDoctorId = async (req: Request, res: Response) => {
+  const doctorId = req.params.doctorId;
 
   try {
-    const doctor = await Doctor.findOne({ userId });
-
-    if (!doctor) {
-      return res.status(404).json({ message: "Không tìm thấy bác sĩ" });
-    }
-
-    const schedules = await DoctorSchedule.find({ doctorId: doctor._id });
+    const schedules = await DoctorSchedule.find({ doctorId });
 
     if (!schedules) {
       return res.status(404).json({ message: "Không tìm thấy lịch trình" });

@@ -1,7 +1,7 @@
 import express from "express";
 import {
   getAllDoctorSchedules,
-  getScheduleByUserId,
+  getScheduleByDoctorId,
 } from "../controllers/doctorScheduleController";
 import { authMiddleware, roleMiddleware } from "../middleware";
 
@@ -11,5 +11,5 @@ const router = express.Router();
 router.get("/", authMiddleware, getAllDoctorSchedules);
 
 // Lấy lịch trình bác sĩ theo userId
-router.get("/user/:userId/", getScheduleByUserId);
+router.get("/:doctorId", authMiddleware, getScheduleByDoctorId);
 export default router;

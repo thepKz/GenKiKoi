@@ -10,13 +10,14 @@ import { authMiddleware } from "../middleware/authMiddleware";
 
 const router = express.Router();
 router.get("/", authMiddleware, getAllAppointments);
-router.get("/doctor/:doctorId", authMiddleware, getAllAppointmentsByDoctorId);
+router.get("/doctors/:doctorId", authMiddleware, getAllAppointmentsByDoctorId);
 router.get(
-  "/customer/:customerId",
+  "/customers/:customerId",
   authMiddleware,
   getAppointmentsByCustomerId
 );
-router.post("/customer/:customerId", authMiddleware, createNewAppointment);
+router.post("/customers/:customerId", authMiddleware, createNewAppointment);
+
 router.patch(
   "/completed/:appointmentId",
   authMiddleware,

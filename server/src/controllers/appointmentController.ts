@@ -54,6 +54,7 @@ export const getAllAppointmentsByDoctorId = async (
         select: "start end",
       })
       .select("_id appointmentDate status notes");
+
     if (!appointments) {
       return res.status(404).json({ message: "Không tìm thấy cuộc hẹn" });
     }
@@ -71,12 +72,13 @@ export const getAllAppointmentsByDoctorId = async (
       notes: appointment.notes,
     }));
 
-    return res.status(200).json({ data: formattedAppointment });
+    return res.status(200).json({ data: appointments });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "Lỗi khi lấy danh sách cuộc hẹn" });
   }
 };
+
 export const updateCompletedAppointment = async (
   req: Request,
   res: Response

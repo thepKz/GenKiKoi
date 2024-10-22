@@ -21,7 +21,7 @@ const DoctorCalendar = () => {
 
   useEffect(() => {
     const getSchedule = async () => {
-      const api = `/api/doctors/${auth.id}/schedules`;
+      const api = `/api/doctorSchedules/${auth.adminId}`;
       try {
         setIsLoading(true);
         const res = await handleAPI(api, undefined, "GET");

@@ -20,6 +20,7 @@ import { CustomerData } from "../models/DataModels";
 import { CustomCalendar } from "../share";
 import { useSelector } from "react-redux";
 import { IAuth } from "../types";
+import dayjs from "dayjs";
 
 const { TextArea } = Input;
 
@@ -65,6 +66,9 @@ const Booking = () => {
   const [service, setService] = useState<any>(null);
   const [price, setPrice] = useState<number>(0);
   const [totalPrice, setTotalPrice] = useState<number>(0);
+
+  const [doctorSchedules, setDoctorSchedules] = useState<any[]>([]);
+  const [isDateSelected, setIsDateSelected] = useState(false);
 
   useEffect(() => {
     const res = VietNamProvinces.map((item: any) => ({
@@ -137,7 +141,6 @@ const Booking = () => {
       try {
         const api = `/api/services/`;
         const res = await handleAPI(api, undefined, "GET");
-        console.log(res.data);
         setServices(res.data);
       } catch (error: any) {
         console.log(error);
@@ -183,10 +186,21 @@ const Booking = () => {
     }
   };
 
+  useEffect(() => {
+    if (date && doctorSchedules.length > 0) {
+      const isDateInSchedule = doctorSchedules.some((schedule) =>
+        dayjs(schedule.start).isSame(date, "day"),
+      );
+      setIsDateSelected(isDateInSchedule);
+    } else {
+      setIsDateSelected(false);
+    }
+  }, [date, doctorSchedules]);
+
   const handleSubmit = async (values: any) => {
     try {
       setIsLoadingForm(true);
-      const appointmentApi = `/api/appointments/${auth.customerId}`;
+      const appointmentApi = `/api/appointments/customers/${auth.customerId}`;
 
       if (date) {
         values.appointmentDate = date;
@@ -221,6 +235,18 @@ const Booking = () => {
       message.error(error.message);
     } finally {
       setIsLoadingForm(false);
+    }
+  };
+
+  const handleDoctorChange = async (doctorId: string) => {
+    try {
+      const api = `/api/doctorSchedules/${doctorId}`;
+      const res = await handleAPI(api, undefined, "GET");
+      setDoctorSchedules(res.data);
+      setSlot(null);
+    } catch (error: any) {
+      console.log(error);
+      message.error(error.message);
     }
   };
 
@@ -286,9 +312,10 @@ const Booking = () => {
                       style={{ width: "100%" }}
                       placeholder="Chọn bác sĩ"
                       options={doctors.map((doctor: any) => ({
-                        value: doctor.fullName,
+                        value: doctor.id,
                         label: "Bs. " + doctor.fullName,
                       }))}
+                      onChange={handleDoctorChange}
                     />
                   </Form.Item>
                   <Form.Item
@@ -332,7 +359,10 @@ const Booking = () => {
                     label="Thời gian khám"
                     required
                   >
-                    <CustomCalendar setDate={setDate} />
+                    <CustomCalendar
+                      setDate={setDate}
+                      doctorSchedules={doctorSchedules}
+                    />
                   </Form.Item>
                   <Form.Item
                     name="slotTime"
@@ -341,6 +371,7 @@ const Booking = () => {
                     <div className="flex flex-wrap gap-4">
                       {demoSlots.map((slotTime) => (
                         <ConfigProvider
+                          key={slotTime.id}
                           theme={{
                             components: {
                               Card: {
@@ -350,13 +381,14 @@ const Booking = () => {
                           }}
                         >
                           <Card
-                            key={slotTime.id}
                             style={{ width: 70, textAlign: "center" }}
-                            onClick={() => setSlot(slotTime.id)}
+                            onClick={() => isDateSelected && setSlot(slotTime.id)}
                             className={
                               slot === slotTime.id
                                 ? "bg-green-dark text-white"
-                                : "hover:bg-green-dark hover:text-white"
+                                : isDateSelected
+                                  ? "hover:bg-green-dark hover:text-white"
+                                  : "cursor-not-allowed opacity-50"
                             }
                           >
                             {slotTime.time}
