@@ -160,7 +160,7 @@ export const createNewAppointment = async (req: Request, res: Response) => {
   try {
     const {
       serviceName,
-      doctorName,
+      doctorId,
       typeOfConsulting,
       appointmentDate,
       slotTime,
@@ -173,12 +173,7 @@ export const createNewAppointment = async (req: Request, res: Response) => {
 
     const service = await Service.findOne({ serviceName });
 
-    const doctorAccount = await User.findOne({
-      fullName: doctorName,
-      role: "doctor",
-    });
-
-    const doctor = await Doctor.findOne({ userId: doctorAccount?._id });
+    const doctor = await Doctor.findById(doctorId);
 
     if (!doctor) {
       return res.status(404).json({ message: "Doctor not found!" });

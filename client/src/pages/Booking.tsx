@@ -304,7 +304,7 @@ const Booking = () => {
                     />
                   </Form.Item>
                   <Form.Item
-                    name="doctorName"
+                    name="doctorId"
                     label="Bác sĩ"
                     required
                   >
