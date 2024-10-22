@@ -52,9 +52,7 @@ export const createPond = async (req: Request, res: Response) => {
       !waterTemperature ||
       !cleanliness ||
       !filtrationSystem ||
-      !pondSize ||
-      !notes ||
-      !diagnosis
+      !pondSize
     ) {
       return res
         .status(400)
