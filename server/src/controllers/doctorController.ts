@@ -309,68 +309,68 @@ export const getAllDoctorsForBooking = async (req: Request, res: Response) => {
  * PROTECTED
  */
 
-export const getScheduleById = async (req: Request, res: Response) => {
-  const userId = req.params.id;
+// export const getScheduleById = async (req: Request, res: Response) => {
+//   const userId = req.params.id;
 
-  try {
-    const doctor = await Doctor.findOne({ userId });
+//   try {
+//     const doctor = await Doctor.findOne({ userId });
 
-    if (!doctor) {
-      return res.status(404).json({ message: "Không tìm thấy bác sĩ" });
-    }
+//     if (!doctor) {
+//       return res.status(404).json({ message: "Không tìm thấy bác sĩ" });
+//     }
 
-    const schedules = await DoctorSchedule.find({ doctorId: doctor._id });
+//     const schedules = await DoctorSchedule.find({ doctorId: doctor._id });
 
-    if (!schedules) {
-      return res.status(404).json({ message: "Không tìm thấy lịch trình" });
-    }
+//     if (!schedules) {
+//       return res.status(404).json({ message: "Không tìm thấy lịch trình" });
+//     }
 
-    const formatSchedule = schedules.map((schedule) => ({
-      id: schedule._id,
-      start: schedule.start,
-      end: schedule.end,
-    }));
+//     const formatSchedule = schedules.map((schedule) => ({
+//       id: schedule._id,
+//       start: schedule.start,
+//       end: schedule.end,
+//     }));
 
-    return res.status(200).json({ data: formatSchedule });
-  } catch (error: any) {
-    return res.status(500).json({
-      message: "Đã xảy ra lỗi khi lấy lịch trình",
-      error: error.message,
-    });
-  }
-};
+//     return res.status(200).json({ data: formatSchedule });
+//   } catch (error: any) {
+//     return res.status(500).json({
+//       message: "Đã xảy ra lỗi khi lấy lịch trình",
+//       error: error.message,
+//     });
+//   }
+// };
 
-export const getDoctorById = async (req: Request, res: Response) => {
-  const doctorId = req.params.doctorId;
+// export const getDoctorById = async (req: Request, res: Response) => {
+//   const doctorId = req.params.doctorId;
 
-  try {
-    const doctor = await Doctor.findOne({ _id: doctorId }).populate(
-      "userId",
-      "photoUrl images email fullName phoneNumber gender"
-    );
+//   try {
+//     const doctor = await Doctor.findOne({ _id: doctorId }).populate(
+//       "userId",
+//       "photoUrl images email fullName phoneNumber gender"
+//     );
 
-    if (!doctor) {
-      return res.status(404).json({ message: "Không tìm thấy bác sĩ" });
-    }
-    const formatDoctor = {
-      _id: doctor._id,
-      photoUrl: doctor.userId.photoUrl,
-      images: doctor.images,
-      email: doctor.userId.email,
-      fullName: doctor.userId.fullName,
-      phoneNumber: doctor.userId.phoneNumber,
-      gender: doctor.userId.gender,
-      movingService: doctor.movingService,
-      specialization: doctor.specialization,
-      licenseNumber: doctor.licenseNumber,
-      yearOfExperience: doctor.yearOfExperience,
-      introduction: doctor.introduction,
-    };
+//     if (!doctor) {
+//       return res.status(404).json({ message: "Không tìm thấy bác sĩ" });
+//     }
+//     const formatDoctor = {
+//       _id: doctor._id,
+//       photoUrl: doctor.userId.photoUrl,
+//       images: doctor.images,
+//       email: doctor.userId.email,
+//       fullName: doctor.userId.fullName,
+//       phoneNumber: doctor.userId.phoneNumber,
+//       gender: doctor.userId.gender,
+//       movingService: doctor.movingService,
+//       specialization: doctor.specialization,
+//       licenseNumber: doctor.licenseNumber,
+//       yearOfExperience: doctor.yearOfExperience,
+//       introduction: doctor.introduction,
+//     };
 
-    return res.status(200).json({
-      data: formatDoctor,
-    });
-  } catch (error: any) {
-    return res.status(500).json({ message: error.message });
-  }
-};
+//     return res.status(200).json({
+//       data: formatDoctor,
+//     });
+//   } catch (error: any) {
+//     return res.status(500).json({ message: error.message });
+//   }
+// };

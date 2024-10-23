@@ -4,7 +4,7 @@ import {
   deleteDoctorById,
   getAllDoctors,
   getAllDoctorsForBooking,
-  getDoctorById,
+  // getDoctorById,
   updateByDoctorId,
 } from "../controllers/doctorController";
 import { authMiddleware, roleMiddleware } from "../middleware";
@@ -17,7 +17,7 @@ router.get("/", getAllDoctors);
 router.get("/all", getAllDoctorsForBooking);
 
 // Lấy thông tin bác sĩ theo Id
-router.get("/:doctorId", getDoctorById);
+// router.get("/:doctorId", getDoctorById);
 
 // Thêm bác sĩ mới
 router.post("/", authMiddleware, roleMiddleware(["manager"]), addNewDoctor);

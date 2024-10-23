@@ -114,22 +114,211 @@ const addMedicalRecord = async () => {
 const addDoctorSchedule = async () => {
   try {
     const newDoctorSchedule = await DoctorSchedule.create({
-      doctorId: "64a3f1b5e2e5c62d9c5f7b3a", // ID của bác sĩ (thay bằng ID thực tế)
-      start: new Date("2024-10-25T00:00:00Z"), // Ngày bắt đầu (ví dụ: 10/07/2023)
-      end: new Date("2024-10-25T23:59:59Z"), // Ngày kết thúc (cùng ngày)
-      slots: [
-        { slotTime: "8:00", isBooked: false },
-        { slotTime: "9:00", isBooked: false },
-        { slotTime: "10:00", isBooked: false },
-        { slotTime: "11:00", isBooked: false },
-        { slotTime: "12:00", isBooked: false },
-        { slotTime: "13:00", isBooked: false },
-        { slotTime: "14:00", isBooked: false },
-        { slotTime: "15:00", isBooked: false },
-        { slotTime: "16:00", isBooked: false },
+      doctorId: "67015e789a7dce19f9fb0015", // Thay thế bằng ID thực của bác sĩ
+      weekSchedule: [
+        {
+          dayOfWeek: "23/10/2023", // Thứ Hai
+          slots: [
+            {
+              slotTime: "8:00",
+              isBooked: false,
+              appointmentId: null,
+            },
+            {
+              slotTime: "9:00",
+              isBooked: false,
+              appointmentId: null,
+            },
+            {
+              slotTime: "10:00",
+              isBooked: false,
+              appointmentId: null,
+            },
+            {
+              slotTime: "11:00",
+              isBooked: false,
+              appointmentId: null,
+            },
+            {
+              slotTime: "12:00",
+              isBooked: false,
+              appointmentId: null,
+            },
+            {
+              slotTime: "13:00",
+              isBooked: false,
+              appointmentId: null,
+            },
+            {
+              slotTime: "14:00",
+              isBooked: false,
+              appointmentId: null,
+            },
+            {
+              slotTime: "15:00",
+              isBooked: false,
+              appointmentId: null,
+            },
+            {
+              slotTime: "16:00",
+              isBooked: false,
+              appointmentId: null,
+            },
+          ],
+        },
+        {
+          dayOfWeek: "25/10/2023", // Thứ 4
+          slots: [
+            {
+              slotTime: "8:00",
+              isBooked: false,
+              appointmentId: null,
+            },
+            {
+              slotTime: "9:00",
+              isBooked: false,
+              appointmentId: null,
+            },
+            {
+              slotTime: "10:00",
+              isBooked: false,
+              appointmentId: null,
+            },
+            {
+              slotTime: "11:00",
+              isBooked: false,
+              appointmentId: null,
+            },
+            {
+              slotTime: "12:00",
+              isBooked: false,
+              appointmentId: null,
+            },
+            {
+              slotTime: "13:00",
+              isBooked: false,
+              appointmentId: null,
+            },
+            {
+              slotTime: "14:00",
+              isBooked: false,
+              appointmentId: null,
+            },
+            {
+              slotTime: "15:00",
+              isBooked: false,
+              appointmentId: null,
+            },
+            {
+              slotTime: "16:00",
+              isBooked: false,
+              appointmentId: null,
+            },
+          ],
+        },
+        {
+          dayOfWeek: "26/10/2023", // Thứ 5
+          slots: [
+            {
+              slotTime: "8:00",
+              isBooked: false,
+              appointmentId: null,
+            },
+            {
+              slotTime: "9:00",
+              isBooked: false,
+              appointmentId: null,
+            },
+            {
+              slotTime: "10:00",
+              isBooked: false,
+              appointmentId: null,
+            },
+            {
+              slotTime: "11:00",
+              isBooked: false,
+              appointmentId: null,
+            },
+            {
+              slotTime: "12:00",
+              isBooked: false,
+              appointmentId: null,
+            },
+            {
+              slotTime: "13:00",
+              isBooked: false,
+              appointmentId: null,
+            },
+            {
+              slotTime: "14:00",
+              isBooked: false,
+              appointmentId: null,
+            },
+            {
+              slotTime: "15:00",
+              isBooked: false,
+              appointmentId: null,
+            },
+            {
+              slotTime: "16:00",
+              isBooked: false,
+              appointmentId: null,
+            },
+          ],
+        },
+        {
+          dayOfWeek: "28/10/2023", // Thứ 7
+          slots: [
+            {
+              slotTime: "8:00",
+              isBooked: false,
+              appointmentId: null,
+            },
+            {
+              slotTime: "9:00",
+              isBooked: false,
+              appointmentId: null,
+            },
+            {
+              slotTime: "10:00",
+              isBooked: false,
+              appointmentId: null,
+            },
+            {
+              slotTime: "11:00",
+              isBooked: false,
+              appointmentId: null,
+            },
+            {
+              slotTime: "12:00",
+              isBooked: false,
+              appointmentId: null,
+            },
+            {
+              slotTime: "13:00",
+              isBooked: false,
+              appointmentId: null,
+            },
+            {
+              slotTime: "14:00",
+              isBooked: false,
+              appointmentId: null,
+            },
+            {
+              slotTime: "15:00",
+              isBooked: false,
+              appointmentId: null,
+            },
+            {
+              slotTime: "16:00",
+              isBooked: false,
+              appointmentId: null,
+            },
+          ],
+        },
       ],
     });
-    console.log(newDoctorSchedule)
+    console.log(newDoctorSchedule);
   } catch (error) {
     console.log(error);
   }

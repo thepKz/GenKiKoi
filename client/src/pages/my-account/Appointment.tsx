@@ -78,7 +78,7 @@ const Appointment = () => {
     const getAppointments = async () => {
       try {
         setIsLoading(true);
-        const api = `/api/appointments/${auth.customerId}`;
+        const api = `/api/appointments/customers/${auth.customerId}`;
         const res: any = await handleAPI(api, undefined, "GET");
         setAppointments(res.data);
       } catch (error: any) {

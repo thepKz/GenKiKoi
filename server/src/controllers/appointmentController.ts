@@ -1,5 +1,5 @@
 import { Response, Request } from "express";
-import { Doctor, Service, User } from "../models";
+import { Doctor, DoctorSchedule, Service, User } from "../models";
 import Appointment from "../models/Appointment";
 import Customer from "../models/Customer";
 /**
@@ -165,6 +165,7 @@ export const createNewAppointment = async (req: Request, res: Response) => {
       appointmentDate,
       slotTime,
       reasons,
+      doctorScheduleId,
     } = req.body;
 
     const customerId = req.params.customerId;
@@ -175,6 +176,8 @@ export const createNewAppointment = async (req: Request, res: Response) => {
 
     const doctor = await Doctor.findById(doctorId);
 
+    const doctorSchedule = await DoctorSchedule.findById(doctorScheduleId);
+
     if (!doctor) {
       return res.status(404).json({ message: "Doctor not found!" });
     }
@@ -184,12 +187,16 @@ export const createNewAppointment = async (req: Request, res: Response) => {
     if (!service) {
       return res.status(404).json({ message: "Service not found!" });
     }
+    if (!doctorSchedule) {
+      return res.status(404).json({ message: "Doctor Schedule not found!" });
+    }
 
     const newAppointment = new Appointment({
       doctorId: doctor._id,
       customerId: customer._id,
       serviceId: service._id,
       appointmentDate,
+      doctorScheduleId,
       slotTime,
       typeOfConsulting,
       reasons,

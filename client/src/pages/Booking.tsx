@@ -24,18 +24,6 @@ import dayjs from "dayjs";
 
 const { TextArea } = Input;
 
-// const demoSlots = [
-//   { id: 1, time: "8:00" },
-//   { id: 2, time: "9:00" },
-//   { id: 3, time: "10:00" },
-//   { id: 4, time: "11:00" },
-//   { id: 5, time: "12:00" },
-//   { id: 6, time: "13:00" },
-//   { id: 7, time: "14:00" },
-//   { id: 8, time: "15:00" },
-//   { id: 9, time: "16:00" },
-// ];
-
 const Booking = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -47,8 +35,8 @@ const Booking = () => {
   const [isLoadingForm, setIsLoadingForm] = useState(false);
 
   const [isLoading, setIsLoading] = useState(false);
-  const [slot, setSlot] = useState<number | null>(null);
-  const [date, setDate] = useState<string>("");
+  const [slot, setSlot] = useState<string | null>(null);
+  const [date, setDate] = useState<dayjs.Dayjs | null>(null);
 
   const [city, setCity] = useState<string>("");
   const [district, setDistrict] = useState<string>("");
@@ -67,10 +55,8 @@ const Booking = () => {
   const [price, setPrice] = useState<number>(0);
   const [totalPrice, setTotalPrice] = useState<number>(0);
 
-  const [doctorSchedules, setDoctorSchedules] = useState<any[]>([]);
-  const [isDateSelected, setIsDateSelected] = useState(false);
-
-  const [slotTimes, setSlotTimes] = useState<any>([]);
+  const [doctorSchedule, setDoctorSchedule] = useState<any>(null);
+  const [availableSlots, setAvailableSlots] = useState<any[]>([]);
 
   useEffect(() => {
     const res = VietNamProvinces.map((item: any) => ({
@@ -188,31 +174,69 @@ const Booking = () => {
     }
   };
 
-  useEffect(() => {
-    if (date && doctorSchedules.length > 0) {
-      const isDateInSchedule = doctorSchedules.some((schedule) =>
-        dayjs(schedule.start).isSame(date, "day"),
-      );
-      setIsDateSelected(isDateInSchedule);
-    } else {
-      setIsDateSelected(false);
+  const handleDoctorChange = async (doctorId: string) => {
+    try {
+      setDoctorSchedule(null);
+      setAvailableSlots([]);
+      setDate(null);
+      setSlot(null);
+      const api = `/api/doctorSchedules/${doctorId}`;
+      const res = await handleAPI(api, undefined, "GET");
+      if (res.data) {
+        setDoctorSchedule(res.data);
+      }
+    } catch (error: any) {
+      console.log(error);
+      message.error(error.message);
     }
-  }, [date, doctorSchedules]);
+  };
+
+  const handleDateChange = async (selectedDate: dayjs.Dayjs) => {
+    if (doctorSchedule) {
+      const formattedDate = selectedDate.format("DD/MM/YYYY");
+      const daySchedule = doctorSchedule.weekSchedule.find(
+        (day: any) => day.dayOfWeek === formattedDate,
+      );
+
+      if (daySchedule) {
+        setAvailableSlots(daySchedule.slots);
+      } else {
+        setAvailableSlots([]);
+        message.info("Không có lịch khám cho ngày này");
+      }
+    }
+    setDate(selectedDate);
+    setSlot(null);
+  };
+
+  console.log(doctorSchedule);
 
   const handleSubmit = async (values: any) => {
     try {
       setIsLoadingForm(true);
       const appointmentApi = `/api/appointments/customers/${auth.customerId}`;
+      const bookSlotApi = `/api/doctorSchedules/${doctorSchedule.doctorId}`;
 
-      if (date) {
-        values.appointmentDate = date;
-      }
-
-      if (slot) {
-        values.slotTime = slotTimes[slot - 1].slotTime;
+      if (date && slot && doctorSchedule) {
+        values.appointmentDate = date.format("YYYY-MM-DD");
+        values.doctorScheduleId = doctorSchedule._id;
+        values.slotTime = slot;
+      } else {
+        message.error("Vui lòng chọn ngày và giờ khám");
+        return;
       }
 
       const appointmentRes: any = await handleAPI(appointmentApi, values, "POST");
+
+      await handleAPI(
+        bookSlotApi,
+        {
+          slotTime: slot,
+          appointmentId: appointmentRes.data.appointmentId,
+          appointmentDate: date,
+        },
+        "PATCH",
+      );
 
       if (appointmentRes.data.appointmentId) {
         const paymentApi = `/api/payments/create-payment`;
@@ -239,36 +263,6 @@ const Booking = () => {
       setIsLoadingForm(false);
     }
   };
-
-  const handleDoctorChange = async (doctorId: string) => {
-    try {
-      const api = `/api/doctorSchedules/${doctorId}`;
-      const res = await handleAPI(api, undefined, "GET");
-      setDoctorSchedules(res.data);
-      setSlot(null);
-      setSlotTimes([]);
-    } catch (error: any) {
-      console.log(error);
-      message.error(error.message);
-    }
-  };
-
-  useEffect(() => {
-    if (doctorSchedules[0]?.doctorId && date) {
-      const getSlots = async () => {
-        const doctorId = doctorSchedules[0].doctorId;
-        try {
-          const api = `/api/doctorSchedules/${doctorId}/slots?date=${date}`;
-          const res = await handleAPI(api, undefined, "GET");
-          setSlotTimes(res.data);
-        } catch (error: any) {
-          console.log(error);
-          message.error(error.message);
-        }
-      };
-      getSlots();
-    }
-  }, [doctorSchedules, date]);
 
   if (isLoading) {
     return (
@@ -380,8 +374,8 @@ const Booking = () => {
                     required
                   >
                     <CustomCalendar
-                      setDate={setDate}
-                      doctorSchedules={doctorSchedules}
+                      setDate={handleDateChange}
+                      doctorSchedule={doctorSchedule}
                     />
                   </Form.Item>
                   <Form.Item
@@ -389,9 +383,9 @@ const Booking = () => {
                     className="mt-5"
                   >
                     <div className="flex flex-wrap gap-4">
-                      {slotTimes.map((slotTime: any) => (
+                      {availableSlots.map((slotTime: any) => (
                         <ConfigProvider
-                          key={slotTime._id}
+                          key={slotTime.slotTime}
                           theme={{
                             components: {
                               Card: {
@@ -402,11 +396,9 @@ const Booking = () => {
                         >
                           <Card
                             style={{ width: 70, textAlign: "center" }}
-                            onClick={() =>
-                              isDateSelected && !slotTime.isBooked && setSlot(slotTime._id)
-                            }
+                            onClick={() => !slotTime.isBooked && setSlot(slotTime.slotTime)}
                             className={
-                              slot === slotTime._id
+                              slot === slotTime.slotTime
                                 ? "bg-green-dark text-white"
                                 : !slotTime.isBooked
                                   ? "hover:bg-green-dark hover:text-white"
@@ -419,13 +411,9 @@ const Booking = () => {
                       ))}
                     </div>
                   </Form.Item>
-                  <p className="text-justify text-base text-white">
-                    Lưu ý: Thời gian khám trên chỉ là thời gian dự kiến, tổng đài sẽ liên hệ xác
-                    nhận thời gian khám chính xác tới quý khách sau khi quý khách đặt hẹn.
-                  </p>
                 </div>
-                <div className="lg:flex-1">
-                  <Row gutter={24}>
+                <div className="lg:w-[45%]">
+                  <Row>
                     <Col span={24}>
                       <Form.Item
                         required
@@ -526,7 +514,7 @@ const Booking = () => {
                   <Row>
                     <Col span={24}>
                       <Form.Item
-                        name="address"
+                        name="detailAddress"
                         label="Địa chỉ"
                       >
                         <Input
