@@ -2,16 +2,11 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useEffect } from 'react';
 import { MapContainer, Marker, Polyline, TileLayer, useMap } from 'react-leaflet';
+import logo from '../assets/logo.jpg';
 
-// Xóa dòng gây lỗi
-// delete L.Icon.Default.prototype._getIconUrl;
-
-// Thay thế bằng cách định nghĩa lại các icon mặc định
-L.Icon.Default.imagePath = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/';
-
-const DefaultIcon = L.icon({
-  iconRetinaUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
-  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+const OriginIcon = L.icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+  iconRetinaUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
   shadowUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-shadow.png',
   iconSize: [25, 41],
   iconAnchor: [12, 41],
@@ -19,7 +14,14 @@ const DefaultIcon = L.icon({
   shadowSize: [41, 41]
 });
 
-L.Marker.prototype.options.icon = DefaultIcon;
+const DestinationIcon = L.icon({
+  iconUrl: logo,
+  shadowUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-shadow.png',
+  iconSize: [32, 32],
+  iconAnchor: [16, 32],
+  popupAnchor: [0, -32],
+  shadowSize: [41, 41]
+});
 
 interface MapControllerProps {
   origin: L.LatLngExpression | null;
@@ -56,15 +58,15 @@ function Map({ origin, destination, route }: MapProps) {
       center={destination}
       zoom={13}
       style={{ height: '400px', width: '100%' }}
-      zoomAnimation={true} // Enable zoom animation
+      zoomAnimation={true}
     >
       <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        attribution='This is created by Minthep'
+        attribution='This is created by Meo'
       />
       
-      {origin && <Marker position={origin} />}
-      <Marker position={destination} />
+      {origin && <Marker position={origin} icon={OriginIcon} />}
+      <Marker position={destination} icon={DestinationIcon} />
       
       {route && route.length > 0 && (
         <Polyline

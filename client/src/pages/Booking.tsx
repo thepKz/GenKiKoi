@@ -601,14 +601,6 @@ const Booking = () => {
                       </Form.Item>
                     </Col>
                   </Row>
-                  {distance && duration && (
-                    <Row>
-                      <Col span={24}>
-                        <p>Khoảng cách: {distance}</p>
-                        <p>Thời gian ước tính: {duration}</p>
-                      </Col>
-                    </Row>
-                  )}
                   <Row>
                     <Col span={24}>
                       <Map origin={origin} destination={destination} route={route} />
