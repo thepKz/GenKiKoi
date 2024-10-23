@@ -39,6 +39,9 @@ const demoSlots = [
   { id: 9, time: "16:00" },
 ];
 
+// Thêm interface cho options
+
+
 const Booking = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -77,6 +80,9 @@ const Booking = () => {
   const [distance, setDistance] = useState<string | null>(null);
   const [duration, setDuration] = useState<string | null>(null);
   const [movingPrice, setMovingPrice] = useState<number>(0);
+
+  // Thêm state để theo dõi input value
+  const [searchValue, setSearchValue] = useState<string>('');
 
   useEffect(() => {
     const res = VietNamProvinces.map((item: any) => ({
@@ -178,21 +184,14 @@ const Booking = () => {
     setTotalPrice((prevPrice) => prevPrice + price);
   }, [price]);
 
-  // Thêm useEffect mới để tính toán movingPrice
   useEffect(() => {
     if (distance) {
       const distanceInKm = parseFloat(distance);
-      const basePrice = 15000; // Giá cơ bản cho 1km đầu tiên
-      const additionalPrice = 10000; // Giá cho mỗi km tiếp theo
-      let calculatedPrice = 0;
-
-      if (distanceInKm <= 1) {
-        calculatedPrice = basePrice;
-      } else {
-        calculatedPrice = basePrice + (distanceInKm - 1) * additionalPrice;
-      }
-
-      setMovingPrice(Math.round(calculatedPrice / 1000) * 1000); // Làm tròn đến hàng nghìn
+      const pricePerKm = 5000; // 5.000 VNĐ/km
+      const calculatedPrice = distanceInKm * pricePerKm;
+      
+      // Làm tròn đến hàng nghìn
+      setMovingPrice(Math.round(calculatedPrice / 1000) * 1000);
     }
   }, [distance]);
 
@@ -248,7 +247,7 @@ const Booking = () => {
         if (paymentRes.data.checkoutUrl) {
           window.open(paymentRes.data.checkoutUrl, "_blank");
         } else {
-          message.error("Không thể tạo liên kết thanh toán");
+          message.error("Không thể từo liên kết thanh toán");
         }
       }
     } catch (error: any) {
@@ -261,32 +260,51 @@ const Booking = () => {
 
   // Cập nhật hàm handleAddressSearch với debounce
   const handleAddressSearch = debounce(async (value: string) => {
+    console.log('Search value:', value);
     if (value.length > 2) {
       try {
-        const response = await axios.get(`/api/distance/autocomplete?query=${value}`);
-        const options = response.data.map((item: any) => ({
-          value: item.display_name,
-          label: item.display_name,
-        }));
-        setAddressOptions(options);
-      } catch (error) {
-        console.error('Error fetching address suggestions:', error);
+        const response = await axios.get(`http://localhost:5000/api/distance/autocomplete`, {
+          params: {
+            query: value
+          },
+          headers: {
+            'Accept': 'application/json'
+          }
+        });
+        
+        console.log('API Response:', response.data);
+        
+        if (response.data && Array.isArray(response.data.data)) {
+          setAddressOptions(response.data.data);
+        } else {
+          console.log('Invalid response format:', response.data);
+          setAddressOptions([]);
+        }
+      } catch (error: unknown) {
+        console.error('Error details:', (error as { response?: { data: unknown } }).response?.data);
+        setAddressOptions([]);
       }
+    } else {
+      setAddressOptions([]);
     }
   }, 300);
 
   // Cập nhật hàm handleAddressSelect
   const handleAddressSelect = async (value: string) => {
     try {
-      const response = await axios.get(`/api/distance/calculate-route?address=${value}`);
-      const { origin, distance, duration, route } = response.data;
-      setOrigin([origin.lat, origin.lon]);
-      setRoute(route);
-      setDistance(distance);
-      setDuration(duration);
-      form.setFieldsValue({ address: value });
+        const response = await axios.get(`http://localhost:5000/api/distance/calculate-route?address=${encodeURIComponent(value)}`);
+        const { origin, route, distance, duration } = response.data;
+        
+        if (origin && route) {
+            setOrigin([origin.lat, origin.lon]);
+            setRoute(route); // Đây sẽ là mảng các tọa độ đã được decode
+            setDistance(distance);
+            setDuration(duration);
+            form.setFieldsValue({ address: value });
+        }
     } catch (error) {
-      console.error('Error calculating route:', error);
+        console.error('Error calculating route:', error);
+        message.error('Không thể tính toán tuyến đường');
     }
   };
 
@@ -382,13 +400,16 @@ const Booking = () => {
                     </div>
                     <Divider style={{ borderColor: "white" }} />
                     <div className="flex items-center justify-between text-white">
-                      <span>Phí di chuyển:</span>
+                      <span>Phí di chuyển ({distance} km):</span>
                       <span>
                         {new Intl.NumberFormat("vi-VN", {
                           style: "currency",
                           currency: "VND",
                         }).format(movingPrice)}
                       </span>
+                    </div>
+                    <div className="text-sm text-gray-300 mt-1">
+                      (5.000đ/km)
                     </div>
                     <Divider style={{ borderColor: "white" }} />
                     <div className="flex items-center justify-between text-white">
@@ -552,10 +573,15 @@ const Booking = () => {
                         label="Địa chỉ"
                       >
                         <AutoComplete
+                          value={searchValue}
                           options={addressOptions}
                           onSearch={handleAddressSearch}
                           onSelect={handleAddressSelect}
                           placeholder="Nhập địa chỉ"
+                          style={{ width: '100%' }}
+                          notFoundContent={searchValue.length > 2 ? "Không tìm thấy địa chỉ" : "Nhập ít nhất 3 ký tự"}
+                          defaultActiveFirstOption={true}
+                          allowClear={true}
                         />
                       </Form.Item>
                     </Col>
