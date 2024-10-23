@@ -3,6 +3,7 @@ import { Response, Request } from "express";
 import PayOS from "@payos/node";
 import dotenv from "dotenv";
 import Payment from "../models/Payment";
+import { Appointment } from "../models";
 
 dotenv.config();
 
@@ -93,6 +94,18 @@ export const updatePaymentById = async (req: Request, res: Response) => {
 
     if (status) {
       payment.status = status;
+    }
+
+    if (status === "PAID") {
+      const appointment = await Appointment.findById(payment.appointmentId);
+
+      if (!appointment) {
+        return res.status(404).json({ message: "Không tìm thấy cuộc hẹn" });
+      }
+      appointment.status = "Đã xác nhận";
+      appointment.notes = "Quý khách vui lòng tới trước giờ hẹn 15 phút!";
+
+      await appointment.save();
     }
 
     await payment.save();

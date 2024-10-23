@@ -197,6 +197,7 @@ export const createNewAppointment = async (req: Request, res: Response) => {
       slotTime,
       typeOfConsulting,
       reasons,
+      notes: "Quý khách cần thanh toán dịch vụ để được xác nhận!",
     });
 
     const savedAppointment = await newAppointment.save();
