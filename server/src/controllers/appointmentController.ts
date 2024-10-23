@@ -1,5 +1,5 @@
 import { Response, Request } from "express";
-import { Doctor, DoctorSchedule, Service, User } from "../models";
+import { Doctor, DoctorSchedule, Payment, Service, User } from "../models";
 import Appointment from "../models/Appointment";
 import Customer from "../models/Customer";
 /**
@@ -30,59 +30,56 @@ export const getAllAppointmentsByDoctorId = async (
 
     const appointments = await Appointment.find({ doctorId })
       .populate({
-        path: "doctorId",
-        select: "userId",
+        path: "customerId",
         populate: {
           path: "userId",
-          select: "fullName",
+          select: "fullName phoneNumber",
         },
       })
       .populate({
         path: "serviceId",
         select: "serviceName",
       })
-      .populate({
-        path: "customerId",
-        select: "userId",
-        populate: {
-          path: "userId",
-          select: "fullName phoneNumber gender",
-        },
-      })
-      .populate({
-        path: "doctorScheduleId",
-        select: "start end",
-      })
-      .select("_id appointmentDate status notes");
+      .select("notes status appointmentDate");
 
-    if (!appointments) {
+    if (!appointments || appointments.length === 0) {
       return res.status(404).json({ message: "Không tìm thấy cuộc hẹn" });
     }
 
-    const formattedAppointment = appointments.map((appointment: any) => ({
-      appointmentId: appointment._id,
-      serviceName: appointment.serviceId.serviceName,
-      doctorFullName: appointment.doctorId.userId.fullName,
-      customerFullName: appointment.customerId.userId.fullName,
-      customerPhoneNumber: appointment.customerId.userId.phoneNumber,
-      customerGender: appointment.customerId.userId.gender,
-      start: appointment.doctorScheduleId.start,
-      end: appointment.doctorScheduleId.end,
-      status: appointment.status,
-      notes: appointment.notes,
-    }));
+    const paidAppointments = await Promise.all(
+      appointments.map(async (appointment) => {
+        const payment = await Payment.findOne({
+          appointmentId: appointment._id,
+          status: "PAID",
+        });
+        if (payment) {
+          return {
+            id: appointment._id,
+            customerName: appointment.customerId.userId.fullName,
+            serviceName: appointment.serviceId.serviceName,
+            phoneNumber: appointment.customerId.userId.phoneNumber,
+            appointmentDate: appointment.appointmentDate,
+            notes: appointment.notes,
+            status: appointment.status,
+            paymentStatus: payment.status,
+          };
+        }
+        return null;
+      })
+    );
 
-    return res.status(200).json({ data: appointments });
+    const formattedData = paidAppointments.filter(
+      (appointment) => appointment !== null
+    );
+
+    return res.status(200).json({ data: formattedData });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "Lỗi khi lấy danh sách cuộc hẹn" });
   }
 };
 
-export const updateCompletedAppointment = async (
-  req: Request,
-  res: Response
-) => {
+export const updateStatusAppointment = async (req: Request, res: Response) => {
   const appointmentId = req.params.appointmentId;
   let { completed } = req.body;
   try {
