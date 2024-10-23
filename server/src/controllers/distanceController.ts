@@ -37,20 +37,12 @@ export const addressAutocomplete = async (req: Request, res: Response) => {
             }
         });
 
-        // Kiểm tra và chuyển đổi dữ liệu
-        if (!Array.isArray(response.data)) {
-            return res.json([]); // Trả về mảng rỗng nếu không phải array
-        }
+        const data = response.data;
 
-        const suggestions = response.data.map((item: any) => ({
-            value: item.display_name,
-            label: item.display_name,
-            lat: item.lat,
-            lon: item.lon
-        }));
+        // Có thể thêm xử lý dữ liệu ở đây nếu cần
+        // Ví dụ: lọc kết quả, định dạng lại dữ liệu, v.v.
 
-        // Trả về kết quả
-        return res.json({ data: suggestions });
+        res.json(data);
     } catch (error) {
         console.error('Lỗi khi tìm kiếm địa chỉ:', error);
         res.status(500).json({ error: 'Đã xảy ra lỗi khi tìm kiếm địa chỉ' });
@@ -86,9 +78,7 @@ export const calculateRoute = async (req: Request, res: Response) => {
         const destination = { lat: 10.8415, lon: 106.8099 };
 
         // Sử dụng OSRM để tính toán tuyến đường
-        const routeResponse = await axios.get<OSRMResponse>(
-            `${OSRM_BASE_URL}/${origin.lon},${origin.lat};${destination.lon},${destination.lat}?overview=full&geometries=polyline`
-        );
+        const routeResponse = await axios.get<OSRMResponse>(`${OSRM_BASE_URL}/${origin.lon},${origin.lat};${destination.lon},${destination.lat}`);
         const routeData = routeResponse.data;
 
         if (!routeData.routes || routeData.routes.length === 0) {
@@ -104,17 +94,12 @@ export const calculateRoute = async (req: Request, res: Response) => {
         const estimatedDurationHours = (distance / averageSpeedKmh) * adjustmentFactor;
         const estimatedDurationMinutes = Math.round(estimatedDurationHours * 60);
 
-        // Sau khi lấy route, decode geometry:
-        const coordinates = decodePolyline(routeResponse.data.routes[0].geometry);
-
-        // Cập nhật response:
         res.json({
             origin,
             destination: {
                 ...destination,
                 name: GENKIKOI_NAME
             },
-            route: coordinates,  // Thêm coordinates vào response
             distance: distance.toFixed(2),
             duration: formatDuration(estimatedDurationMinutes),
         });
@@ -128,7 +113,6 @@ interface OSRMResponse {
     routes: {
         distance: number;
         duration: number;
-        geometry: string;
     }[];
 }
 
@@ -136,49 +120,4 @@ function formatDuration(minutes: number): string {
     const hours = Math.floor(minutes / 60);
     const mins = Math.round(minutes % 60);
     return `${hours} giờ ${mins} phút`;
-}
-
-// Thêm hàm decode polyline
-function decodePolyline(str: string, precision = 5) {
-    let index = 0,
-        lat = 0,
-        lng = 0,
-        coordinates = [],
-        shift = 0,
-        result = 0,
-        byte = null,
-        latitude_change,
-        longitude_change,
-        factor = Math.pow(10, precision);
-
-    while (index < str.length) {
-        byte = null;
-        shift = 0;
-        result = 0;
-
-        do {
-            byte = str.charCodeAt(index++) - 63;
-            result |= (byte & 0x1f) << shift;
-            shift += 5;
-        } while (byte >= 0x20);
-
-        latitude_change = ((result & 1) ? ~(result >> 1) : (result >> 1));
-
-        shift = result = 0;
-
-        do {
-            byte = str.charCodeAt(index++) - 63;
-            result |= (byte & 0x1f) << shift;
-            shift += 5;
-        } while (byte >= 0x20);
-
-        longitude_change = ((result & 1) ? ~(result >> 1) : (result >> 1));
-
-        lat += latitude_change;
-        lng += longitude_change;
-
-        coordinates.push([lat / factor, lng / factor]);
-    }
-
-    return coordinates;
 }
