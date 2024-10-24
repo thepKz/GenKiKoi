@@ -92,7 +92,7 @@ const MedicalRecord = () => {
                     </p>
                   </div>
                   <div className="">
-                    <Link to="#">
+                    <Link to={`/my-account/medical-record/fishes/${fish._id}/records`}>
                       <Button type="primary">Xem chi tiết</Button>
                     </Link>
                   </div>

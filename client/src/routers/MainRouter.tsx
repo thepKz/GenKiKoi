@@ -13,11 +13,13 @@ import {
   Home,
   Images,
   InspectionRecord,
+  ListFishRecords,
   MedicalRecord,
   NotFound,
   PaymentCancel,
   PaymentSuccess,
   Profile,
+  RecordDetail,
   Services,
   SignIn,
   SignUp,
@@ -183,10 +185,22 @@ const MainRouter = () => {
             path="appointment"
             element={<Appointment />}
           />
-          <Route
-            path="medical-record"
-            element={<MedicalRecord />}
-          />
+          <Route path="medical-record">
+            <Route
+              index
+              element={<MedicalRecord />}
+            />
+            <Route path="fishes/:fishId/records">
+              <Route
+                index
+                element={<ListFishRecords />}
+              />
+              <Route
+                path=":recordId"
+                element={<RecordDetail />}
+              />
+            </Route>
+          </Route>
           <Route
             path="inspection-record"
             element={<InspectionRecord />}

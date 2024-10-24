@@ -45,6 +45,10 @@
   .heading-3 {
     @apply text-3xl font-bold;
   }
+
+  .heading-4 {
+    @apply text-2xl font-bold;
+  }
 }
 
 /* ======== ADDITIONAL CSS ======== */
@@ -76,5 +80,5 @@
 }
 
 .ant-table-container {
-  height: calc(100vh - 230px);
+  height: calc(100vh - 260px);
 }
