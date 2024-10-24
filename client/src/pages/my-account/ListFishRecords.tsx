@@ -113,9 +113,6 @@ const ListFishRecords = () => {
               ),
             },
             {
-              title: <Link to={"/my-account/medical-record"}>Danh sách cá</Link>,
-            },
-            {
               title: "Danh sách hồ sơ bệnh án",
             },
           ]}

@@ -1,16 +1,4 @@
-import {
-  Button,
-  ConfigProvider,
-  Divider,
-  Dropdown,
-  MenuProps,
-  Spin,
-  Table,
-  TableProps,
-  Tag,
-} from "antd";
-import { CalendarCircle, Sort } from "iconsax-react";
-import { AppointmentData } from "../../models/DataModels";
+import { Button, ConfigProvider, Modal, Spin, Table, TableProps, Tag } from "antd";
 import { getValue } from "../../utils";
 import { useEffect, useState } from "react";
 import { handleAPI } from "../../apis/handleAPI";
@@ -18,7 +6,7 @@ import { useSelector } from "react-redux";
 import { IAuth } from "../../types";
 import { HeaderComponent } from "../../components";
 
-const columns: TableProps<AppointmentData>["columns"] = [
+const columns: TableProps["columns"] = [
   {
     key: "#",
     title: "#",
@@ -67,6 +55,30 @@ const columns: TableProps<AppointmentData>["columns"] = [
     title: "Ghi chú của trung tâm",
     dataIndex: "notes",
   },
+  {
+    key: "action",
+    title: "Hành động",
+    width: 120,
+    render: (_, record) => (
+      <Button
+        danger
+        onClick={() =>
+          Modal.warning({
+            title: "Hủy lịch hẹn",
+            content: "Thao tác này sẽ không thể hoàn tác!",
+            okCancel: true,
+            cancelText: "Hủy",
+            okText: "Đồng ý",
+            onOk: () => {
+              console.log(record.appointmentId);
+            },
+          })
+        }
+      >
+        Hủy lịch
+      </Button>
+    ),
+  },
 ];
 
 const Appointment = () => {
@@ -100,35 +112,6 @@ const Appointment = () => {
     );
   }
 
-  const handleSortAppointments = () => {
-    const today = new Date().getTime();
-    const sortedAppointments = [...appointments].sort((a: any, b: any) => {
-      const dateA = new Date(a.appointmentDate).getTime();
-      const dateB = new Date(b.appointmentDate).getTime();
-
-      // Tính khoảng cách từ ngày hiện tại đến ngày hẹn
-      const diffA = Math.abs(dateA - today);
-      const diffB = Math.abs(dateB - today);
-
-      // Các cuộc hẹn đã qua sẽ được xếp ở cuối bảng
-      if (dateA < today && dateB >= today) return 1;
-      if (dateB < today && dateA >= today) return -1;
-
-      // Sắp xếp theo khoảng cách từ gần đến xa
-      return diffA - diffB;
-    });
-    setAppointments(sortedAppointments);
-  };
-
-  const filterOptions: MenuProps["items"] = [
-    {
-      key: "1",
-      label: "Ngày gần đến hẹn",
-      icon: <CalendarCircle size={20} />,
-      onClick: () => handleSortAppointments(),
-    },
-  ];
-
   return (
     <ConfigProvider
       theme={{
@@ -138,7 +121,7 @@ const Appointment = () => {
         },
       }}
     >
-      <div className="section">
+      <div className="section appointment">
         {/* Header */}
         <HeaderComponent
           heading="Danh sách cuộc hẹn"

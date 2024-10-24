@@ -78,7 +78,7 @@ const InspectionRecord = () => {
                     </p>
                   </div>
                   <div className="flex w-1/5 flex-col gap-2 text-right">
-                    <Link to={"#"}>
+                    <Link to={`/my-account/inspection-record/ponds/${pond.recordId}/records`}>
                       <Button type="primary">Xem chi tiết</Button>
                     </Link>
                   </div>

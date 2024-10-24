@@ -79,6 +79,10 @@
   color: white !important;
 }
 
+.appointment .ant-table-container {
+  height: calc(100vh - 220px);
+}
+
 .ant-table-container {
   height: calc(100vh - 260px);
 }

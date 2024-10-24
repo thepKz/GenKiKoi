@@ -1,14 +1,14 @@
-import { Avatar, Col, ConfigProvider, Divider, List, message, Row, Spin } from "antd";
+import { Avatar, Breadcrumb, Col, ConfigProvider, Divider, List, message, Row, Spin } from "antd";
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { handleAPI } from "../../apis/handleAPI";
 import { HeaderComponent } from "../../components";
 import { GiCirclingFish } from "react-icons/gi";
+import { Stickynote } from "iconsax-react";
 
 const RecordDetail = () => {
   const { pathname } = useLocation();
-  //   const customerId = pathname.split("/")[3];
-  //   const fishId = pathname.split("/")[5];
+  const fishId = pathname.split("/")[4];
   const medicalRecordId = pathname.split("/")[6];
 
   const [medicalRecord, setMedicalRecord] = useState<any>(null);
@@ -53,37 +53,31 @@ const RecordDetail = () => {
     >
       <div className="section">
         <HeaderComponent heading="Chi tiết hồ sơ" />
-        {/* <Breadcrumb
-        separator=">"
-        items={[
-          {
-            title: (
-              <Link to="/doctor/customers">
-                <div className="flex items-center gap-2">
-                  <Stickynote size={20} />
-                  Hồ sơ khách hàng
-                </div>
-              </Link>
-            ),
-          },
-          {
-            title: <Link to="/doctor/customers">Hồ sơ bệnh án</Link>,
-          },
-          {
-            title: <Link to={`/doctor/customers/${customerId}/fishes`}>Danh sách cá</Link>,
-          },
-          {
-            title: (
-              <Link to={`/doctor/customers/${customerId}/fishes/${fishId}/records`}>
-                Danh sách hồ sơ bệnh án
-              </Link>
-            ),
-          },
-          {
-            title: "Chi tiết hồ sơ",
-          },
-        ]}
-      /> */}
+        <Breadcrumb
+          separator=">"
+          items={[
+            {
+              title: (
+                <Link to="/my-account/medical-record">
+                  <div className="flex items-center gap-2">
+                    <Stickynote size={20} />
+                    Hồ sơ điều trị
+                  </div>
+                </Link>
+              ),
+            },
+            {
+              title: (
+                <Link to={`/my-account/medical-record/fishes/${fishId}/records`}>
+                  Danh sách hồ sơ bệnh án
+                </Link>
+              ),
+            },
+            {
+              title: "Chi tiết hồ sơ",
+            },
+          ]}
+        />
         <Row
           gutter={32}
           className="mt-2"

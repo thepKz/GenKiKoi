@@ -11,6 +11,7 @@ import History from "./my-account/History";
 import InspectionRecord from "./my-account/InspectionRecord";
 import ListFishRecords from "./my-account/ListFishRecords";
 import MedicalRecord from "./my-account/MedicalRecord";
+import PondDetail from "./my-account/PondDetail";
 import Profile from "./my-account/Profile";
 import RecordDetail from "./my-account/RecordDetail";
 import NotFound from "./NotFound";
@@ -44,4 +45,5 @@ export {
   PaymentSuccess,
   ListFishRecords,
   RecordDetail,
+  PondDetail
 };

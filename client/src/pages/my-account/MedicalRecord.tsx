@@ -1,4 +1,4 @@
-import { Button, Card, ConfigProvider, Divider, Spin, Tag } from "antd";
+import { Button, Card, ConfigProvider, Spin, Tag } from "antd";
 import { useEffect, useState } from "react";
 import { handleAPI } from "../../apis/handleAPI";
 import { useSelector } from "react-redux";

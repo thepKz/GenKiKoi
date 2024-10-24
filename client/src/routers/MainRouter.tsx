@@ -18,6 +18,7 @@ import {
   NotFound,
   PaymentCancel,
   PaymentSuccess,
+  PondDetail,
   Profile,
   RecordDetail,
   Services,
@@ -201,10 +202,18 @@ const MainRouter = () => {
               />
             </Route>
           </Route>
-          <Route
-            path="inspection-record"
-            element={<InspectionRecord />}
-          />
+          <Route path="inspection-record">
+            <Route
+              index
+              element={<InspectionRecord />}
+            />
+            <Route path="ponds/:pondId/records">
+              <Route
+                index
+                element={<PondDetail />}
+              />
+            </Route>
+          </Route>
           <Route
             path="profile"
             element={<Profile />}
