@@ -33,7 +33,7 @@ const InspectionRecord = () => {
         },
       }}
     >
-      <div className="section">
+      <div className="my-account-section">
         {/* Header */}
         <HeaderComponent
           heading="Hồ sơ kiểm định"

@@ -42,7 +42,7 @@ const MedicalRecord = () => {
         },
       }}
     >
-      <div className="section">
+      <div className="my-account-section">
         {/* Header */}
         <HeaderComponent
           heading="Hồ sơ điều trị"

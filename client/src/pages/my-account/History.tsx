@@ -34,7 +34,7 @@ const History = () => {
         },
       }}
     >
-      <div className="section">
+      <div className="my-account-section">
         <HeaderComponent
           heading="Danh sách hóa đơn"
           placeholder="Tìm hóa đơn"

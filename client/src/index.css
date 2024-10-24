@@ -25,6 +25,10 @@
 
 @layer components {
   .section {
+    @apply py-20;
+  }
+
+  .my-account-section {
     @apply container mx-auto my-5 h-[calc(100vh-40px)] rounded-md bg-white p-5 shadow-sm lg:w-[95%];
   }
 

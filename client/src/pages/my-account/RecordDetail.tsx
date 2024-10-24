@@ -51,7 +51,7 @@ const RecordDetail = () => {
         },
       }}
     >
-      <div className="section">
+      <div className="my-account-section">
         <HeaderComponent heading="Chi tiết hồ sơ" />
         <Breadcrumb
           separator=">"

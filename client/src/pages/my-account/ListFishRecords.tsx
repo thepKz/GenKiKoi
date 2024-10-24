@@ -94,7 +94,7 @@ const ListFishRecords = () => {
         },
       }}
     >
-      <div className="section">
+      <div className="my-account-section">
         <HeaderComponent
           heading="Danh sách hồ sơ"
           placeholder="Tìm hồ sơ"

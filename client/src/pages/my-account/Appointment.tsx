@@ -166,7 +166,7 @@ const Appointment = () => {
         },
       }}
     >
-      <div className="section appointment">
+      <div className="my-account-section appointment">
         {/* Header */}
         <HeaderComponent
           heading="Danh sách cuộc hẹn"

@@ -161,7 +161,7 @@ const Profile = () => {
   }
 
   return (
-    <div className="section">
+    <div className="my-account-section">
       {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="heading-3">Hồ sơ cá nhân</h1>
