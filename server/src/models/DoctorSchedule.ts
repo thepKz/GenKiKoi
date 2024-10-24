@@ -9,7 +9,7 @@ export interface IDoctorSchedule extends Document {
     slots: Array<{
       slotTime: string;
       isBooked: boolean;
-      appointmentId?: mongoose.Types.ObjectId;
+      appointmentId?: mongoose.Types.ObjectId | null;
     }>;
   }>;
 }

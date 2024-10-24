@@ -91,7 +91,7 @@ export const updateStatusAppointment = async (req: Request, res: Response) => {
             ? "Đã hoàn thành"
             : status === "PENDING"
             ? "Đang chờ xử lý"
-            : status === "CANCELED"
+            : status === "CANCELLED"
             ? "Đã hủy"
             : "Đã xác nhận",
         notes: "Quý khách sẽ được hoàn tiền theo chính sách của công ty!",
@@ -101,6 +101,26 @@ export const updateStatusAppointment = async (req: Request, res: Response) => {
 
     if (!updatedAppointment) {
       return res.status(404).json({ message: "Không tìm thấy cuộc hẹn" });
+    }
+
+    // Nếu trạng thái là CANCELLED, cập nhật DoctorSchedule
+    if (status === "CANCELLED") {
+      const doctorSchedule = await DoctorSchedule.findOne({
+        "weekSchedule.slots.appointmentId": appointmentId,
+      });
+
+      if (doctorSchedule) {
+        doctorSchedule.weekSchedule.forEach((day) => {
+          day.slots.forEach((slot) => {
+            if (slot.appointmentId?.toString() === appointmentId) {
+              slot.appointmentId = null;
+              slot.isBooked = false;
+            }
+          });
+        });
+
+        await doctorSchedule.save();
+      }
     }
 
     return res.status(200).json({ message: "Đã cập nhật cuộc hẹn" });

@@ -36,6 +36,7 @@ const valueMap: {
   PENDING: "lime",
   "Đang chờ xử lý": "lime",
   PAID: "green",
+  CANCELLED: "red",
   "Đã xác nhận": "cyan",
   "Đã thay đổi lịch": "orange",
   "Đã hủy": "red",

@@ -31,9 +31,8 @@ const Appointment = () => {
 
   const handleCancelAppointment = async (appointmentId: string) => {
     try {
-      setIsLoading(true);
       const api = `/api/appointments/${appointmentId}/status`;
-      const res: any = await handleAPI(api, { status: "CANCELED" }, "PATCH");
+      const res: any = await handleAPI(api, { status: "CANCELLED" }, "PATCH");
       if (res.message === "Đã cập nhật cuộc hẹn") {
         setAppointments((prevAppointments: any) =>
           prevAppointments.map((appointment: any) =>
@@ -51,8 +50,21 @@ const Appointment = () => {
     } catch (error: any) {
       console.log(error);
       message.error(error.message);
-    } finally {
-      setIsLoading(false);
+    }
+  };
+
+  const handlePayment = async (appointmentId: string) => {
+    try {
+      const api = `/api/payments/appointments/${appointmentId}`;
+
+      const res = await handleAPI(api, undefined, "GET");
+
+      if (res.data) {
+        window.open(`https://pay.payos.vn/web/${res.data.paymentLinkId}`, "_blank");
+      }
+    } catch (error: any) {
+      console.log(error);
+      message.error(error.message);
     }
   };
 
@@ -68,7 +80,7 @@ const Appointment = () => {
       key: "Tên dịch vụ",
       title: "Tên dịch vụ",
       dataIndex: "serviceName",
-      width: 250,
+      width: 200,
     },
     {
       key: "Ngày hẹn",
@@ -108,24 +120,32 @@ const Appointment = () => {
     {
       key: "action",
       title: "Hành động",
-      width: 120,
-      render: (_, record) => (
-        <Button
-          danger
-          onClick={() =>
-            Modal.warning({
-              title: "Hủy lịch hẹn",
-              content: "Thao tác này sẽ không thể hoàn tác!",
-              okCancel: true,
-              cancelText: "Hủy",
-              okText: "Đồng ý",
-              onOk: () => handleCancelAppointment(record.appointmentId),
-            })
-          }
-        >
-          Hủy lịch
-        </Button>
-      ),
+      width: 150,
+      render: (_, record) => {
+        return record.status === "Đã xác nhận" ? (
+          <Button
+            danger
+            onClick={() =>
+              Modal.warning({
+                title: "Hủy lịch hẹn",
+                content: "Thao tác này sẽ không thể hoàn tác!",
+                okCancel: true,
+                cancelText: "Hủy",
+                okText: "Đồng ý",
+                onOk: () => handleCancelAppointment(record.appointmentId),
+              })
+            }
+          >
+            Hủy lịch
+          </Button>
+        ) : record.status === "Đang chờ xử lý" ? (
+          <Button onClick={() => handlePayment(record.appointmentId)}>Thanh toán</Button>
+        ) : record.status === "Đã hoàn thành" ? (
+          <Button>Viết đánh giá</Button>
+        ) : (
+          ""
+        );
+      },
     },
   ];
 

@@ -261,6 +261,8 @@ const Booking = () => {
       message.error(error.message);
     } finally {
       setIsLoadingForm(false);
+      setSlot(null);
+      setDate(null);
       form.resetFields();
     }
   };
@@ -306,7 +308,12 @@ const Booking = () => {
                   <Form.Item
                     name="serviceName"
                     label="Loại dịch vụ"
-                    required
+                    rules={[
+                      {
+                        required: true,
+                        message: "Vui lòng chọn loại dịch vụ",
+                      },
+                    ]}
                   >
                     <Select
                       placeholder="Chọn loại dịch vụ"
@@ -321,7 +328,12 @@ const Booking = () => {
                   <Form.Item
                     name="doctorId"
                     label="Bác sĩ"
-                    required
+                    rules={[
+                      {
+                        required: true,
+                        message: "Vui lòng chọn bác sĩ",
+                      },
+                    ]}
                   >
                     <Select
                       style={{ width: "100%" }}
@@ -336,7 +348,12 @@ const Booking = () => {
                   <Form.Item
                     name="typeOfConsulting"
                     label="Hình thức khám"
-                    required
+                    rules={[
+                      {
+                        required: true,
+                        message: "Vui lòng chọn hình thức khám",
+                      },
+                    ]}
                   >
                     <Select
                       placeholder="Chọn hình thức khám"

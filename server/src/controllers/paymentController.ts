@@ -108,6 +108,20 @@ export const updatePaymentById = async (req: Request, res: Response) => {
       await appointment.save();
     }
 
+    if (status === "CANCELLED") {
+      const appointment = await Appointment.findById(payment.appointmentId);
+
+      if (!appointment) {
+        return res.status(404).json({ message: "Không tìm thấy cuộc hẹn" });
+      }
+
+      appointment.status = "Đã hủy";
+      appointment.notes =
+        "Quý khách sẽ được hoàn tiền theo chính sách của công ty!";
+
+      await appointment.save();
+    }
+
     await payment.save();
 
     return res.status(200).json({ message: "Cập nhật thành công" });
@@ -116,3 +130,29 @@ export const updatePaymentById = async (req: Request, res: Response) => {
     return res.status(500).json({ message: error.message });
   }
 };
+
+export const getPaymentByAppointmentId = async (req: Request, res: Response) => {
+  const appointmentId = req.params.appointmentId;
+  try {
+    const payment = await Payment.findOne({ appointmentId });
+
+    if (!payment) {
+      return res.status(404).json({ message: "Không tìm thấy thông tin thanh toán cho cuộc hẹn này" });
+    }
+
+    const formattedPayment = {
+      date: payment.date,
+      serviceName: payment.serviceName,
+      totalPrice: payment.totalPrice,
+      status: payment.status,
+      paymentLinkId: payment.paymentLinkId,
+    };
+
+    return res.status(200).json({ data: formattedPayment });
+  } catch (error: any) {
+    console.error(error);
+    return res.status(500).json({ message: "Lỗi khi lấy thông tin thanh toán", error: error.message });
+  }
+};
+
+
