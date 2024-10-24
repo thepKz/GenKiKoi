@@ -81,32 +81,29 @@ export const getAllAppointmentsByDoctorId = async (
 
 export const updateStatusAppointment = async (req: Request, res: Response) => {
   const appointmentId = req.params.appointmentId;
-  let { completed } = req.body;
+  let { status } = req.body;
   try {
-    // Lấy cuộc hẹn hiện tại
-    const appointment = await Appointment.findById(appointmentId);
-    if (!appointment) {
-      return res.status(404).json({ message: "Cuộc hẹn không tìm thấy." });
-    }
-
-    // Cập nhật trạng thái và completed
-    completed = !completed; // Đảo ngược giá trị completed
     const updatedAppointment = await Appointment.findByIdAndUpdate(
       appointmentId,
       {
-        status: completed ? "Đã hoàn thành" : "Đang chờ xử lý",
+        status:
+          status === "DONE"
+            ? "Đã hoàn thành"
+            : status === "PENDING"
+            ? "Đang chờ xử lý"
+            : status === "CANCELED"
+            ? "Đã hủy"
+            : "Đã xác nhận",
+        notes: "Quý khách sẽ được hoàn tiền theo chính sách của công ty!",
       },
-      { new: true } // Trả về tài liệu đã cập nhật
+      { new: true }
     );
-    const formattedAppointment = {
-      appointmentId: updatedAppointment?._id,
-      status: updatedAppointment?.status,
-      completed,
-    };
 
-    return res
-      .status(200)
-      .json({ message: "Đã cập nhật cuộc hẹn", data: formattedAppointment });
+    if (!updatedAppointment) {
+      return res.status(404).json({ message: "Không tìm thấy cuộc hẹn" });
+    }
+
+    return res.status(200).json({ message: "Đã cập nhật cuộc hẹn" });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "Lỗi khi cập nhật cuộc hẹn" });

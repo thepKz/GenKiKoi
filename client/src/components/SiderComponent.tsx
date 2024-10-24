@@ -1,16 +1,18 @@
 import { Avatar, Layout, Menu, MenuProps } from "antd";
-import { DocumentLike, DocumentText, Home2, User } from "iconsax-react";
+import { DocumentLike, DocumentText, Home2, Logout, User } from "iconsax-react";
 import { VscHistory } from "react-icons/vsc";
 import { Link, useLocation } from "react-router-dom";
 
 const { Sider } = Layout;
 
 import Logo from "../assets/logo-transparent.png";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { IAuth } from "../types";
+import { removeAuth } from "../redux/reducers/authReducer";
 
 const SiderComponent = () => {
   const location = useLocation();
+  const dispatch = useDispatch();
   const auth: IAuth = useSelector((state: any) => state.authReducer.data);
 
   const items: MenuProps["items"] = [
@@ -52,6 +54,12 @@ const SiderComponent = () => {
           src={auth.photoUrl}
         />
       ),
+    },
+    {
+      key: "logout",
+      label: "Đăng xuất",
+      icon: <Logout size={20} />,
+      onClick: () => dispatch(removeAuth({})),
     },
   ];
 

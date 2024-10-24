@@ -21,10 +21,6 @@ router.get(
 
 router.post("/customers/:customerId", authMiddleware, createNewAppointment);
 
-router.patch(
-  "/completed/:appointmentId",
-  authMiddleware,
-  updateStatusAppointment
-);
+router.patch("/:appointmentId/status", authMiddleware, updateStatusAppointment);
 
 export default router;

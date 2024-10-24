@@ -55,7 +55,6 @@ const AppointmentSchema = new mongoose.Schema<IAppointment>(
         "Đã xác nhận",
         "Đã hoàn thành",
         "Đã hủy",
-        "Đã thay đổi lịch",
       ],
       default: "Đang chờ xử lý",
     },
