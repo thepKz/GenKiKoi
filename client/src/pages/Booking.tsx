@@ -261,6 +261,7 @@ const Booking = () => {
       message.error(error.message);
     } finally {
       setIsLoadingForm(false);
+      form.resetFields();
     }
   };
 

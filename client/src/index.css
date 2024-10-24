@@ -25,7 +25,7 @@
 
 @layer components {
   .section {
-    @apply py-20;
+    @apply container mx-auto my-5 h-[calc(100vh-40px)] rounded-md bg-white p-5 shadow-sm lg:w-[95%];
   }
 
   .item-hover {
@@ -48,6 +48,11 @@
 }
 
 /* ======== ADDITIONAL CSS ======== */
+
+::-webkit-scrollbar {
+  display: none;
+}
+
 /* Header */
 .link div {
   width: 0;
@@ -71,5 +76,5 @@
 }
 
 .ant-table-container {
-  height: calc(100vh - 280px);
+  height: calc(100vh - 230px);
 }

@@ -16,6 +16,7 @@ import { useEffect, useState } from "react";
 import { handleAPI } from "../../apis/handleAPI";
 import { useSelector } from "react-redux";
 import { IAuth } from "../../types";
+import { HeaderComponent } from "../../components";
 
 const columns: TableProps<AppointmentData>["columns"] = [
   {
@@ -129,38 +130,20 @@ const Appointment = () => {
   ];
 
   return (
-    <div>
-      <div className="container mx-auto my-5 h-[calc(100vh-115px)] rounded-md bg-white p-5 shadow-sm lg:w-[95%]">
+    <ConfigProvider
+      theme={{
+        inherit: false,
+        token: {
+          fontFamily: "Pro-Rounded",
+        },
+      }}
+    >
+      <div className="section">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <h1 className="heading-3">Danh sách cuộc hẹn</h1>
-          <div className="">
-            <ConfigProvider
-              theme={{
-                inherit: false,
-                token: {
-                  fontFamily: "Pro-Rounded",
-                },
-              }}
-            >
-              <Dropdown menu={{ items: filterOptions }}>
-                <Button icon={<Sort size={18} />}>Lọc</Button>
-              </Dropdown>
-            </ConfigProvider>
-          </div>
-        </div>
-        {/* Divider */}
-        <ConfigProvider
-          theme={{
-            components: {
-              Divider: {
-                marginLG: 15,
-              },
-            },
-          }}
-        >
-          <Divider />
-        </ConfigProvider>
+        <HeaderComponent
+          heading="Danh sách cuộc hẹn"
+          placeholder="Tìm cuộc hẹn"
+        />
         {/* Table */}
         <div className="">
           <Table
@@ -175,7 +158,7 @@ const Appointment = () => {
           />
         </div>
       </div>
-    </div>
+    </ConfigProvider>
   );
 };
 

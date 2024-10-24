@@ -1,4 +1,4 @@
-import { Layout, Menu, MenuProps } from "antd";
+import { Avatar, Layout, Menu, MenuProps } from "antd";
 import { DocumentLike, DocumentText, Home2, User } from "iconsax-react";
 import { VscHistory } from "react-icons/vsc";
 import { Link, useLocation } from "react-router-dom";
@@ -6,9 +6,12 @@ import { Link, useLocation } from "react-router-dom";
 const { Sider } = Layout;
 
 import Logo from "../assets/logo-transparent.png";
+import { useSelector } from "react-redux";
+import { IAuth } from "../types";
 
 const SiderComponent = () => {
   const location = useLocation();
+  const auth: IAuth = useSelector((state: any) => state.authReducer.data);
 
   const items: MenuProps["items"] = [
     {
@@ -38,7 +41,17 @@ const SiderComponent = () => {
     {
       key: "profile",
       label: <Link to={"/my-account/profile"}>Hồ sơ cá nhân</Link>,
-      icon: <User size={20} />,
+      icon: (
+        <Avatar
+          icon={
+            <User
+              size={16}
+              color="white"
+            />
+          }
+          src={auth.photoUrl}
+        />
+      ),
     },
   ];
 

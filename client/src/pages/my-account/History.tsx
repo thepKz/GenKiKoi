@@ -5,6 +5,7 @@ import { IAuth } from "../../types";
 import { handleAPI } from "../../apis/handleAPI";
 import { getValue } from "../../utils";
 import { Link } from "react-router-dom";
+import { HeaderComponent } from "../../components";
 
 const History = () => {
   const auth: IAuth = useSelector((state: any) => state.authReducer.data);
@@ -31,25 +32,20 @@ const History = () => {
         token: {
           fontFamily: "Pro-Rounded",
         },
-        components: {
-          Divider: {
-            marginLG: 15,
-          },
-          Button: {},
-        },
       }}
     >
-      <div className="container mx-auto my-5 h-[calc(100vh-115px)] rounded-md bg-white p-5 shadow-sm lg:w-[95%]">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <h1 className="heading-3">Lịch sử thanh toán</h1>
-        </div>
-        {/* Divider */}
-        <Divider />
+      <div className="section">
+        <HeaderComponent
+          heading="Danh sách hóa đơn"
+          placeholder="Tìm hóa đơn"
+        />
         {/* List Card */}
-        <div className="flex h-[calc(100vh-230px)] flex-col gap-5 overflow-y-auto">
-          {payments.map((payment: any) => (
-            <Card>
+        <div className="flex h-[calc(100vh-170px)] flex-col gap-5 overflow-y-auto">
+          {payments.map((payment: any, i) => (
+            <Card
+              key={i}
+              className="duration-100 ease-in hover:border-[#4096ff]"
+            >
               <div className="flex items-start justify-between">
                 <div className="flex flex-col gap-1">
                   <p>
