@@ -1,0 +1,10 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+      "types": ["node", "codeceptjs"]
+    },
+    "include": [
+      "tests/**/*.ts",
+      "codecept.conf.ts"
+    ]
+  }

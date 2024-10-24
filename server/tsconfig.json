@@ -1,20 +1,12 @@
 {
   "compilerOptions": {
-    "target": "es2018",
-    "lib": ["es2018", "DOM"],
-    "esModuleInterop": true,
+    "target": "es6",
     "module": "commonjs",
-    "types": ["node", "mocha"],
-    "skipLibCheck": true,
     "outDir": "./dist",
+    "rootDir": "./src",
     "strict": true,
-    "noImplicitAny": false,
-    "typeRoots": ["./types", "./node_modules/@types"]
+    "esModuleInterop": true
   },
-  "include": [
-    "src/**/*.ts",
-    "steps_file.ts",
-    "codecept.conf.ts",
-    "types/**/*.d.ts"
-  ]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"]
 }

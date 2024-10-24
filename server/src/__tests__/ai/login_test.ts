@@ -1,9 +1,13 @@
 Feature('Login');
 
-Scenario('test login', ({ I }) => {
+Scenario('Test login with AI', async ({ I }) => {
   I.amOnPage('/login');
-  I.fillField('input[name=email]', 'test@example.com');
-  I.fillField('input[name=password]', 'password123');
-  I.click('button[type=submit]');
+  
+  // Sử dụng AI để tìm và điền form
+  await I.useAI('Find email input and type test@example.com');
+  await I.useAI('Find password field and type password123');
+  await I.useAI('Click the login button');
+
+  // Verify
   I.see('Welcome');
 });

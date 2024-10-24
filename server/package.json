@@ -4,6 +4,9 @@
   "main": "index.js",
   "scripts": {
     "test": "jest --config jest.config.js",
+    "test:e2e": "codeceptjs run --config=codecept.conf.ts",
+    "test:e2e:ui": "codeceptjs run --config=codecept.conf.ts --plugins retryFailedStep",
+    "test:e2e:debug": "codeceptjs run --config=codecept.conf.ts --debug",
     "start": "node dist/index.js",
     "build": "tsc",
     "dev": "nodemon --exec ts-node src/index.ts"

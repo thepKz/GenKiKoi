@@ -1,23 +1,22 @@
-import { setHeadlessWhen, setCommonPlugins } from '@codeceptjs/configure';
-// turn on headless mode when running with HEADLESS=true environment variable
-// export HEADLESS=true && npx codeceptjs run
-setHeadlessWhen(process.env.HEADLESS);
+import * as dotenv from 'dotenv';
+dotenv.config();
 
-// enable all common plugins https://github.com/codeceptjs/configure#setcommonplugins
-setCommonPlugins();
-
-export const config: CodeceptJS.MainConfig = {
-  tests: '.src/__tests__/ai/login_test.ts',
-  output: '.output',
+export const config = {
+  tests: './src/__tests__/**/*_test.ts',
+  output: './output',
   helpers: {
     Playwright: {
-      browser: 'chromium',
       url: 'http://localhost:5173',
-      show: true
+      show: true,
+      browser: 'chromium'
+    },
+    AI: {
+      require: './helpers/ai_helper.ts',
+      apiKey: process.env.OPENAI_API_KEY
     }
   },
   include: {
-    I: './steps_file'
+    I: './steps_file.ts'
   },
   name: 'server'
-}
+};
