@@ -10,6 +10,7 @@ import medicalRecordRoutes from "./medicalRecordRoutes";
 import pondRoutes from "./pondRoutes";
 import fishRoutes from "./fishRoutes";
 import doctorScheduleRoutes from "./doctorScheduleRoutes";
+import feedbackRoutes from "./feedbackRoutes";
 export {
   appointmentRoutes,
   authRoutes,
@@ -23,4 +24,5 @@ export {
   fishRoutes,
   doctorScheduleRoutes,
   paymentRoutes,
+  feedbackRoutes,
 };

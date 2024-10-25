@@ -114,7 +114,7 @@ export const updateProfile = async (req: AuthRequest, res: Response) => {
     }
 
     const formattedUser = {
-      _id: updatedUser._id,
+      id: updatedUser._id,
       username: updatedUser.username,
       email: updatedUser.email,
       photoUrl: updatedUser.photoUrl,

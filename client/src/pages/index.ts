@@ -45,5 +45,5 @@ export {
   PaymentSuccess,
   ListFishRecords,
   RecordDetail,
-  PondDetail
+  PondDetail,
 };

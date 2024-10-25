@@ -1,8 +1,9 @@
 import mongoose from "mongoose";
-import { IAppointment } from "./Appointment";
-
 export interface IFeedback {
-  userId: mongoose.Types.ObjectId;
+  customerId: mongoose.Types.ObjectId;
+  appointmentId: mongoose.Types.ObjectId;
+  doctorId: mongoose.Types.ObjectId;
+  serviceId: mongoose.Types.ObjectId;
   feedbackDate: Date;
   rating: 1 | 2 | 3 | 4 | 5;
   comment?: string;
@@ -10,9 +11,24 @@ export interface IFeedback {
 
 const FeedBackSchema = new mongoose.Schema<IFeedback>(
   {
-    userId: {
+    customerId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: "Customer",
+      required: true,
+    },
+    appointmentId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Appointment",
+      required: true,
+    },
+    doctorId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Doctor",
+      required: true,
+    },
+    serviceId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Service",
       required: true,
     },
     feedbackDate: {

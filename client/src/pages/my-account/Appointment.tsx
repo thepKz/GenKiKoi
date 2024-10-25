@@ -1,4 +1,15 @@
-import { Button, ConfigProvider, message, Modal, Spin, Table, TableProps, Tag } from "antd";
+import {
+  Button,
+  ConfigProvider,
+  message,
+  Modal,
+  Rate,
+  Spin,
+  Table,
+  TableProps,
+  Tag,
+  Input,
+} from "antd";
 import { getValue } from "../../utils";
 import { useEffect, useState } from "react";
 import { handleAPI } from "../../apis/handleAPI";
@@ -6,9 +17,18 @@ import { useSelector } from "react-redux";
 import { IAuth } from "../../types";
 import { HeaderComponent } from "../../components";
 
+const { TextArea } = Input;
+
 const Appointment = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [appointments, setAppointments] = useState<any>([]);
+  const [feedbackLoading, setFeedbackLoading] = useState(false);
+  const [isFeedbackModalVisible, setIsFeedbackModalVisible] = useState<boolean>(false);
+  const [currentAppointment, setCurrentAppointment] = useState<any>(null);
+  const [rating, setRating] = useState(0);
+  const [comment, setComment] = useState("");
+
+  console.log(currentAppointment);
 
   const auth: IAuth = useSelector((state: any) => state.authReducer.data);
 
@@ -66,6 +86,33 @@ const Appointment = () => {
       console.log(error);
       message.error(error.message);
     }
+  };
+
+  const handleFeedbackSubmit = async () => {
+    try {
+      setFeedbackLoading(true);
+      const api = `/api/feedbacks`;
+      const feedbackData = {
+        appointmentId: currentAppointment.appointmentId,
+        rating,
+        comment,
+      };
+      const res: any = await handleAPI(api, feedbackData, "POST");
+      message.success(res.message);
+      setIsFeedbackModalVisible(false);
+    } catch (error: any) {
+      console.log(error);
+      message.error("Có lỗi xảy ra khi gửi đánh giá");
+    } finally {
+      setFeedbackLoading(false);
+      setComment("");
+      setRating(0);
+    }
+  };
+
+  const showFeedbackModal = (record: any) => {
+    setCurrentAppointment(record);
+    setIsFeedbackModalVisible(true);
   };
 
   const columns: TableProps["columns"] = [
@@ -139,9 +186,19 @@ const Appointment = () => {
             Hủy lịch
           </Button>
         ) : record.status === "Đang chờ xử lý" ? (
-          <Button onClick={() => handlePayment(record.appointmentId)}>Thanh toán</Button>
+          <Button
+            type="primary"
+            onClick={() => handlePayment(record.appointmentId)}
+          >
+            Thanh toán
+          </Button>
         ) : record.status === "Đã hoàn thành" ? (
-          <Button>Viết đánh giá</Button>
+          <Button
+            type="primary"
+            onClick={() => showFeedbackModal(record)}
+          >
+            Viết đánh giá
+          </Button>
         ) : (
           ""
         );
@@ -186,6 +243,46 @@ const Appointment = () => {
           />
         </div>
       </div>
+
+      <Modal
+        okText="Gửi nhận xét"
+        cancelText="Hủy"
+        open={isFeedbackModalVisible}
+        onOk={handleFeedbackSubmit}
+        confirmLoading={feedbackLoading}
+        onCancel={() => setIsFeedbackModalVisible(false)}
+        okButtonProps={{ disabled: rating === 0 || comment.trim() === "" }}
+      >
+        <div className="my-5">
+          <h1 className="heading-4">Viết đánh giá</h1>
+          <div className="my-2 flex flex-col gap-3 text-base">
+            <p>
+              <span className="font-semibold">Đánh giá dịch vụ:</span>{" "}
+              {currentAppointment?.serviceName}
+            </p>
+            <p>
+              <span className="font-semibold">Bác sĩ:</span> {currentAppointment?.doctorFullName}
+            </p>
+            <p className="font-semibold">Bạn có hài lòng với cuộc hẹn này không 🥰</p>
+          </div>
+          <div className="text-center mt-3">
+            <Rate
+              onChange={setRating}
+              value={rating}
+              tooltips={["Rất tệ", "Tệ", "Ổn", "Tốt", "Rất tốt"]}
+              style={{ fontSize: 28 }}
+            />
+          </div>
+          <p className="mb-2 text-base font-semibold">Nhận xét</p>
+          <TextArea
+            size="large"
+            placeholder="Hãy viết nhận xét của mình ở đây nhé"
+            rows={5}
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+          />
+        </div>
+      </Modal>
     </ConfigProvider>
   );
 };

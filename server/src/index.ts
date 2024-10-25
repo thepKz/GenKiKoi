@@ -20,6 +20,7 @@ import {
   pondRoutes,
   fishRoutes,
   doctorScheduleRoutes,
+  feedbackRoutes,
 } from "./routes";
 import { DoctorSchedule, MedicalRecord } from "./models";
 
@@ -70,6 +71,7 @@ app.use("/api/fishes", fishRoutes);
 app.use("/api/distance", distanceRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/doctorSchedules", doctorScheduleRoutes);
+app.use("/api/feedbacks", feedbackRoutes);
 
 // Export the app for testing purposes
 export { app };
