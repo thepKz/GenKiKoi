@@ -1,10 +1,16 @@
-// in this file you can append custom step methods to 'I' object
+const { I } = inject();
 
 export = function() {
   return actor({
+    // Add custom steps here
+    async waitAndSay(message: string, delay = 500) {
+      await this.wait(delay);
+      this.say(message);
+    },
 
-    // Define custom steps here, use 'this' to access default methods of I.
-    // It is recommended to place a general 'login' function here.
-
+    // Add a general wait function
+    async wait(time: number) {
+      return new Promise(resolve => setTimeout(resolve, time));
+    }
   });
 }

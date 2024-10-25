@@ -1,5 +1,14 @@
 declare namespace CodeceptJS {
-  export interface MainConfig {
+  interface I {
+    amOnPage(url: string): void;
+    see(text: string): void;
+    fillField(field: string, value: string): void;
+    click(locator: string): void;
+    say(message: string): void;
+    useAI(description: string): Promise<void>;
+  }
+
+  interface MainConfig {
     tests: string;
     output: string;
     helpers: any;
@@ -7,11 +16,7 @@ declare namespace CodeceptJS {
     name: string;
     plugins?: any;
   }
-
-  export interface I {
-    amOnPage(url: string): void;
-    see(text: string): void;
-    fillField(field: string, value: string): void;
-    click(locator: string): void;
-  }
 }
+
+declare const Feature: (title: string) => void;
+declare const Scenario: (title: string, callback: Function) => void;
