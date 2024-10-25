@@ -1,5 +1,5 @@
-import { Response, Request } from "express";
-import { Doctor, DoctorSchedule, Payment, Service, User } from "../models";
+import { Request, Response } from "express";
+import { Doctor, DoctorSchedule, Payment, Service } from "../models";
 import Appointment from "../models/Appointment";
 import Customer from "../models/Customer";
 /**
