@@ -118,6 +118,7 @@ export const updateProfile = async (req: AuthRequest, res: Response) => {
       username: updatedUser.username,
       email: updatedUser.email,
       photoUrl: updatedUser.photoUrl,
+      customerId: updatedCustomer._id,
     };
 
     return res

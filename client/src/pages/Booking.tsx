@@ -14,17 +14,18 @@ import {
   Spin,
 } from "antd";
 
-import axios from 'axios';
-import { debounce } from 'lodash'; // Thêm import này
+import axios from "axios";
+import { debounce } from "lodash"; // Thêm import này
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import VietNamProvinces from "../../data";
 import { handleAPI } from "../apis/handleAPI";
-import Map from '../components/Map';
+import Map from "../components/Map";
 import { CustomerData } from "../models/DataModels";
 import { CustomCalendar } from "../share";
 import { IAuth } from "../types";
 import dayjs from "dayjs";
+import { useNavigate } from "react-router-dom";
 
 const { TextArea } = Input;
 
@@ -32,6 +33,8 @@ const Booking = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  const navigate = useNavigate();
 
   const auth: IAuth = useSelector((state: any) => state.authReducer.data);
 
@@ -71,7 +74,7 @@ const Booking = () => {
   const [movingPrice, setMovingPrice] = useState<number>(0);
 
   // Thêm state để theo dõi input value
-  const [searchValue, setSearchValue] = useState<string>('');
+  const [searchValue, setSearchValue] = useState<string>("");
 
   useEffect(() => {
     const res = VietNamProvinces.map((item: any) => ({
@@ -116,24 +119,22 @@ const Booking = () => {
         const api = `api/users/`;
         const res = await handleAPI(api, undefined, "GET");
         setProfile(res.data);
+        if (!res.data.phoneNumber || !res.data.gender || !res.data.fullName) {
+          navigate("/my-account/profile");
+        }
       } catch (error) {
         console.log(error);
+        message.error("Có lỗi xảy ra khi tải thông tin người dùng.");
       } finally {
         setIsLoading(false);
       }
     };
     getProfile();
-  }, []);
+  }, [navigate]);
 
   useEffect(() => {
     if (profile) {
       form.setFieldsValue({
-        fullName: profile.fullName,
-        phoneNumber: profile.phoneNumber,
-        gender: profile.gender,
-        city: profile.city,
-        district: profile.district,
-        ward: profile.ward,
         detailAddress: profile.detailAddress,
       });
     }
@@ -177,7 +178,7 @@ const Booking = () => {
       const distanceInKm = parseFloat(distance);
       const pricePerKm = 5000; // 5.000 VNĐ/km
       const calculatedPrice = distanceInKm * pricePerKm;
-      
+
       // Làm tròn đến hàng nghìn
       setMovingPrice(Math.round(calculatedPrice / 1000) * 1000);
     }
@@ -240,8 +241,6 @@ const Booking = () => {
     setSlot(null);
   };
 
-  console.log(doctorSchedule);
-
   const handleSubmit = async (values: any) => {
     try {
       setIsLoadingForm(true);
@@ -298,30 +297,32 @@ const Booking = () => {
     }
   };
 
+  console.log(auth);
+
   // Cập nhật hàm handleAddressSearch với debounce
   const handleAddressSearch = debounce(async (value: string) => {
-    console.log('Search value:', value);
+    console.log("Search value:", value);
     if (value.length > 2) {
       try {
         const response = await axios.get(`http://localhost:5000/api/distance/autocomplete`, {
           params: {
-            query: value
+            query: value,
           },
           headers: {
-            'Accept': 'application/json'
-          }
+            Accept: "application/json",
+          },
         });
-        
-        console.log('API Response:', response.data);
-        
+
+        console.log("API Response:", response.data);
+
         if (response.data && Array.isArray(response.data.data)) {
           setAddressOptions(response.data.data);
         } else {
-          console.log('Invalid response format:', response.data);
+          console.log("Invalid response format:", response.data);
           setAddressOptions([]);
         }
       } catch (error: unknown) {
-        console.error('Error details:', (error as { response?: { data: unknown } }).response?.data);
+        console.error("Error details:", (error as { response?: { data: unknown } }).response?.data);
         setAddressOptions([]);
       }
     } else {
@@ -332,19 +333,21 @@ const Booking = () => {
   // Cập nhật hàm handleAddressSelect
   const handleAddressSelect = async (value: string) => {
     try {
-        const response = await axios.get(`http://localhost:5000/api/distance/calculate-route?address=${encodeURIComponent(value)}`);
-        const { origin, route, distance, duration } = response.data;
-        
-        if (origin && route) {
-            setOrigin([origin.lat, origin.lon]);
-            setRoute(route); // Đây sẽ là mảng các tọa độ đã được decode
-            setDistance(distance);
-            setDuration(duration);
-            form.setFieldsValue({ address: value });
-        }
+      const response = await axios.get(
+        `http://localhost:5000/api/distance/calculate-route?address=${encodeURIComponent(value)}`,
+      );
+      const { origin, route, distance, duration } = response.data;
+
+      if (origin && route) {
+        setOrigin([origin.lat, origin.lon]);
+        setRoute(route); // Đây sẽ là mảng các tọa độ đã được decode
+        setDistance(distance);
+        setDuration(duration);
+        form.setFieldsValue({ address: value });
+      }
     } catch (error) {
-        console.error('Error calculating route:', error);
-        message.error('Không thể tính toán tuyến đường');
+      console.error("Error calculating route:", error);
+      message.error("Không thể tính toán tuyến đường");
     }
   };
 
@@ -464,9 +467,7 @@ const Booking = () => {
                         }).format(movingPrice)}
                       </span>
                     </div>
-                    <div className="text-sm text-gray-300 mt-1">
-                      (5.000đ/km)
-                    </div>
+                    <div className="mt-1 text-sm text-gray-300">(5.000đ/km)</div>
                     <Divider style={{ borderColor: "white" }} />
                     <div className="flex items-center justify-between text-white">
                       <span>Tổng tiền:</span>
@@ -525,7 +526,7 @@ const Booking = () => {
                   </Form.Item>
                 </div>
                 <div className="lg:w-[45%]">
-                  <Row>
+                  {/* <Row>
                     <Col span={24}>
                       <Form.Item
                         required
@@ -622,27 +623,7 @@ const Booking = () => {
                         />
                       </Form.Item>
                     </Col>
-                  </Row>
-                  <Row>
-                    <Col span={24}>
-                      <Form.Item
-                        name="detailAddress"
-                        label="Địa chỉ"
-                      >
-                        <AutoComplete
-                          value={searchValue}
-                          options={addressOptions}
-                          onSearch={handleAddressSearch}
-                          onSelect={handleAddressSelect}
-                          placeholder="Nhập địa chỉ"
-                          style={{ width: '100%' }}
-                          notFoundContent={searchValue.length > 2 ? "Không tìm thấy địa chỉ" : "Nhập ít nhất 3 ký tự"}
-                          defaultActiveFirstOption={true}
-                          allowClear={true}
-                        />
-                      </Form.Item>
-                    </Col>
-                  </Row>
+                  </Row> */}
                   <Row>
                     <Col span={24}>
                       <Form.Item
@@ -660,7 +641,35 @@ const Booking = () => {
                   </Row>
                   <Row>
                     <Col span={24}>
-                      <Map origin={origin} destination={destination} route={route} />
+                      <Form.Item
+                        name="detailAddress"
+                        label="Địa chỉ"
+                      >
+                        <AutoComplete
+                          value={searchValue}
+                          options={addressOptions}
+                          onSearch={handleAddressSearch}
+                          onSelect={handleAddressSelect}
+                          placeholder="Nhập địa chỉ"
+                          style={{ width: "100%" }}
+                          notFoundContent={
+                            searchValue.length > 2
+                              ? "Không tìm thấy địa chỉ"
+                              : "Nhập ít nhất 3 ký tự"
+                          }
+                          defaultActiveFirstOption={true}
+                          allowClear={true}
+                        />
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col span={24}>
+                      <Map
+                        origin={origin}
+                        destination={destination}
+                        route={route}
+                      />
                     </Col>
                   </Row>
                 </div>
