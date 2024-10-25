@@ -17,7 +17,7 @@ router.get("/", getAllDoctors);
 router.get("/all", getAllDoctorsForBooking);
 
 // Lấy thông tin bác sĩ theo Id
-router.get("/:doctorId", getDoctorById);
+router.get("/:doctorId", authMiddleware, getDoctorById);
 
 // Thêm bác sĩ mới
 router.post("/", authMiddleware, roleMiddleware(["manager"]), addNewDoctor);

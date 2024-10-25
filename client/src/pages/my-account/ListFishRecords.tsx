@@ -1,16 +1,21 @@
-import { Breadcrumb, Button, message, TableProps } from "antd";
-import { HeaderPage } from "../../components";
+import { useSelector } from "react-redux";
+import { HeaderComponent } from "../../components";
 import { CustomTable } from "../../share";
 import { Link, useLocation } from "react-router-dom";
-import { Stickynote } from "iconsax-react";
+import { IAuth } from "../../types";
 import { useEffect, useState } from "react";
 import { handleAPI } from "../../apis/handleAPI";
+import { Breadcrumb, Button, ConfigProvider, message } from "antd";
+import { TableProps } from "antd/lib";
+import { Stickynote } from "iconsax-react";
 
 const ListFishRecords = () => {
   const { pathname } = useLocation();
-  const customerId = pathname.split("/")[3];
-  const fishId = pathname.split("/")[5];
+  const auth: IAuth = useSelector((state: any) => state.authReducer.data);
+
+  const fishId = pathname.split("/")[4];
   const [records, setRecords] = useState([]);
+
   useEffect(() => {
     const getAllRecords = async () => {
       try {
@@ -72,9 +77,7 @@ const ListFishRecords = () => {
       width: 150,
       render: (_text: any, record: any) => (
         <div className="text-center">
-          <Link
-            to={`/doctor/customers/${customerId}/fishes/${fishId}/records/${record.recordId}`}
-          >
+          <Link to={`/my-account/medical-record/fishes/${fishId}/records/${record.recordId}`}>
             <Button type="primary">Xem chi tiết</Button>
           </Link>
         </div>
@@ -83,38 +86,45 @@ const ListFishRecords = () => {
   ];
 
   return (
-    <div className="section">
-      <HeaderPage heading="Danh sách hồ sơ" placeholder="Tìm hồ sơ" />
-      <Breadcrumb
-        separator=">"
-        items={[
-          {
-            title: (
-              <Link to="/doctor/customers">
-                <div className="flex items-center gap-2">
-                  <Stickynote size={20} />
-                  Hồ sơ khách hàng
-                </div>
-              </Link>
-            ),
-          },
-          {
-            title: <Link to="/doctor/customers">Hồ sơ bệnh án</Link>,
-          },
-          {
-            title: (
-              <Link to={`/doctor/customers/${customerId}/fishes`}>Danh sách cá</Link>
-            ),
-          },
-          {
-            title: "Danh sách hồ sơ bệnh án",
-          },
-        ]}
-      />
-      <div className="doctor-view fish-record mt-3">
-        <CustomTable columns={columns} dataSource={records} />
+    <ConfigProvider
+      theme={{
+        inherit: false,
+        token: {
+          fontFamily: "Pro-Rounded",
+        },
+      }}
+    >
+      <div className="my-account-section">
+        <HeaderComponent
+          heading="Danh sách hồ sơ"
+          placeholder="Tìm hồ sơ"
+        />
+        <Breadcrumb
+          separator=">"
+          items={[
+            {
+              title: (
+                <Link to="/my-account/medical-record">
+                  <div className="flex items-center gap-2">
+                    <Stickynote size={20} />
+                    Hồ sơ điều trị
+                  </div>
+                </Link>
+              ),
+            },
+            {
+              title: "Danh sách hồ sơ bệnh án",
+            },
+          ]}
+        />
+        <div className="doctor-view fish-record mt-3">
+          <CustomTable
+            columns={columns}
+            dataSource={records}
+          />
+        </div>
       </div>
-    </div>
+    </ConfigProvider>
   );
 };
 

@@ -5,13 +5,15 @@ import ManagerRouter from "./ManagerRouter";
 import StaffRouter from "./StaffRouter";
 import DoctorRouter from "./DoctorRouter";
 import { IAuth } from "../types";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { addAuth } from "../redux/reducers/authReducer";
+import { Spin } from "antd";
 
 const Routers = () => {
   const auth: IAuth = useSelector((state: any) => state.authReducer.data);
   const dispatch = useDispatch();
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const getData = () => {
@@ -19,7 +21,16 @@ const Routers = () => {
       res && dispatch(addAuth(JSON.parse(res)));
     };
     getData();
+    setIsLoading(false);
   }, [dispatch]);
+
+  if (isLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <Spin size="large" />
+      </div>
+    );
+  }
 
   return (
     <BrowserRouter>

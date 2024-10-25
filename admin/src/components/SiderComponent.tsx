@@ -48,13 +48,6 @@ const SiderComponent = () => {
       key: "divider",
       type: "divider",
     },
-    // {
-    //   key: "profile",
-    //   label: <Link to={"/manager/profile"}>Hồ sơ cá nhân</Link>,
-    //   icon: (
-    //     <Avatar icon={<User size={16} color="white" />} src={auth.photoUrl} />
-    //   ),
-    // },
     {
       key: "logout",
       label: "Đăng xuất",

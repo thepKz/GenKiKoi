@@ -1,6 +1,6 @@
 import { Layout } from "antd";
 import { Outlet } from "react-router-dom";
-import { HeaderComponent, SiderComponent } from "../components";
+import { SiderComponent } from "../components";
 
 const { Content } = Layout;
 
@@ -9,7 +9,6 @@ const MyAccountLayout = () => {
     <Layout>
       <SiderComponent />
       <Layout>
-        <HeaderComponent />
         <Content>
           <Outlet />
         </Content>

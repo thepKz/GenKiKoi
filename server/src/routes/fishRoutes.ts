@@ -3,6 +3,7 @@ import {
   getAllFish,
   getAllFishesByCustomerId,
   getFishByPhoneNumber,
+  updateFish,
 } from "../controllers/fishController";
 import { authMiddleware } from "../middleware";
 
@@ -12,6 +13,8 @@ router.get("/", authMiddleware, getAllFish);
 
 router.get("/:customerId", authMiddleware, getAllFishesByCustomerId);
 
-router.get("/phones/:phoneNumber/", authMiddleware, getFishByPhoneNumber);
+router.patch("/:fishId", authMiddleware, updateFish);
+
+router.get("/customers/:phoneNumber", authMiddleware, getFishByPhoneNumber);
 
 export default router;
