@@ -227,18 +227,27 @@ jobs:
   #         NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
   #         NETLIFY_SITE_ID: ${{ secrets.NETLIFY_ADMIN_SITE_ID }}
 
-  # # Job to deploy the backend to Render
-  # deploy-backend:
-  #   needs: [test-and-build]
-  #   if: github.ref == 'refs/heads/develop'
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Deploy to Render
-  #       run: curl ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
-  #       env:
-  #         MONGO_URI: ${{ secrets.MONGO_URI }}
-  #         SECRET_KEY: ${{ secrets.SECRET_KEY }}
-  #         TMN_CODE: ${{ secrets.TMN_CODE }}
-  #         vnp_HashSecret: ${{ secrets.VNP_HASHSECRET }}
-  #         VNP_URL: ${{ secrets.VNP_URL }}
-  #         RETURN_URL: ${{ secrets.RETURN_URL }}
+  # Job to deploy the backend to Render
+  deploy-backend:
+    needs: [test-and-build]
+    if: github.ref == 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to Render
+        run: curl ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        env:
+          MONGO_URI: ${{ secrets.MONGO_URI }}
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          TMN_CODE: ${{ secrets.TMN_CODE }}
+          vnp_HashSecret: ${{ secrets.VNP_HASHSECRET }}
+          VNP_URL: ${{ secrets.VNP_URL }}
+          RETURN_URL: ${{ secrets.RETURN_URL }}
+          OPENAI_URL: ${{ secrets.OPENAI_URL }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+          CLIENT_ID: ${{ secrets.CLIENT_ID }}
+          API_KEY: ${{ secrets.API_KEY }}
+          CHECKSUM_KEY: ${{ secrets.CHECKSUM_KEY }}
+          BASE_URL_CANCELLED_PAYMENT: ${{ secrets.BASE_URL_CANCELLED_PAYMENT }}
+          BASE_URL_SUCCESS_PAYMENT: ${{ secrets.BASE_URL_SUCCESS_PAYMENT }}
+          API_URL: ${{ secrets.API_URL }}

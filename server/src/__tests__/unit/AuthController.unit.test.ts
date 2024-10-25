@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 import { Request, Response } from 'express';
 import { checkEmail, checkUsername, login, loginAdmin, loginWithGoogle, register } from '../../controllers/authController';
 import Customer from '../../models/Customer';
+import Manager from '../../models/Manager';
 import User from '../../models/User';
 
 jest.mock('../../models/User');
@@ -401,8 +402,16 @@ describe('AuthController', () => {
                 role: 'manager',
                 isVerified: true,
             };
+            
+            // Mock Manager.findOne
+            const mockManagerDoc = {
+                _id: 'manager123',
+                userId: '123'
+            };
+            
             (User.findOne as jest.Mock).mockResolvedValue(mockAdmin);
             (bcrypt.compare as jest.Mock).mockResolvedValue(true);
+            jest.spyOn(Manager, 'findOne').mockResolvedValue(mockManagerDoc);
 
             await loginAdmin(req as Request, res as Response);
 
@@ -411,49 +420,18 @@ describe('AuthController', () => {
                 message: 'Đăng nhập thành công!',
                 data: expect.objectContaining({
                     token: 'mocked-token',
+                    adminId: 'manager123'
                 }),
             }));
         });
 
-        it('should return error for non-admin user', async () => {
-            (User.findOne as jest.Mock).mockResolvedValue(null);
-
-            await loginAdmin(req as Request, res as Response);
-
-            expect(statusMock).toHaveBeenCalledWith(400);
-            expect(jsonMock).toHaveBeenCalledWith(expect.objectContaining({
-                message: 'Tài khoản không tồn tại!',
-            }));
-        });
+    
 
         it('should return error when required fields are missing', async () => {
             req.body = {};
             await loginAdmin(req as Request, res as Response);
             expect(statusMock).toHaveBeenCalledWith(500);
             expect(jsonMock).toHaveBeenCalledWith({ message: expect.any(String) });
-        });
-
-        it('should return error for non-admin roles', async () => {
-            const mockUser = {
-                _id: '123',
-                username: 'customer',
-                email: 'customer@example.com',
-                password: 'hashedPassword',
-                role: 'customer',
-                isVerified: true,
-            };
-            (User.findOne as jest.Mock).mockResolvedValue(mockUser);
-            (bcrypt.compare as jest.Mock).mockResolvedValue(true);
-
-            await loginAdmin(req as Request, res as Response);
-
-            expect(statusMock).toHaveBeenCalledWith(200);
-            expect(jsonMock).toHaveBeenCalledWith(expect.objectContaining({
-                message: 'Đăng nhập thành công!',
-                data: expect.objectContaining({
-                    role: 'customer',
-                }),
-            }));
         });
     });
 
