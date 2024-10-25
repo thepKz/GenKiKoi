@@ -340,37 +340,37 @@ export const getAllDoctorsForBooking = async (req: Request, res: Response) => {
 //   }
 // };
 
-// export const getDoctorById = async (req: Request, res: Response) => {
-//   const doctorId = req.params.doctorId;
+export const getDoctorById = async (req: Request, res: Response) => {
+  const doctorId = req.params.doctorId;
 
-//   try {
-//     const doctor = await Doctor.findOne({ _id: doctorId }).populate(
-//       "userId",
-//       "photoUrl images email fullName phoneNumber gender"
-//     );
+  try {
+    const doctor = await Doctor.findById(doctorId).populate(
+      "userId",
+      "photoUrl images email fullName phoneNumber gender"
+    );
 
-//     if (!doctor) {
-//       return res.status(404).json({ message: "Không tìm thấy bác sĩ" });
-//     }
-//     const formatDoctor = {
-//       _id: doctor._id,
-//       photoUrl: doctor.userId.photoUrl,
-//       images: doctor.images,
-//       email: doctor.userId.email,
-//       fullName: doctor.userId.fullName,
-//       phoneNumber: doctor.userId.phoneNumber,
-//       gender: doctor.userId.gender,
-//       movingService: doctor.movingService,
-//       specialization: doctor.specialization,
-//       licenseNumber: doctor.licenseNumber,
-//       yearOfExperience: doctor.yearOfExperience,
-//       introduction: doctor.introduction,
-//     };
+    if (!doctor) {
+      return res.status(404).json({ message: "Không tìm thấy bác sĩ" });
+    }
+    const formatDoctor = {
+      _id: doctor._id,
+      photoUrl: doctor.userId.photoUrl,
+      images: doctor.images,
+      email: doctor.userId.email,
+      fullName: doctor.userId.fullName,
+      phoneNumber: doctor.userId.phoneNumber,
+      gender: doctor.userId.gender,
+      movingService: doctor.movingService,
+      specialization: doctor.specialization,
+      licenseNumber: doctor.licenseNumber,
+      yearOfExperience: doctor.yearOfExperience,
+      introduction: doctor.introduction,
+    };
 
-//     return res.status(200).json({
-//       data: formatDoctor,
-//     });
-//   } catch (error: any) {
-//     return res.status(500).json({ message: error.message });
-//   }
-// };
+    return res.status(200).json({
+      data: formatDoctor,
+    });
+  } catch (error: any) {
+    return res.status(500).json({ message: error.message });
+  }
+};

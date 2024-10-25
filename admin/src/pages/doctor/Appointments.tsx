@@ -76,11 +76,6 @@ const Appointments = () => {
       render: (date) => new Date(date).toLocaleDateString(),
     },
     {
-      key: "Ghi chú",
-      title: "Ghi chú",
-      dataIndex: "notes",
-    },
-    {
       key: "Trạng thái",
       title: "Trạng thái",
       width: 150,

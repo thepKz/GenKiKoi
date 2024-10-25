@@ -1,6 +1,6 @@
-import { Response } from "express";
+import { Response, Request } from "express";
 import { AuthRequest } from "../types";
-import { Appointment, Customer, Feedback } from "../models";
+import { Appointment, Customer, Doctor, Feedback } from "../models";
 
 export const createNewFeedback = async (req: AuthRequest, res: Response) => {
   try {
@@ -58,5 +58,53 @@ export const createNewFeedback = async (req: AuthRequest, res: Response) => {
     res
       .status(500)
       .json({ message: "Đã xảy ra lỗi khi xử lý yêu cầu của bạn" });
+  }
+};
+
+export const getFeedbacksByDoctorId = async (
+  req: AuthRequest,
+  res: Response
+) => {
+  try {
+    const userId = req.user?._id;
+
+    const doctor = await Doctor.findOne({ userId });
+
+    if (!doctor) {
+      return res.status(404).json({ message: "Không tìm thấy bác sĩ" });
+    }
+
+    const feedbacks = await Feedback.find({ doctorId: doctor._id })
+      .populate({
+        path: "customerId",
+        populate: {
+          path: "userId",
+          select: "fullName",
+        },
+        select: "userId",
+      })
+      .populate({
+        path: "serviceId",
+        select: "serviceName",
+      })
+      .select("rating comment feedbackDate");
+
+    if (!feedbacks) {
+      return res.status(404).json({ message: "Không tìm thấy đánh giá" });
+    }
+
+    const formattedData = feedbacks.map((feedback: any) => ({
+      id: feedback._id,
+      customerName: feedback.customerId.userId.fullName,
+      serviceName: feedback.serviceId.serviceName,
+      feedbackDate: feedback.feedbackDate,
+      rating: feedback.rating,
+      comment: feedback.comment,
+    }));
+
+    return res.status(200).json({ data: formattedData });
+  } catch (error: any) {
+    console.log(error);
+    return res.status(500).json({ message: error.message });
   }
 };

@@ -1,4 +1,4 @@
-import { Table, TableProps } from "antd";
+import { Empty, Table, TableProps } from "antd";
 
 interface Props {
   columns: TableProps["columns"];
@@ -22,6 +22,9 @@ const CustomTable = (props: Props) => {
       loading={loading}
       pagination={{
         showSizeChanger: true,
+      }}
+      locale={{
+        emptyText: <Empty description="No Data" />,
       }}
       columns={columns}
       dataSource={dataSource}

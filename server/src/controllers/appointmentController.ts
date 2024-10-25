@@ -40,7 +40,7 @@ export const getAllAppointmentsByDoctorId = async (
         path: "serviceId",
         select: "serviceName",
       })
-      .select("notes status appointmentDate isFeedback");
+      .select("status appointmentDate isFeedback");
 
     if (!appointments || appointments.length === 0) {
       return res.status(404).json({ message: "Không tìm thấy cuộc hẹn" });
@@ -59,7 +59,6 @@ export const getAllAppointmentsByDoctorId = async (
             serviceName: appointment.serviceId.serviceName,
             phoneNumber: appointment.customerId.userId.phoneNumber,
             appointmentDate: appointment.appointmentDate,
-            notes: appointment.notes,
             status: appointment.status,
             paymentStatus: payment.status,
             isFeedback: appointment.isFeedback,
