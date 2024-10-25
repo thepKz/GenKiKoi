@@ -3,6 +3,7 @@ import {
   getAllDoctorSchedules,
   getScheduleByDoctorId,
   getSlotsByDoctorAndDate,
+  getViewCalendarByDoctorId,
   updateBookAppointment,
 } from "../controllers/doctorScheduleController";
 import { authMiddleware } from "../middleware";
@@ -14,6 +15,12 @@ router.get("/", authMiddleware, getAllDoctorSchedules);
 
 // Lấy lịch trình bác sĩ theo userId
 router.get("/:doctorId", authMiddleware, getScheduleByDoctorId);
+
+router.get(
+  "/:doctorId/view-calendar",
+  authMiddleware,
+  getViewCalendarByDoctorId
+);
 
 // Lấy slots cho một ngày cụ thể của bác sĩ
 router.get("/:doctorId/slots", authMiddleware, getSlotsByDoctorAndDate);

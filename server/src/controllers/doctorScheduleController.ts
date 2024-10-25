@@ -77,6 +77,68 @@ export const getSlotsByDoctorAndDate = async (req: Request, res: Response) => {
   }
 };
 
+export const getViewCalendarByDoctorId = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const doctorId = req.params.doctorId;
+    const schedule = await DoctorSchedule.findOne({ doctorId });
+
+    if (!schedule) {
+      return res
+        .status(404)
+        .json({ message: "Không tìm thấy lịch của bác sĩ" });
+    }
+
+    const formattedSchedule = schedule.weekSchedule.flatMap((day) => {
+      const [dayPart, monthPart, yearPart] = day.dayOfWeek.split("/");
+      const date = new Date(`${yearPart}-${monthPart}-${dayPart}`);
+      const dateString = date.toISOString().split("T")[0];
+
+      const morningSlots = day.slots.filter((slot) => {
+        const hour = parseInt(slot.slotTime.split(":")[0]);
+        return hour >= 8 && hour < 12;
+      });
+
+      const afternoonSlots = day.slots.filter((slot) => {
+        const hour = parseInt(slot.slotTime.split(":")[0]);
+        return hour >= 13 && hour < 17;
+      });
+
+      const events = [];
+
+      if (morningSlots.length > 0) {
+        events.push({
+          id: `${dateString}-morning`,
+          title: "Ca sáng",
+          start: `${dateString} 08:00`,
+          end: `${dateString} 12:00`,
+          description: "Ca sáng",
+        });
+      }
+
+      if (afternoonSlots.length > 0) {
+        events.push({
+          id: `${dateString}-afternoon`,
+          title: "Ca chiều",
+          start: `${dateString} 13:00`,
+          end: `${dateString} 17:00`,
+          description: "Ca chiều",
+        });
+      }
+
+      return events;
+    });
+
+    return res.status(200).json({ data: formattedSchedule });
+  } catch (error: any) {
+    return res
+      .status(500)
+      .json({ message: "Lỗi server", error: error.message });
+  }
+};
+
 export const updateBookAppointment = async (req: Request, res: Response) => {
   try {
     const { doctorId } = req.params;
@@ -100,22 +162,33 @@ export const updateBookAppointment = async (req: Request, res: Response) => {
 
     // Chuyển đổi appointmentDate thành định dạng DD/MM/YYYY
     const date = new Date(appointmentDate);
-    const formattedAppointmentDate = `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()}`;
+    const formattedAppointmentDate = `${date
+      .getDate()
+      .toString()
+      .padStart(2, "0")}/${(date.getMonth() + 1)
+      .toString()
+      .padStart(2, "0")}/${date.getFullYear()}`;
 
     const scheduleDate = doctorSchedule.weekSchedule.find(
       (day) => day.dayOfWeek === formattedAppointmentDate
     );
 
     if (scheduleDate) {
-      const time = scheduleDate.slots.find((time) => time.slotTime === slotTime);
+      const time = scheduleDate.slots.find(
+        (time) => time.slotTime === slotTime
+      );
       if (time) {
         time.isBooked = true;
         time.appointmentId = new mongoose.Types.ObjectId(appointmentId);
       } else {
-        return res.status(404).json({ message: "Không tìm thấy slot thời gian này" });
+        return res
+          .status(404)
+          .json({ message: "Không tìm thấy slot thời gian này" });
       }
     } else {
-      return res.status(404).json({ message: "Không tìm thấy ngày này trong lịch làm việc" });
+      return res
+        .status(404)
+        .json({ message: "Không tìm thấy ngày này trong lịch làm việc" });
     }
 
     await doctorSchedule.save();

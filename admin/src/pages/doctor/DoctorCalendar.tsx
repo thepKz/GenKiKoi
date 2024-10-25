@@ -21,18 +21,11 @@ const DoctorCalendar = () => {
 
   useEffect(() => {
     const getSchedule = async () => {
-      const api = `/api/doctorSchedules/${auth.adminId}`;
+      const api = `/api/doctorSchedules/${auth.adminId}/view-calendar`;
       try {
         setIsLoading(true);
         const res = await handleAPI(api, undefined, "GET");
-        const formattedEvents = res.data.map((event: any, index: number) => ({
-          id: index + 1,
-          title: event.title,
-          start: formatDate(event.start),
-          end: formatDate(event.end),
-          description: event.description,
-        }));
-        setEvents(formattedEvents);
+        setEvents(res.data);
       } catch (error: any) {
         console.log(error);
         message.error(error.message);
@@ -41,12 +34,7 @@ const DoctorCalendar = () => {
       }
     };
     getSchedule();
-  }, [auth.id]);
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toISOString().replace("T", " ").slice(0, -8);
-  };
+  }, [auth.adminId]);
 
   const calendar = useCalendarApp({
     views: [createViewWeek(), createViewDay(), createViewMonthGrid()],
@@ -67,7 +55,7 @@ const DoctorCalendar = () => {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto my-5 flex h-[calc(100vh-115px)] items-center justify-center rounded-md bg-white p-5 shadow-sm lg:w-[95%]">
+      <div className="container mx-auto my-5 flex h-screen items-center justify-center rounded-md bg-white p-5 shadow-sm lg:w-[95%]">
         <Spin size="large" />
       </div>
     );
