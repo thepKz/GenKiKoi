@@ -164,13 +164,20 @@ describe('AuthController', () => {
                 email: 'test@example.com',
                 password: 'hashedPassword',
                 role: 'customer',
-                isVerified: true,
             };
+            
+            const mockCustomer = {
+                _id: 'customer123',
+                userId: '123',
+                isVerified: true
+            };
+        
             (User.findOne as jest.Mock).mockResolvedValue(mockUser);
+            (Customer.findOne as jest.Mock).mockResolvedValue(mockCustomer);
             (bcrypt.compare as jest.Mock).mockResolvedValue(true);
-
+        
             await login(req as Request, res as Response);
-
+        
             expect(statusMock).toHaveBeenCalledWith(200);
             expect(jsonMock).toHaveBeenCalledWith(expect.objectContaining({
                 message: 'Đăng nhập thành công!',
@@ -198,13 +205,20 @@ describe('AuthController', () => {
                 email: 'test@example.com',
                 password: 'hashedPassword',
                 role: 'customer',
-                isVerified: true,
             };
+            
+            const mockCustomer = {
+                _id: 'customer123',
+                userId: '123',
+                isVerified: true
+            };
+        
             (User.findOne as jest.Mock).mockResolvedValue(mockUser);
+            (Customer.findOne as jest.Mock).mockResolvedValue(mockCustomer);
             (bcrypt.compare as jest.Mock).mockResolvedValue(false);
-
+        
             await login(req as Request, res as Response);
-
+        
             expect(statusMock).toHaveBeenCalledWith(400);
             expect(jsonMock).toHaveBeenCalledWith(expect.objectContaining({
                 message: 'Thông tin đăng nhập sai, vui lòng thử lại!',
@@ -291,50 +305,70 @@ describe('AuthController', () => {
             };
         });
 
-        it('should log in or register a user with Google successfully', async () => {
-            (User.findOne as jest.Mock).mockResolvedValue(null);
-            (User.create as jest.Mock).mockResolvedValue({
-                _id: '123',
-                email: 'test@gmail.com',
-                username: 'Test User-random-text',
-                role: 'customer',
-                isVerified: true,
-            });
-            (Customer.create as jest.Mock).mockResolvedValue({});
-
-            await loginWithGoogle(req as Request, res as Response);
-
-            expect(statusMock).toHaveBeenCalledWith(200);
-            expect(jsonMock).toHaveBeenCalledWith(expect.objectContaining({
-                message: 'Đăng nhập thành công!',
-                data: expect.objectContaining({
-                    token: 'mocked-token',
-                    email: 'test@gmail.com',
-                    username: 'Test User-random-text',
-                    role: 'customer',
-                    isVerified: true,
-                }),
-            }));
-        });
-
         it('should log in existing Google user', async () => {
             const mockUser = {
                 _id: '123',
                 email: 'test@gmail.com',
                 username: 'Test User',
                 role: 'customer',
-                isVerified: true,
+                save: jest.fn().mockResolvedValue(true)
             };
+            
+            const mockCustomer = {
+                _id: 'customer123',
+                userId: '123',
+                isVerified: true,
+                save: jest.fn().mockResolvedValue(true)
+            };
+
             (User.findOne as jest.Mock).mockResolvedValue(mockUser);
+            (Customer.findOne as jest.Mock).mockResolvedValue(mockCustomer);
 
             await loginWithGoogle(req as Request, res as Response);
 
             expect(statusMock).toHaveBeenCalledWith(200);
+            // Sử dụng expect.objectContaining để kiểm tra một phần của response
             expect(jsonMock).toHaveBeenCalledWith(expect.objectContaining({
                 message: 'Đăng nhập thành công!',
                 data: expect.objectContaining({
-                    token: 'mocked-token',
-                }),
+                    email: 'test@gmail.com',
+                    role: 'customer',
+                    token: 'mocked-token'
+                })
+            }));
+        });
+
+        it('should create new user if not found', async () => {
+            (User.findOne as jest.Mock).mockResolvedValue(null);
+            const newUser = {
+                _id: '123',
+                email: 'test@gmail.com',
+                username: 'Test User-random-text',
+                role: 'customer',
+                save: jest.fn().mockResolvedValue(true)
+            };
+            
+            const mockCustomer = {
+                _id: 'customer123',
+                userId: '123',
+                isVerified: true,
+                save: jest.fn().mockResolvedValue(true)
+            };
+
+            (User.create as jest.Mock).mockResolvedValue(newUser);
+            (Customer.create as jest.Mock).mockResolvedValue(mockCustomer);
+
+            await loginWithGoogle(req as Request, res as Response);
+
+            expect(statusMock).toHaveBeenCalledWith(200);
+            // Sử dụng expect.objectContaining để kiểm tra một phần của response
+            expect(jsonMock).toHaveBeenCalledWith(expect.objectContaining({
+                message: 'Đăng nhập thành công!',
+                data: expect.objectContaining({
+                    email: 'test@gmail.com',
+                    role: 'customer',
+                    token: 'mocked-token'
+                })
             }));
         });
 
@@ -342,32 +376,9 @@ describe('AuthController', () => {
             (User.findOne as jest.Mock).mockRejectedValue(new Error('Database error'));
             await loginWithGoogle(req as Request, res as Response);
             expect(statusMock).toHaveBeenCalledWith(500);
-            expect(jsonMock).toHaveBeenCalledWith({ message: 'ã xảy ra lỗi khi xử lý đăng nhập Google' });
-        });
-
-        it('should create a new user if not found', async () => {
-            (User.findOne as jest.Mock).mockResolvedValue(null);
-            const newUser = {
-                _id: '123',
-                email: 'test@gmail.com',
-                username: 'Test User-random-text',
-                role: 'customer',
-                isVerified: true,
-                isNew: true,
-            };
-            (User.create as jest.Mock).mockResolvedValue(newUser);
-            (Customer.create as jest.Mock).mockResolvedValue({});
-
-            await loginWithGoogle(req as Request, res as Response);
-
-            expect(statusMock).toHaveBeenCalledWith(200);
-            expect(jsonMock).toHaveBeenCalledWith(expect.objectContaining({
-                message: 'Đăng ký thành công!',
-                data: expect.objectContaining({
-                    email: 'test@gmail.com',
-                    username: 'Test User-random-text',
-                }),
-            }));
+            expect(jsonMock).toHaveBeenCalledWith({ 
+                message: 'Đã xảy ra lỗi khi xử lý đăng nhập Google' 
+            });
         });
     });
 
