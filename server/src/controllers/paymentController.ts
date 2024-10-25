@@ -1,5 +1,4 @@
 import { Response, Request } from "express";
-
 import PayOS from "@payos/node";
 import dotenv from "dotenv";
 import Payment from "../models/Payment";
@@ -20,8 +19,8 @@ export const createPayment = async (req: Request, res: Response) => {
       orderCode: Number(String(Date.now()).slice(-6)),
       amount: totalPrice,
       description: `Thanh toan don hang`,
-      cancelUrl: "http://localhost:5173/payment-cancel",
-      returnUrl: "http://localhost:5173/payment-success",
+      cancelUrl: process.env.BASE_URL_CANCELLED_PAYMENT as string,
+      returnUrl: process.env.BASE_URL_SUCCESS_PAYMENT as string,
     };
 
     const paymentLinkResponse = await payOS.createPaymentLink(body);
@@ -131,13 +130,18 @@ export const updatePaymentById = async (req: Request, res: Response) => {
   }
 };
 
-export const getPaymentByAppointmentId = async (req: Request, res: Response) => {
+export const getPaymentByAppointmentId = async (
+  req: Request,
+  res: Response
+) => {
   const appointmentId = req.params.appointmentId;
   try {
     const payment = await Payment.findOne({ appointmentId });
 
     if (!payment) {
-      return res.status(404).json({ message: "Không tìm thấy thông tin thanh toán cho cuộc hẹn này" });
+      return res.status(404).json({
+        message: "Không tìm thấy thông tin thanh toán cho cuộc hẹn này",
+      });
     }
 
     const formattedPayment = {
@@ -151,8 +155,9 @@ export const getPaymentByAppointmentId = async (req: Request, res: Response) => 
     return res.status(200).json({ data: formattedPayment });
   } catch (error: any) {
     console.error(error);
-    return res.status(500).json({ message: "Lỗi khi lấy thông tin thanh toán", error: error.message });
+    return res.status(500).json({
+      message: "Lỗi khi lấy thông tin thanh toán",
+      error: error.message,
+    });
   }
 };
-
-

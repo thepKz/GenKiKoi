@@ -192,7 +192,7 @@ const Appointment = () => {
           >
             Thanh toán
           </Button>
-        ) : record.status === "Đã hoàn thành" ? (
+        ) : record.status === "Đã hoàn thành" && !record.isFeedback ? (
           <Button
             type="primary"
             onClick={() => showFeedbackModal(record)}
@@ -265,7 +265,7 @@ const Appointment = () => {
             </p>
             <p className="font-semibold">Bạn có hài lòng với cuộc hẹn này không 🥰</p>
           </div>
-          <div className="text-center mt-3">
+          <div className="mt-3 text-center">
             <Rate
               onChange={setRating}
               value={rating}

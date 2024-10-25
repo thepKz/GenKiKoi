@@ -40,7 +40,7 @@ export const getAllAppointmentsByDoctorId = async (
         path: "serviceId",
         select: "serviceName",
       })
-      .select("notes status appointmentDate");
+      .select("notes status appointmentDate isFeedback");
 
     if (!appointments || appointments.length === 0) {
       return res.status(404).json({ message: "Không tìm thấy cuộc hẹn" });
@@ -62,6 +62,7 @@ export const getAllAppointmentsByDoctorId = async (
             notes: appointment.notes,
             status: appointment.status,
             paymentStatus: payment.status,
+            isFeedback: appointment.isFeedback,
           };
         }
         return null;
@@ -152,7 +153,7 @@ export const getAppointmentsByCustomerId = async (
         path: "serviceId",
         select: "serviceName",
       })
-      .select("_id appointmentDate status notes");
+      .select("_id appointmentDate status notes isFeedback");
 
     const formattedAppointment = appointments.map((appointment: any) => ({
       appointmentId: appointment._id,
@@ -161,6 +162,7 @@ export const getAppointmentsByCustomerId = async (
       appointmentDate: appointment.appointmentDate,
       status: appointment.status,
       notes: appointment.notes,
+      isFeedback: appointment.isFeedback,
     }));
 
     return res.status(200).json({ data: formattedAppointment });
