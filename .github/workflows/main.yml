@@ -59,6 +59,7 @@ jobs:
         run: |
           cd server
           npm ci
+          npm install --save-dev copyfiles
           npm run build
         env:
           MONGO_URI: ${{ secrets.MONGO_URI }}
@@ -236,6 +237,7 @@ jobs:
       - name: Deploy to Render
         run: curl ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
         env:
+          PORT: 5000
           MONGO_URI: ${{ secrets.MONGO_URI }}
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
           OPENAI_URL: ${{ secrets.OPENAI_URL }}
