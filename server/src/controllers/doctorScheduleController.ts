@@ -4,7 +4,16 @@ import { Doctor, DoctorSchedule } from "../models";
 
 export const getAllDoctorSchedules = async (req: Request, res: Response) => {
   try {
-    const schedules = await DoctorSchedule.find().populate("doctorId");
+    const schedules = await DoctorSchedule.find()
+      .populate({
+        path: "doctorId",
+        populate: {
+          path: "userId",
+          select: "fullName email gender photoUrl",
+        },
+        select: "movingService _id",
+      })
+      .select("weekSchedule.dayOfWeek");
 
     if (!schedules || schedules.length === 0) {
       return res
@@ -12,7 +21,18 @@ export const getAllDoctorSchedules = async (req: Request, res: Response) => {
         .json({ message: "Không tìm thấy lịch làm việc nào" });
     }
 
-    return res.status(200).json({ data: schedules });
+    const formattedData = schedules.map((schedule) => ({
+      id: schedule._id,
+      doctorId: schedule.doctorId._id,
+      doctorName: schedule.doctorId.userId.fullName,
+      photoUrl: schedule.doctorId.userId.photoUrl,
+      email: schedule.doctorId.userId.email,
+      gender: schedule.doctorId.userId.gender,
+      movingService: schedule.doctorId.movingService,
+      weekSchedule: schedule.weekSchedule,
+    }));
+
+    return res.status(200).json({ data: formattedData });
   } catch (error: any) {
     console.log(error);
     return res.status(500).json({
@@ -83,6 +103,19 @@ export const getViewCalendarByDoctorId = async (
 ) => {
   try {
     const doctorId = req.params.doctorId;
+    const doctor = await Doctor.findById(doctorId)
+      .populate({
+        path: "userId",
+        select: "fullName",
+      })
+      .select("userId");
+
+    if (!doctor) {
+      return res.status(404).json({ message: "Không tìm thấy bác sĩ" });
+    }
+
+    const doctorName = doctor.userId.fullName;
+
     const schedule = await DoctorSchedule.findOne({ doctorId });
 
     if (!schedule) {
@@ -131,7 +164,9 @@ export const getViewCalendarByDoctorId = async (
       return events;
     });
 
-    return res.status(200).json({ data: formattedSchedule });
+    return res
+      .status(200)
+      .json({ data: { schedules: formattedSchedule, doctorName: doctorName } });
   } catch (error: any) {
     return res
       .status(500)
@@ -202,32 +237,3 @@ export const updateBookAppointment = async (req: Request, res: Response) => {
     });
   }
 };
-
-// export const createOrUpdateDoctorSchedule = async (
-//   req: Request,
-//   res: Response
-// ) => {
-//   const { doctorId, weekSchedule } = req.body;
-
-//   try {
-//     let schedule = await DoctorSchedule.findOne({ doctorId });
-
-//     if (schedule) {
-//       schedule.weekSchedule = weekSchedule;
-//       await schedule.save();
-//     } else {
-//       schedule = new DoctorSchedule({ doctorId, weekSchedule });
-//       await schedule.save();
-//     }
-
-//     return res
-//       .status(200)
-//       .json({ message: "Lịch làm việc đã được cập nhật", data: schedule });
-//   } catch (error: any) {
-//     console.log(error);
-//     return res.status(500).json({
-//       message: "Đã xảy ra lỗi khi cập nhật lịch làm việc",
-//       error: error.message,
-//     });
-//   }
-// };

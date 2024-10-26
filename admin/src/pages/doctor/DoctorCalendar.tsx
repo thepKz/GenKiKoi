@@ -25,7 +25,7 @@ const DoctorCalendar = () => {
       try {
         setIsLoading(true);
         const res = await handleAPI(api, undefined, "GET");
-        setEvents(res.data);
+        setEvents(res.data.schedules);
       } catch (error: any) {
         console.log(error);
         message.error(error.message);

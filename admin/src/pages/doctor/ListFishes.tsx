@@ -128,7 +128,7 @@ const ListFishes = () => {
             <div className="flex items-center gap-5">
               <div className="h-[150px] w-[250px] overflow-hidden rounded-lg">
                 <img
-                  src={fish.photoUrl}
+                  src={fish.photoUrl ?? "https://placehold.co/150x150"}
                   alt=""
                   className="h-full w-full object-cover"
                 />
