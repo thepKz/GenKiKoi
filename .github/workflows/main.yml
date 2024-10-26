@@ -102,52 +102,52 @@ jobs:
           });
           "
 
-      - name: Install dependencies and build client
-        run: |
-          cd client
-          npm ci
-          npm run build
-        env:
-          VITE_BASE_apiKey: ${{ secrets.VITE_BASE_APIKEY }}
-          VITE_BASE_authDomain: ${{ secrets.VITE_BASE_AUTHDOMAIN }}
-          VITE_BASE_projectId: ${{ secrets.VITE_BASE_PROJECTID }}
-          VITE_BASE_storageBucket: ${{ secrets.VITE_BASE_STORAGEBUCKET }}
-          VITE_BASE_messagingSenderId: ${{ secrets.VITE_BASE_MESSAGINGSENDERID }}
-          VITE_BASE_appId: ${{ secrets.VITE_BASE_APPID }}
-          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+      # - name: Install dependencies and build client
+      #   run: |
+      #     cd client
+      #     npm ci
+      #     npm run build
+      #   env:
+      #     VITE_BASE_apiKey: ${{ secrets.VITE_BASE_APIKEY }}
+      #     VITE_BASE_authDomain: ${{ secrets.VITE_BASE_AUTHDOMAIN }}
+      #     VITE_BASE_projectId: ${{ secrets.VITE_BASE_PROJECTID }}
+      #     VITE_BASE_storageBucket: ${{ secrets.VITE_BASE_STORAGEBUCKET }}
+      #     VITE_BASE_messagingSenderId: ${{ secrets.VITE_BASE_MESSAGINGSENDERID }}
+      #     VITE_BASE_appId: ${{ secrets.VITE_BASE_APPID }}
+      #     VITE_API_URL: ${{ secrets.VITE_API_URL }}
 
-      - name: Upload artifact client
-        uses: actions/upload-artifact@v3
-        with:
-          name: client-dist
-          path: client/dist
+      # - name: Upload artifact client
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: client-dist
+      #     path: client/dist
 
-      - name: Install dependencies and build admin
-        run: |
-          cd admin
-          npm ci
-          npm run build
-        env:
-          VITE_BASE_apiKey: ${{ secrets.VITE_BASE_APIKEY }}
-          VITE_BASE_authDomain: ${{ secrets.VITE_BASE_AUTHDOMAIN }}
-          VITE_BASE_projectId: ${{ secrets.VITE_BASE_PROJECTID }}
-          VITE_BASE_storageBucket: ${{ secrets.VITE_BASE_STORAGEBUCKET }}
-          VITE_BASE_messagingSenderId: ${{ secrets.VITE_BASE_MESSAGINGSENDERID }}
-          VITE_BASE_appId: ${{ secrets.VITE_BASE_APPID }}
-          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+      # - name: Install dependencies and build admin
+      #   run: |
+      #     cd admin
+      #     npm ci
+      #     npm run build
+      #   env:
+      #     VITE_BASE_apiKey: ${{ secrets.VITE_BASE_APIKEY }}
+      #     VITE_BASE_authDomain: ${{ secrets.VITE_BASE_AUTHDOMAIN }}
+      #     VITE_BASE_projectId: ${{ secrets.VITE_BASE_PROJECTID }}
+      #     VITE_BASE_storageBucket: ${{ secrets.VITE_BASE_STORAGEBUCKET }}
+      #     VITE_BASE_messagingSenderId: ${{ secrets.VITE_BASE_MESSAGINGSENDERID }}
+      #     VITE_BASE_appId: ${{ secrets.VITE_BASE_APPID }}
+      #     VITE_API_URL: ${{ secrets.VITE_API_URL }}
 
-      - name: Upload coverage to Coveralls
-        uses: coverallsapp/github-action@v2
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          path-to-lcov: server/coverage.lcov
-          coveralls-repo-token: ${{ secrets.COVERALLS_REPO_TOKEN }}
+      # - name: Upload coverage to Coveralls
+      #   uses: coverallsapp/github-action@v2
+      #   with:
+      #     github-token: ${{ secrets.GITHUB_TOKEN }}
+      #     path-to-lcov: server/coverage.lcov
+      #     coveralls-repo-token: ${{ secrets.COVERALLS_REPO_TOKEN }}
 
-      - name: Upload artifact admin
-        uses: actions/upload-artifact@v3
-        with:
-          name: admin-dist
-          path: admin/dist
+      # - name: Upload artifact admin
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: admin-dist
+      #     path: admin/dist
       
   # # Job to deploy the application to the staging environment
   # deploy-staging:
