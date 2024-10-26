@@ -304,14 +304,17 @@ const Booking = () => {
     console.log("Search value:", value);
     if (value.length > 2) {
       try {
-        const response = await axios.get(`http://localhost:5000/api/distance/autocomplete`, {
-          params: {
-            query: value,
+        const response = await axios.get(
+          `${import.meta.env.VITE_API_URL}/api/distance/autocomplete`,
+          {
+            params: {
+              query: value,
+            },
+            headers: {
+              Accept: "application/json",
+            },
           },
-          headers: {
-            Accept: "application/json",
-          },
-        });
+        );
 
         console.log("API Response:", response.data);
 
@@ -334,7 +337,7 @@ const Booking = () => {
   const handleAddressSelect = async (value: string) => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/distance/calculate-route?address=${encodeURIComponent(value)}`,
+        `${import.meta.env.VITE_API_URL}/api/distance/calculate-route?address=${encodeURIComponent(value)}`,
       );
       const { origin, route, distance, duration } = response.data;
 

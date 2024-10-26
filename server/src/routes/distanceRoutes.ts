@@ -1,9 +1,12 @@
-import express from 'express';
-import { addressAutocomplete, calculateRoute } from '../controllers/distanceController';
+import express from "express";
+import {
+  addressAutocomplete,
+  calculateRoute,
+} from "../controllers/distanceController";
 
-const distanceRoutes = express.Router()
-;
-distanceRoutes.get('/autocomplete', addressAutocomplete);
-distanceRoutes.get('/calculate-route', calculateRoute);
+const router = express.Router();
 
-export default distanceRoutes;
+router.get("/autocomplete", addressAutocomplete);
+router.get("/calculate-route", calculateRoute);
+
+export default router;
