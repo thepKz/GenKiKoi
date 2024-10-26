@@ -7,22 +7,22 @@ import { swaggerDocument, swaggerUi } from "./swagger";
 dotenv.config();
 
 // Routes
+import { DoctorSchedule, MedicalRecord } from "./models";
 import {
   appointmentRoutes,
   authRoutes,
   distanceRoutes,
   doctorRoutes,
+  doctorScheduleRoutes,
+  feedbackRoutes,
+  fishRoutes,
+  medicalRecordRoutes,
   paymentRoutes,
+  pondRoutes,
   serviceRoutes,
   staffRoutes,
   userRoutes,
-  medicalRecordRoutes,
-  pondRoutes,
-  fishRoutes,
-  doctorScheduleRoutes,
-  feedbackRoutes,
 } from "./routes";
-import { DoctorSchedule, MedicalRecord } from "./models";
 
 const app = express();
 
@@ -334,9 +334,12 @@ if (require.main === module) {
     .connect(process.env.MONGO_URI as string)
     .then(() => {
       console.log("Connected to MongoDB successfully");
-      app.listen(process.env.PORT || 5000, () => {
+      // Convert port to number
+      const port = parseInt(process.env.PORT || '10000', 10);
+      
+      app.listen(port, '0.0.0.0', () => {
         console.log(`Server started at ${new Date().toISOString()}`);
-        console.log(`Server is running on port ${process.env.PORT}`);
+        console.log(`Server is running on port ${port}`);
       });
     })
     .catch((error) => console.log("MongoDB connection error:", error));
