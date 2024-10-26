@@ -330,14 +330,13 @@ const addDoctorSchedule = async () => {
 
 // Only start the server if this file is run directly (not imported as a module)
 if (require.main === module) {
+  const port = process.env.PORT || 5000;
+
   mongoose
     .connect(process.env.MONGO_URI as string)
     .then(() => {
       console.log("Connected to MongoDB successfully");
-      // Convert port to number
-      const port = parseInt(process.env.PORT || '5000', 10);
-      
-      app.listen(port, '0.0.0.0', () => {
+      app.listen(port, () => {
         console.log(`Server started at ${new Date().toISOString()}`);
         console.log(`Server is running on port ${port}`);
       });

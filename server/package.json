@@ -5,7 +5,9 @@
   "scripts": {
     "test": "jest --config jest.config.js",
     "start": "node dist/index.js",
-    "build": "tsc",
+    "build": "tsc && npm run copy-files && npm run copy-swagger",
+    "copy-files": "copyfiles -u 1 src/__tests__/api/*.yaml dist/__tests__/api/",
+    "copy-swagger": "copyfiles -u 1 src/swagger.yaml dist/",
     "dev": "nodemon --exec ts-node src/index.ts"
   },
   "keywords": [],
