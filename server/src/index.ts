@@ -335,7 +335,7 @@ if (require.main === module) {
     .then(() => {
       console.log("Connected to MongoDB successfully");
       // Convert port to number
-      const port = parseInt(process.env.PORT || '10000', 10);
+      const port = parseInt(process.env.PORT || '5000', 10);
       
       app.listen(port, '0.0.0.0', () => {
         console.log(`Server started at ${new Date().toISOString()}`);

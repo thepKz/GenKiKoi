@@ -247,4 +247,3 @@ jobs:
           BASE_URL_CANCELLED_PAYMENT: ${{ secrets.BASE_URL_CANCELLED_PAYMENT }}
           BASE_URL_SUCCESS_PAYMENT: ${{ secrets.BASE_URL_SUCCESS_PAYMENT }}
           API_URL: ${{ secrets.API_URL }}
-          PORT: ${{ secrets.PORT }}
