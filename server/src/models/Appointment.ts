@@ -15,6 +15,7 @@ export interface IAppointment {
   status: string;
   reasons?: string;
   notes?: string;
+  isFeedback: boolean;
 }
 
 const AppointmentSchema = new mongoose.Schema<IAppointment>(
@@ -50,13 +51,7 @@ const AppointmentSchema = new mongoose.Schema<IAppointment>(
     },
     status: {
       type: String,
-      enum: [
-        "Đang chờ xử lý",
-        "Đã xác nhận",
-        "Đã hoàn thành",
-        "Đã hủy",
-        "Đã thay đổi lịch",
-      ],
+      enum: ["Đang chờ xử lý", "Đã xác nhận", "Đã hoàn thành", "Đã hủy"],
       default: "Đang chờ xử lý",
     },
     reasons: {
@@ -64,6 +59,10 @@ const AppointmentSchema = new mongoose.Schema<IAppointment>(
     },
     notes: {
       type: String,
+    },
+    isFeedback: {
+      type: Boolean,
+      default: false,
     },
   },
   {

@@ -304,47 +304,15 @@ export const getAllDoctorsForBooking = async (req: Request, res: Response) => {
 };
 
 /**
- * API: /api/doctors/schedules
+ * API: /api/doctors/:doctorId
  * METHOD: GET
  * PROTECTED
  */
-
-export const getScheduleById = async (req: Request, res: Response) => {
-  const userId = req.params.id;
-
-  try {
-    const doctor = await Doctor.findOne({ userId });
-
-    if (!doctor) {
-      return res.status(404).json({ message: "Không tìm thấy bác sĩ" });
-    }
-
-    const schedules = await DoctorSchedule.find({ doctorId: doctor._id });
-
-    if (!schedules) {
-      return res.status(404).json({ message: "Không tìm thấy lịch trình" });
-    }
-
-    const formatSchedule = schedules.map((schedule) => ({
-      id: schedule._id,
-      start: schedule.start,
-      end: schedule.end,
-    }));
-
-    return res.status(200).json({ data: formatSchedule });
-  } catch (error: any) {
-    return res.status(500).json({
-      message: "Đã xảy ra lỗi khi lấy lịch trình",
-      error: error.message,
-    });
-  }
-};
-
 export const getDoctorById = async (req: Request, res: Response) => {
   const doctorId = req.params.doctorId;
 
   try {
-    const doctor = await Doctor.findOne({ _id: doctorId }).populate(
+    const doctor = await Doctor.findById(doctorId).populate(
       "userId",
       "photoUrl images email fullName phoneNumber gender"
     );

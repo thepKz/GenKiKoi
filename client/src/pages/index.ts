@@ -9,8 +9,11 @@ import Images from "./Images";
 import Appointment from "./my-account/Appointment";
 import History from "./my-account/History";
 import InspectionRecord from "./my-account/InspectionRecord";
+import ListFishRecords from "./my-account/ListFishRecords";
 import MedicalRecord from "./my-account/MedicalRecord";
+import PondDetail from "./my-account/PondDetail";
 import Profile from "./my-account/Profile";
+import RecordDetail from "./my-account/RecordDetail";
 import NotFound from "./NotFound";
 import { PaymentCancel, PaymentSuccess } from "./payment";
 import ConsultingTreatment from "./services/ConsultingTreatment";
@@ -40,4 +43,7 @@ export {
   VerifyAccount,
   PaymentCancel,
   PaymentSuccess,
+  ListFishRecords,
+  RecordDetail,
+  PondDetail,
 };

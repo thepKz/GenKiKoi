@@ -10,24 +10,34 @@ dayjs.extend(timezone);
 const DEFAULT_TIMEZONE = "Asia/Ho_Chi_Minh"; // Hoặc múi giờ phù hợp với ứng dụng của bạn
 
 interface Props {
-  setDate: (date: string) => void;
-  doctorSchedules: any[];
+  setDate: (date: Dayjs) => void;
+  doctorSchedule: {
+    weekSchedule: Array<{
+      dayOfWeek: string;
+      slots: Array<{
+        slotTime: string;
+        isBooked: boolean;
+      }>;
+    }>;
+  } | null;
 }
 
 const CustomCalendar = (props: Props) => {
-  const { setDate, doctorSchedules } = props;
+  const { setDate, doctorSchedule } = props;
+
+  console.log(doctorSchedule);
 
   const disabledDate = (current: Dayjs) => {
     const isBeforeToday = current.isBefore(dayjs().tz(DEFAULT_TIMEZONE).startOf("day"));
-    const isInDoctorSchedule = doctorSchedules.some((schedule) => {
-      const scheduleStart = dayjs(schedule.start).tz(DEFAULT_TIMEZONE);
-      const scheduleEnd = dayjs(schedule.end).tz(DEFAULT_TIMEZONE);
+
+    if (!doctorSchedule) return true;
+
+    const isInDoctorSchedule = doctorSchedule.weekSchedule.some((day) => {
       return (
-        current.tz(DEFAULT_TIMEZONE).startOf("day").isSame(scheduleStart.startOf("day")) ||
-        (current.tz(DEFAULT_TIMEZONE).isAfter(scheduleStart) &&
-          current.tz(DEFAULT_TIMEZONE).isBefore(scheduleEnd))
+        day.dayOfWeek === current.format("DD/MM/YYYY") && day.slots.some((slot) => !slot.isBooked)
       );
     });
+
     return isBeforeToday || !isInDoctorSchedule;
   };
 
@@ -95,7 +105,7 @@ const CustomCalendar = (props: Props) => {
           </div>
         );
       }}
-      onChange={(e) => setDate(e.format("YYYY-MM-DD"))}
+      onChange={(date) => setDate(date)}
     />
   );
 };

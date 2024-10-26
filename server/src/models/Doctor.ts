@@ -10,6 +10,7 @@ export interface IDoctor {
   startDate?: Date;
   images?: string[];
   introduction?: string;
+  _id: string;
 }
 
 const DoctorSchema = new mongoose.Schema<IDoctor>(

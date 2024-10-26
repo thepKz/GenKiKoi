@@ -410,6 +410,7 @@ export const loginAdmin = async (req: Request, res: Response) => {
         username: user.username,
         email: user.email,
         role: user.role,
+        photoUrl: user.photoUrl,
         adminId,
         token,
       },

@@ -35,7 +35,7 @@ const valueMap: {
   [key: string]: string;
 } = {
   "Đang chờ xử lý": "lime",
-  "Đã xác nhân": "cyan",
+  "Đã xác nhận": "cyan",
   "Đã thay đổi lịch": "orange",
   "Đã hủy": "red",
   "Đã hoàn thành": "green",
