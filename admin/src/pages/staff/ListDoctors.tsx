@@ -27,9 +27,33 @@ const ListDoctors = () => {
     getDoctors();
   }, []);
 
+  const getWeekDates = () => {
+    const today = new Date();
+    const monday = new Date(today);
+    monday.setDate(monday.getDate() - monday.getDay() + 1);
+    const sunday = new Date(monday);
+    sunday.setDate(sunday.getDate() + 6);
+    return { monday, sunday };
+  };
+
   const formatDate = (dateString: string) => {
-    const [day, month] = dateString.split("/");
-    return `${day}/${month}`;
+    const [day, month] = dateString.split("/").map(Number);
+    const date = new Date(new Date().getFullYear(), month - 1, day);
+    const { monday, sunday } = getWeekDates();
+
+    if (date >= monday && date <= sunday) {
+      return `${day}/${month}`;
+    }
+    return null;
+  };
+
+  const countFutureDays = (weekSchedule: any[]) => {
+    const { sunday } = getWeekDates();
+    return weekSchedule.reduce((count, day) => {
+      const [dayNum, monthNum] = day.dayOfWeek.split("/").map(Number);
+      const date = new Date(new Date().getFullYear(), monthNum - 1, dayNum);
+      return date > sunday ? count + 1 : count;
+    }, 0);
   };
 
   if (isLoading) {
@@ -95,11 +119,23 @@ const ListDoctors = () => {
                   </p>
                   <p>
                     <span className="font-semibold">Lịch làm việc: </span>
-                    {doctor.weekSchedule.map((day: any, index: any) => (
-                      <Tag key={index} color="blue" className="mr-1">
-                        {formatDate(day.dayOfWeek)}
+                    {doctor.weekSchedule.map((day: any, index: any) => {
+                      const formattedDate = formatDate(day.dayOfWeek);
+                      return formattedDate && (
+                        <Tag
+                          key={index}
+                          color="blue"
+                          className="mr-1"
+                        >
+                          {formattedDate}
+                        </Tag>
+                      );
+                    })}
+                    {countFutureDays(doctor.weekSchedule) > 0 && (
+                      <Tag color="orange" className="">
+                        + {countFutureDays(doctor.weekSchedule)} Ngày
                       </Tag>
-                    ))}
+                    )}
                   </p>
                 </div>
                 <div className="flex w-1/5 flex-col gap-2 text-right">
