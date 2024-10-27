@@ -21,6 +21,7 @@ import {
   fishRoutes,
   doctorScheduleRoutes,
   feedbackRoutes,
+  customerRoutes,
 } from "./routes";
 import { DoctorSchedule, MedicalRecord } from "./models";
 
@@ -60,6 +61,7 @@ app.get("/", (_req, res) => {
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use("/api/auth", authRoutes);
+app.use("/api/customers", customerRoutes);
 app.use("/api/appointments", appointmentRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/services", serviceRoutes);

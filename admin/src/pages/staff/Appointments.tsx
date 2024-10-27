@@ -1,11 +1,34 @@
-import { Breadcrumb, Button, TableProps, Tag } from "antd";
+import { Breadcrumb, Button, message, TableProps, Tag } from "antd";
 import { HeaderPage } from "../../components";
 import { CustomTable } from "../../share";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { getValue } from "../../utils";
 import { Calendar, CalendarSearch } from "iconsax-react";
+import { useEffect, useState } from "react";
+import { handleAPI } from "../../apis/handleAPI";
 
 const Appointments = () => {
+  const { pathname } = useLocation();
+  const customerId = pathname.split("/")[3];
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [appointments, setAppointments] = useState([]);
+
+  useEffect(() => {
+    const getAppointments = async () => {
+      try {
+        setIsLoading(true);
+        const api = `/api/appointments/customers/${customerId}`;
+        const res = await handleAPI(api, undefined, "GET");
+        setAppointments(res.data);
+      } catch (error) {
+        message.error("Có lỗi xảy ra khi lấy danh sách cuộc hẹn");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    getAppointments();
+  }, [customerId]);
+
   const columns: TableProps["columns"] = [
     {
       key: "#",
@@ -34,36 +57,17 @@ const Appointments = () => {
       key: "Trạng thái",
       title: "Trạng thái",
       dataIndex: "status",
+      width: 150,
       render: (status) => <Tag color={getValue(status)}>{status}</Tag>,
     },
     {
-      key: "Notes",
-      title: "Notes",
-      dataIndex: "notes",
-    },
-    {
-      key: "Chi tiết",
-      title: "Chi tiết",
-      render: (_text: any, _record: any) => (
-        <div className="text-center">
-          <Link to={"/staff/customers/348/appointments/485"}>
-            <Button type="primary">Xem chi tiết</Button>
-          </Link>
-        </div>
-      ),
+      key: "Lý do khám",
+      title: "Lý do khám",
+      dataIndex: "reasons",
+      width: 400,
     },
   ];
 
-  const demoData = [
-    {
-      id: 1,
-      serviceName: "Tiêm phòng",
-      doctorFullName: "Đỗ Quang Dũng",
-      notes: "",
-      appointmentDate: "2024-10-16T15:18:26.465+00:00",
-      status: "Đang chờ xử lý",
-    },
-  ];
   return (
     <div className="section">
       <HeaderPage heading="Danh sách cuộc hẹn" placeholder="Tìm cuộc hẹn" />
@@ -82,7 +86,7 @@ const Appointments = () => {
           },
           {
             title: (
-              <Link to="/staff/customers/348/appointments">
+              <Link to={`/staff/customers/${customerId}/appointments`}>
                 <div className="flex items-center gap-2">
                   <Calendar size={20} />
                   Danh sách cuộc hẹn
@@ -93,7 +97,7 @@ const Appointments = () => {
         ]}
       />
       <div className="mt-2">
-        <CustomTable columns={columns} dataSource={demoData} />
+        <CustomTable columns={columns} dataSource={appointments} />
       </div>
     </div>
   );

@@ -1,4 +1,3 @@
-import AppointmentDetail from "./AppointmentDetail";
 import Appointments from "./Appointments";
 import AssignCalendar from "./AssignCalendar";
 import CreateAppointment from "./CreateAppointment";
@@ -14,6 +13,5 @@ export {
   CreateAppointment,
   Customers,
   Appointments,
-  AppointmentDetail,
   Profile,
 };

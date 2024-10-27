@@ -152,7 +152,7 @@ export const getAppointmentsByCustomerId = async (
         path: "serviceId",
         select: "serviceName",
       })
-      .select("_id appointmentDate status notes isFeedback");
+      .select("_id appointmentDate status notes reasons isFeedback");
 
     const formattedAppointment = appointments.map((appointment: any) => ({
       appointmentId: appointment._id,
@@ -162,6 +162,7 @@ export const getAppointmentsByCustomerId = async (
       status: appointment.status,
       notes: appointment.notes,
       isFeedback: appointment.isFeedback,
+      reasons: appointment.reasons,
     }));
 
     return res.status(200).json({ data: formattedAppointment });
