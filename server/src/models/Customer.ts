@@ -1,11 +1,15 @@
 import mongoose from "mongoose";
+import { IUser } from "./User";
 
-interface ICustomer {
-  userId: mongoose.Types.ObjectId;
+export interface ICustomer {
+  userId: IUser;
   city?: string;
   district?: string;
   ward?: string;
   detailAddress?: string;
+  isVerified: boolean;
+  verificationToken?: string;
+  verificationTokenExpiresAt?: Date;
 }
 
 const CustomerSchema = new mongoose.Schema<ICustomer>(
@@ -27,6 +31,12 @@ const CustomerSchema = new mongoose.Schema<ICustomer>(
     detailAddress: {
       type: String,
     },
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
+    verificationToken: String,
+    verificationTokenExpiresAt: Date,
   },
   { timestamps: true }
 );

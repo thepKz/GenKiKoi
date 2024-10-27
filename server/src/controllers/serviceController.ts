@@ -1,38 +1,7 @@
 import { Request, Response } from "express";
 import { Service } from "../models";
 
-/**
- * @swagger
- * tags:
- *   name: Services
- *   description: Service management
- */
 
-
-/**
- * @swagger
- * /api/services:
- *   get:
- *     summary: Get all services
- *     description: Retrieve a list of all available services
- *     tags: [Services]
- *     responses:
- *       200:
- *         description: List of services
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 data:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/Service'
- *       404:
- *         description: No services available
- *       500:
- *         description: Internal server error
- */
 export const getAllServices = async (req: Request, res: Response) => {
   try {
     const services = await Service.find();

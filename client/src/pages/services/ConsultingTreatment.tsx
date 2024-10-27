@@ -2,11 +2,14 @@ import { AnimatedSection } from "../../share";
 
 import { Button } from "antd";
 import { ArrowRight2 } from "iconsax-react";
+import { useNavigate } from 'react-router-dom';
 
 import Demo1 from "../../assets/demo-1.jpg";
 import Fish4 from "../../assets/consulting.webp";
 
 const ConsultingTreatment = () => {
+  const navigate = useNavigate();
+
   return (
     <div>
       {/* Section 1 */}
@@ -48,16 +51,29 @@ const ConsultingTreatment = () => {
                   },
                 }}
               >
-                <h1 className="heading-1">Tư vấn và Điều trị ban đầu</h1>
+                <h1 className="heading-1">Tư vấn và Điều trị</h1>
 
                 <p className="my-5 text-justify">
                   Dịch vụ tư vấn và điều trị cho cá Koi là việc cung cấp các dịch vụ liên quan đến
                   sức khỏe và chăm sóc cho cá Koi như khám bệnh, điều trị, các cách thức phòng
                   ngừa, tư vấn dinh dưỡng, chăm sóc cá nhân và nhiều những việc khác.
                 </p>
+                <p className="mb-3 text-justify">
+                  Chúng tôi cung cấp hai hình thức tư vấn chính:
+                </p>
+                <ul className="list-disc list-inside mb-3 text-justify">
+                  <li>Tư vấn trực tuyến (Online): Hỗ trợ nhanh chóng và tiện lợi thông qua video call hoặc chat.</li>
+                  <li>Tư vấn trực tiếp (Offline): Kiểm tra và tư vấn chi tiết tại phòng khám của chúng tôi.</li>
+                </ul>
+                <p className="text-justify">
+                  Với cả hai hình thức này, chúng tôi cam kết mang đến dịch vụ chăm sóc tốt nhất cho cá Koi của bạn.
+                </p>
                 <Button
                   size="large"
                   ghost
+                  onClick={() => navigate("/booking")}
+                  type="link"
+                  className="mt-4 text-white hover:text-blue-300"
                 >
                   Đặt lịch
                   <ArrowRight2 size={18} />

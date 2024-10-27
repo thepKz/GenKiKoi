@@ -35,7 +35,7 @@ const valueMap: {
   [key: string]: string;
 } = {
   "Đang chờ xử lý": "lime",
-  "Đã xác nhân": "cyan",
+  "Đã xác nhận": "cyan",
   "Đã thay đổi lịch": "orange",
   "Đã hủy": "red",
   "Đã hoàn thành": "green",
@@ -44,6 +44,8 @@ const valueMap: {
   "Tư vấn trực tuyến": "orange",
   nam: "green",
   nữ: "orange",
+  đực: "green",
+  cái: "orange",
   yes: "green",
   no: "red",
 };
@@ -52,28 +54,25 @@ export const getValue = (value: string) => {
   return valueMap[value];
 };
 
-export const uploadFile = async (file: any, folder: "customers" | "fishes") => {
+export const uploadFile = async (
+  file: any,
+  folder: "customers" | "fishes" | "staffs" | "doctors" | "records" | "ponds",
+) => {
   const compressedFile: any = await handleResize(file);
 
   const fileName = replaceName(compressedFile.name);
 
   const storageRef = ref(storage, `${folder}/${fileName}`);
 
-  const res = await uploadBytes(storageRef, file);
+  const res = await uploadBytes(storageRef, compressedFile);
 
   if (res) {
-    if (res.metadata.size === compressedFile.size) {
-      return getDownloadURL(storageRef);
-    } else {
-      return "Uploading";
-    }
+    return getDownloadURL(storageRef);
   } else {
     return "Error upload";
   }
 };
 
-// Hàm nén ảnh
-// Ủa nén sao thấy y nguyên vậy trời ???
 const handleResize = (file: any) =>
   new Promise((resolve) => {
     Resizer.imageFileResizer(
@@ -81,10 +80,13 @@ const handleResize = (file: any) =>
       1080,
       720,
       "JPEG",
-      80,
+      70, // Giảm chất lượng xuống 70
       0,
       (compressedFile) => {
-        compressedFile && resolve(compressedFile);
+        if (compressedFile) {
+          console.log("Compressed file size:", (compressedFile as File).size);
+          resolve(compressedFile);
+        }
       },
       "file",
     );

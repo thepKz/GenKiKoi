@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import { Request, Response } from "express";
 import { ValidationError } from "../errors/ValidationError";
-import { Customer } from "../models";
+import { Customer, Doctor, Manager, Staff } from "../models";
 import User from "../models/User";
 import { randomText, signToken } from "../utils";
 /**
@@ -9,7 +9,7 @@ import { randomText, signToken } from "../utils";
  * Người Test: Thép
  * Loại Test: API TEST (Đã xong), UNIT TEST (Đang làm), E2E TEST (Đã làm)
  * Chỉnh Sửa Lần Cuối : 13/10/2024
-*/
+ */
 
 export const register = async (req: Request, res: Response) => {
   try {
@@ -22,7 +22,12 @@ export const register = async (req: Request, res: Response) => {
 
     const errors: any = {};
 
-    if (!formatUsername || !formatEmail || !formatPassword || !formatConfirmPassword) {
+    if (
+      !formatUsername ||
+      !formatEmail ||
+      !formatPassword ||
+      !formatConfirmPassword
+    ) {
       errors.message = "Vui lòng điền đầy đủ các trường!";
       throw new ValidationError(errors);
     }
@@ -38,7 +43,9 @@ export const register = async (req: Request, res: Response) => {
     }
 
     // Check email format
-    if (!/^[A-Za-z0-9\._%+\-]+@[A-Za-z0-9\.\-]+\.[A-Za-z]{2,}$/.test(formatEmail)) {
+    if (
+      !/^[A-Za-z0-9\._%+\-]+@[A-Za-z0-9\.\-]+\.[A-Za-z]{2,}$/.test(formatEmail)
+    ) {
       errors.email = "Email không hợp lệ!";
       throw new ValidationError(errors);
     }
@@ -58,8 +65,13 @@ export const register = async (req: Request, res: Response) => {
     }
 
     // Check password strength
-    if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>/?]).{6,30}$/.test(formatPassword)) {
-      errors.password = "Mật khẩu phải chứa chữ thường, in hoa, số, ký tự đặc biệt và từ 6 đến 30 ký tự!";
+    if (
+      !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>/?]).{6,30}$/.test(
+        formatPassword
+      )
+    ) {
+      errors.password =
+        "Mật khẩu phải chứa chữ thường, in hoa, số, ký tự đặc biệt và từ 6 đến 30 ký tự!";
       throw new ValidationError(errors);
     }
 
@@ -71,15 +83,25 @@ export const register = async (req: Request, res: Response) => {
     // Create new user
     const salt = await bcrypt.genSalt(10);
     const hashedPass = await bcrypt.hash(formatPassword, salt);
+
     const newUser = await User.create({
       username: formatUsername,
       email: formatEmail,
       password: hashedPass,
     });
 
+    // const verificationToken = Math.floor(
+    //   100000 + Math.random() * 900000
+    // ).toString();
+
+    // For testing
+    const verificationToken = "123456";
+
     // Create new customer
-    await Customer.create({
+    const newCustomer = await Customer.create({
       userId: newUser._id,
+      verificationToken,
+      verificationTokenExpiresAt: Date.now() + 10 * 60 * 1000, // 10 minutes
     });
 
     // Generate token
@@ -90,13 +112,21 @@ export const register = async (req: Request, res: Response) => {
       role: newUser.role,
     });
 
+    // await sendVerificationEmail(
+    //   newUser.email,
+    //   newUser.username,
+    //   verificationToken
+    // );
+
     return res.status(201).json({
       message: "Đăng ký thành công!",
       data: {
         id: newUser._id,
+        customerId: newCustomer._id,
         username: newUser.username,
         email: newUser.email,
         role: newUser.role,
+        isVerified: false,
         token,
       },
     });
@@ -105,6 +135,71 @@ export const register = async (req: Request, res: Response) => {
       return res.status(400).json(error.errors);
     }
     res.status(500).json({ message: "Đã xảy ra lỗi server" });
+  }
+};
+
+export const verifyEmail = async (req: Request, res: Response) => {
+  const { verifyCode } = req.body;
+  try {
+    const customer = await Customer.findOne({
+      verificationToken: verifyCode,
+      verificationTokenExpiresAt: { $gt: Date.now() },
+    });
+
+    if (!customer) {
+      return res.status(400).json({ message: "Mã không hợp lệ hoặc hết hạn" });
+    }
+
+    customer.isVerified = true;
+    customer.verificationToken = undefined;
+    customer.verificationTokenExpiresAt = undefined;
+
+    await customer.save();
+
+    return res.status(200).json({ message: "Xác nhận tài khoản thành công" });
+  } catch (error: any) {
+    console.log(error);
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+export const sendNewVerifyEmail = async (req: Request, res: Response) => {
+  const { email, username } = req.body;
+  try {
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ message: "Người dùng không tồn tại" });
+    }
+
+    const customer = await Customer.findOne({ userId: user._id });
+
+    if (!customer) {
+      return res.status(404).json({ message: "Người dùng không tồn tại" });
+    }
+
+    // const verificationToken = Math.floor(
+    //   100000 + Math.random() * 900000
+    // ).toString();
+
+    // For testing
+    const verificationToken = "123456";
+
+    const verificationTokenExpiresAt = Date.now() + 10 * 60 * 1000; // 10 minutes
+
+    customer.verificationToken = verificationToken;
+    customer.verificationTokenExpiresAt = verificationTokenExpiresAt as any;
+
+    await customer.save();
+
+    // await sendVerificationEmail(email, username, verificationToken);
+
+    return res
+      .status(200)
+      .json({ message: "Mã OTP đã được gửi đến email của bạn" });
+  } catch (error: any) {
+    console.log(error);
+    return res.status(500).json({ message: error.message });
   }
 };
 
@@ -127,6 +222,14 @@ export const login = async (req: Request, res: Response) => {
     });
 
     if (!user) {
+      errors.message = "Tài khoản không tồn tại!";
+      errors.login = "Vui lòng kiểm tra lại!";
+      throw new ValidationError(errors);
+    }
+
+    const customer = await Customer.findOne({ userId: user._id });
+
+    if (!customer) {
       errors.message = "Tài khoản không tồn tại!";
       errors.login = "Vui lòng kiểm tra lại!";
       throw new ValidationError(errors);
@@ -155,9 +258,11 @@ export const login = async (req: Request, res: Response) => {
       message: "Đăng nhập thành công!",
       data: {
         id: user._id,
+        customerId: customer._id,
         username: user.username,
         email: user.email,
         role: user.role,
+        isVerified: customer.isVerified,
         token,
       },
     });
@@ -179,6 +284,7 @@ export const loginWithGoogle = async (req: Request, res: Response) => {
     const formatUserName = username + "-" + randomText(5);
 
     let user = await User.findOne({ email: formatEmail });
+    let customer = null;
 
     if (!user) {
       const salt = await bcrypt.genSalt(10);
@@ -193,7 +299,20 @@ export const loginWithGoogle = async (req: Request, res: Response) => {
       // Create a new customer
       await Customer.create({
         userId: user._id,
+        isVerified: true,
       });
+    } else {
+      customer = await Customer.findOne({ userId: user._id });
+
+      if (!customer) {
+        return res.status(404).json({ message: "Không tìm thấy khách hàng" });
+      }
+
+      customer.isVerified = true;
+      customer.verificationToken = undefined;
+      customer.verificationTokenExpiresAt = undefined;
+
+      await customer.save();
     }
 
     const token = await signToken({
@@ -207,16 +326,19 @@ export const loginWithGoogle = async (req: Request, res: Response) => {
       message: user.isNew ? "Đăng ký thành công!" : "Đăng nhập thành công!",
       data: {
         id: user._id,
+        customerId: customer?._id,
         username: user.username,
         email: user.email,
         role: user.role,
         photoUrl: user.photoUrl || photoUrl,
+        isVerified: true,
         token,
       },
     });
   } catch (error: any) {
+    console.log(error);
     res.status(500).json({
-      message: "ã xảy ra lỗi khi xử lý đăng nhập Google",
+      message: "Đã xảy ra lỗi khi xử lý đăng nhập Google",
     });
   }
 };
@@ -267,6 +389,19 @@ export const loginAdmin = async (req: Request, res: Response) => {
       role: user.role,
     });
 
+    let adminId = null;
+
+    if (user.role === "manager") {
+      const manager = await Manager.findOne({ userId: user._id });
+      adminId = manager?._id;
+    } else if (user.role === "doctor") {
+      const doctor = await Doctor.findOne({ userId: user._id });
+      adminId = doctor?._id;
+    } else {
+      const staff = await Staff.findOne({ userId: user._id });
+      adminId = staff?._id;
+    }
+
     return res.status(200).json({
       message: "Đăng nhập thành công!",
       data: {
@@ -274,6 +409,8 @@ export const loginAdmin = async (req: Request, res: Response) => {
         username: user.username,
         email: user.email,
         role: user.role,
+        photoUrl: user.photoUrl,
+        adminId,
         token,
       },
     });

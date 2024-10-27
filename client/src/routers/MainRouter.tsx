@@ -1,13 +1,11 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-import ScrollToTop from "../hooks/scrollToTop";
 import { MainLayout, MyAccountLayout } from "../layouts";
 import {
   AboutUs,
   Appointment,
   Booking,
-  CheckoutPage,
   ConsultingTreatment,
   Doctors,
   FAQ,
@@ -15,25 +13,37 @@ import {
   Home,
   Images,
   InspectionRecord,
+  ListFishRecords,
   MedicalRecord,
   NotFound,
+  PaymentCancel,
+  PaymentSuccess,
+  PondDetail,
   Profile,
+  RecordDetail,
   Services,
   SignIn,
   SignUp,
   UnAuthorized,
-  VnPayReturn
+  VerifyAccount,
 } from "../pages";
 import Vaccine from "../pages/services/Vaccine";
 import WaterQuality from "../pages/services/WaterQuality";
 import { addAuth } from "../redux/reducers/authReducer";
 import { IAuth } from "../types";
+import DoctorDetail from "../pages/DoctorDetail";
+
+import TermsOfService from "../pages/TermsOfService";
+import ServicePriceTable from "../pages/services/ServicePriceTable";
+import Feedback from "../pages/Feedback";
+import Dashboard from "../pages/Dashboard";
+import { Spin } from "antd";
+
 
 const MainRouter = () => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const auth: IAuth = useSelector((state: any) => state.authReducer.data);
-
   const dispatch = useDispatch();
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const getData = () => {
@@ -41,22 +51,22 @@ const MainRouter = () => {
       if (res) {
         dispatch(addAuth(JSON.parse(res)));
       }
+      setIsLoading(false);
     };
     getData();
   }, [dispatch]);
 
+  if (isLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <Spin size="large" />
+      </div>
+    );
+  }
+
   return (
     <BrowserRouter>
-      <ScrollToTop />
       <Routes>
-        <Route
-          path="/sign-in"
-          element={!auth.token ? <SignIn /> : <Navigate to={"/"} />}
-        />
-        <Route
-          path="/sign-up"
-          element={!auth.token ? <SignUp /> : <Navigate to={"/"} />}
-        />
         <Route
           path="/"
           element={<MainLayout />}
@@ -74,66 +84,176 @@ const MainRouter = () => {
             element={<Doctors />}
           />
           <Route
+            path="doctors/:id"
+            element={<DoctorDetail />}
+          />
+          <Route
             path="images"
             element={<Images />}
           />
-          <Route
-            path="services"
-            element={<Services />}
-          />
-          <Route
-            path="services/consulting-treatment"
-            element={<ConsultingTreatment />}
-          />
-          <Route
-            path="services/vaccine"
-            element={<Vaccine />}
-          />
-          <Route
-            path="services/water-quality"
-            element={<WaterQuality />}
-          />
+          <Route path="services">
+            <Route
+              index
+              element={<Services />}
+            />
+            <Route
+              path="consulting-treatment"
+              element={<ConsultingTreatment />}
+            />
+            <Route
+              path="vaccine"
+              element={<Vaccine />}
+            />
+            <Route
+              path="water-quality"
+              element={<WaterQuality />}
+            />
+            <Route
+              path="service-price-table"
+              element={<ServicePriceTable />}
+            />
+            
+            
+          </Route>
           <Route
             path="faq"
             element={<FAQ />}
           />
           <Route
-            path="booking"
-            element={<Booking />}
+            path="terms-of-service"
+            element={<TermsOfService />}
           />
+          
+          <Route
+            path="booking"
+            element={auth.token && auth.isVerified ? <Booking /> : <Navigate to={"/sign-in"} />}
+          />
+          <Route
+            path="feedback"
+            element={<Feedback />}
+          />
+          <Route
+            path="dashboard"
+              element={<Dashboard />}
+            />
+          
           <Route
             path="unauthorized"
             element={<UnAuthorized />}
           />
+          <Route
+            path="/verify-account"
+            element={
+              (auth.token && auth.isVerified) || !auth.token ? (
+                <Navigate to={"/"} />
+              ) : (
+                <VerifyAccount />
+              )
+            }
+          />
         </Route>
         <Route
+          path="payment-success"
+          element={<PaymentSuccess />}
+        />
+        <Route
+          path="payment-cancel"
+          element={<PaymentCancel />}
+        />
+
+        <Route
+          path="/sign-in"
+          element={
+            !auth.token ? (
+              <SignIn />
+            ) : (
+              <Navigate
+                to="/"
+                replace
+              />
+            )
+          }
+        />
+        <Route
+          path="/sign-up"
+          element={
+            !auth.token ? (
+              <SignUp />
+            ) : (
+              <Navigate
+                to="/"
+                replace
+              />
+            )
+          }
+        />
+
+        <Route
           path="/my-account"
-          element={auth.token ? <MyAccountLayout /> : <Navigate to="/sign-in" />}
+          element={
+            auth.token ? (
+              auth.isVerified ? (
+                <MyAccountLayout />
+              ) : (
+                <Navigate
+                  to="/verify-account"
+                  replace
+                />
+              )
+            ) : (
+              <Navigate
+                to="/sign-in"
+                replace
+              />
+            )
+          }
         >
           <Route
             path="appointment"
-            element={auth.token ? <Appointment /> : <Navigate to="/sign-in" />}
+            element={<Appointment />}
           />
-          <Route
-            path="medical-record"
-            element={auth.token ? <MedicalRecord /> : <Navigate to="/sign-in" />}
-          />
-          <Route
-            path="inspection-record"
-            element={auth.token ? <InspectionRecord /> : <Navigate to="/sign-in" />}
-          />
+          <Route path="medical-record">
+            <Route
+              index
+              element={<MedicalRecord />}
+            />
+            <Route path="fishes/:fishId/records">
+              <Route
+                index
+                element={<ListFishRecords />}
+              />
+              <Route
+                path=":recordId"
+                element={<RecordDetail />}
+              />
+            </Route>
+          </Route>
+          <Route path="inspection-record">
+            <Route
+              index
+              element={<InspectionRecord />}
+            />
+            <Route path="ponds/:pondId/records">
+              <Route
+                index
+                element={<PondDetail />}
+              />
+            </Route>
+          </Route>
           <Route
             path="profile"
-            element={auth.token ? <Profile /> : <Navigate to="/sign-in" />}
+            element={<Profile />}
           />
           <Route
             path="history"
-            element={auth.token ? <History /> : <Navigate to="/sign-in" />}
+            element={<History />}
           />
         </Route>
-        <Route path="/checkout" element={<CheckoutPage />} />
-        <Route path="/vnpay_return" element={<VnPayReturn />} />
-        <Route path="*" element={<NotFound />} />
+
+        <Route
+          path="*"
+          element={<NotFound />}
+        />
       </Routes>
     </BrowserRouter>
   );

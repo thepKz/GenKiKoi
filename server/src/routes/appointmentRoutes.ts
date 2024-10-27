@@ -1,10 +1,26 @@
 import express from "express";
-import { createNewAppointment, getAppointmentsByUser } from "../controllers/appointmentController";
+import {
+  createNewAppointment,
+  getAllAppointments,
+  getAllAppointmentsByDoctorId,
+  getAppointmentsByCustomerId,
+  updateStatusAppointment,
+} from "../controllers/appointmentController";
 import { authMiddleware } from "../middleware/authMiddleware";
 
 const router = express.Router();
+router.get("/", authMiddleware, getAllAppointments);
 
-router.get("/", authMiddleware, getAppointmentsByUser);
-router.put('/', authMiddleware, createNewAppointment)
+router.get("/doctors/:doctorId", authMiddleware, getAllAppointmentsByDoctorId);
+
+router.get(
+  "/customers/:customerId",
+  authMiddleware,
+  getAppointmentsByCustomerId
+);
+
+router.post("/customers/:customerId", authMiddleware, createNewAppointment);
+
+router.patch("/:appointmentId/status", authMiddleware, updateStatusAppointment);
 
 export default router;

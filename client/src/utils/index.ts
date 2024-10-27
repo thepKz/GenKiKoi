@@ -33,11 +33,23 @@ export const replaceName = (str: string) => {
 const valueMap: {
   [key: string]: string;
 } = {
+  PENDING: "lime",
   "Đang chờ xử lý": "lime",
-  "Đã xác nhân": "cyan",
+  PAID: "green",
+  CANCELLED: "red",
+  "Đã xác nhận": "cyan",
   "Đã thay đổi lịch": "orange",
   "Đã hủy": "red",
   "Đã hoàn thành": "green",
+  "Tại phòng khám": "green",
+  "Tại nhà": "lime",
+  "Tư vấn trực tuyến": "orange",
+  nam: "green",
+  nữ: "orange",
+  đực: "green",
+  cái: "orange",
+  yes: "green",
+  no: "red",
 };
 
 export const getValue = (value: string) => {

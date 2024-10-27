@@ -1,19 +1,30 @@
 import mongoose from "mongoose";
+import { IDoctor } from "./Doctor";
+import { ICustomer } from "./Customer";
+import { IService } from "./Service";
+import { IDoctorSchedule } from "./DoctorSchedule";
+import { IFeedback } from "./Feedback";
 
-interface IAppointment {
-  doctorId: mongoose.Types.ObjectId;
-  customerId: mongoose.Types.ObjectId;
-  serviceId: mongoose.Types.ObjectId;
+export interface IAppointment {
+  doctorScheduleId: IDoctorSchedule;
+  doctorId: IDoctor;
+  customerId: ICustomer;
+  serviceId: IService;
+  feedback?: IFeedback;
   appointmentDate: Date;
-  typeOfConsulting: string;
-  slotTime: string;
   status: string;
-  reasons: string;
+  reasons?: string;
   notes?: string;
+  isFeedback: boolean;
 }
 
 const AppointmentSchema = new mongoose.Schema<IAppointment>(
   {
+    doctorScheduleId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "DoctorSchedule",
+      required: true,
+    },
     doctorId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Doctor",
@@ -29,45 +40,29 @@ const AppointmentSchema = new mongoose.Schema<IAppointment>(
       ref: "Service",
       required: true,
     },
+    feedback: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Feedback",
+    },
     appointmentDate: {
       type: Date,
       required: true,
-    },
-    typeOfConsulting: {
-      type: String,
-      required: true,
+      default: new Date(),
     },
     status: {
       type: String,
-      enum: [
-        "Đang chờ xử lý",
-        "Đã xác nhận",
-        "Đã hoàn thành",
-        "Đã hủy",
-        "Đã thay đổi lịch",
-      ],
+      enum: ["Đang chờ xử lý", "Đã xác nhận", "Đã hoàn thành", "Đã hủy"],
       default: "Đang chờ xử lý",
     },
     reasons: {
       type: String,
-      required: true,
-    },
-    slotTime: {
-      type: String,
-      enum: [
-        "8:00",
-        "9:00",
-        "10:00",
-        "11:00",
-        "12:00",
-        "13:00",
-        "14:00",
-        "15:00",
-        "16:00",
-      ],
     },
     notes: {
       type: String,
+    },
+    isFeedback: {
+      type: Boolean,
+      default: false,
     },
   },
   {

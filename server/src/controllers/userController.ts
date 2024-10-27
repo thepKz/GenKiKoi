@@ -1,20 +1,19 @@
 import { Response } from "express";
 import { Customer, User } from "../models";
 import { AuthRequest } from "../types";
-import { ICustomer } from "../types/customer";
-import { IUser } from "../types/user";
+import { ICustomer } from "../models/Customer";
+import { IUser } from "../models/User";
+
 /**
  * Người Làm: Thép, Dũng
  * Người Test: Thép
  * Loại Test: API TEST (Đã xong), UNIT TEST (Đang làm), E2E TEST (Đang làm)
  * Chỉnh Sửa Lần Cuối : 13/10/2024 (Thép)
-*/
-
+ */
 
 export const getUser = async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user?._id;
-    console.log("userId:", userId);
 
     if (!userId) {
       return res.status(401).json({ message: "Không tìm thấy ID người dùng" });
@@ -26,8 +25,6 @@ export const getUser = async (req: AuthRequest, res: Response) => {
         "username email photoUrl fullName phoneNumber photoUrl gender"
       )
       .select("detailAddress city district ward");
-
-    console.log("customer:", customer);
 
     if (!customer) {
       // If customer is not found, create a new one
@@ -117,10 +114,11 @@ export const updateProfile = async (req: AuthRequest, res: Response) => {
     }
 
     const formattedUser = {
-      _id: updatedUser._id,
+      id: updatedUser._id,
       username: updatedUser.username,
       email: updatedUser.email,
       photoUrl: updatedUser.photoUrl,
+      customerId: updatedCustomer._id,
     };
 
     return res

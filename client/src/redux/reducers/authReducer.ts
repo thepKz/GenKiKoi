@@ -1,12 +1,14 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  _id: "",
+  id: "",
+  customerId: "",
   username: "",
   photoUrl: "",
   email: "",
   role: "",
   token: "",
+  isVerified: false,
 };
 
 const authSlice = createSlice({
@@ -28,10 +30,18 @@ const authSlice = createSlice({
         ...action.payload,
         role: state.data.role,
         token: state.data.token,
+        isVerified: true,
       };
+    },
+    checkVerified: (state, _action) => {
+      state.data = {
+        ...state.data,
+        isVerified: true,
+      };
+      localStorage.setItem("customer_GenKiKoi", JSON.stringify(state.data));
     },
   },
 });
 
 export const authReducer = authSlice.reducer;
-export const { addAuth, removeAuth, updateAuth } = authSlice.actions;
+export const { addAuth, removeAuth, updateAuth, checkVerified } = authSlice.actions;

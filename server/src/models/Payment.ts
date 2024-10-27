@@ -1,55 +1,67 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 interface IPayment {
-    orderId: string;
-    amount: number;
-    orderInfo: string;
-    orderType: string;
-    transactionNo?: string;
-    transactionStatus: 'pending' | 'success' | 'failed';
-    paymentMethod: 'vnpay';
-    paymentDate: Date;
-  }
-  
+  customerId: mongoose.Types.ObjectId;
+  appointmentId: mongoose.Types.ObjectId;
+  serviceName: string;
+  date: Date;
+  accountNumber: string;
+  accountName: string;
+  description: string;
+  paymentLinkId: string;
+  totalPrice: number;
+  status: "PENDING" | "PAID" | "CANCELLED";
+}
+
 const PaymentSchema = new mongoose.Schema<IPayment>(
   {
-    orderId: {
+    customerId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Customer",
+      required: true,
+    },
+    serviceName: {
       type: String,
       required: true,
-      unique: true,
     },
-    amount: {
+    date: {
+      type: Date,
+      required: true,
+    },
+    totalPrice: {
       type: Number,
       required: true,
     },
-    orderInfo: {
+    status: {
+      type: String,
+      enum: ["PENDING", "PAID", "CANCELLED"],
+      default: "PENDING",
+      required: true,
+    },
+    accountNumber: {
       type: String,
       required: true,
     },
-    orderType: {
+    accountName: {
       type: String,
       required: true,
     },
-    transactionNo: {
+    description: {
       type: String,
+      required: true,
     },
-    transactionStatus: {
+    paymentLinkId: {
       type: String,
-      enum: ['pending', 'success', 'failed'],
-      default: 'pending',
+      required: true,
     },
-    paymentMethod: {
-      type: String,
-      enum: ['vnpay'],
-      default: 'vnpay',
-    },
-    paymentDate: {
-      type: Date,
-      default: Date.now,
+    appointmentId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Appointment",
+      required: true,
     },
   },
   { timestamps: true }
 );
 
-const Payment = mongoose.model<IPayment>('Payment', PaymentSchema);
+const Payment = mongoose.model<IPayment>("Payment", PaymentSchema);
 export default Payment;

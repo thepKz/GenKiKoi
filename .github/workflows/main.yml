@@ -59,6 +59,7 @@ jobs:
         run: |
           cd server
           npm ci
+          npm install --save-dev copyfiles
           npm run build
         env:
           MONGO_URI: ${{ secrets.MONGO_URI }}
@@ -102,130 +103,130 @@ jobs:
           });
           "
 
-      - name: Install dependencies and build client
-        run: |
-          cd client
-          npm ci
-          npm run build
-        env:
-          VITE_BASE_apiKey: ${{ secrets.VITE_BASE_APIKEY }}
-          VITE_BASE_authDomain: ${{ secrets.VITE_BASE_AUTHDOMAIN }}
-          VITE_BASE_projectId: ${{ secrets.VITE_BASE_PROJECTID }}
-          VITE_BASE_storageBucket: ${{ secrets.VITE_BASE_STORAGEBUCKET }}
-          VITE_BASE_messagingSenderId: ${{ secrets.VITE_BASE_MESSAGINGSENDERID }}
-          VITE_BASE_appId: ${{ secrets.VITE_BASE_APPID }}
-          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+      # - name: Install dependencies and build client
+      #   run: |
+      #     cd client
+      #     npm ci
+      #     npm run build
+      #   env:
+      #     VITE_BASE_apiKey: ${{ secrets.VITE_BASE_APIKEY }}
+      #     VITE_BASE_authDomain: ${{ secrets.VITE_BASE_AUTHDOMAIN }}
+      #     VITE_BASE_projectId: ${{ secrets.VITE_BASE_PROJECTID }}
+      #     VITE_BASE_storageBucket: ${{ secrets.VITE_BASE_STORAGEBUCKET }}
+      #     VITE_BASE_messagingSenderId: ${{ secrets.VITE_BASE_MESSAGINGSENDERID }}
+      #     VITE_BASE_appId: ${{ secrets.VITE_BASE_APPID }}
+      #     VITE_API_URL: ${{ secrets.VITE_API_URL }}
 
-      - name: Upload artifact client
-        uses: actions/upload-artifact@v3
-        with:
-          name: client-dist
-          path: client/dist
+      # - name: Upload artifact client
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: client-dist
+      #     path: client/dist
 
-      - name: Install dependencies and build admin
-        run: |
-          cd admin
-          npm ci
-          npm run build
-        env:
-          VITE_BASE_apiKey: ${{ secrets.VITE_BASE_APIKEY }}
-          VITE_BASE_authDomain: ${{ secrets.VITE_BASE_AUTHDOMAIN }}
-          VITE_BASE_projectId: ${{ secrets.VITE_BASE_PROJECTID }}
-          VITE_BASE_storageBucket: ${{ secrets.VITE_BASE_STORAGEBUCKET }}
-          VITE_BASE_messagingSenderId: ${{ secrets.VITE_BASE_MESSAGINGSENDERID }}
-          VITE_BASE_appId: ${{ secrets.VITE_BASE_APPID }}
-          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+      # - name: Install dependencies and build admin
+      #   run: |
+      #     cd admin
+      #     npm ci
+      #     npm run build
+      #   env:
+      #     VITE_BASE_apiKey: ${{ secrets.VITE_BASE_APIKEY }}
+      #     VITE_BASE_authDomain: ${{ secrets.VITE_BASE_AUTHDOMAIN }}
+      #     VITE_BASE_projectId: ${{ secrets.VITE_BASE_PROJECTID }}
+      #     VITE_BASE_storageBucket: ${{ secrets.VITE_BASE_STORAGEBUCKET }}
+      #     VITE_BASE_messagingSenderId: ${{ secrets.VITE_BASE_MESSAGINGSENDERID }}
+      #     VITE_BASE_appId: ${{ secrets.VITE_BASE_APPID }}
+      #     VITE_API_URL: ${{ secrets.VITE_API_URL }}
 
-      - name: Upload coverage to Coveralls
-        uses: coverallsapp/github-action@v2
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          path-to-lcov: server/coverage.lcov
-          coveralls-repo-token: ${{ secrets.COVERALLS_REPO_TOKEN }}
+      # - name: Upload coverage to Coveralls
+      #   uses: coverallsapp/github-action@v2
+      #   with:
+      #     github-token: ${{ secrets.GITHUB_TOKEN }}
+      #     path-to-lcov: server/coverage.lcov
+      #     coveralls-repo-token: ${{ secrets.COVERALLS_REPO_TOKEN }}
 
-      - name: Upload artifact admin
-        uses: actions/upload-artifact@v3
-        with:
-          name: admin-dist
-          path: admin/dist
+      # - name: Upload artifact admin
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: admin-dist
+      #     path: admin/dist
       
-  # Job to deploy the application to the staging environment
-  deploy-staging:
-    needs: test-and-build
-    if: github.ref == 'refs/heads/develop'
-    runs-on: ubuntu-latest
-    environment: staging
-    steps:
-      - uses: actions/checkout@v4
+  # # Job to deploy the application to the staging environment
+  # deploy-staging:
+  #   needs: test-and-build
+  #   if: github.ref == 'refs/heads/develop'
+  #   runs-on: ubuntu-latest
+  #   environment: staging
+  #   steps:
+  #     - uses: actions/checkout@v4
 
-      - name: Download artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: client-dist
-          path: ./client/dist
+  #     - name: Download artifact
+  #       uses: actions/download-artifact@v3
+  #       with:
+  #         name: client-dist
+  #         path: ./client/dist
 
-      - name: Deploy to Netlify (Staging)
-        uses: nwtgck/actions-netlify@v2.0
-        with:
-          publish-dir: './client/dist'
-          production-branch: develop
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          deploy-message: "Deploy to staging from GitHub Actions"
-        env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_STAGING_SITE_ID }}
+  #     - name: Deploy to Netlify (Staging)
+  #       uses: nwtgck/actions-netlify@v2.0
+  #       with:
+  #         publish-dir: './client/dist'
+  #         production-branch: develop
+  #         github-token: ${{ secrets.GITHUB_TOKEN }}
+  #         deploy-message: "Deploy to staging from GitHub Actions"
+  #       env:
+  #         NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+  #         NETLIFY_SITE_ID: ${{ secrets.NETLIFY_STAGING_SITE_ID }}
 
-  # Job to deploy the application to the production environment
-  deploy-production:
-    needs: test-and-build
-    if: github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    environment: production
-    steps:
-      - uses: actions/checkout@v4
+  # # Job to deploy the application to the production environment
+  # deploy-production:
+  #   needs: test-and-build
+  #   if: github.ref == 'refs/heads/main'
+  #   runs-on: ubuntu-latest
+  #   environment: production
+  #   steps:
+  #     - uses: actions/checkout@v4
 
-      - name: Download artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: client-dist
-          path: ./client/dist
+  #     - name: Download artifact
+  #       uses: actions/download-artifact@v3
+  #       with:
+  #         name: client-dist
+  #         path: ./client/dist
 
-      - name: Deploy to Netlify (Production)
-        uses: nwtgck/actions-netlify@v2.0
-        with:
-          publish-dir: './client/dist'
-          production-branch: main
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          deploy-message: "Deploy to production from GitHub Actions"
-        env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_PRODUCTION_SITE_ID }}
+  #     - name: Deploy to Netlify (Production)
+  #       uses: nwtgck/actions-netlify@v2.0
+  #       with:
+  #         publish-dir: './client/dist'
+  #         production-branch: main
+  #         github-token: ${{ secrets.GITHUB_TOKEN }}
+  #         deploy-message: "Deploy to production from GitHub Actions"
+  #       env:
+  #         NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+  #         NETLIFY_SITE_ID: ${{ secrets.NETLIFY_PRODUCTION_SITE_ID }}
 
-  # Job to deploy the application to the admin environment
-  deploy-admin:
-    needs: test-and-build
-    if: github.ref == 'refs/heads/develop'
-    runs-on: ubuntu-latest
-    environment: admin
-    steps:
-      - uses: actions/checkout@v4
+  # # Job to deploy the application to the admin environment
+  # deploy-admin:
+  #   needs: test-and-build
+  #   if: github.ref == 'refs/heads/develop'
+  #   runs-on: ubuntu-latest
+  #   environment: admin
+  #   steps:
+  #     - uses: actions/checkout@v4
 
-      - name: Download artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: admin-dist
-          path: ./admin/dist
+  #     - name: Download artifact
+  #       uses: actions/download-artifact@v3
+  #       with:
+  #         name: admin-dist
+  #         path: ./admin/dist
 
-      - name: Deploy to Netlify (Admin)
-        uses: nwtgck/actions-netlify@v2.0
-        with:
-          publish-dir: './admin/dist'
-          production-branch: develop
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          deploy-message: "Deploy to admin from GitHub Actions"
-        env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_ADMIN_SITE_ID }}
+  #     - name: Deploy to Netlify (Admin)
+  #       uses: nwtgck/actions-netlify@v2.0
+  #       with:
+  #         publish-dir: './admin/dist'
+  #         production-branch: develop
+  #         github-token: ${{ secrets.GITHUB_TOKEN }}
+  #         deploy-message: "Deploy to admin from GitHub Actions"
+  #       env:
+  #         NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+  #         NETLIFY_SITE_ID: ${{ secrets.NETLIFY_ADMIN_SITE_ID }}
 
   # Job to deploy the backend to Render
   deploy-backend:
@@ -236,9 +237,15 @@ jobs:
       - name: Deploy to Render
         run: curl ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
         env:
+          PORT: 5000
           MONGO_URI: ${{ secrets.MONGO_URI }}
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
-          TMN_CODE: ${{ secrets.TMN_CODE }}
-          vnp_HashSecret: ${{ secrets.VNP_HASHSECRET }}
-          VNP_URL: ${{ secrets.VNP_URL }}
-          RETURN_URL: ${{ secrets.RETURN_URL }}
+          OPENAI_URL: ${{ secrets.OPENAI_URL }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+          CLIENT_ID: ${{ secrets.CLIENT_ID }}
+          API_KEY: ${{ secrets.API_KEY }}
+          CHECKSUM_KEY: ${{ secrets.CHECKSUM_KEY }}
+          BASE_URL_CANCELLED_PAYMENT: ${{ secrets.BASE_URL_CANCELLED_PAYMENT }}
+          BASE_URL_SUCCESS_PAYMENT: ${{ secrets.BASE_URL_SUCCESS_PAYMENT }}
+          API_URL: ${{ secrets.API_URL }}

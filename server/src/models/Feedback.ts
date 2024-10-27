@@ -1,23 +1,40 @@
 import mongoose from "mongoose";
-
-interface IFeedback {
+export interface IFeedback {
+  customerId: mongoose.Types.ObjectId;
   appointmentId: mongoose.Types.ObjectId;
-  userId: mongoose.Types.ObjectId;
+  doctorId: mongoose.Types.ObjectId;
+  serviceId: mongoose.Types.ObjectId;
+  feedbackDate: Date;
   rating: 1 | 2 | 3 | 4 | 5;
   comment?: string;
 }
 
 const FeedBackSchema = new mongoose.Schema<IFeedback>(
   {
+    customerId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Customer",
+      required: true,
+    },
     appointmentId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Appointment",
       required: true,
     },
-    userId: {
+    doctorId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: "Doctor",
       required: true,
+    },
+    serviceId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Service",
+      required: true,
+    },
+    feedbackDate: {
+      type: Date,
+      required: true,
+      default: new Date(),
     },
     rating: {
       type: Number,

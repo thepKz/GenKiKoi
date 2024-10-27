@@ -1,14 +1,7 @@
 import bcrypt from "bcryptjs";
 import { Request, Response } from "express";
-import { Doctor, DoctorSchedule, User } from "../models";
+import { Doctor, User } from "../models";
 import { randomText, replaceName } from "../utils";
-
-/**
- * @swagger
- * tags:
- *   name: Doctors
- *   description: Doctor management
- */
 
 /**
  * API: /api/doctors/
@@ -154,36 +147,26 @@ export const addNewDoctor = async (req: Request, res: Response) => {
 };
 
 /**
- * API: /api/staffs/:id
+ * API: /api/doctors/:id
  * Method: PATCH
  * PROTECTED
  */
-export const updateDoctorById = async (req: Request, res: Response) => {
+export const updateByDoctorId = async (req: Request, res: Response) => {
   try {
-    const doctorId = req.params.id;
+    const doctorId = req.params.doctorId;
     const {
+      photoUrl,
+      images,
       fullName,
       gender,
       email,
+      phoneNumber,
       specialization,
       licenseNumber,
       yearOfExperience,
       movingService,
+      introduction,
     } = req.body;
-
-    // if (
-    //   !fullName ||
-    //   !gender ||
-    //   !specialization ||
-    //   !email ||
-    //   !licenseNumber ||
-    //   !yearOfExperience ||
-    //   !movingService
-    // ) {
-    //   return res
-    //     .status(400)
-    //     .json({ message: "Vui lòng điền đầy đủ thông tin" });
-    // }
 
     const existsDoctor = await Doctor.findById(doctorId);
 
@@ -191,20 +174,34 @@ export const updateDoctorById = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "Không tìm thấy bác sĩ" });
     }
 
-    const existsUser = await User.findOne({
+    // check email khong duoc trung voi tai khoan khac
+    const checkEmail = await User.findOne({
       email,
       _id: { $ne: existsDoctor.userId },
     });
 
-    if (existsUser) {
+    if (checkEmail) {
       return res
         .status(400)
         .json({ message: "Email đã được sử dụng bởi người dùng khác" });
+    }
+    // check sdt k ddc trung voi tai khoan khac
+    const checkPhoneNumber = await User.findOne({
+      phoneNumber,
+      _id: { $ne: existsDoctor.userId },
+    });
+
+    if (checkPhoneNumber) {
+      return res
+        .status(400)
+        .json({ message: "Số điện thoại đã được sử dụng bởi người dùng khác" });
     }
 
     const updatedDoctor = await Doctor.findByIdAndUpdate(
       doctorId,
       {
+        images,
+        introduction,
         specialization,
         licenseNumber,
         yearOfExperience,
@@ -216,9 +213,11 @@ export const updateDoctorById = async (req: Request, res: Response) => {
     const updatedUser = await User.findByIdAndUpdate(
       existsDoctor.userId,
       {
+        photoUrl,
         fullName,
         gender,
         email,
+        phoneNumber,
       },
       { new: true, runValidators: true }
     );
@@ -231,14 +230,17 @@ export const updateDoctorById = async (req: Request, res: Response) => {
 
     const updatedInfo = {
       _id: updatedDoctor._id,
+      images: updatedDoctor.images,
+      photoUrl: updatedUser.photoUrl,
       fullName: updatedUser.fullName,
       gender: updatedUser.gender,
       movingService: updatedDoctor.movingService,
       specialization: updatedDoctor.specialization,
       licenseNumber: updatedDoctor.licenseNumber,
       yearOfExperience: updatedDoctor.yearOfExperience,
-      startDate: updatedDoctor.startDate,
       email: updatedUser.email,
+      phoneNumber: updatedUser.phoneNumber,
+      introduction: updatedDoctor.introduction,
     };
 
     return res.status(200).json({
@@ -257,7 +259,7 @@ export const updateDoctorById = async (req: Request, res: Response) => {
  */
 export const deleteDoctorById = async (req: Request, res: Response) => {
   try {
-    const doctorId = req.params.id;
+    const doctorId = req.params.doctorId;
 
     await Doctor.findByIdAndDelete(doctorId);
 
@@ -299,55 +301,69 @@ export const getAllDoctorsForBooking = async (req: Request, res: Response) => {
  * METHOD: GET
  * PROTECTED
  */
-export const getAllDoctorSchedules = async (req: Request, res: Response) => {
+
+// export const getScheduleById = async (req: Request, res: Response) => {
+//   const userId = req.params.id;
+
+//   try {
+//     const doctor = await Doctor.findOne({ userId });
+
+//     if (!doctor) {
+//       return res.status(404).json({ message: "Không tìm thấy bác sĩ" });
+//     }
+
+//     const schedules = await DoctorSchedule.find({ doctorId: doctor._id });
+
+//     if (!schedules) {
+//       return res.status(404).json({ message: "Không tìm thấy lịch trình" });
+//     }
+
+//     const formatSchedule = schedules.map((schedule) => ({
+//       id: schedule._id,
+//       start: schedule.start,
+//       end: schedule.end,
+//     }));
+
+//     return res.status(200).json({ data: formatSchedule });
+//   } catch (error: any) {
+//     return res.status(500).json({
+//       message: "Đã xảy ra lỗi khi lấy lịch trình",
+//       error: error.message,
+//     });
+//   }
+// };
+
+export const getDoctorById = async (req: Request, res: Response) => {
+  const doctorId = req.params.doctorId;
+
   try {
-    const schedules = await DoctorSchedule.find().populate("doctorId");
-
-    if (!schedules || schedules.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "Không tìm thấy lịch làm việc nào" });
-    }
-
-    return res.status(200).json({ data: schedules });
-  } catch (error: any) {
-    console.log(error);
-    return res.status(500).json({
-      message: "An error occurred while fetching all schedules",
-      error: error.message,
-    });
-  }
-};
-
-export const getScheduleById = async (req: Request, res: Response) => {
-  const userId = req.params.id;
-
-  try {
-    const doctor = await Doctor.findOne({ userId });
+    const doctor = await Doctor.findById(doctorId).populate(
+      "userId",
+      "photoUrl images email fullName phoneNumber gender"
+    );
 
     if (!doctor) {
       return res.status(404).json({ message: "Không tìm thấy bác sĩ" });
     }
+    const formatDoctor = {
+      _id: doctor._id,
+      photoUrl: doctor.userId.photoUrl,
+      images: doctor.images,
+      email: doctor.userId.email,
+      fullName: doctor.userId.fullName,
+      phoneNumber: doctor.userId.phoneNumber,
+      gender: doctor.userId.gender,
+      movingService: doctor.movingService,
+      specialization: doctor.specialization,
+      licenseNumber: doctor.licenseNumber,
+      yearOfExperience: doctor.yearOfExperience,
+      introduction: doctor.introduction,
+    };
 
-    const schedules = await DoctorSchedule.find({ doctorId: doctor._id });
-
-    if (!schedules) {
-      return res.status(404).json({ message: "Không tìm thấy lịch trình" });
-    }
-
-    const formatSchedule = schedules.map((schedule) => ({
-      id: schedule._id,
-      title: schedule.title,
-      start: schedule.start,
-      end: schedule.end,
-      description: schedule.description,
-    }));
-
-    return res.status(200).json({ data: formatSchedule });
-  } catch (error: any) {
-    return res.status(500).json({
-      message: "Đã xảy ra lỗi khi lấy lịch trình",
-      error: error.message,
+    return res.status(200).json({
+      data: formatDoctor,
     });
+  } catch (error: any) {
+    return res.status(500).json({ message: error.message });
   }
 };

@@ -28,6 +28,10 @@
     @apply py-20;
   }
 
+  .my-account-section {
+    @apply container mx-auto my-5 h-[calc(100vh-40px)] rounded-md bg-white p-5 shadow-sm lg:w-[95%];
+  }
+
   .item-hover {
     @apply flex items-center rounded-md p-8 ring-2 ring-blue-secondary duration-200 ease-in hover:shadow-lg hover:shadow-blue-secondary;
   }
@@ -45,9 +49,18 @@
   .heading-3 {
     @apply text-3xl font-bold;
   }
+
+  .heading-4 {
+    @apply text-2xl font-bold;
+  }
 }
 
 /* ======== ADDITIONAL CSS ======== */
+
+::-webkit-scrollbar {
+  display: none;
+}
+
 /* Header */
 .link div {
   width: 0;
@@ -55,6 +68,10 @@
 
 .link:hover div {
   width: 100%;
+}
+
+.booking .anticon-question-circle {
+  color: white !important;
 }
 
 /* Ant Design */
@@ -66,6 +83,10 @@
   color: white !important;
 }
 
+.appointment .ant-table-container {
+  height: calc(100vh - 220px);
+}
+
 .ant-table-container {
-  height: calc(100vh - 280px);
+  height: calc(100vh - 260px);
 }
