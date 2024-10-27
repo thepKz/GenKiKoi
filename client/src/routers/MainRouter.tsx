@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { MainLayout, MyAccountLayout } from "../layouts";
@@ -13,11 +13,14 @@ import {
   Home,
   Images,
   InspectionRecord,
+  ListFishRecords,
   MedicalRecord,
   NotFound,
   PaymentCancel,
   PaymentSuccess,
+  PondDetail,
   Profile,
+  RecordDetail,
   Services,
   SignIn,
   SignUp,
@@ -29,14 +32,18 @@ import WaterQuality from "../pages/services/WaterQuality";
 import { addAuth } from "../redux/reducers/authReducer";
 import { IAuth } from "../types";
 import DoctorDetail from "../pages/DoctorDetail";
+
 import TermsOfService from "../pages/TermsOfService";
 import ServicePriceTable from "../pages/services/ServicePriceTable";
 import Feedback from "../pages/Feedback";
 import Dashboard from "../pages/Dashboard";
+import { Spin } from "antd";
+
 
 const MainRouter = () => {
   const auth: IAuth = useSelector((state: any) => state.authReducer.data);
   const dispatch = useDispatch();
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const getData = () => {
@@ -44,9 +51,18 @@ const MainRouter = () => {
       if (res) {
         dispatch(addAuth(JSON.parse(res)));
       }
+      setIsLoading(false);
     };
     getData();
   }, [dispatch]);
+
+  if (isLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <Spin size="large" />
+      </div>
+    );
+  }
 
   return (
     <BrowserRouter>
@@ -196,14 +212,34 @@ const MainRouter = () => {
             path="appointment"
             element={<Appointment />}
           />
-          <Route
-            path="medical-record"
-            element={<MedicalRecord />}
-          />
-          <Route
-            path="inspection-record"
-            element={<InspectionRecord />}
-          />
+          <Route path="medical-record">
+            <Route
+              index
+              element={<MedicalRecord />}
+            />
+            <Route path="fishes/:fishId/records">
+              <Route
+                index
+                element={<ListFishRecords />}
+              />
+              <Route
+                path=":recordId"
+                element={<RecordDetail />}
+              />
+            </Route>
+          </Route>
+          <Route path="inspection-record">
+            <Route
+              index
+              element={<InspectionRecord />}
+            />
+            <Route path="ponds/:pondId/records">
+              <Route
+                index
+                element={<PondDetail />}
+              />
+            </Route>
+          </Route>
           <Route
             path="profile"
             element={<Profile />}

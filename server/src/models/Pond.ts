@@ -17,6 +17,7 @@ export interface IPond {
   pondSize?: number; // Kích thước hồ
   diagnosis?: string; // Chẩn đoán
   notes?: string; // Ghi chú
+  treatment?: string; // Điều trị
   createdAt?: Date; // Ngày tạo
 }
 const PondSchema = new mongoose.Schema<IPond>({
@@ -41,7 +42,6 @@ const PondSchema = new mongoose.Schema<IPond>({
   ph: {
     type: Number,
   },
-
   ammoniaLevel: {
     type: Number,
   },
@@ -71,6 +71,9 @@ const PondSchema = new mongoose.Schema<IPond>({
     type: String,
   },
   notes: {
+    type: String,
+  },
+  treatment: {
     type: String,
   },
   createdAt: {

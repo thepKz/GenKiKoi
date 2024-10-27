@@ -1,10 +1,32 @@
-import { Breadcrumb, Button, TableProps } from "antd";
+import { Breadcrumb, Button, message, TableProps } from "antd";
 import { HeaderPage } from "../../components";
 import { CustomTable } from "../../share";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Stickynote } from "iconsax-react";
+import { useEffect, useState } from "react";
+import { handleAPI } from "../../apis/handleAPI";
 
 const ListFishRecords = () => {
+  const { pathname } = useLocation();
+  const customerId = pathname.split("/")[3];
+  const fishId = pathname.split("/")[5];
+  const [records, setRecords] = useState([]);
+  useEffect(() => {
+    const getAllRecords = async () => {
+      try {
+        const api = `/api/medicalRecords/fishes/${fishId}`;
+
+        const res = await handleAPI(api, undefined, "GET");
+
+        setRecords(res.data);
+      } catch (error: any) {
+        console.log(error);
+        message.error(error.message);
+      }
+    };
+    getAllRecords();
+  }, [fishId]);
+
   const columns: TableProps["columns"] = [
     {
       key: "#",
@@ -18,16 +40,18 @@ const ListFishRecords = () => {
       title: "Mã lưu trữ",
       dataIndex: "recordId",
       width: 180,
+      render: (text) => (text.length > 20 ? `${text.slice(0, 17)}...` : text),
     },
     {
       key: "Dịch vụ khám",
       title: "Dịch vụ khám",
-      dataIndex: "typeOfService",
+      dataIndex: "serviceName",
+      width: 150,
     },
     {
       key: "Loại khám",
       title: "Loại khám",
-      dataIndex: "visitType",
+      dataIndex: "examType",
       width: 130,
     },
     {
@@ -46,9 +70,11 @@ const ListFishRecords = () => {
       key: "Chi tiết",
       title: "Chi tiết",
       width: 150,
-      render: (_text: any, _record: any) => (
+      render: (_text: any, record: any) => (
         <div className="text-center">
-          <Link to={`/doctor/customers/345/fishes/453/records/453`}>
+          <Link
+            to={`/doctor/customers/${customerId}/fishes/${fishId}/records/${record.recordId}`}
+          >
             <Button type="primary">Xem chi tiết</Button>
           </Link>
         </div>
@@ -56,16 +82,6 @@ const ListFishRecords = () => {
     },
   ];
 
-  const dataSource = [
-    {
-      id: 1,
-      recordId: "67sn43j",
-      typeOfService: "Tiêm ngừa",
-      visitType: "Tái khám",
-      doctorName: "Đỗ Quang Dũng",
-      date: "2024-10-09T15:18:26.465+00:00",
-    },
-  ];
   return (
     <div className="section">
       <HeaderPage heading="Danh sách hồ sơ" placeholder="Tìm hồ sơ" />
@@ -86,7 +102,9 @@ const ListFishRecords = () => {
             title: <Link to="/doctor/customers">Hồ sơ bệnh án</Link>,
           },
           {
-            title: <Link to={"/doctor/customers/345/fishes"}>Danh sách cá</Link>,
+            title: (
+              <Link to={`/doctor/customers/${customerId}/fishes`}>Danh sách cá</Link>
+            ),
           },
           {
             title: "Danh sách hồ sơ bệnh án",
@@ -94,7 +112,7 @@ const ListFishRecords = () => {
         ]}
       />
       <div className="doctor-view fish-record mt-3">
-        <CustomTable columns={columns} dataSource={dataSource} />
+        <CustomTable columns={columns} dataSource={records} />
       </div>
     </div>
   );

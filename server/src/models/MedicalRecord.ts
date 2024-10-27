@@ -6,12 +6,13 @@ export interface IMedicalRecord {
   doctorId: IDoctor;
   customerId: ICustomer;
   fishId: mongoose.Types.ObjectId;
-  examType?: "Khám bệnh" | "Tái khám" | "Tiêm Phòng" | "Điều Trị";
+  examType: "Khám bệnh" | "Tái khám";
+  serviceName: string;
   diagnosis?: string; // Chuẩn đoán
   treatment?: string; // Phác đồ điều trị
   medicines?: { name: string; quantity: number }[]; // Danh sách thuốc
   images?: string[]; //mang cac hinh anh dieu tri
-  createdAt: Date;
+  date: Date;
 }
 
 const MedicalRecordSchema = new mongoose.Schema<IMedicalRecord>(
@@ -31,10 +32,13 @@ const MedicalRecordSchema = new mongoose.Schema<IMedicalRecord>(
       ref: "Customer",
       required: true,
     },
-
     examType: {
       type: String,
-      enum: ["Khám bệnh", "Tái khám", "Tiêm Phòng", "Điều Trị"],
+      enum: ["Khám bệnh", "Tái khám"],
+      required: true,
+    },
+    serviceName: {
+      type: String,
       required: true,
     },
     diagnosis: {
@@ -49,9 +53,9 @@ const MedicalRecordSchema = new mongoose.Schema<IMedicalRecord>(
     images: {
       type: [String],
     },
-    createdAt: {
+    date: {
       type: Date,
-      default: Date.now,
+      default: new Date(),
     },
   },
   { timestamps: true }

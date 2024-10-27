@@ -8,6 +8,8 @@ import {
   Feedback,
   ListFishes,
   ListFishRecords,
+  ListPonds,
+  PondDetail,
   Profile,
   RecordDetail,
   Records,
@@ -27,6 +29,12 @@ const DoctorRouter = () => {
             <Route path=":fishId/records">
               <Route index element={<ListFishRecords />} />
               <Route path=":recordId" element={<RecordDetail />} />
+            </Route>
+          </Route>
+          <Route path=":userId/ponds">
+            <Route index element={<ListPonds />} />
+            <Route path=":pondId/records">
+              <Route index element={<PondDetail />} />
             </Route>
           </Route>
         </Route>

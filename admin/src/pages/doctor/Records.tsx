@@ -3,9 +3,38 @@ import { CustomTable } from "../../share";
 import { getValue } from "../../utils";
 import { HeaderPage } from "../../components";
 import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { handleAPI } from "../../apis/handleAPI";
 
 const Records = () => {
-  const columns: TableProps["columns"] = [
+  const [medicalCustomers, setMedicalCustomers] = useState([]);
+  const [pondCustomers, setPondCustomers] = useState([]);
+
+  useEffect(() => {
+    const getCustomers = async () => {
+      try {
+        const api = `/api/medicalRecords/customers`;
+        const res = await handleAPI(api, undefined, "GET");
+
+        setMedicalCustomers(res.data);
+      } catch (error) {}
+    };
+    getCustomers();
+  }, []);
+
+  useEffect(() => {
+    const getCustomers = async () => {
+      try {
+        const api = `/api/ponds/customers`;
+        const res = await handleAPI(api, undefined, "GET");
+
+        setPondCustomers(res.data);
+      } catch (error) {}
+    };
+    getCustomers();
+  }, []);
+
+  const medicalColumn: TableProps["columns"] = [
     {
       key: "#",
       title: "#",
@@ -16,7 +45,7 @@ const Records = () => {
     {
       key: "Tên khách hàng",
       title: "Tên khách hàng",
-      dataIndex: "fullName",
+      dataIndex: "customerName",
       width: 220,
     },
     {
@@ -41,17 +70,12 @@ const Records = () => {
       width: 150,
     },
     {
-      key: "Ghi chú",
-      title: "Ghi chú",
-      dataIndex: "notes",
-    },
-    {
       key: "Chi tiết",
       title: "Chi tiết",
       width: 150,
       render: (_text: any, record: any) => (
         <div className="text-center">
-          <Link to={`/doctor/customers/345/fishes`}>
+          <Link to={`/doctor/customers/${record._id}/fishes`}>
             <Button type="primary">Xem chi tiết</Button>
           </Link>
         </div>
@@ -59,14 +83,52 @@ const Records = () => {
     },
   ];
 
-  const demoData = [
+  const pondColumn: TableProps["columns"] = [
     {
-      id: 1,
-      fullName: "Đỗ Quang Dũng",
-      gender: "nam",
-      phoneNumber: "0352195876",
-      notes: "",
-      numberAppointment: 5,
+      key: "#",
+      title: "#",
+      dataIndex: "key",
+      width: 70,
+      render: (_text, _record, index) => index + 1,
+    },
+    {
+      key: "Tên khách hàng",
+      title: "Tên khách hàng",
+      dataIndex: "customerName",
+      width: 220,
+    },
+    {
+      key: "Giới tính",
+      title: "Giới tính",
+      dataIndex: "gender",
+      width: 150,
+      render: (text) => (
+        <Tag color={getValue(text)}>{text === "nam" ? "Nam" : "Nữ"}</Tag>
+      ),
+    },
+    {
+      key: "Số điện thoại",
+      title: "Số điện thoại",
+      dataIndex: "phoneNumber",
+      width: 150,
+    },
+    {
+      key: "Số hồ",
+      title: "Số hồ",
+      dataIndex: "numberPond",
+      width: 150,
+    },
+    {
+      key: "Chi tiết",
+      title: "Chi tiết",
+      width: 150,
+      render: (_text: any, record: any) => (
+        <div className="text-center">
+          <Link to={`/doctor/customers/${record._id}/ponds`}>
+            <Button type="primary">Xem chi tiết</Button>
+          </Link>
+        </div>
+      ),
     },
   ];
 
@@ -77,8 +139,8 @@ const Records = () => {
       children: (
         <div className="doctor-view">
           <CustomTable
-            columns={columns}
-            dataSource={demoData}
+            columns={medicalColumn}
+            dataSource={medicalCustomers}
             scroll="calc(100vh - 410px)"
             className="staff-table"
           />
@@ -91,8 +153,8 @@ const Records = () => {
       children: (
         <div className="doctor-view">
           <CustomTable
-            columns={columns}
-            dataSource={demoData}
+            columns={pondColumn}
+            dataSource={pondCustomers}
             scroll="calc(100vh - 410px)"
             className="staff-table"
           />
