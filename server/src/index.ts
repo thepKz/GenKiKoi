@@ -21,6 +21,7 @@ import {
   fishRoutes,
   doctorScheduleRoutes,
   feedbackRoutes,
+  customerRoutes,
 } from "./routes";
 import { DoctorSchedule, MedicalRecord } from "./models";
 
@@ -72,6 +73,7 @@ app.use("/api/distance", distanceRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/doctorSchedules", doctorScheduleRoutes);
 app.use("/api/feedbacks", feedbackRoutes);
+app.use("/api/customers", customerRoutes);
 
 // Export the app for testing purposes
 export { app };

@@ -184,7 +184,6 @@ export const getTopCustomers = async (req: Request, res: Response) => {
       },
     ]);
 
-    //Bước 2: Map và lấy thông tin chi tiết
     const result = await Promise.all(
       topCustomers.map(async (customer) => {
         try {
@@ -220,6 +219,81 @@ export const getTopCustomers = async (req: Request, res: Response) => {
       success: false,
       message: "Lỗi khi lấy top khach hang",
       error: error.message,
+    });
+  }
+};
+
+export const getStatistics = async (req: Request, res: Response) => {
+  try {
+    const statistics = await Payment.aggregate([
+      {
+        $match: {
+          status: "PAID",
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          totalEarning: { $sum: "$totalPrice" },
+          totalBooking: { $sum: 1 },
+        },
+      },
+    ]);
+
+    // Vì group by null nên kết quả là array với 1 phần tử
+    const result = statistics[0] || {
+      totalEarning: 0,
+      totalBooking: 0,
+    };
+
+    return res.status(200).json({
+      data: result,
+    });
+  } catch (error: any) {
+    console.error("Lỗi:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Lỗi khi lấy thống kê thanh toán",
+      error: error.message,
+    });
+  }
+};
+
+export const getTopServices = async (req: Request, res: Response) => {
+  try {
+    const totalPayments = await Payment.countDocuments({ status: "PAID" });
+    const statistics = await Payment.aggregate([
+      {
+        $match: {
+          status: "PAID",
+        },
+      },
+      {
+        $group: {
+          _id: "$serviceName",
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $sort: {
+          count: -1,
+        },
+      },
+    ]);
+
+    const result = statistics.map((item) => ({
+      serviceName: item._id,
+      count: item.count,
+      percentage: ((item.count / totalPayments) * 100).toFixed(2),
+    }));
+
+    return res.status(200).json({
+      data: result,
+    });
+  } catch (error: any) {
+    console.error("Lỗi:", error);
+    return res.status(500).json({
+      message: "Lỗi khi lấy thống kê dịch vụ",
     });
   }
 };
