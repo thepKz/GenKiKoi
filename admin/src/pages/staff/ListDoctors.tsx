@@ -29,12 +29,15 @@ const ListDoctors = () => {
 
   const getWeekDates = () => {
     const today = new Date();
+    const dayOfWeek = today.getDay(); // 0 là Chủ nhật, 1 là thứ Hai, ..., 6 là thứ Bảy
     const monday = new Date(today);
-    monday.setDate(monday.getDate() - monday.getDay() + 1);
+    monday.setDate(today.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1));
     const sunday = new Date(monday);
-    sunday.setDate(sunday.getDate() + 6);
+    sunday.setDate(monday.getDate() + 6);
     return { monday, sunday };
   };
+
+  console.log(getWeekDates());
 
   const formatDate = (dateString: string) => {
     const [day, month] = dateString.split("/").map(Number);
@@ -121,14 +124,12 @@ const ListDoctors = () => {
                     <span className="font-semibold">Lịch làm việc: </span>
                     {doctor.weekSchedule.map((day: any, index: any) => {
                       const formattedDate = formatDate(day.dayOfWeek);
-                      return formattedDate && (
-                        <Tag
-                          key={index}
-                          color="blue"
-                          className="mr-1"
-                        >
-                          {formattedDate}
-                        </Tag>
+                      return (
+                        formattedDate && (
+                          <Tag key={index} color="blue" className="mr-1">
+                            {formattedDate}
+                          </Tag>
+                        )
                       );
                     })}
                     {countFutureDays(doctor.weekSchedule) > 0 && (
