@@ -32,6 +32,7 @@ import DoctorDetail from "../pages/DoctorDetail";
 import TermsOfService from "../pages/TermsOfService";
 import ServicePriceTable from "../pages/services/ServicePriceTable";
 import Feedback from "../pages/Feedback";
+import Dashboard from "../pages/Dashboard";
 
 const MainRouter = () => {
   const auth: IAuth = useSelector((state: any) => state.authReducer.data);
@@ -95,10 +96,8 @@ const MainRouter = () => {
               path="service-price-table"
               element={<ServicePriceTable />}
             />
-            <Route
-            path="feedback"
-            element={<Feedback />}
-          />
+            
+            
           </Route>
           <Route
             path="faq"
@@ -113,6 +112,15 @@ const MainRouter = () => {
             path="booking"
             element={auth.token && auth.isVerified ? <Booking /> : <Navigate to={"/sign-in"} />}
           />
+          <Route
+            path="feedback"
+            element={<Feedback />}
+          />
+          <Route
+            path="dashboard"
+            element={<Dashboard />}
+          />
+          
           <Route
             path="unauthorized"
             element={<UnAuthorized />}
