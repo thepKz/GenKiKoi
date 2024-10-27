@@ -144,6 +144,8 @@ export const addNewDoctor = async (req: Request, res: Response) => {
       };
     }
 
+    await DoctorSchedule.create({ doctorId: doctor._id, weekSchedule: [] });
+
     return res.status(201).json({
       message: "Nhân viên được thêm thành công!",
       data: formatDoctor,

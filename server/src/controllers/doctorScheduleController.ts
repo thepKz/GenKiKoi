@@ -179,8 +179,6 @@ export const updateBookAppointment = async (req: Request, res: Response) => {
     const { doctorId } = req.params;
     const { slotTime, appointmentId, appointmentDate } = req.body;
 
-    console.log(doctorId, slotTime, appointmentId, appointmentDate);
-
     if (!slotTime || !appointmentId || !appointmentDate) {
       return res
         .status(400)

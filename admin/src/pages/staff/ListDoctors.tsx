@@ -37,8 +37,6 @@ const ListDoctors = () => {
     return { monday, sunday };
   };
 
-  console.log(getWeekDates());
-
   const formatDate = (dateString: string) => {
     const [day, month] = dateString.split("/").map(Number);
     const date = new Date(new Date().getFullYear(), month - 1, day);

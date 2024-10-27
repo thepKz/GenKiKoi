@@ -62,7 +62,12 @@
   display: none;
 }
 
-/* ::-webkit-scrollbar-thumb {
+/* .dashboard ::-webkit-scrollbar {
+  display: initial;
+  width: 10px;
+}
+
+.dashboard ::-webkit-scrollbar-thumb {
   background: #ccc;
   border-radius: 10px;
 } */

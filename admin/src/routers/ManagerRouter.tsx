@@ -4,6 +4,7 @@ import {
   Appointments,
   AssignCalendar,
   Customers,
+  Dashboard,
   DoctorCalendar,
   ListDoctors,
   Services,
@@ -15,7 +16,8 @@ const ManagerRouter = () => {
   return (
     <Routes>
       <Route path="/" element={<MainLayout />}>
-        <Route index element={<Navigate to="services" replace />} />
+        <Route index element={<Navigate to="dashboard" replace />} />
+        <Route path="dashboard" element={<Dashboard />} />
         <Route path="services" element={<Services />} />
         <Route path="staffs" element={<Staffs />} />
         <Route path="doctor-calendar">

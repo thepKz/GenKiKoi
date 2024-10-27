@@ -94,7 +94,14 @@ export const updateStatusAppointment = async (req: Request, res: Response) => {
             : status === "CANCELLED"
             ? "Đã hủy"
             : "Đã xác nhận",
-        notes: "Quý khách sẽ được hoàn tiền theo chính sách của công ty!",
+        notes:
+          status === "PENDING"
+            ? "Quý khách cần thanh toán dịch vụ để được xác nhận!"
+            : status === "CANCELLED"
+            ? "Quý khách sẽ được hoàn tiền theo chính sách của công ty!"
+            : status === "DONE"
+            ? ""
+            : "Quý khách vui lòng tới trước giờ hẹn 15 phút!",
       },
       { new: true }
     );

@@ -29,10 +29,11 @@ const ListDoctors = () => {
 
   const getWeekDates = () => {
     const today = new Date();
+    const dayOfWeek = today.getDay(); // 0 là Chủ nhật, 1 là thứ Hai, ..., 6 là thứ Bảy
     const monday = new Date(today);
-    monday.setDate(monday.getDate() - monday.getDay() + 1);
+    monday.setDate(today.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1));
     const sunday = new Date(monday);
-    sunday.setDate(sunday.getDate() + 6);
+    sunday.setDate(monday.getDate() + 6);
     return { monday, sunday };
   };
 
@@ -90,7 +91,11 @@ const ListDoctors = () => {
             <div className="flex gap-5">
               <div className="h-[150px] w-[250px] overflow-hidden rounded-lg">
                 <img
-                  src={doctor.photoUrl ?? "https://placehold.co/150x150"}
+                  src={
+                    doctor.photoUrl === ""
+                      ? "https://placehold.co/150x150"
+                      : doctor.photoUrl
+                  }
                   alt=""
                   className="h-full w-full object-cover"
                 />
@@ -140,7 +145,9 @@ const ListDoctors = () => {
                   <Link to={`/manager/doctor-calendar/${doctor.doctorId}`}>
                     <Button type="primary">Xem chi tiết</Button>
                   </Link>
-                  <Link to={`/manager/doctor-calendar/assign/${doctor.doctorId}`}>
+                  <Link
+                    to={`/manager/doctor-calendar/assign/${doctor.doctorId}`}
+                  >
                     <Button>Chỉnh lịch làm việc</Button>
                   </Link>
                 </div>

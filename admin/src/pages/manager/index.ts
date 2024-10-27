@@ -1,6 +1,7 @@
 import Appointments from "./Appointments";
 import AssignCalendar from "./AssignCalendar";
 import Customers from "./Customers";
+import Dashboard from "./Dashboard";
 import DoctorCalendar from "./DoctorCalendar";
 import ListDoctors from "./ListDoctors";
 import Services from "./Services";
@@ -14,4 +15,5 @@ export {
   ListDoctors,
   Customers,
   Appointments,
+  Dashboard,
 };
