@@ -2,7 +2,7 @@ import { Response, Request } from "express";
 import PayOS from "@payos/node";
 import dotenv from "dotenv";
 import Payment from "../models/Payment";
-import { Appointment } from "../models";
+import { Appointment, Customer } from "../models";
 
 dotenv.config();
 
@@ -157,6 +157,68 @@ export const getPaymentByAppointmentId = async (
     console.error(error);
     return res.status(500).json({
       message: "Lỗi khi lấy thông tin thanh toán",
+      error: error.message,
+    });
+  }
+};
+
+export const getTopCustomers = async (req: Request, res: Response) => {
+  try {
+    const topCustomers = await Payment.aggregate([
+      {
+        $match: {
+          status: "PAID",
+        },
+      },
+      {
+        $group: {
+          _id: "$customerId",
+          totalAmount: { $sum: "$totalPrice" },
+          orderCount: { $sum: 1 },
+        },
+      },
+      {
+        $sort: {
+          totalAmount: -1,
+        },
+      },
+    ]);
+
+    //Bước 2: Map và lấy thông tin chi tiết
+    const result = await Promise.all(
+      topCustomers.map(async (customer) => {
+        try {
+          const customerInfo = await Customer.findById(customer._id).populate(
+            "userId",
+            "fullName"
+          );
+
+          return {
+            customerId: customer._id,
+            name: customerInfo?.userId?.fullName || "Không xác định",
+            totalAmount: customer.totalAmount,
+            orderCount: customer.orderCount,
+          };
+        } catch (err) {
+          // Nếu không tìm thấy thông tin khách hàng, vẫn trả về dữ liệu cơ bản
+          return {
+            customerId: customer._id,
+            name: "Không xác định",
+            totalAmount: customer.totalAmount,
+            orderCount: customer.orderCount,
+          };
+        }
+      })
+    );
+
+    return res.status(200).json({
+      data: result,
+    });
+  } catch (error: any) {
+    console.error("Lỗi khi lấy top khách hàng:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Lỗi khi lấy top khach hang",
       error: error.message,
     });
   }
