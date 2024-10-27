@@ -28,10 +28,33 @@ const Footer = () => {
         iconAnchor: [16, 32],
         popupAnchor: [0, -32]
       });
+
+      // Thêm icons cho Hoàng Sa và Trường Sa
+      const hoangSaIcon = L.icon({
+        iconUrl: '/src/assets/hoangsa.png',
+        iconSize: [100, 100],
+        iconAnchor: [16, 32],
+        popupAnchor: [0, -32]
+      });
+
+      const truongSaIcon = L.icon({
+        iconUrl: '/src/assets/truongsa.png',
+        iconSize: [100, 100],
+        iconAnchor: [16, 32],
+        popupAnchor: [0, -32]
+      });
       
+      // Marker cho GenKiKoi
       L.marker([lat, lon], { icon: genkikoiIcon }).addTo(map)
         .bindPopup('GenKiKoi')
         .openPopup();
+
+      // Thêm markers cho Hoàng Sa và Trường Sa
+      L.marker([16.4, 112.0], { icon: hoangSaIcon }).addTo(map)
+        .bindPopup('Quần đảo Hoàng Sa');
+      
+      L.marker([8.6, 111.9], { icon: truongSaIcon }).addTo(map)
+        .bindPopup('Quần đảo Trường Sa');
     };
 
     initMap();
