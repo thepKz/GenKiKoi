@@ -5,8 +5,14 @@ import { ArrowRight2 } from "iconsax-react";
 
 import WaterQuality1 from "../../assets/water-quality-1.jpg";
 import WaterQuality2 from "../../assets/water-quality-2.jpg";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 const WaterQuality = () => {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+  const navigate = useNavigate();
   return (
     <div>
       {/* Section 1 */}
@@ -58,6 +64,9 @@ const WaterQuality = () => {
                 <Button
                   size="large"
                   ghost
+                  onClick={() => navigate("/booking")}
+                  type="link"
+                  className="mt-4 text-white hover:text-blue-300"
                 >
                   Đặt lịch
                   <ArrowRight2 size={18} />
