@@ -297,3 +297,92 @@ export const getTopServices = async (req: Request, res: Response) => {
     });
   }
 };
+
+export const getBookingsByMonth = async (req: Request, res: Response) => {
+  try {
+    const bookingsByMonth = await Payment.aggregate([
+      {
+        $match: {
+          status: "PAID",
+        },
+      },
+      {
+        $group: {
+          _id: {
+            month: { $month: "$date" },
+            year: { $year: "$date" },
+          },
+          value: { $sum: 1 },
+        },
+      },
+      {
+        $sort: {
+          "_id.year": 1,
+          "_id.month": 1,
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          month: "$_id.month",
+          value: 1,
+        },
+      },
+    ]);
+
+    return res.status(200).json({
+      data: bookingsByMonth,
+    });
+  } catch (error: any) {
+    console.error("Lỗi:", error);
+    return res.status(500).json({
+      message: "Lỗi khi lấy thống kê cuộc hẹn theo tháng",
+      error: error.message,
+    });
+  }
+};
+
+export const getMoneyByMonth = async (req: Request, res: Response) => {
+  try {
+    const moneyByMonth = await Payment.aggregate([
+      {
+        $match: {
+          status: "PAID",
+        },
+      },
+      {
+        $group: {
+          _id: {
+            month: { $month: "$date" },
+            year: { $year: "$date" },
+          },
+          total: { $sum: "$totalPrice" },
+        },
+      },
+      {
+        $sort: {
+          "_id.year": 1,
+          "_id.month": 1,
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          month: "$_id.month",
+
+          total: 1,
+        },
+      },
+    ]);
+
+    return res.status(200).json({
+      data: moneyByMonth,
+    });
+  } catch (error: any) {
+    console.error("Lỗi:", error);
+    return res.status(500).json({
+      message: "Lỗi khi lấy thống kê doanh thu theo tháng",
+      error: error.message,
+    });
+  }
+};
