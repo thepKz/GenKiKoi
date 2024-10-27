@@ -1,7 +1,10 @@
 import React from 'react';
-import { FiDollarSign, FiCalendar, FiUsers, FiMoreHorizontal, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
-import { FiGrid, FiFileText, FiBookOpen, FiCalendar as FiCalendarNav, FiUsers as FiUsersNav, FiSettings } from 'react-icons/fi';
+import { FiCalendar, FiUsers} from 'react-icons/fi';
+import { FiGrid, FiFileText, FiBookOpen,  FiSettings } from 'react-icons/fi';
 import FishBanner from "../assets/fish-banner-3.png";
+import Dashboard1 from "../assets/dashboard1.png";
+import Dashboard2 from "../assets/dashboard2.png";
+import Dashboard3 from "../assets/dashboard3.png";
 
 const SidebarItem: React.FC<{ icon: React.ReactNode; text: string; active?: boolean }> = ({ icon, text, active }) => (
   <div className={`flex items-center mb-4 p-2 rounded-lg ${active ? 'bg-blue-100 text-blue-600' : 'text-gray-600 hover:bg-gray-100'}`}>
@@ -42,20 +45,21 @@ const Dashboard: React.FC = () => {
             <h2 className="text-xl font-semibold mb-4">July activity</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <StatCard
-                icon={<img src="/path-to-dollar-icon.svg" alt="Dollar" className="w-12 h-12" />}
+                icon={<img src={Dashboard1} alt="Dollar" className="w-12 h-12" />}
                 title="Total earnings"
                 value="24,345,55$"
                 color="bg-white"
-                decoration={<img src={FishBanner} alt="Arrow Up" className="absolute top-2 right-2 w-8 h-8" />}
+                decoration={<img src={FishBanner} alt="Star" className="absolute top-2 right-2 w-6 h-6" />}
               />
               <StatCard
-                icon={<img src="/path-to-lock-icon.svg" alt="Lock" className="w-12 h-12" />}
+                icon={<img src={Dashboard2} alt="Lock" className="w-12 h-12" />}
                 title="Total booking"
                 value="202"
                 color="bg-white"
+                decoration={<img src={FishBanner} alt="Star" className="absolute top-2 right-2 w-6 h-6" />}
               />
               <StatCard
-                icon={<img src="/path-to-phone-icon.svg" alt="Phone" className="w-12 h-12" />}
+                icon={<img src={Dashboard3} alt="Phone" className="w-12 h-12" />}
                 title="Total Customer"
                 value="554"
                 color="bg-white"
@@ -134,22 +138,33 @@ const ServiceRow: React.FC<{ id: string; name: string; popularity: number; sales
 );
 
 const VIPCustomers: React.FC = () => (
-  <ul>
-    <CustomerItem name="Nguyễn Thị Hồng Hạnh" value="12345$" />
-    <CustomerItem name="Lê Thị Ánh Hồng" value="5678$" />
-    <CustomerItem name="Đỗ Dũng" value="5$" />
-    <CustomerItem name="Tân Thép" value="1$" />
-  </ul>
+  <table className="w-full">
+    <thead>
+      <tr className="text-left text-gray-500">
+        <th className="pb-2">#</th>
+        <th className="pb-2">Name</th>
+        <th className="pb-2">Total Amount</th>
+        <th className="pb-2">Usage Count</th>
+      </tr>
+    </thead>
+    <tbody>
+      <CustomerRow id="01" name="Nguyễn Thị Hồng Hạnh" amount="12345$" usageCount={15} />
+      <CustomerRow id="02" name="Lê Thị Ánh Hồng" amount="5678$" usageCount={10} />
+      <CustomerRow id="03" name="Đỗ Dũng" amount="5$" usageCount={2}  />
+      <CustomerRow id="04" name="Tân Thép" amount="1$" usageCount={1}  />
+    </tbody>
+  </table>
 );
 
-const CustomerItem: React.FC<{ name: string; value: string }> = ({ name, value }) => (
-  <li className="flex justify-between items-center py-2 border-b last:border-b-0">
-    <span>{name}</span>
-    <span className="font-semibold">{value}</span>
-  </li>
+const CustomerRow: React.FC<{ id: string; name: string; amount: string; usageCount: number }> = ({ id, name, amount, usageCount }) => (
+  <tr>
+    <td className="py-2">{id}</td>
+    <td className="py-2">{name}</td>
+    <td className="py-2 font-bold text-center">{amount}</td>
+    <td className="py-2 text-center">
+      <span className={`font-bold px-2 py-1 rounded-full`}>{usageCount}</span>
+    </td>
+  </tr>
 );
-
-
-
 
 export default Dashboard;

@@ -118,8 +118,8 @@ const MainRouter = () => {
           />
           <Route
             path="dashboard"
-            element={<Dashboard />}
-          />
+              element={<Dashboard />}
+            />
           
           <Route
             path="unauthorized"
