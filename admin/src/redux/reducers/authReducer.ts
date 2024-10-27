@@ -25,6 +25,7 @@ const authSlice = createSlice({
         ...state.data,
         photoUrl: action.payload.photoUrl,
       };
+      localStorage.setItem("admin_GenKiKoi", JSON.stringify(state.data));
     },
     removeAuth: (state, _action) => {
       state.data = initialState;
