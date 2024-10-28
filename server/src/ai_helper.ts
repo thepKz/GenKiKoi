@@ -18,128 +18,115 @@ class AIHelper extends Helper {
   }
 
   async useAI(description: string) {
-    try {
-      const { page } = this.helpers.Playwright;
-      console.log(`AI attempting to: ${description}`);
+  try {
+    const { page } = this.helpers.Playwright;
+    console.log(`AI attempting to: ${description}`);
 
-      if (description === 'fill booking form') {
-        // Yêu cầu GPT trả về JSON cụ thể
-        const completion = await this.openai.chat.completions.create({
-          model: "gpt-3.5-turbo",
-          messages: [{
-            role: "system", 
-            content: "You are a medical booking assistant. Return ONLY a JSON object with these exact fields in Vietnamese: {service: string, doctor: string, consultingType: string, address: string, reason: string}"
-          }, {
-            role: "user",
-            content: "Generate medical booking details"
-          }],
-          temperature: 0.3 // Giảm temperature để output ổn định hơn
-        });
+    if (description === 'fill booking form') {
+      try {
+        // Wait for form to be fully loaded
+        await page.waitForSelector('.ant-select', { state: 'visible', timeout: 10000 });
+        await page.waitForTimeout(2000);
 
-        // Log response để debug
-        console.log('GPT Response:', completion.choices[0].message.content);
+        // Fill service type
+        await page.locator('.ant-select').first().click();
+        await page.waitForTimeout(500);
+        await page.locator('.ant-select-item-option-content:has-text("Siêu âm")').click();
+        await page.waitForTimeout(1000);
 
-        try {
-          const formData = JSON.parse(completion.choices[0].message.content);
-          
-          // Validate dữ liệu
-          if (!formData.address || !formData.reason) {
-            throw new Error('Missing required fields from AI response');
-          }
+        // Fill doctor selection
+        await page.locator('.ant-select').nth(1).click();
+        await page.waitForTimeout(500);
+        await page.locator('.ant-select-item-option-content:has-text("Bs. Đỗ Thị Mỹ Uyên")').click();
+        await page.waitForTimeout(1000);
 
-          // Fill service
-          await page.click('.ant-select-selector');
-          await page.waitForTimeout(1000);
-          await page.click('.ant-select-item-option:first-child');
-          
-          // Fill doctor
-          await page.click('form .ant-select-selector:nth-child(2)');
-          await page.waitForTimeout(1000); 
-          await page.click('.ant-select-item-option:first-child');
+        // Fill consulting type
+        await page.locator('.ant-select').nth(2).click();
+        await page.waitForTimeout(500);
+        await page.locator('.ant-select-item-option-content:has-text("Tại Phòng Khám")').click();
+        await page.waitForTimeout(1000);
 
-          // Fill consulting type
-          await page.click('form .ant-select-selector:nth-child(3)');
-          await page.waitForTimeout(1000);
-          await page.click('.ant-select-item-option:first-child');
+        // Wait for calendar to load after doctor selection
+        await page.waitForSelector('.ant-picker-calendar', { timeout: 10000 });
+        await page.waitForTimeout(1000);
 
-          // Select date
-          await page.click('.ant-picker-cell-in-view:not(.ant-picker-cell-disabled)');
+        // Find and click first available date (not disabled)
+        const availableDate = await page.locator('.ant-picker-cell:not(.ant-picker-cell-disabled)').first();
+        if (await availableDate.isVisible()) {
+          await availableDate.click();
           await page.waitForTimeout(1000);
 
-          // Select time slot
-          await page.click('.ant-card:first-child');
-          await page.waitForTimeout(1000);
-
-          // Fill address & reason
-          await page.fill('input[placeholder="Nhập địa chỉ"]', formData.address);
-          await page.waitForTimeout(1000);
-          await page.click('.ant-select-item:first-child');
-          await page.fill('textarea[placeholder="Lý do khám"]', formData.reason);
-
-        } catch (parseError) {
-          console.error('Failed to parse AI response:', parseError);
-          // Fallback values
-          await page.fill('input[placeholder="Nhập địa chỉ"]', '123 Nguyễn Văn Linh');
-          await page.waitForTimeout(1000);
-          await page.click('.ant-select-item:first-child');
-          await page.fill('textarea[placeholder="Lý do khám"]', 'Khám sức khỏe định kỳ');
+          // Wait for time slots to appear and select first available slot
+          await page.waitForSelector('.ant-card:not(.opacity-50)', { timeout: 5000 });
+          await page.locator('.ant-card:not(.opacity-50)').first().click();
+        } else {
+          throw new Error('No available dates found in calendar');
         }
 
-      } else {
-        // Các case khác giữ nguyên
-        if (description === 'login with username') {
-          await page.fill('input[placeholder="Email"]', 'gemixdecor1');
-        }
-        else if (description === 'login with password') {
-          await page.fill('input[placeholder="Mật khẩu"]', 'Gemixdecor1@');
-        }
-        else if (description.includes('click login')) {
-          await page.click('.ant-btn:has-text("Đăng nhập")');
-        }
-        else if (description === 'click booking link') {
-          await page.waitForTimeout(2000);
-          await page.click('a[href="/booking"]', {
-            timeout: 5000,
-            force: true
-          });
-        }
-        else if (description === 'click payment button') {
-          await page.click('button:has-text("Thanh toán")');
-          await page.waitForTimeout(2000);
-        }
-        // Register cases
-        else if (description === 'register with username') {
-          await page.fill('input[placeholder="Tên tài khoản"]', this.credentials.username);
-          await page.waitForTimeout(500);
-        }
-        else if (description === 'register with email') {
-          await page.fill('input[placeholder="Email"]', this.credentials.email);
-          await page.waitForTimeout(500);
-        }
-        else if (description === 'register with password') {
-          await page.fill('input[placeholder="Mật khẩu"]', this.credentials.password);
-          await page.waitForTimeout(500);
-        }
-        else if (description === 'register with confirm password') {
-          await page.fill('input[placeholder="Xác nhận mật khẩu"]', this.credentials.password);
-          await page.waitForTimeout(500);
-        }
-        else if (description === 'click register button') {
-          await page.click('button:has-text("Đăng ký")');
-          // Đợi API response
-          await page.waitForTimeout(2000);
-          // Đợi message hiển thị
-          await page.waitForSelector('.ant-message', { timeout: 5000 });
-        }
+        // Fill reason
+        await page.locator('textarea[placeholder="Lý do khám"]').fill('Khám sức khỏe định kỳ cho cá Koi');
+        await page.waitForTimeout(1000);
+
+      } catch (error) {
+        console.error('Failed to fill booking form:', error);
+        throw error;
       }
-
-      await page.waitForLoadState('networkidle');
-
-    } catch (error) {
-      console.error('Action error:', error);
-      throw error;
+    } else {
+      // Các case khác giữ nguyên
+      if (description === 'login with username') {
+        await page.fill('input[placeholder="Email"]', 'gemixdecor1');
+      }
+      else if (description === 'login with password') {
+        await page.fill('input[placeholder="Mật khẩu"]', 'Gemixdecor1@');
+      }
+      else if (description.includes('click login')) {
+        await page.click('.ant-btn:has-text("Đăng nhập")');
+      }
+      else if (description === 'click booking link') {
+        await page.waitForTimeout(2000);
+        await page.click('a[href="/booking"]', {
+          timeout: 5000,
+          force: true
+        });
+      }
+      else if (description === 'click payment button') {
+        await page.click('button:has-text("Thanh toán")');
+        await page.waitForTimeout(2000);
+      }
+      // Register cases
+      else if (description === 'register with username') {
+        await page.fill('input[placeholder="Tên tài khoản"]', this.credentials.username);
+        await page.waitForTimeout(500);
+      }
+      else if (description === 'register with email') {
+        await page.fill('input[placeholder="Email"]', this.credentials.email);
+        await page.waitForTimeout(500);
+      }
+      else if (description === 'register with password') {
+        await page.fill('input[placeholder="Mật khẩu"]', this.credentials.password);
+        await page.waitForTimeout(500);
+      }
+      else if (description === 'register with confirm password') {
+        await page.fill('input[placeholder="Xác nhận mật khẩu"]', this.credentials.password);
+        await page.waitForTimeout(500);
+      }
+      else if (description === 'click register button') {
+        await page.click('button:has-text("Đăng ký")');
+        // Đợi API response
+        await page.waitForTimeout(2000);
+        // Đợi message hiển thị
+        await page.waitForSelector('.ant-message', { timeout: 5000 });
+      }
     }
+    // Add delay between test cases
+    await page.waitForTimeout(1000);
+    await page.waitForLoadState('networkidle');
+
+  } catch (error) {
+    console.error('Action error:', error);
+    throw error;
   }
+}
 }
 
 module.exports = AIHelper;
