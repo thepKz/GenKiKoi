@@ -228,6 +228,12 @@ export const login = async (req: Request, res: Response) => {
       throw new ValidationError(errors);
     }
 
+    if (user.isDisabled) {
+      errors.message =
+        "Tài khoản của bạn đã bị khóa! Vui lòng liên hệ quản trị viên để được hỗ trợ";
+      throw new ValidationError(errors);
+    }
+
     const customer = await Customer.findOne({ userId: user._id });
 
     if (!customer) {
@@ -303,6 +309,13 @@ export const loginWithGoogle = async (req: Request, res: Response) => {
         isVerified: true,
       });
     } else {
+      if (user.isDisabled) {
+        return res.status(403).json({
+          message:
+            "Tài khoản của bạn đã bị khóa! Vui lòng liên hệ quản trị viên để được hỗ trợ",
+        });
+      }
+
       customer = await Customer.findOne({ userId: user._id });
 
       if (!customer) {
@@ -368,6 +381,12 @@ export const loginAdmin = async (req: Request, res: Response) => {
     if (!user) {
       errors.message = "Tài khoản không tồn tại!";
       errors.email = "Vui lòng kiểm tra lại!";
+      throw new ValidationError(errors);
+    }
+
+    if (user.isDisabled) {
+      errors.message =
+        "Tài khoản của bạn đã bị khóa! Vui lòng liên hệ quản trị viên để được hỗ trợ";
       throw new ValidationError(errors);
     }
 
