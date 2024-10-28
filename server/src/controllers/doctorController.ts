@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import { Request, Response } from "express";
-import { Doctor, User } from "../models";
+import { Doctor, DoctorSchedule, User } from "../models";
 import { randomText, replaceName } from "../utils";
 
 /**

@@ -11,6 +11,7 @@ import { DoctorSchedule, MedicalRecord } from "./models";
 import {
   appointmentRoutes,
   authRoutes,
+  customerRoutes,
   distanceRoutes,
   doctorRoutes,
   doctorScheduleRoutes,
@@ -22,13 +23,6 @@ import {
   serviceRoutes,
   staffRoutes,
   userRoutes,
-  medicalRecordRoutes,
-  pondRoutes,
-  fishRoutes,
-  doctorScheduleRoutes,
-  feedbackRoutes,
-  customerRoutes,
-
 } from "./routes";
 
 const app = express();
