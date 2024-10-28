@@ -1,10 +1,10 @@
-import { Button, Card, ConfigProvider, Divider, Tag } from "antd";
-import { HeaderComponent } from "../../components";
+import { Button, Card, ConfigProvider } from "antd";
 import { useEffect, useState } from "react";
-import { handleAPI } from "../../apis/handleAPI";
 import { useSelector } from "react-redux";
-import { IAuth } from "../../types";
 import { Link } from "react-router-dom";
+import { handleAPI } from "../../apis/handleAPI";
+import { HeaderComponent } from "../../components";
+import { IAuth } from "../../types";
 
 const InspectionRecord = () => {
   const [ponds, setPonds] = useState([]);

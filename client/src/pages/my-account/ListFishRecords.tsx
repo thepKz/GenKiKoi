@@ -1,17 +1,16 @@
-import { useSelector } from "react-redux";
-import { HeaderComponent } from "../../components";
-import { CustomTable } from "../../share";
-import { Link, useLocation } from "react-router-dom";
-import { IAuth } from "../../types";
-import { useEffect, useState } from "react";
-import { handleAPI } from "../../apis/handleAPI";
 import { Breadcrumb, Button, ConfigProvider, message } from "antd";
 import { TableProps } from "antd/lib";
 import { Stickynote } from "iconsax-react";
-
+import { useEffect, useState } from "react";
+// import { useSelector } from "react-redux";
+import { Link, useLocation } from "react-router-dom";
+import { handleAPI } from "../../apis/handleAPI";
+import { HeaderComponent } from "../../components";
+import { CustomTable } from "../../share";
+// import { IAuth } from "../../types";
 const ListFishRecords = () => {
   const { pathname } = useLocation();
-  const auth: IAuth = useSelector((state: any) => state.authReducer.data);
+  // const auth: IAuth = useSelector((state: any) => state.authReducer.data);
 
   const fishId = pathname.split("/")[4];
   const [records, setRecords] = useState([]);

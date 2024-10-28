@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   AutoComplete,
   Button,
@@ -10,22 +11,20 @@ import {
   message,
   Row,
   Select,
-  SelectProps,
-  Spin,
+  Spin
 } from "antd";
 
 import axios from "axios";
+import dayjs from "dayjs";
 import { debounce } from "lodash"; // Thêm import này
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import VietNamProvinces from "../../data";
+import { useNavigate } from "react-router-dom";
 import { handleAPI } from "../apis/handleAPI";
 import Map from "../components/Map";
 import { CustomerData } from "../models/DataModels";
 import { CustomCalendar } from "../share";
 import { IAuth } from "../types";
-import dayjs from "dayjs";
-import { useNavigate } from "react-router-dom";
 
 const { TextArea } = Input;
 
@@ -44,14 +43,6 @@ const Booking = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [slot, setSlot] = useState<string | null>(null);
   const [date, setDate] = useState<dayjs.Dayjs | null>(null);
-
-  const [city, setCity] = useState<string>("");
-  const [district, setDistrict] = useState<string>("");
-  const [ward, setWard] = useState<string>("");
-
-  const [cities, setCities] = useState<SelectProps["options"]>([]);
-  const [districts, setDistricts] = useState<SelectProps["options"]>([]);
-  const [wards, setWards] = useState<SelectProps["options"]>([]);
   const [profile, setProfile] = useState<CustomerData | null>(null);
 
   const [services, setServices] = useState([]);
@@ -70,49 +61,9 @@ const Booking = () => {
   const [destination] = useState<L.LatLngExpression>([10.8415, 106.8099]); // Tọa độ cố định của Genkikoi
   const [route, setRoute] = useState<L.LatLngExpression[] | null>(null);
   const [distance, setDistance] = useState<string | null>(null);
-  const [duration, setDuration] = useState<string | null>(null);
   const [movingPrice, setMovingPrice] = useState<number>(0);
 
-  // Thêm state để theo dõi input value
-  const [searchValue, setSearchValue] = useState<string>("");
-
   const [isAddressDisabled, setIsAddressDisabled] = useState(false);
-
-  useEffect(() => {
-    const res = VietNamProvinces.map((item: any) => ({
-      value: item.Name,
-      label: item.Name,
-    }));
-    setCities(res);
-  }, []);
-
-  useEffect(() => {
-    const res = VietNamProvinces.find((item: any) => item.Name === city);
-    const res1 = res?.Districts?.map((item: any) => ({
-      value: item.Name,
-      label: item.Name,
-    }));
-    setDistricts(res1);
-
-    if (form.getFieldValue(["district"])) {
-      form.setFieldValue("district", "");
-      form.setFieldValue("ward", "");
-    }
-  }, [city]);
-
-  useEffect(() => {
-    const res = VietNamProvinces.find((item: any) => item.Name === city);
-    const res1 = res?.Districts.find((item: any) => item.Name === district);
-    const res2 = res1?.Wards.map((item: any) => ({
-      value: item.Name,
-      label: item.Name,
-    }));
-    setWards(res2);
-
-    if (form.getFieldValue(["ward"])) {
-      form.setFieldValue("ward", "");
-    }
-  }, [district]);
 
   useEffect(() => {
     const getProfile = async () => {
@@ -341,13 +292,12 @@ const Booking = () => {
       const response = await axios.get(
         `${import.meta.env.VITE_API_URL}/api/distance/calculate-route?address=${encodeURIComponent(value)}`,
       );
-      const { origin, route, distance, duration } = response.data;
+      const { origin, route, distance } = response.data;
 
       if (origin && route) {
         setOrigin([origin.lat, origin.lon]);
         setRoute(route); // Đây sẽ là mảng các tọa độ đã được decode
         setDistance(distance);
-        setDuration(duration);
         form.setFieldsValue({ address: value });
       }
     } catch (error) {
@@ -563,16 +513,13 @@ const Booking = () => {
                         label="Địa chỉ"
                       >
                         <AutoComplete
-                          value={searchValue}
                           options={addressOptions}
                           onSearch={handleAddressSearch}
                           onSelect={handleAddressSelect}
                           placeholder="Nhập địa chỉ"
                           style={{ width: "100%" }}
                           notFoundContent={
-                            searchValue.length > 2
-                              ? "Không tìm thấy địa chỉ"
-                              : "Nhập ít nhất 3 ký tự"
+                            "Nhập ít nhất 3 ký tự"
                           }
                           defaultActiveFirstOption={true}
                           allowClear={true}
