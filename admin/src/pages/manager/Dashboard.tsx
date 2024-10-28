@@ -117,7 +117,7 @@ const Dashboard = () => {
               </div>
               <div>
                 <h3 className="text-sm text-gray-600">Tổng doanh thu</h3>
-                <p className="text-xl font-semibold">24,345,55$</p>
+                <p className="text-xl font-semibold">24,345,550đ</p>
               </div>
             </div>
             <div className="relative flex items-center overflow-hidden rounded-lg bg-white p-6 shadow">
@@ -223,17 +223,17 @@ const Dashboard = () => {
                   {
                     id: "01",
                     name: "Nguyễn Thị Hồng Hạnh",
-                    amount: "12345$",
+                    amount: "923,450đ",
                     usageCount: 15,
                   },
                   {
                     id: "02",
                     name: "Lê Thị Ánh Hồng",
-                    amount: "5678$",
+                    amount: "567,800đ",
                     usageCount: 10,
                   },
-                  { id: "03", name: "Đỗ Dũng", amount: "5$", usageCount: 2 },
-                  { id: "04", name: "Tân Thép", amount: "1$", usageCount: 1 },
+                  { id: "03", name: "Đỗ Dũng", amount: "200,000đ", usageCount: 2 },
+                  { id: "04", name: "Tân Thép", amount: "150,000đ", usageCount: 1 },
                 ].map((customer) => (
                   <tr key={customer.id}>
                     <td className="py-2">{customer.id}</td>

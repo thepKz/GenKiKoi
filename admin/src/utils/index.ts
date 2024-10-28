@@ -48,6 +48,10 @@ const valueMap: {
   cái: "orange",
   yes: "green",
   no: "red",
+  doctor: "magenta",
+  manager: "volcano",
+  staff: "geekblue",
+  customer: "cyan",
 };
 
 export const getValue = (value: string) => {

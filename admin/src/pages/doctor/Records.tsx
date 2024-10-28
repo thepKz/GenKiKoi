@@ -113,8 +113,8 @@ const Records = () => {
       width: 150,
     },
     {
-      key: "Số hồ",
-      title: "Số hồ",
+      key: "Số lần kiểm định",
+      title: "Số lần kiểm định",
       dataIndex: "numberPond",
       width: 150,
     },

@@ -172,6 +172,9 @@ const AssignCalendar = () => {
                   <div className="gap-2">
                     <Form.Item name="doctorSchedule" label="Ngày làm việc">
                       <DatePicker
+                        disabledDate={(current) =>
+                          current && current < dayjs().startOf("day")
+                        }
                         allowClear={false}
                         placeholder="Chọn ngày"
                         maxTagCount="responsive"

@@ -115,9 +115,6 @@ const ListFishes = () => {
             ),
           },
           {
-            title: <Link to="/doctor/customers">Hồ sơ bệnh án</Link>,
-          },
-          {
             title: "Danh sách cá",
           },
         ]}

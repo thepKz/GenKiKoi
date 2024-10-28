@@ -10,6 +10,7 @@ import {
   Profile2User,
   Stickynote,
   User,
+  UserOctagon,
 } from "iconsax-react";
 import { Link, useLocation } from "react-router-dom";
 
@@ -54,6 +55,11 @@ const SiderComponent = () => {
       key: "customers",
       label: <Link to={"/manager/customers"}>Cuộc hẹn khách hàng</Link>,
       icon: <CalendarSearch size={20} />,
+    },
+    {
+      key: "accounts",
+      label: <Link to={"/manager/accounts"}>Quản lý người dùng</Link>,
+      icon: <UserOctagon size={20} />,
     },
     {
       key: "divider",

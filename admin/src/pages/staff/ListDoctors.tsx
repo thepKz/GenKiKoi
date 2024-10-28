@@ -91,8 +91,11 @@ const ListDoctors = () => {
             <div className="flex gap-5">
               <div className="h-[150px] w-[250px] overflow-hidden rounded-lg">
                 <img
-                  src={doctor.photoUrl ?? "https://placehold.co/150x150"}
-                  alt=""
+                  src={
+                    doctor.photoUrl === ""
+                      ? "https://placehold.co/150x150"
+                      : doctor.photoUrl
+                  }
                   className="h-full w-full object-cover"
                 />
               </div>

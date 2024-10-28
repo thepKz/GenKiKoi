@@ -1,4 +1,4 @@
-import { Response } from "express";
+import { Response, Request } from "express";
 import { Customer, User } from "../models";
 import { AuthRequest } from "../types";
 import { ICustomer } from "../models/Customer";
@@ -127,6 +127,56 @@ export const updateProfile = async (req: AuthRequest, res: Response) => {
   } catch (error: any) {
     return res.status(500).json({
       message: error.message,
+    });
+  }
+};
+
+export const getAllUsers = async (req: Request, res: Response) => {
+  try {
+    const users = await User.find();
+
+    if (!users || users.length === 0) {
+      return res.status(404).json("Danh sách tài khoản trống");
+    }
+
+    const formattedData = users.map((user) => ({
+      id: user._id,
+      username: user.username,
+      email: user.email,
+      photoUrl: user.photoUrl ?? "",
+      fullName: user.fullName ?? "",
+      phoneNumber: user.phoneNumber ?? "",
+      role: user.role,
+      isDisabled: user.isDisabled,
+    }));
+
+    return res.status(200).json({ data: formattedData });
+  } catch (error: any) {
+    return res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+export const toggleUserStatus = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "Không tìm thấy người dùng" });
+    }
+
+    user.isDisabled = !user.isDisabled;
+    await user.save();
+
+    return res.status(200).json({
+      data: user,
+    });
+  } catch (error: any) {
+    return res.status(500).json({
+      message:
+        error.message || "Đã xảy ra lỗi khi cập nhật trạng thái tài khoản",
     });
   }
 };

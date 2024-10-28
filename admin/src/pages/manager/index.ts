@@ -1,3 +1,4 @@
+import Accounts from "./Accounts";
 import Appointments from "./Appointments";
 import AssignCalendar from "./AssignCalendar";
 import Customers from "./Customers";
@@ -16,4 +17,5 @@ export {
   Customers,
   Appointments,
   Dashboard,
+  Accounts,
 };

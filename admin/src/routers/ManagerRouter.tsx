@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import { MainLayout } from "../layouts";
 import {
+  Accounts,
   Appointments,
   AssignCalendar,
   Customers,
@@ -30,6 +31,9 @@ const ManagerRouter = () => {
           <Route path=":userId/appointments">
             <Route index element={<Appointments />} />
           </Route>
+        </Route>
+        <Route path="accounts">
+          <Route index element={<Accounts />} />
         </Route>
       </Route>
       <Route path="*" element={<NotFound to="/" />} />

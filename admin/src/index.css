@@ -72,6 +72,10 @@
   border-radius: 10px;
 } */
 
+.accounts .ant-table-container {
+  height: calc(100vh - 200px);
+}
+
 .ant-table-container {
   height: calc(100vh - 230px);
 }
