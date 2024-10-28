@@ -1,10 +1,9 @@
 import bcrypt from "bcryptjs";
 import { Request, Response } from "express";
 import { ValidationError } from "../errors/ValidationError";
-import { Customer } from "../models";
+import { Customer, Doctor, Manager, Staff } from "../models";
 import User from "../models/User";
 import { randomText, signToken } from "../utils";
-import { sendVerificationEmail } from "../services/emails";
 /**
  * Người Làm: Thép
  * Người Test: Thép
@@ -228,6 +227,12 @@ export const login = async (req: Request, res: Response) => {
       throw new ValidationError(errors);
     }
 
+    if (user.isDisabled) {
+      errors.message =
+        "Tài khoản của bạn đã bị khóa! Vui lòng liên hệ quản trị viên để được hỗ trợ";
+      throw new ValidationError(errors);
+    }
+
     const customer = await Customer.findOne({ userId: user._id });
 
     if (!customer) {
@@ -303,6 +308,13 @@ export const loginWithGoogle = async (req: Request, res: Response) => {
         isVerified: true,
       });
     } else {
+      if (user.isDisabled) {
+        return res.status(403).json({
+          message:
+            "Tài khoản của bạn đã bị khóa! Vui lòng liên hệ quản trị viên để được hỗ trợ",
+        });
+      }
+
       customer = await Customer.findOne({ userId: user._id });
 
       if (!customer) {
@@ -371,6 +383,12 @@ export const loginAdmin = async (req: Request, res: Response) => {
       throw new ValidationError(errors);
     }
 
+    if (user.isDisabled) {
+      errors.message =
+        "Tài khoản của bạn đã bị khóa! Vui lòng liên hệ quản trị viên để được hỗ trợ";
+      throw new ValidationError(errors);
+    }
+
     const comparePassword = await bcrypt.compare(
       trimmedPassword,
       user.password
@@ -390,6 +408,19 @@ export const loginAdmin = async (req: Request, res: Response) => {
       role: user.role,
     });
 
+    let adminId = null;
+
+    if (user.role === "manager") {
+      const manager = await Manager.findOne({ userId: user._id });
+      adminId = manager?._id;
+    } else if (user.role === "doctor") {
+      const doctor = await Doctor.findOne({ userId: user._id });
+      adminId = doctor?._id;
+    } else {
+      const staff = await Staff.findOne({ userId: user._id });
+      adminId = staff?._id;
+    }
+
     return res.status(200).json({
       message: "Đăng nhập thành công!",
       data: {
@@ -397,6 +428,8 @@ export const loginAdmin = async (req: Request, res: Response) => {
         username: user.username,
         email: user.email,
         role: user.role,
+        photoUrl: user.photoUrl,
+        adminId,
         token,
       },
     });

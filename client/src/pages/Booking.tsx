@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   AutoComplete,
   Button,
@@ -10,42 +11,29 @@ import {
   message,
   Row,
   Select,
-  SelectProps,
-  Spin,
+  Spin
 } from "antd";
 
-import axios from 'axios';
-import { debounce } from 'lodash'; // Thêm import này
+import axios from "axios";
+import dayjs from "dayjs";
+import { debounce } from "lodash"; // Thêm import này
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import VietNamProvinces from "../../data";
+import { useNavigate } from "react-router-dom";
 import { handleAPI } from "../apis/handleAPI";
-import Map from '../components/Map';
+import Map from "../components/Map";
 import { CustomerData } from "../models/DataModels";
 import { CustomCalendar } from "../share";
 import { IAuth } from "../types";
 
 const { TextArea } = Input;
 
-const demoSlots = [
-  { id: 1, time: "8:00" },
-  { id: 2, time: "9:00" },
-  { id: 3, time: "10:00" },
-  { id: 4, time: "11:00" },
-  { id: 5, time: "12:00" },
-  { id: 6, time: "13:00" },
-  { id: 7, time: "14:00" },
-  { id: 8, time: "15:00" },
-  { id: 9, time: "16:00" },
-];
-
-// Thêm interface cho options
-
-
 const Booking = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  const navigate = useNavigate();
 
   const auth: IAuth = useSelector((state: any) => state.authReducer.data);
 
@@ -53,16 +41,8 @@ const Booking = () => {
   const [isLoadingForm, setIsLoadingForm] = useState(false);
 
   const [isLoading, setIsLoading] = useState(false);
-  const [slot, setSlot] = useState<number | null>(null);
-  const [date, setDate] = useState<string>("");
-
-  const [city, setCity] = useState<string>("");
-  const [district, setDistrict] = useState<string>("");
-  const [ward, setWard] = useState<string>("");
-
-  const [cities, setCities] = useState<SelectProps["options"]>([]);
-  const [districts, setDistricts] = useState<SelectProps["options"]>([]);
-  const [wards, setWards] = useState<SelectProps["options"]>([]);
+  const [slot, setSlot] = useState<string | null>(null);
+  const [date, setDate] = useState<dayjs.Dayjs | null>(null);
   const [profile, setProfile] = useState<CustomerData | null>(null);
 
   const [services, setServices] = useState([]);
@@ -73,52 +53,17 @@ const Booking = () => {
   const [price, setPrice] = useState<number>(0);
   const [totalPrice, setTotalPrice] = useState<number>(0);
 
+  const [doctorSchedule, setDoctorSchedule] = useState<any>(null);
+  const [availableSlots, setAvailableSlots] = useState<any[]>([]);
+
   const [addressOptions, setAddressOptions] = useState<{ value: string; label: string }[]>([]);
   const [origin, setOrigin] = useState<L.LatLngExpression | null>(null);
   const [destination] = useState<L.LatLngExpression>([10.8415, 106.8099]); // Tọa độ cố định của Genkikoi
   const [route, setRoute] = useState<L.LatLngExpression[] | null>(null);
   const [distance, setDistance] = useState<string | null>(null);
-  const [duration, setDuration] = useState<string | null>(null);
   const [movingPrice, setMovingPrice] = useState<number>(0);
 
-  // Thêm state để theo dõi input value
-  const [searchValue, setSearchValue] = useState<string>('');
-
-  useEffect(() => {
-    const res = VietNamProvinces.map((item: any) => ({
-      value: item.Name,
-      label: item.Name,
-    }));
-    setCities(res);
-  }, []);
-
-  useEffect(() => {
-    const res = VietNamProvinces.find((item: any) => item.Name === city);
-    const res1 = res?.Districts?.map((item: any) => ({
-      value: item.Name,
-      label: item.Name,
-    }));
-    setDistricts(res1);
-
-    if (form.getFieldValue(["district"])) {
-      form.setFieldValue("district", "");
-      form.setFieldValue("ward", "");
-    }
-  }, [city]);
-
-  useEffect(() => {
-    const res = VietNamProvinces.find((item: any) => item.Name === city);
-    const res1 = res?.Districts.find((item: any) => item.Name === district);
-    const res2 = res1?.Wards.map((item: any) => ({
-      value: item.Name,
-      label: item.Name,
-    }));
-    setWards(res2);
-
-    if (form.getFieldValue(["ward"])) {
-      form.setFieldValue("ward", "");
-    }
-  }, [district]);
+  const [isAddressDisabled, setIsAddressDisabled] = useState(false);
 
   useEffect(() => {
     const getProfile = async () => {
@@ -127,24 +72,22 @@ const Booking = () => {
         const api = `api/users/`;
         const res = await handleAPI(api, undefined, "GET");
         setProfile(res.data);
+        if (!res.data.phoneNumber || !res.data.gender || !res.data.fullName) {
+          navigate("/my-account/profile");
+        }
       } catch (error) {
         console.log(error);
+        message.error("Có lỗi xảy ra khi tải thông tin người dùng.");
       } finally {
         setIsLoading(false);
       }
     };
     getProfile();
-  }, []);
+  }, [navigate]);
 
   useEffect(() => {
     if (profile) {
       form.setFieldsValue({
-        fullName: profile.fullName,
-        phoneNumber: profile.phoneNumber,
-        gender: profile.gender,
-        city: profile.city,
-        district: profile.district,
-        ward: profile.ward,
         detailAddress: profile.detailAddress,
       });
     }
@@ -155,7 +98,6 @@ const Booking = () => {
       try {
         const api = `/api/services/`;
         const res = await handleAPI(api, undefined, "GET");
-        console.log(res.data);
         setServices(res.data);
       } catch (error: any) {
         console.log(error);
@@ -189,7 +131,7 @@ const Booking = () => {
       const distanceInKm = parseFloat(distance);
       const pricePerKm = 5000; // 5.000 VNĐ/km
       const calculatedPrice = distanceInKm * pricePerKm;
-      
+
       // Làm tròn đến hàng nghìn
       setMovingPrice(Math.round(calculatedPrice / 1000) * 1000);
     }
@@ -217,20 +159,67 @@ const Booking = () => {
     }
   };
 
+  const handleDoctorChange = async (doctorId: string) => {
+    try {
+      setDoctorSchedule(null);
+      setAvailableSlots([]);
+      setDate(null);
+      setSlot(null);
+      const api = `/api/doctorSchedules/${doctorId}`;
+      const res = await handleAPI(api, undefined, "GET");
+      if (res.data) {
+        setDoctorSchedule(res.data);
+      }
+    } catch (error: any) {
+      console.log(error);
+      message.error(error.message);
+    }
+  };
+
+  const handleDateChange = async (selectedDate: dayjs.Dayjs) => {
+    if (doctorSchedule) {
+      const formattedDate = selectedDate.format("DD/MM/YYYY");
+      const daySchedule = doctorSchedule.weekSchedule.find(
+        (day: any) => day.dayOfWeek === formattedDate,
+      );
+
+      if (daySchedule) {
+        setAvailableSlots(daySchedule.slots);
+      } else {
+        setAvailableSlots([]);
+        message.info("Không có lịch khám cho ngày này");
+      }
+    }
+    setDate(selectedDate);
+    setSlot(null);
+  };
+
   const handleSubmit = async (values: any) => {
     try {
       setIsLoadingForm(true);
-      const appointmentApi = `/api/appointments/${auth.customerId}`;
+      const appointmentApi = `/api/appointments/customers/${auth.customerId}`;
+      const bookSlotApi = `/api/doctorSchedules/${doctorSchedule.doctorId}`;
 
-      if (date) {
-        values.appointmentDate = date;
-      }
-
-      if (slot) {
-        values.slotTime = demoSlots[slot - 1].time;
+      if (date && slot && doctorSchedule) {
+        values.appointmentDate = date.format("YYYY-MM-DD");
+        values.doctorScheduleId = doctorSchedule._id;
+        values.slotTime = slot;
+      } else {
+        message.error("Vui lòng chọn ngày và giờ khám");
+        return;
       }
 
       const appointmentRes: any = await handleAPI(appointmentApi, values, "POST");
+
+      await handleAPI(
+        bookSlotApi,
+        {
+          slotTime: slot,
+          appointmentId: appointmentRes.data.appointmentId,
+          appointmentDate: date,
+        },
+        "PATCH",
+      );
 
       if (appointmentRes.data.appointmentId) {
         const paymentApi = `/api/payments/create-payment`;
@@ -255,33 +244,41 @@ const Booking = () => {
       message.error(error.message);
     } finally {
       setIsLoadingForm(false);
+      setSlot(null);
+      setDate(null);
+      form.resetFields();
     }
   };
 
+  console.log(auth);
+
   // Cập nhật hàm handleAddressSearch với debounce
   const handleAddressSearch = debounce(async (value: string) => {
-    console.log('Search value:', value);
+    console.log("Search value:", value);
     if (value.length > 2) {
       try {
-        const response = await axios.get(`http://localhost:5000/api/distance/autocomplete`, {
-          params: {
-            query: value
+        const response = await axios.get(
+          `${import.meta.env.VITE_API_URL}/api/distance/autocomplete`,
+          {
+            params: {
+              query: value,
+            },
+            headers: {
+              Accept: "application/json",
+            },
           },
-          headers: {
-            'Accept': 'application/json'
-          }
-        });
-        
-        console.log('API Response:', response.data);
-        
+        );
+
+        console.log("API Response:", response.data);
+
         if (response.data && Array.isArray(response.data.data)) {
           setAddressOptions(response.data.data);
         } else {
-          console.log('Invalid response format:', response.data);
+          console.log("Invalid response format:", response.data);
           setAddressOptions([]);
         }
       } catch (error: unknown) {
-        console.error('Error details:', (error as { response?: { data: unknown } }).response?.data);
+        console.error("Error details:", (error as { response?: { data: unknown } }).response?.data);
         setAddressOptions([]);
       }
     } else {
@@ -292,19 +289,29 @@ const Booking = () => {
   // Cập nhật hàm handleAddressSelect
   const handleAddressSelect = async (value: string) => {
     try {
-        const response = await axios.get(`http://localhost:5000/api/distance/calculate-route?address=${encodeURIComponent(value)}`);
-        const { origin, route, distance, duration } = response.data;
-        
-        if (origin && route) {
-            setOrigin([origin.lat, origin.lon]);
-            setRoute(route); // Đây sẽ là mảng các tọa độ đã được decode
-            setDistance(distance);
-            setDuration(duration);
-            form.setFieldsValue({ address: value });
-        }
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/distance/calculate-route?address=${encodeURIComponent(value)}`,
+      );
+      const { origin, route, distance } = response.data;
+
+      if (origin && route) {
+        setOrigin([origin.lat, origin.lon]);
+        setRoute(route); // Đây sẽ là mảng các tọa độ đã được decode
+        setDistance(distance);
+        form.setFieldsValue({ address: value });
+      }
     } catch (error) {
-        console.error('Error calculating route:', error);
-        message.error('Không thể tính toán tuyến đường');
+      console.error("Error calculating route:", error);
+      message.error("Không thể tính toán tuyến đường");
+    }
+  };
+
+  const handleConsultingTypeChange = (value: string) => {
+    if (value === "Tư vấn trực tuyến" || value === "Tại phòng khám") {
+      setIsAddressDisabled(true);
+      form.setFieldsValue({ detailAddress: "" });
+    } else {
+      setIsAddressDisabled(false);
     }
   };
 
@@ -349,7 +356,12 @@ const Booking = () => {
                   <Form.Item
                     name="serviceName"
                     label="Loại dịch vụ"
-                    required
+                    rules={[
+                      {
+                        required: true,
+                        message: "Vui lòng chọn loại dịch vụ",
+                      },
+                    ]}
                   >
                     <Select
                       placeholder="Chọn loại dịch vụ"
@@ -362,28 +374,40 @@ const Booking = () => {
                     />
                   </Form.Item>
                   <Form.Item
-                    name="doctorName"
+                    name="doctorId"
                     label="Bác sĩ"
-                    required
+                    rules={[
+                      {
+                        required: true,
+                        message: "Vui lòng chọn bác sĩ",
+                      },
+                    ]}
                   >
                     <Select
                       style={{ width: "100%" }}
                       placeholder="Chọn bác sĩ"
                       options={doctors.map((doctor: any) => ({
-                        value: doctor.fullName,
+                        value: doctor.id,
                         label: "Bs. " + doctor.fullName,
                       }))}
+                      onChange={handleDoctorChange}
                     />
                   </Form.Item>
                   <Form.Item
                     name="typeOfConsulting"
                     label="Hình thức khám"
-                    required
+                    rules={[
+                      {
+                        required: true,
+                        message: "Vui lòng chọn hình thức khám",
+                      },
+                    ]}
                   >
                     <Select
                       placeholder="Chọn hình thức khám"
                       style={{ width: "100%" }}
                       options={consultingOptions}
+                      onChange={handleConsultingTypeChange}
                     />
                   </Form.Item>
                   <div className="mt-20">
@@ -408,9 +432,7 @@ const Booking = () => {
                         }).format(movingPrice)}
                       </span>
                     </div>
-                    <div className="text-sm text-gray-300 mt-1">
-                      (5.000đ/km)
-                    </div>
+                    <div className="mt-1 text-sm text-gray-300">(5.000đ/km)</div>
                     <Divider style={{ borderColor: "white" }} />
                     <div className="flex items-center justify-between text-white">
                       <span>Tổng tiền:</span>
@@ -429,15 +451,19 @@ const Booking = () => {
                     label="Thời gian khám"
                     required
                   >
-                    <CustomCalendar setDate={setDate} />
+                    <CustomCalendar
+                      setDate={handleDateChange}
+                      doctorSchedule={doctorSchedule}
+                    />
                   </Form.Item>
                   <Form.Item
                     name="slotTime"
                     className="mt-5"
                   >
                     <div className="flex flex-wrap gap-4">
-                      {demoSlots.map((slotTime) => (
+                      {availableSlots.map((slotTime: any) => (
                         <ConfigProvider
+                          key={slotTime.slotTime}
                           theme={{
                             components: {
                               Card: {
@@ -447,145 +473,24 @@ const Booking = () => {
                           }}
                         >
                           <Card
-                            key={slotTime.id}
                             style={{ width: 70, textAlign: "center" }}
-                            onClick={() => setSlot(slotTime.id)}
+                            onClick={() => !slotTime.isBooked && setSlot(slotTime.slotTime)}
                             className={
-                              slot === slotTime.id
+                              slot === slotTime.slotTime
                                 ? "bg-green-dark text-white"
-                                : "hover:bg-green-dark hover:text-white"
+                                : !slotTime.isBooked
+                                  ? "hover:bg-green-dark hover:text-white"
+                                  : "cursor-not-allowed opacity-50"
                             }
                           >
-                            {slotTime.time}
+                            {slotTime.slotTime}
                           </Card>
                         </ConfigProvider>
                       ))}
                     </div>
                   </Form.Item>
-                  <p className="text-justify text-base text-white">
-                    Lưu ý: Thời gian khám trên chỉ là thời gian dự kiến, tổng đài sẽ liên hệ xác
-                    nhận thời gian khám chính xác tới quý khách sau khi quý khách đặt hẹn.
-                  </p>
                 </div>
-                <div className="lg:flex-1">
-                  <Row gutter={24}>
-                    <Col span={24}>
-                      <Form.Item
-                        required
-                        name="fullName"
-                        label="Họ và tên"
-                      >
-                        <Input
-                          defaultValue={profile?.fullName}
-                          placeholder="Họ và tên"
-                        />
-                      </Form.Item>
-                    </Col>
-                  </Row>
-                  <Row gutter={24}>
-                    <Col span={12}>
-                      <Form.Item
-                        required
-                        name="phoneNumber"
-                        label="Số điện thoại"
-                      >
-                        <Input
-                          className="addon-input"
-                          addonBefore="+84"
-                          placeholder="Số điện thoại"
-                          defaultValue={profile?.phoneNumber}
-                        />
-                      </Form.Item>
-                    </Col>
-                    <Col span={12}>
-                      <Form.Item
-                        name="gender"
-                        label="Giới tính"
-                      >
-                        <Select
-                          placeholder="Giới tính"
-                          defaultValue={
-                            profile?.gender === undefined
-                              ? null
-                              : profile?.gender === true
-                                ? "Nam"
-                                : "Nữ"
-                          }
-                          options={[
-                            { value: "nam", label: "Nam" },
-                            { value: "nữ", label: "Nữ" },
-                          ]}
-                        />
-                      </Form.Item>
-                    </Col>
-                  </Row>
-                  <Row gutter={24}>
-                    <Col span={8}>
-                      <Form.Item
-                        name="city"
-                        label="Tỉnh"
-                      >
-                        <Select
-                          placeholder="Thành phố"
-                          value={city}
-                          defaultValue={profile?.city}
-                          onChange={(e) => {
-                            setCity(e);
-                          }}
-                          options={cities}
-                        />
-                      </Form.Item>
-                    </Col>
-                    <Col span={8}>
-                      <Form.Item
-                        name="district"
-                        label="Quận / Huyện"
-                      >
-                        <Select
-                          placeholder="Quận / Huyện"
-                          defaultValue={profile?.district}
-                          onChange={(e) => {
-                            setDistrict(e);
-                          }}
-                          options={districts}
-                        />
-                      </Form.Item>
-                    </Col>
-                    <Col span={8}>
-                      <Form.Item
-                        name="ward"
-                        label="Phường / Xã"
-                      >
-                        <Select
-                          placeholder="Phường / Xã"
-                          defaultValue={profile?.ward}
-                          value={ward}
-                          onChange={(e) => setWard(e)}
-                          options={wards}
-                        />
-                      </Form.Item>
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col span={24}>
-                      <Form.Item
-                        name="address"
-                        label="Địa chỉ"
-                      >
-                        <AutoComplete
-                          value={searchValue}
-                          options={addressOptions}
-                          onSearch={handleAddressSearch}
-                          onSelect={handleAddressSelect}
-                          placeholder="Nhập địa chỉ"
-                          style={{ width: '100%' }}
-                          notFoundContent={searchValue.length > 2 ? "Không tìm thấy địa chỉ" : "Nhập ít nhất 3 ký tự"}
-                          defaultActiveFirstOption={true}
-                          allowClear={true}
-                        />
-                      </Form.Item>
-                    </Col>
-                  </Row>
+                <div className="lg:w-[45%]">
                   <Row>
                     <Col span={24}>
                       <Form.Item
@@ -603,12 +508,46 @@ const Booking = () => {
                   </Row>
                   <Row>
                     <Col span={24}>
-                      <Map origin={origin} destination={destination} route={route} />
+                      <Form.Item
+                        name="detailAddress"
+                        label="Địa chỉ"
+                      >
+                        <AutoComplete
+                          options={addressOptions}
+                          onSearch={handleAddressSearch}
+                          onSelect={handleAddressSelect}
+                          placeholder="Nhập địa chỉ"
+                          style={{ width: "100%" }}
+                          notFoundContent={
+                            "Nhập ít nhất 3 ký tự"
+                          }
+                          defaultActiveFirstOption={true}
+                          allowClear={true}
+                          disabled={isAddressDisabled}
+                        />
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col span={24}>
+                      <Map
+                        origin={origin}
+                        destination={destination}
+                        route={route}
+                      />
                     </Col>
                   </Row>
                 </div>
               </div>
             </Form>
+            <div className="">
+              <h1 className="text-2xl font-semibold text-white">Lưu ý</h1>
+              <p className="w-1/2 text-justify text-white">
+                Khi quý khách thanh toán thành công cho dịch vụ tư vấn trực tuyến, đường link tham
+                gia cuộc hẹn sẽ được gửi qua email trong vòng 2 giờ. <br />
+                Xin quý khách vui lòng kiểm tra email để nhận thông tin cuộc hẹn!
+              </p>
+            </div>
           </ConfigProvider>
           <div className="text-right">
             <ConfigProvider

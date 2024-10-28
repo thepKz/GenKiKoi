@@ -1,108 +1,94 @@
-import { Card, ConfigProvider, Divider, Tag } from "antd";
+import { Button, Card, ConfigProvider } from "antd";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+import { handleAPI } from "../../apis/handleAPI";
+import { HeaderComponent } from "../../components";
+import { IAuth } from "../../types";
 
 const InspectionRecord = () => {
+  const [ponds, setPonds] = useState([]);
+
+  const auth: IAuth = useSelector((state: any) => state.authReducer.data);
+
+  useEffect(() => {
+    const getAllPondsByCustomer = async () => {
+      try {
+        const api = `/api/ponds/customers/${auth.customerId}`;
+        const res = await handleAPI(api, undefined, "GET");
+
+        setPonds(res.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getAllPondsByCustomer();
+  }, []);
   return (
-    <div>
-      <div className="container mx-auto my-5 h-[calc(100vh-115px)] rounded-md bg-white p-5 shadow-sm lg:w-[95%]">
+    <ConfigProvider
+      theme={{
+        inherit: false,
+        token: {
+          fontFamily: "Pro-Rounded",
+        },
+      }}
+    >
+      <div className="my-account-section">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <h1 className="heading-3">Hồ sơ kiểm định</h1>
-        </div>
-        {/* Divider */}
-        <ConfigProvider
-          theme={{
-            components: {
-              Divider: {
-                marginLG: 15,
-              },
-            },
-          }}
-        >
-          <Divider />
-        </ConfigProvider>
+        <HeaderComponent
+          heading="Hồ sơ kiểm định"
+          placeholder="Tìm hồ sơ"
+        />
         {/* List Card */}
-        <div className="flex h-[calc(100vh-230px)] flex-col gap-5 overflow-y-auto">
-          <Card>
-            <div className="flex gap-5">
-              <div className="">
-                <img
-                  src="https://placehold.co/300x150"
-                  alt=""
-                  className="rounded-lg"
-                />
+        <div className="flex h-[calc(100vh-170px)] flex-col gap-5 overflow-y-auto">
+          {ponds.map((pond: any, i) => (
+            <Card
+              key={i}
+              className="duration-100 ease-in hover:border-[#4096ff]"
+            >
+              <div className="flex items-center gap-5">
+                <div className="h-[150px] w-[250px] overflow-hidden rounded-lg">
+                  <img
+                    src="https://placehold.co/150x150"
+                    alt=""
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+                <div className="flex w-full">
+                  <div className="flex flex-1 flex-col gap-2">
+                    <p>
+                      <span className="font-semibold">Mã báo cáo: </span>
+                      {pond.recordId}
+                    </p>
+                    <p>
+                      <span className="font-semibold">Kích cỡ hồ: </span>
+                      {pond.pondSize}
+                    </p>
+                    <p>
+                      <span className="font-semibold">Tình trạng: </span>
+                      {pond.status}
+                    </p>
+                    <p>
+                      <span className="font-semibold">Kích cỡ hệ thống lọc: </span>
+                      {pond.filtrationSystem}
+                    </p>
+                    <p>
+                      <span className="font-semibold">Ghi chú: </span>
+                      {pond.notes}
+                    </p>
+                  </div>
+                  <div className="flex w-1/5 flex-col gap-2 text-right">
+                    <Link to={`/my-account/inspection-record/ponds/${pond.recordId}/records`}>
+                      <Button type="primary">Xem chi tiết</Button>
+                    </Link>
+                  </div>
+                </div>
               </div>
-              <div className="flex flex-col gap-1">
-                <p>
-                  <span className="font-semibold">Tên hồ cá:</span> Hồ C
-                </p>
-                <p>
-                  <span className="font-semibold">Số lượng cá:</span> 10
-                </p>
-                <p>
-                  <span className="font-semibold">Ngày kiểm định gần nhất:</span> 20-09-2024
-                </p>
-                <p>
-                  <span className="font-semibold">Tình trạng chất lượng nước hiện tại:</span>{" "}
-                  <Tag color="green">Tốt</Tag>
-                </p>
-              </div>
-            </div>
-          </Card>
-          <Card>
-            <div className="flex gap-5">
-              <div className="">
-                <img
-                  src="https://placehold.co/300x150"
-                  alt=""
-                  className="rounded-lg"
-                />
-              </div>
-              <div className="flex flex-col gap-1">
-                <p>
-                  <span className="font-semibold">Tên hồ cá:</span> Hồ C
-                </p>
-                <p>
-                  <span className="font-semibold">Số lượng cá:</span> 10
-                </p>
-                <p>
-                  <span className="font-semibold">Ngày kiểm định gần nhất:</span> 20-09-2024
-                </p>
-                <p>
-                  <span className="font-semibold">Tình trạng chất lượng nước hiện tại:</span>{" "}
-                  <Tag color="green">Tốt</Tag>
-                </p>
-              </div>
-            </div>
-          </Card>
-          <Card>
-            <div className="flex gap-5">
-              <div className="">
-                <img
-                  src="https://placehold.co/300x150"
-                  alt=""
-                  className="rounded-lg"
-                />
-              </div>
-              <div className="flex flex-col gap-1">
-                <p>
-                  <span className="font-semibold">Tên hồ cá:</span> Hồ C
-                </p>
-                <p>
-                  <span className="font-semibold">Số lượng cá:</span> 10
-                </p>
-                <p>
-                  <span className="font-semibold">Ngày kiểm định gần nhất:</span> 20-09-2024
-                </p>
-                <p>
-                  <span className="font-semibold">Tình trạng chất lượng nước hiện tại:</span>{" "}
-                  <Tag color="green">Tốt</Tag>
-                </p>
-              </div>
-            </div>
-          </Card>
+            </Card>
+          ))}
         </div>
       </div>
-    </div>
+    </ConfigProvider>
   );
 };
 

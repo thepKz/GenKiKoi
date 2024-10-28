@@ -53,7 +53,6 @@ const Home = () => {
         />
       </div>
       
-     
         {/* Banner Container */}
         <div className="relative h-[120vh]">
           {/* Banner Background */}
@@ -375,7 +374,7 @@ const Home = () => {
                 },
               }}
             >
-              <h1 className="heading-1 mb-5 relative z-20">Hình ảnh hoạt động tại GenKiKoi</h1>
+              <h1 className="heading-1 mb-5">Hình ảnh hoạt động tại GenKiKoi</h1>
             </AnimatedSection>
             {/* Images list */}
             <AnimatedSection
@@ -425,7 +424,28 @@ const Home = () => {
                 </div>
               </div>
             </AnimatedSection>
-
+            <AnimatedSection
+              variants={{
+                hidden: {
+                  opacity: 0,
+                  scale: 0.5,
+                },
+                visible: {
+                  opacity: 1,
+                  scale: 1,
+                  transition: { duration: 1, delay: 0.5 },
+                },
+              }}
+            >
+              <Button
+                style={{ fontSize: 18 }}
+                size="large"
+                type="link"
+              >
+                Thêm hình ảnh
+                <ArrowRight2 size={18} />
+              </Button>
+            </AnimatedSection>
           </div>
           <div className="bg-[#0C3C54]">
             <svg
@@ -665,10 +685,10 @@ const Home = () => {
                       transition: { duration: 1.5, delay: 0.5 },
                     },
                   }}
-                  className="flex items-center justify-center"
+                  className="flex items-center justify-center h-full"
                 >
                   <img
-                    className="w-4/5"
+                    className="w-4/5 ml-auto"
                     src={FishBanner}
                     alt=""
                   />

@@ -3,6 +3,7 @@ import {
   addNewStaff,
   deleteStaffById,
   getAllStaffs,
+  getStaffByStaffId,
   updateStaffById,
 } from "../controllers/staffController";
 import { authMiddleware, roleMiddleware } from "../middleware";
@@ -11,17 +12,18 @@ const router = express.Router();
 
 router.get("/", authMiddleware, roleMiddleware(["manager"]), getAllStaffs);
 
+router.get("/:staffId", authMiddleware, getStaffByStaffId);
+
 router.post("/", authMiddleware, roleMiddleware(["manager"]), addNewStaff);
 
 router.patch(
-  "/:id",
+  "/:staffId",
   authMiddleware,
-  roleMiddleware(["manager"]),
   updateStaffById
 );
 
 router.delete(
-  "/:id",
+  "/:staffId",
   authMiddleware,
   roleMiddleware(["manager"]),
   deleteStaffById

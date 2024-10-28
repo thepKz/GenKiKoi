@@ -1,9 +1,33 @@
-import { Modal, Switch, TableProps, Tabs, TabsProps, Tag } from "antd";
+import { message, Modal, Switch, TableProps, Tag } from "antd";
 import { CustomTable } from "../../share";
 import { getValue } from "../../utils";
 import { HeaderPage } from "../../components";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { IAuth } from "../../types";
+import { handleAPI } from "../../apis/handleAPI";
 
 const Appointments = () => {
+  const auth: IAuth = useSelector((state: any) => state.authReducer.data);
+
+  const [appointments, setAppointments] = useState([]);
+
+  useEffect(() => {
+    const getAppointments = async () => {
+      try {
+        const api = `/api/appointments/doctors/${auth.adminId}`;
+
+        const res = await handleAPI(api, undefined, "GET");
+
+        setAppointments(res.data);
+      } catch (error: any) {
+        console.log(error);
+        message.error(error.message);
+      }
+    };
+    getAppointments();
+  }, [auth.adminId]);
+
   const handleCheck = (checked: boolean, appointmentId: string) => {
     Modal.confirm({
       title: `${checked ? "Xác nhận hoàn thành" : "Hoàn tác"}` + ` dịch vụ`,
@@ -12,8 +36,25 @@ const Appointments = () => {
         : "Xác nhận đây không phải sự nhầm lẫn",
       okText: "Đồng ý",
       cancelText: "Hủy",
-      onOk: () => {
-        console.log(checked, appointmentId);
+      onOk: async () => {
+        try {
+          const api = `/api/appointments/${appointmentId}/status`;
+          const status = checked ? "DONE" : "";
+
+          await handleAPI(api, { status }, "PATCH");
+
+          // Refresh danh sách cuộc hẹn
+          const appointmentsApi = `/api/appointments/doctors/${auth.adminId}`;
+          const res = await handleAPI(appointmentsApi, undefined, "GET");
+          setAppointments(res.data);
+
+          message.success(
+            `${checked ? "Hoàn thành" : "Hoàn tác"} dịch vụ thành công`,
+          );
+        } catch (error: any) {
+          console.log(error);
+          message.error(error.message || "Có lỗi xảy ra");
+        }
       },
     });
   };
@@ -29,17 +70,8 @@ const Appointments = () => {
     {
       key: "Tên khách hàng",
       title: "Tên khách hàng",
-      dataIndex: "fullName",
+      dataIndex: "customerName",
       width: 200,
-    },
-    {
-      key: "Giới tính",
-      title: "Giới tính",
-      dataIndex: "gender",
-      width: 100,
-      render: (text) => (
-        <Tag color={getValue(text)}>{text === "nam" ? "Nam" : "Nữ"}</Tag>
-      ),
     },
     {
       key: "Số điện thoại",
@@ -54,9 +86,11 @@ const Appointments = () => {
       width: 200,
     },
     {
-      key: "Ghi chú",
-      title: "Ghi chú",
-      dataIndex: "notes",
+      key: "Ngày hẹn",
+      title: "Ngày hẹn",
+      dataIndex: "appointmentDate",
+      width: 200,
+      render: (date) => new Date(date).toLocaleDateString(),
     },
     {
       key: "Trạng thái",
@@ -77,18 +111,6 @@ const Appointments = () => {
     },
   ];
 
-  const demoData = [
-    {
-      id: 1,
-      fullName: "Đỗ Quang Dũng",
-      gender: "nam",
-      serviceName: "Siêu âm",
-      phoneNumber: "0352195876",
-      notes: "Tái khám",
-      status: "Đang chờ xử lý",
-    },
-  ];
-
   return (
     <div>
       <div className="section">
@@ -99,7 +121,7 @@ const Appointments = () => {
         <div className="doctor-view appointments">
           <CustomTable
             columns={columns}
-            dataSource={demoData}
+            dataSource={appointments}
             scroll="calc(100vh - 410px)"
             className="staff-table"
           />

@@ -8,7 +8,9 @@
     "test:e2e:ui": "codeceptjs run --config=codecept.conf.ts --plugins retryFailedStep",
     "test:e2e:debug": "codeceptjs run --config=codecept.conf.ts --debug",
     "start": "node dist/index.js",
-    "build": "tsc",
+    "build": "tsc && npm run copy-files && npm run copy-swagger",
+    "copy-files": "copyfiles -u 1 src/__tests__/api/*.yaml dist/__tests__/api/",
+    "copy-swagger": "copyfiles -u 1 src/swagger.yaml dist/",
     "dev": "nodemon --exec ts-node src/index.ts"
   },
   "keywords": [],
@@ -37,7 +39,6 @@
     "node-fetch": "^3.3.2",
     "nodemailer": "^6.9.15",
     "qs": "^6.13.0",
-    "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
     "yamljs": "^0.3.0"
   },
@@ -60,6 +61,8 @@
     "openai": "^4.68.4",
     "playwright": "^1.48.1",
     "supertest": "^7.0.0",
+    "swagger-autogen": "^2.23.7",
+    "swagger-jsdoc": "^6.2.8",
     "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",
     "typescript": "^5.6.3",

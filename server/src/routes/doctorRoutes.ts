@@ -5,7 +5,9 @@ import {
   getAllDoctors,
   getAllDoctorsForBooking,
   getDoctorById,
+  getScheduleByDoctorId,
   updateByDoctorId,
+  updateDoctorSchedule,
 } from "../controllers/doctorController";
 import { authMiddleware, roleMiddleware } from "../middleware";
 
@@ -17,7 +19,15 @@ router.get("/", getAllDoctors);
 router.get("/all", getAllDoctorsForBooking);
 
 // Lấy thông tin bác sĩ theo Id
-router.get("/:doctorId", getDoctorById);
+router.get("/:doctorId", authMiddleware, getDoctorById);
+
+router.get("/:doctorId/schedule", authMiddleware, getScheduleByDoctorId);
+
+router.patch(
+  "/:doctorId/schedule",
+  authMiddleware,
+  updateDoctorSchedule
+);
 
 // Thêm bác sĩ mới
 router.post("/", authMiddleware, roleMiddleware(["manager"]), addNewDoctor);

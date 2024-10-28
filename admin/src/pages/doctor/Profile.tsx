@@ -7,21 +7,110 @@ import {
   Divider,
   Form,
   Input,
+  InputNumber,
+  message,
   Row,
   Select,
   Upload,
+  UploadFile,
+  UploadProps,
 } from "antd";
 import { User } from "iconsax-react";
 import { UploadOutlined } from "@ant-design/icons";
 
 const { TextArea } = Input;
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { HeaderPage } from "../../components";
+import { uploadFile } from "../../utils";
+import { handleAPI } from "../../apis/handleAPI";
+import { useDispatch, useSelector } from "react-redux";
+import { IAuth } from "../../types";
+import { updateAuth } from "../../redux/reducers/authReducer";
 
 const Profile = () => {
+  const auth: IAuth = useSelector((state: any) => state.authReducer.data);
+
   const [form] = Form.useForm();
+
+  const dispatch = useDispatch();
+
   const inpRef = useRef<any>();
+
+  const [file, setFile] = useState(null);
+
+  const [profile, setProfile] = useState<any>(null);
+  const [fileList, setFileList] = useState<UploadFile[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoadingForm, setIsLoadingForm] = useState(false);
+
+  useEffect(() => {
+    const getProfile = async () => {
+      try {
+        setIsLoading(true);
+        const api = `/api/doctors/${auth.adminId}`;
+
+        const res = await handleAPI(api, undefined, "GET");
+
+        setProfile(res.data);
+
+        form.setFieldsValue(res.data);
+      } catch (error: any) {
+        console.log(error);
+        message.error(error.message);
+      }
+    };
+    getProfile();
+  }, []);
+
+  const handleUpload: UploadProps["onChange"] = ({ fileList: newFileList }) => {
+    setFileList(newFileList);
+  };
+
+  const beforeUpload = (file: File) => {
+    const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
+    if (!isJpgOrPng) {
+      message.error("Bạn chỉ có thể tải lên file JPG/PNG!");
+    }
+    const isLt2M = file.size / 1024 / 1024 < 2;
+    if (!isLt2M) {
+      message.error("Hình ảnh phải nhỏ hơn 2MB!");
+    }
+    return false;
+  };
+
+  const handleSubmit = async (values: any) => {
+    try {
+      setIsLoadingForm(true);
+      const api = `/api/doctors/${auth.adminId}`;
+      if (fileList.length > 0) {
+        const uploadedFiles = await Promise.all(
+          fileList.map(async (file) => {
+            if (file.originFileObj) {
+              const url = await uploadFile(file.originFileObj, "doctors");
+              return url;
+            }
+            return null;
+          }),
+        );
+        values.images = uploadedFiles.filter((file) => file !== null);
+      }
+
+      if (file) {
+        values.photoUrl = await uploadFile(file, "doctors");
+      }
+
+      const res: any = await handleAPI(api, values, "PATCH");
+
+      dispatch(updateAuth({ photoUrl: res.data.photoUrl }));
+      message.success(res.message);
+    } catch (error: any) {
+      console.log(error);
+      message.error(error.message);
+    } finally {
+      setIsLoadingForm(false);
+    }
+  };
 
   return (
     <ConfigProvider
@@ -40,15 +129,29 @@ const Profile = () => {
             <Col span={6}>
               <div className="my-5 mb-10 text-center">
                 <label htmlFor="inpFile">
-                  <Avatar
-                    shape="square"
-                    style={{
-                      backgroundColor: "transparent",
-                      border: "2px dashed #ccc",
-                    }}
-                    size={150}
-                    icon={<User color="#ccc" size={50} />}
-                  />
+                  {file ? (
+                    <Avatar
+                      shape="square"
+                      style={{
+                        backgroundColor: "transparent",
+                        border: "2px dashed #ccc",
+                      }}
+                      size={150}
+                      src={URL.createObjectURL(file)}
+                      icon={<User color="#ccc" size={50} />}
+                    />
+                  ) : (
+                    <Avatar
+                      shape="square"
+                      style={{
+                        backgroundColor: "transparent",
+                        border: "2px dashed #ccc",
+                      }}
+                      size={150}
+                      src={profile?.photoUrl}
+                      icon={<User color="#ccc" size={50} />}
+                    />
+                  )}
                 </label>
               </div>
               <Divider />
@@ -64,14 +167,28 @@ const Profile = () => {
                   showIcon
                 />
                 <div className="mt-3">
-                  <Upload accept="image/png">
-                    <Button icon={<UploadOutlined />}>Upload</Button>
-                  </Upload>
+                  <Form.Item>
+                    <Upload
+                      accept="image/png, image/jpeg"
+                      fileList={fileList}
+                      beforeUpload={beforeUpload}
+                      onChange={handleUpload}
+                      maxCount={4}
+                    >
+                      <Button icon={<UploadOutlined />}>Upload</Button>
+                    </Upload>
+                  </Form.Item>
                 </div>
               </div>
             </Col>
             <Col span={18}>
-              <Form form={form} size="large" layout="vertical">
+              <Form
+                form={form}
+                size="large"
+                layout="vertical"
+                onFinish={handleSubmit}
+                disabled={isLoadingForm}
+              >
                 <Row gutter={32}>
                   <Col span={6}>
                     <Form.Item name="email" label="Email" required>
@@ -130,12 +247,21 @@ const Profile = () => {
                     >
                       <Input addonBefore="+84" placeholder="Số điện thoại" />
                     </Form.Item>
-                    <Form.Item name="gender" label="Giới tính">
+                    <Form.Item
+                      name="gender"
+                      label="Giới tính"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Vui lòng chọn giới tính",
+                        },
+                      ]}
+                    >
                       <Select
                         placeholder="Giới tính"
                         options={[
-                          { value: "nữ", label: "Nữ" },
                           { value: "nam", label: "Nam" },
+                          { value: "nữ", label: "Nữ" },
                         ]}
                       />
                     </Form.Item>
@@ -169,11 +295,17 @@ const Profile = () => {
                       label="Năm kinh nghiệm"
                       required
                     >
-                      <Input placeholder="Số năm kinh nghiệm" />
+                      <InputNumber
+                        min={0}
+                        max={50}
+                        style={{ width: "100%" }}
+                        placeholder="Số năm kinh nghiệm"
+                      />
                     </Form.Item>
                   </Col>
                   <Col span={12}>
                     <Form.Item
+                      name="introduction"
                       tooltip="Hãy giới thiệu một các đầy đủ rõ ràng về bản thân của mình!"
                       label="Giới thiệu"
                     >
@@ -190,6 +322,7 @@ const Profile = () => {
           <div className="text-right">
             <Button
               size="large"
+              loading={isLoadingForm}
               type="primary"
               className="mt-3 w-fit"
               onClick={() => form.submit()}
@@ -206,7 +339,7 @@ const Profile = () => {
             type="file"
             accept="image/*"
             id="inpFile"
-            // onChange={(e: any) => setFile(e.target.files[0])}
+            onChange={(e: any) => setFile(e.target.files[0])}
           />
         </div>
       </div>

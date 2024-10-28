@@ -23,6 +23,13 @@ const Header = () => {
       key: "3",
       label: <Link to={"/services/water-quality"}>Kiểm tra chất lượng nước</Link>,
     },
+    {
+      key: "4",
+      label: <Link to={"/services/service-price-table"}>Bảng giá dịch vụ</Link>,
+    },
+    
+    
+    
   ];
 
   const profile: MenuProps["items"] = [

@@ -62,10 +62,19 @@
   display: none;
 }
 
-/* ::-webkit-scrollbar-thumb {
+/* .dashboard ::-webkit-scrollbar {
+  display: initial;
+  width: 10px;
+}
+
+.dashboard ::-webkit-scrollbar-thumb {
   background: #ccc;
   border-radius: 10px;
 } */
+
+.accounts .ant-table-container {
+  height: calc(100vh - 200px);
+}
 
 .ant-table-container {
   height: calc(100vh - 230px);
