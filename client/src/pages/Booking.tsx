@@ -18,10 +18,8 @@ import dayjs from "dayjs";
 import { debounce } from "lodash";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
 import { handleAPI } from "../apis/handleAPI";
 import Map from "../components/Map";
-import { CustomerData } from "../models/DataModels";
 import { CustomCalendar } from "../share";
 import { IAuth } from "../types";
 
@@ -32,8 +30,6 @@ const Booking = () => {
     window.scrollTo(0, 0);
   }, []);
 
-  const navigate = useNavigate();
-
   const auth: IAuth = useSelector((state: any) => state.authReducer.data);
 
   const [form] = Form.useForm();
@@ -42,7 +38,7 @@ const Booking = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [slot, setSlot] = useState<string | null>(null);
   const [date, setDate] = useState<dayjs.Dayjs | null>(null);
-  const [profile, setProfile] = useState<CustomerData | null>(null);
+  const [profile, setProfile] = useState<any | null>(null);
 
   const [services, setServices] = useState([]);
   const [doctors, setDoctors] = useState([]);
@@ -60,10 +56,11 @@ const Booking = () => {
   const [destination] = useState<L.LatLngExpression>([10.8415, 106.8099]); // Tọa độ cố định của Genkikoi
   const [route, setRoute] = useState<L.LatLngExpression[] | null>(null);
   const [distance, setDistance] = useState<string | null>(null);
-  const [duration, setDuration] = useState<string | null>(null);
   const [movingPrice, setMovingPrice] = useState<number>(0);
 
   const [isAddressDisabled, setIsAddressDisabled] = useState(false);
+
+  console.log(profile);
 
   useEffect(() => {
     const getProfile = async () => {
@@ -72,9 +69,7 @@ const Booking = () => {
         const api = `api/users/`;
         const res = await handleAPI(api, undefined, "GET");
         setProfile(res.data);
-        if (!res.data.phoneNumber || !res.data.gender || !res.data.fullName) {
-          navigate("/my-account/profile");
-        }
+        form.setFieldsValue(res.data);
       } catch (error) {
         console.log(error);
         message.error("Có lỗi xảy ra khi tải thông tin người dùng.");
@@ -83,7 +78,7 @@ const Booking = () => {
       }
     };
     getProfile();
-  }, [navigate]);
+  }, []);
 
   useEffect(() => {
     if (profile) {
@@ -137,7 +132,6 @@ const Booking = () => {
     }
   }, [distance]);
 
-  // Cập nhật useEffect cho tổng giá
   useEffect(() => {
     setTotalPrice(price + movingPrice);
   }, [price, movingPrice]);
@@ -197,8 +191,11 @@ const Booking = () => {
   const handleSubmit = async (values: any) => {
     try {
       setIsLoadingForm(true);
+      const { fullName, phoneNumber, gender } = values;
+
       const appointmentApi = `/api/appointments/customers/${auth.customerId}`;
       const bookSlotApi = `/api/doctorSchedules/${doctorSchedule.doctorId}`;
+      const profileApi = `/api/users/update-profile`;
 
       if (date && slot && doctorSchedule) {
         values.appointmentDate = date.format("YYYY-MM-DD");
@@ -208,6 +205,8 @@ const Booking = () => {
         message.error("Vui lòng chọn ngày và giờ khám");
         return;
       }
+
+      await handleAPI(profileApi, { fullName, phoneNumber, gender }, "PATCH");
 
       const appointmentRes: any = await handleAPI(appointmentApi, values, "POST");
 
@@ -236,7 +235,7 @@ const Booking = () => {
         if (paymentRes.data.checkoutUrl) {
           window.open(paymentRes.data.checkoutUrl, "_blank");
         } else {
-          message.error("Không thể từo liên kết thanh toán");
+          message.error("Không thể lấy liên kết thanh toán");
         }
       }
     } catch (error: any) {
@@ -244,15 +243,9 @@ const Booking = () => {
       message.error(error.message);
     } finally {
       setIsLoadingForm(false);
-      setSlot(null);
-      setDate(null);
-      form.resetFields();
     }
   };
 
-  console.log(auth);
-
-  // Cập nhật hàm handleAddressSearch với debounce
   const handleAddressSearch = debounce(async (value: string) => {
     if (value.length > 2) {
       try {
@@ -274,7 +267,6 @@ const Booking = () => {
     }
   }, 300);
 
-  // Cập nhật hàm handleAddressSelect
   const handleAddressSelect = async (value: string) => {
     try {
       const api = `/api/distance/calculate-route`;
@@ -284,7 +276,6 @@ const Booking = () => {
         setOrigin([data.origin.lat, data.origin.lon]);
         setRoute(data.route);
         setDistance(data.distance);
-        setDuration(data.duration);
         form.setFieldsValue({ detailAddress: value });
       }
     } catch (error: any) {
@@ -299,6 +290,20 @@ const Booking = () => {
       form.setFieldsValue({ detailAddress: "" });
     } else {
       setIsAddressDisabled(false);
+    }
+  };
+
+  const handleCheckExistence = async (field: string, value: string) => {
+    const api = `/api/users/check-${field}`;
+    try {
+      const res: any = await handleAPI(api, { [field]: value }, "POST");
+
+      if (res.exists && res.userId !== auth.id) {
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -322,7 +327,6 @@ const Booking = () => {
               components: {
                 Form: {
                   labelColor: "white",
-                  fontSize: 17,
                 },
                 Divider: {
                   marginLG: 8,
@@ -338,7 +342,7 @@ const Booking = () => {
               layout="vertical"
             >
               <h3 className="heading-3 text-white">Nội dung chi tiết đặt hẹn</h3>
-              <div className="my-5 flex gap-10">
+              <div className="my-5 flex gap-5">
                 <div className="lg:w-1/5">
                   <Form.Item
                     name="serviceName"
@@ -477,7 +481,88 @@ const Booking = () => {
                     </div>
                   </Form.Item>
                 </div>
-                <div className="lg:w-[45%]">
+                <div className="lg:w-[50%]">
+                  <Row gutter={16}>
+                    <Col span={8}>
+                      <Form.Item
+                        required
+                        name="fullName"
+                        label="Họ và tên"
+                        tooltip="Chỉ chữ cái và khoảng trắng, dài từ 2 đến 50 ký tự!"
+                        rules={[
+                          { required: true, message: "Vui lòng nhập họ và tên" },
+                          { min: 2, message: "Họ và tên phải có ít nhất 2 ký tự" },
+                          { max: 50, message: "Họ và tên không được vượt quá 50 ký tự" },
+                          {
+                            pattern: /^[a-zA-ZÀ-ỹ\s]+$/,
+                            message: "Họ và tên chỉ được chứa chữ cái và khoảng trắng",
+                          },
+                          {
+                            validator: (_, value) => {
+                              if (value && value.trim().split(/\s+/).length < 2) {
+                                return Promise.reject("Họ và tên phải bao gồm ít nhất hai từ");
+                              }
+                              return Promise.resolve();
+                            },
+                          },
+                        ]}
+                        validateDebounce={1000}
+                      >
+                        <Input placeholder="Họ và tên" />
+                      </Form.Item>
+                    </Col>
+                    <Col span={8}>
+                      <Form.Item
+                        required
+                        name="phoneNumber"
+                        label="Số điện thoại"
+                        hasFeedback
+                        rules={[
+                          { required: true, message: "Vui lòng nhập số điện thoại" },
+                          { pattern: /^[0-9]{10}$/, message: "Số điện thoại không hợp lệ" },
+                          {
+                            validator: async (_, value) => {
+                              const exists = await handleCheckExistence("phoneNumber", value);
+                              if (exists) {
+                                return Promise.reject(
+                                  new Error("Tên số điện thoại này đã tồn tại!"),
+                                );
+                              }
+
+                              return Promise.resolve();
+                            },
+                          },
+                        ]}
+                        validateDebounce={1000}
+                      >
+                        <Input
+                          className="addon-input"
+                          addonBefore="+84"
+                          placeholder="Số điện thoại"
+                        />
+                      </Form.Item>
+                    </Col>
+                    <Col span={8}>
+                      <Form.Item
+                        name="gender"
+                        label="Giới tính"
+                        rules={[
+                          {
+                            required: true,
+                            message: "Vui lòng chọn giới tính",
+                          },
+                        ]}
+                      >
+                        <Select
+                          placeholder="Giới tính"
+                          options={[
+                            { value: "nam", label: "Nam" },
+                            { value: "nữ", label: "Nữ" },
+                          ]}
+                        />
+                      </Form.Item>
+                    </Col>
+                  </Row>
                   <Row>
                     <Col span={24}>
                       <Form.Item

@@ -82,17 +82,20 @@ export const updateProfile = async (req: AuthRequest, res: Response) => {
       detailAddress,
     } = req.body;
 
-    const formatUsername = username.toLowerCase();
+    const userUpdateData: any = {
+      fullName,
+      phoneNumber,
+      photoUrl,
+      gender,
+    };
+    
+    if (username) {
+      userUpdateData.username = username.toLowerCase();
+    }
 
     const updatedUser = await User.findOneAndUpdate(
       { _id: userId },
-      {
-        username: formatUsername,
-        fullName,
-        phoneNumber,
-        photoUrl,
-        gender,
-      },
+      userUpdateData,
       { new: true }
     );
 
@@ -179,4 +182,11 @@ export const toggleUserStatus = async (req: Request, res: Response) => {
         error.message || "Đã xảy ra lỗi khi cập nhật trạng thái tài khoản",
     });
   }
+};
+
+export const checkPhoneNumber = async (req: Request, res: Response) => {
+  const { phoneNumber } = req.body;
+
+  const user = await User.findOne({ phoneNumber });
+  return res.status(200).json({ exists: !!user, userId: user?._id });
 };
