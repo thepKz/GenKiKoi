@@ -4,7 +4,6 @@ import { ValidationError } from "../errors/ValidationError";
 import { Customer, Doctor, Manager, Staff } from "../models";
 import User from "../models/User";
 import { randomText, signToken } from "../utils";
-import { sendVerificationEmail } from "../services/emails";
 /**
  * Người Làm: Thép
  * Người Test: Thép

@@ -1,14 +1,7 @@
 import bcrypt from "bcryptjs";
 import { Request, Response } from "express";
-import { Doctor, DoctorSchedule, User } from "../models";
+import { Doctor, User } from "../models";
 import { randomText, replaceName } from "../utils";
-
-/**
- * @swagger
- * tags:
- *   name: Doctors
- *   description: Doctor management
- */
 
 /**
  * API: /api/doctors/

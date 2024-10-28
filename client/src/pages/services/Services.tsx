@@ -11,8 +11,10 @@ import Icon5 from "../../assets/Icon-05.svg";
 import Icon6 from "../../assets/Icon-06.svg";
 
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Services = () => {
+  const navigate = useNavigate();
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -76,6 +78,9 @@ const Services = () => {
                 <Button
                   size="large"
                   ghost
+                  onClick={() => navigate("/booking")}
+                  type="link"
+                  className="mt-4 text-white hover:text-blue-300"
                 >
                   Đặt lịch
                   <ArrowRight2 size={18} />

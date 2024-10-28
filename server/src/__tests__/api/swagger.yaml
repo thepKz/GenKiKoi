@@ -14,14 +14,32 @@ security:
 servers:
   - url: http://localhost:5000
     description: Development server
+  - url: https://genkikoi-backend.onrender.com
+    description: Production server
 tags:
   - name: Authentication
     description: No need JWT TOKENS
   - name: Users
     description: Need JWT TOKENS
-  - name: VNPay
+  - name: Services
+    description: Need JWT TOKENS
+  - name: Doctors
     description: Need JWT TOKENS
   - name: Appointments
+    description: Need JWT TOKENS
+  - name: Payments
+    description: Need JWT TOKENS
+  - name: Ponds
+    description: Need JWT TOKENS
+  - name: Medical Records
+    description: Need JWT TOKENS
+  - name: Distance
+    description: No need JWT TOKENS
+  - name: Fish
+    description: Need JWT TOKENS
+  - name: Staff
+    description: Need JWT TOKENS
+  - name: Feedback
     description: Need JWT TOKENS
 paths:
   /api/auth/register:
@@ -510,10 +528,2384 @@ paths:
           description: User information not found
         500:
           description: Server error
-  /api/bills/create:
-    post: 
-      summary: Create a new bill (MANAGER, STAFF)
-      tags: [Bills]
+  /api/services:
+    get:
+      summary: Get all services
+      tags: [Services]
+      responses:
+        '200':
+          description: List of services
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Service'
+        '404':
+          description: No services available
+        '500':
+          description: Internal server error
+    post:
+      summary: Create a new service
+      tags: [Services]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - serviceName
+                - price
+                - availableAt
+                - description
+              properties:
+                serviceName:
+                  type: string
+                  description: Name of the service
+                price:
+                  type: number
+                  description: Price of the service
+                availableAt:
+                  type: string
+                  description: Location where the service is available
+                description:
+                  type: string
+                  description: Description of the service
+      responses:
+        '201':
+          description: Service created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Dịch vụ được tạo thành công!
+                  data:
+                    $ref: '#/components/schemas/Service'
+        '400':
+          description: Service already exists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Dịch vụ này đã tồn tại!
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Đã xảy ra lỗi server
+  /api/services/{id}:
+    delete:
+      summary: Delete a service
+      tags: [Services]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID of the service to delete
+      responses:
+        '200':
+          description: Service deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Xóa thành công
+        '404':
+          description: Service not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Không tìm thấy dịch vụ
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Đã xảy ra lỗi server
+    patch:
+      summary: Update a service
+      tags: [Services]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID of the service to update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - serviceName
+                - price
+                - availableAt
+                - description
+              properties:
+                serviceName:
+                  type: string
+                  description: Name of the service
+                price:
+                  type: number
+                  description: Price of the service
+                availableAt:
+                  type: string
+                  description: Location where the service is available
+                description:
+                  type: string
+                  description: Description of the service
+      responses:
+        '200':
+          description: Service updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Cập nhật dịch vụ thành công
+                  data:
+                    $ref: '#/components/schemas/Service'
+        '404':
+          description: Service not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Không tìm thấy dịch vụ
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Đã xảy ra lỗi server
+  /api/doctors:
+    get:
+      summary: Get all doctors
+      tags: [Doctors]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of doctors
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Doctor'
+        '404':
+          description: No doctors available
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Danh sách bác sĩ trống!
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Đã xảy ra lỗi server
+    post:
+      summary: Create a new doctor
+      tags: [Doctors]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - fullName
+                - gender
+                - email
+                - specialization
+                - licenseNumber
+                - yearOfExperience
+                - movingService
+              properties:
+                fullName:
+                  type: string
+                  description: Full name of the doctor
+                gender:
+                  type: string
+                  description: Gender of the doctor
+                email:
+                  type: string
+                  description: Email of the doctor
+                specialization:
+                  type: string
+                  description: Specialization of the doctor
+                licenseNumber:
+                  type: string
+                  description: License number of the doctor
+                yearOfExperience:
+                  type: number
+                  description: Years of experience of the doctor
+                movingService:
+                  type: boolean
+                  description: Whether the doctor provides moving service
+      responses:
+        '201':
+          description: Doctor created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Nhân viên được thêm thành công!
+                  data:
+                    $ref: '#/components/schemas/Doctor'
+        '400':
+          description: Doctor already exists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Bác sĩ đã tồn tại
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Đã xảy ra lỗi server
+  /api/doctors/{doctorId}:
+    patch:
+      summary: Update a doctor
+      tags: [Doctors]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: doctorId
+          required: true
+          schema:
+            type: string
+          description: ID of the doctor to update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                photoUrl:
+                  type: string
+                  description: URL of the doctor's photo
+                images:
+                  type: array
+                  items:
+                    type: string
+                  description: URLs of the doctor's images
+                fullName:
+                  type: string
+                  description: Full name of the doctor
+                gender:
+                  type: string
+                  description: Gender of the doctor
+                email:
+                  type: string
+                  description: Email of the doctor
+                phoneNumber:
+                  type: string
+                  description: Phone number of the doctor
+                specialization:
+                  type: string
+                  description: Specialization of the doctor
+                licenseNumber:
+                  type: string
+                  description: License number of the doctor
+                yearOfExperience:
+                  type: number
+                  description: Years of experience of the doctor
+                movingService:
+                  type: boolean
+                  description: Whether the doctor provides moving service
+                introduction:
+                  type: string
+                  description: Introduction of the doctor
+      responses:
+        '200':
+          description: Doctor updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Cập nhật thông tin bác sĩ thành công
+                  data:
+                    $ref: '#/components/schemas/Doctor'
+        '404':
+          description: Doctor not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Không tìm thấy bác sĩ
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Đã xảy ra lỗi server
+    delete:
+      summary: Delete a doctor
+      tags: [Doctors]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: doctorId
+          required: true
+          schema:
+            type: string
+          description: ID of the doctor to delete
+      responses:
+        '200':
+          description: Doctor deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Xóa thành công
+        '404':
+          description: Doctor not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Không tìm thấy bác sĩ
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Đã xảy ra lỗi server
+  /api/doctors/all:
+    get:
+      summary: Get all doctors for booking
+      tags: [Doctors]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of doctors for booking
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        fullName:
+                          type: string
+        '404':
+          description: No doctors available
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Không tìm thấy bác sĩ nào
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Đã xảy ra lỗi server
+  /api/doctors/{doctorId}:
+    get:
+      summary: Get a doctor by ID
+      tags: [Doctors]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: doctorId
+          required: true
+          schema:
+            type: string
+          description: ID of the doctor
+      responses:
+        '200':
+          description: Doctor information
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Doctor'
+        '404':
+          description: Doctor not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Không tìm thấy bác sĩ
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Đã xảy ra lỗi server
+  /api/doctor-schedules:
+    get:
+      summary: Get all doctor schedules
+      tags: [Doctors]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of doctor schedules
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/DoctorSchedule'
+        '404':
+          description: No schedules found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Không tìm thấy lịch làm việc nào
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Đã xảy ra lỗi khi lấy lịch trình
+  /api/doctor-schedules/{doctorId}:
+    get:
+      summary: Get schedule by doctor ID
+      tags: [Doctors]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: doctorId
+          required: true
+          schema:
+            type: string
+          description: ID of the doctor
+      responses:
+        '200':
+          description: Doctor schedule
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DoctorSchedule'
+        '404':
+          description: Schedule not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Không tìm thấy lịch trình
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Đã xảy ra lỗi khi lấy lịch trình
+  /api/doctor-schedules/{doctorId}/slots:
+    get:
+      summary: Get slots by doctor and date
+      tags: [Doctors]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: doctorId
+          required: true
+          schema:
+            type: string
+          description: ID of the doctor
+        - in: query
+          name: date
+          required: true
+          schema:
+            type: string
+          description: Date in the format DD/MM/YYYY
+      responses:
+        '200':
+          description: Slots for the given doctor and date
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/DoctorScheduleSlot'
+        '400':
+          description: Invalid date format
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Ngày không hợp lệ
+        '404':
+          description: Schedule not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Không tìm thấy lịch làm việc cho bác sĩ này
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Đã xảy ra lỗi khi lấy slots
+  /api/doctor-schedules/{doctorId}/view-calendar:
+    get:
+      summary: Get view calendar by doctor ID
+      tags: [Doctors]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: doctorId
+          required: true
+          schema:
+            type: string
+          description: ID of the doctor
+      responses:
+        '200':
+          description: Calendar events for the doctor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        title:
+                          type: string
+                        start:
+                          type: string
+                          format: date-time
+                        end:
+                          type: string
+                          format: date-time
+                        description:
+                          type: string
+        '404':
+          description: Schedule not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Không tìm thấy lịch của bác sĩ
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Lỗi server
+  /api/doctor-schedules/{doctorId}/update-appointment:
+    patch:
+      summary: Update appointment in doctor schedule
+      tags: [Doctors]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: doctorId
+          required: true
+          schema:
+            type: string
+          description: ID of the doctor
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - slotTime
+                - appointmentId
+                - appointmentDate
+              properties:
+                slotTime:
+                  type: string
+                  description: Time slot for the appointment
+                appointmentId:
+                  type: string
+                  description: ID of the appointment
+                appointmentDate:
+                  type: string
+                  description: Date of the appointment
+      responses:
+        '200':
+          description: Appointment slot updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Đặt slot thành công
+        '400':
+          description: Missing required fields
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Vui lòng điền đầy đủ các trường
+        '404':
+          description: Schedule or slot not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Không tìm thấy lịch làm việc của bác sĩ hoặc slot thời gian này
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Đã xảy ra lỗi khi cập nhật lịch làm việc
+  /api/appointments:
+    get:
+      summary: Get all appointments
+      y: Get all appointments
+      tags: [Appointments]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of appointments
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Appointment'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Lỗi khi lấy danh sách cuộc hẹn
+  /api/appointments/doctor/{doctorId}:
+    get:
+      summary: Get appointments by doctor ID
+      tags: [Appointments]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: doctorId
+          required: true
+          schema:
+            type: string
+          description: ID of the doctor
+      responses:
+        '200':
+          description: List of appointments for the doctor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        appointmentId:
+                          type: string
+                        customerName:
+                          type: string
+                        serviceName:
+                          type: string
+                        phoneNumber:
+                          type: string
+                        appointmentDate:
+                          type: string
+                        status:
+                          type: string
+                        paymentStatus:
+                          type: string
+                        isFeedback:
+                          type: boolean
+        '404':
+          description: No appointments found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Không tìm thấy cuộc hẹn
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Lỗi khi lấy danh sách cuộc hẹn
+  /api/appointments/{appointmentId}/update-status:
+    patch:
+      summary: Update appointment status
+      tags: [Appointments]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: appointmentId
+          required: true
+          schema:
+            type: string
+          description: ID of the appointment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - status
+              properties:
+                status:
+                  type: string
+                  description: New status of the appointment
+      responses:
+        '200':
+          description: Appointment status updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Đã cập nhật cuộc hẹn
+        '404':
+          description: Appointment not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Không tìm thấy cuộc hẹn
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Lỗi khi cập nhật cuộc hẹn
+  /api/appointments/customer/{customerId}:
+    get:
+      summary: Get appointments by customer ID
+      tags: [Appointments]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: customerId
+          required: true
+          schema:
+            type: string
+          description: ID of the customer
+      responses:
+        '200':
+          description: List of appointments for the customer
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        appointmentId:
+                          type: string
+                        serviceName:
+                          type: string
+                        doctorFullName:
+                          type: string
+                        appointmentDate:
+                          type: string
+                        status:
+                          type: string
+                        notes:
+                          type: string
+                        isFeedback:
+                          type: boolean
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Lỗi khi lấy danh sách cuộc hẹn
+  /api/appointments/customer/{customerId}:
+    post:
+      summary: Create a new appointment
+      tags: [Appointments]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: customerId
+          required: true
+          schema:
+            type: string
+          description: ID of the customer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - serviceName
+                - doctorId
+                - typeOfConsulting
+                - appointmentDate
+                - slotTime
+                - reasons
+                - doctorScheduleId
+              properties:
+                serviceName:
+                  type: string
+                  description: Name of the service
+                doctorId:
+                  type: string
+                  description: ID of the doctor
+                typeOfConsulting:
+                  type: string
+                  description: Type of consulting
+                appointmentDate:
+                  type: string
+                  description: Date of the appointment
+                slotTime:
+                  type: string
+                  description: Time slot for the appointment
+                reasons:
+                  type: string
+                  description: Reasons for the appointment
+                doctorScheduleId:
+                  type: string
+                  description: ID of the doctor's schedule
+      responses:
+        '200':
+          description: Appointment created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Cuộc hẹn được tạo thành công!
+                  data:
+                    type: object
+                    properties:
+                      appointmentId:
+                        type: string
+        '404':
+          description: Doctor, customer, service, or schedule not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Lỗi khi tạo cuộc hẹn
+  /api/medical-records:
+    get:
+      summary: Get all medical records
+      tags: [Medical Records]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of medical records
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/MedicalRecord'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Lỗi khi lấy danh sách bệnh án
+  /api/medical-records/fish/{fishId}:
+    get:
+      summary: Get medical records by fish ID
+      tags: [Medical Records]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: fishId
+          required: true
+          schema:
+            type: string
+          description: ID of the fish
+      responses:
+        '200':
+          description: List of medical records for the fish
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        recordId:
+                          type: string
+                        customerName:
+                          type: string
+                        date:
+                          type: string
+                        examType:
+                          type: string
+                        serviceName:
+                          type: string
+                        images:
+                          type: array
+                          items:
+                            type: string
+                        diagnosis:
+                          type: string
+                        treatment:
+                          type: string
+                        medicines:
+                          type: string
+                        doctorName:
+                          type: string
+        '404':
+          description: No medical records found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Không tìm thấy bệnh án
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Lỗi khi lấy danh sách bệnh án
+  /api/medical-records/{medicalRecordId}:
+    get:
+      summary: Get medical record by ID
+      tags: [Medical Records]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: medicalRecordId
+          required: true
+          schema:
+            type: string
+          description: ID of the medical record
+      responses:
+        '200':
+          description: Medical record details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      recordId:
+                        type: string
+                      customerName:
+                        type: string
+                      doctorName:
+                        type: string
+                      date:
+                        type: string
+                      serviceName:
+                        type: string
+                      examType:
+                        type: string
+                      images:
+                        type: array
+                        items:
+                          type: string
+                      diagnosis:
+                        type: string
+                      treatment:
+                        type: string
+                      medicines:
+                        type: string
+        '404':
+          description: Medical record not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Không tìm thấy bệnh án
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Lỗi khi lấy thông tin bệnh án
+  /api/medical-records:
+    post:
+      summary: Create a new medical record
+      tags: [Medical Records]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - phoneNumber
+                - fishId
+                - doctorId
+                - serviceName
+                - examType
+              properties:
+                phoneNumber:
+                  type: string
+                  description: Phone number of the customer
+                fishId:
+                  type: string
+                  description: ID of the fish
+                doctorId:
+                  type: string
+                  description: ID of the doctor
+                serviceName:
+                  type: string
+                  description: Name of the service
+                examType:
+                  type: string
+                  description: Type of the examination
+                images:
+                  type: array
+                  items:
+                    type: string
+                  description: URLs of the images
+                diagnosis:
+                  type: string
+                  description: Diagnosis
+                treatment:
+                  type: string
+                  description: Treatment
+                medicines:
+                  type: string
+                  description: Medicines
+      responses:
+        '200':
+          description: Medical record created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Đã tạo hồ sơ bệnh án thành công!
+        '400':
+          description: Missing required fields or user not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Lỗi khi tạo hồ sơ bệnh án
+  /api/medical-records/customers:
+    get:
+      summary: Get all customers with medical records
+      tags: [Medical Records]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of customers with medical records
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        _id:
+                          type: string
+                        customerName:
+                          type: string
+                        gender:
+                          type: string
+                        phoneNumber:
+                          type: string
+                        numberAppointment:
+                          type: number
+        '404':
+          description: No customers found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Danh sách khách hàng trống
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Lỗi khi lấy danh sách khách hàng
+  /api/ponds:
+    get:
+      summary: Get all ponds
+      tags: [Ponds]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of ponds
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Pond'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Lỗi khi lấy danh sách hồ cá
+    post:
+      summary: Create a new pond
+      tags: [Ponds]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - phoneNumber
+                - status
+                - images
+                - ph
+                - ammoniaLevel
+                - nitrateLevel
+                - oxygenLevel
+                - waterTemperature
+                - cleanliness
+                - filtrationSystem
+                - pondSize
+              properties:
+                doctorId:
+                  type: string
+                  description: ID of the doctor
+                phoneNumber:
+                  type: string
+                  description: Phone number of the customer
+                status:
+                  type: string
+                  description: Status of the pond
+                images:
+                  type: array
+                  items:
+                    type: string
+                  description: URLs of the pond images
+                ph:
+                  type: number
+                  description: pH level of the pond
+                ammoniaLevel:
+                  type: number
+                  description: Ammonia level of the pond
+                nitrateLevel:
+                  type: number
+                  description: Nitrate level of the pond
+                oxygenLevel:
+                  type: number
+                  description: Oxygen level of the pond
+                waterTemperature:
+                  type: number
+                  description: Water temperature of the pond
+                cleanliness:
+                  type: string
+                  description: Cleanliness of the pond
+                  ption: Cleanliness of the pond
+                filtrationSystem:
+                  type: string
+                  description: Filtration system of the pond
+                pondSize:
+                  type: number
+                  description: Size of the pond
+                notes:
+                  type: string
+                  description: Notes about the pond
+                diagnosis:
+                  type: string
+                  description: Diagnosis of the pond
+      responses:
+        '200':
+          description: Pond created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Đã tạo hồ sơ Hồ cá thành công !
+                  data:
+                    $ref: '#/components/schemas/Pond'
+        '400':
+          description: Missing required fields or user not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Lỗi khi tạo hồ sơ hồ cá
+  /api/ponds/{id}:
+    get:
+      summary: Get pond by ID
+      tags: [Ponds]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID of the pond
+      responses:
+        '200':
+          description: Pond details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      customerName:
+                        type: string
+                      doctorName:
+                        type: string
+                      date:
+                        type: string
+                      images:
+                        type: array
+                        items:
+                          type: string
+                      ph:
+                        type: number
+                      status:
+                        type: string
+                      ammoniaLevel:
+                        type: number
+                      nitrateLevel:
+                        type: number
+                      oxygenLevel:
+                        type: number
+                      waterTemperature:
+                        type: number
+                      cleanliness:
+                        type: string
+                      filtrationSystem:
+                        type: string
+                      pondSize:
+                        type: number
+                      treatment:
+                        type: string
+                      notes:
+                        type: string
+                      diagnosis:
+                        type: string
+        '400':
+          description: Pond not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Hồ không tồn tại
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Lỗi khi lấy thông tin hồ cá
+  /api/ponds/customers:
+    get:
+      summary: Get all customers with ponds
+      tags: [Ponds]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of customers with ponds
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        _id:
+                          type: string
+                        customerName:
+                          type: string
+                        gender:
+                          type: string
+                        phoneNumber:
+                          type: string
+                        numberPond:
+                          type: number
+        '404':
+          description: No customers found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Danh sách khách hàng trống
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Lỗi khi lấy danh sách khách hàng
+  /api/ponds/customer/{customerId}:
+    get:
+      summary: Get ponds by customer ID
+      tags: [Ponds]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: customerId
+          required: true
+          schema:
+            type: string
+          description: ID of the customer
+      responses:
+        '200':
+          description: List of ponds for the customer
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        recordId:
+                          type: string
+                        pondSize:
+                          type: number
+                        status:
+                          type: string
+                        filtrationSystem:
+                          type: string
+                        notes:
+                          type: string
+        '404':
+          description: No ponds found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Danh sách trống
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Lỗi khi lấy danh sách hồ cá
+  /api/payments:
+    post:
+      summary: Create a new payment
+      tags: [Payments]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - totalPrice
+                - customerId
+                - serviceName
+                - appointmentId
+              properties:
+                totalPrice:
+                  type: number
+                  description: Total price of the service
+                customerId:
+                  type: string
+                  description: ID of the customer
+                serviceName:
+                  type: string
+                  description: Name of the service
+                appointmentId:
+                  type: string
+                  description: ID of the appointment
+      responses:
+        '200':
+          description: Payment created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      checkoutUrl:
+                        type: string
+                        description: URL for the customer to complete the payment
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Lỗi khi tạo thanh toán
+  /api/payments/{paymentId}:
+    get:
+      summary: Get payment by ID
+      tags: [Payments]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: paymentId
+          required: true
+          schema:
+            type: string
+          description: ID of the payment
+      responses:
+        '200':
+          description: Payment details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      # Add payment details properties here
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Lỗi khi lấy thông tin thanh toán
+  /api/payments/customer/{customerId}:
+    get:
+      summary: Get payments by customer ID
+      tags: [Payments]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: customerId
+          required: true
+          schema:
+            type: string
+          description: ID of the customer
+      responses:
+        '200':
+          description: List of payments for the customer
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        date:
+                          type: string
+                        serviceName:
+                          type: string
+                        totalPrice:
+                          type: number
+                        status:
+                          type: string
+                        paymentLinkId:
+                          type: string
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Lỗi khi lấy danh sách thanh toán
+  /api/payments/{paymentId}/update:
+    patch:
+      summary: Update payment status
+      tags: [Payments]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: paymentId
+          required: true
+          schema:
+            type: string
+          description: ID of the payment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - status
+              properties:
+                status:
+                  type: string
+                  description: New status of the payment
+      responses:
+        '200':
+          description: Payment status updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Cập nhật thành công
+        '404':
+          description: Payment not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Không tìm thấy hóa đơn
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Lỗi khi cập nhật trạng thái thanh toán
+  /api/payments/appointment/{appointmentId}:
+    get:
+      summary: Get payment by appointment ID
+      tags: [Payments]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: appointmentId
+          required: true
+          schema:
+            type: string
+          description: ID of the appointment
+      responses:
+        '200':
+          description: Payment details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      date:
+                        type: string
+                      serviceName:
+                        type: string
+                      totalPrice:
+                        type: number
+                      status:
+                        type: string
+                      paymentLinkId:
+                        type: string
+        '404':
+          description: Payment not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Không tìm thấy thông tin thanh toán cho cuộc hẹn này
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Lỗi khi lấy thông tin thanh toán
+  /api/distance/autocomplete:
+    get:
+      summary: Address autocomplete
+      tags: [Distance]
+      parameters:
+        - in: query
+          name: query
+          required: true
+          schema:
+            type: string
+          description: Search query for address
+      responses:
+        '200':
+          description: Address suggestions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        value:
+                          type: string
+                        label:
+                          type: string
+                        lat:
+                          type: number
+                        lon:
+                          type: number
+        '400':
+          description: Missing query parameter
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+  /api/distance/calculate:
+    get:
+      summary: Calculate route
+      tags: [Distance]
+      parameters:
+        - in: query
+          name: address
+          required: true
+          schema:
+            type: string
+          description: Starting address
+      responses:
+        '200':
+          description: Route information
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  origin:
+                    $ref: '#/components/schemas/Location'
+                  destination:
+                    $ref: '#/components/schemas/Location'
+                  route:
+                    type: array
+                    items:
+                      type: array
+                      items:
+                        type: number
+                  distance:
+                    type: string
+                  duration:
+                    type: string
+        '400':
+          description: Missing address parameter
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '404':
+          description: Address not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+  /api/fish:
+    get:
+      summary: Get all fish
+      tags: [Fish]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of fish
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Fish'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Lỗi khi lấy danh sách cá
+    get:
+      summary: Get fish by customer ID
+      tags: [Fish]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: customerId
+          required: true
+          schema:
+            type: string
+          description: ID of the customer
+      responses:
+        '200':
+          description: List of fish for the customer
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        description:
+                          type: string
+        '404':
+          description: No fish found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Danh sách trống
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Lỗi khi lấy danh sách cá
+    patch:
+      summary: Update fish
+      tags: [Fish]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: fishId
+          required: true
+          schema:
+            type: string
+          description: ID of the fish
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                description:
+                  type: string
+                  description: Description of the fish
+                size:
+                  type: number
+                  description: Size of the fish
+                age:
+                  type: number
+                  description: Age of the fish
+                photoUrl:
+                  type: string
+                  description: URL of the fish photo
+                gender:
+                  type: string
+                  description: Gender of the fish
+      responses:
+        '200':
+          description: Fish updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Cập nhật thông tin cá thành công
+                  data:
+                    $ref: '#/components/schemas/Fish'
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Lỗi khi cập nhật thông tin cá
+  /api/staff:
+    get:
+      summary: Get all staff
+      tags: [Staff]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of staff
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Staff'
+        '404':
+          description: No staff found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Danh sách nhân viên trống!
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Lỗi khi lấy danh sách nhân viên
+    post:
+      summary: Create a new staff
+      tags: [Staff]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - fullName
+                - gender
+                - position
+                - email
+                - workShift
+              properties:
+                fullName:
+                  type: string
+                  description: Full name of the staff
+                gender:
+                  type: string
+                  description: Gender of the staff
+                position:
+                  type: string
+                  description: Position of the staff
+                email:
+                  type: string
+                  description: Email of the staff
+                workShift:
+                  type: string
+                  description: Work shift of the staff
+      responses:
+        '201':
+          description: Staff created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Nhân viên được thêm thành công!
+                  data:
+                    $ref: '#/components/schemas/Staff'
+        '400':
+          description: Missing required fields
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Vui lòng điền đầy đủ thông tin
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Lỗi khi thêm nhân viên
+  /api/staff/{id}:
+    patch:
+      summary: Update staff
+      tags: [Staff]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID of the staff
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fullName:
+                  type: string
+                  description: Full name of the staff
+                gender:
+                  type: string
+                  description: Gender of the staff
+                position:
+                  type: string
+                  description: Position of the staff
+                email:
+                  type: string
+                  description: Email of the staff
+                workShift:
+                  type: string
+                  description: Work shift of the staff
+      responses:
+        '200':
+          description: Staff updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Cập nhật thông tin nhân viên thành công
+                  data:
+                    $ref: '#/components/schemas/Staff'
+        '404':
+          description: Staff not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Không tìm thấy nhân viên
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Lỗi khi cập nhật thông tin nhân viên
+    delete:
+      summary: Delete staff
+      tags: [Staff]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID of the staff
+      responses:
+        '200':
+          description: Staff deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Xóa thành công
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Lỗi khi xóa nhân viên
+  /api/feedback:
+    post:
+      summary: Create new feedback
+      tags: [Feedback]
       security:
         - bearerAuth: []
       requestBody:
@@ -524,145 +2916,50 @@ paths:
               type: object
               required:
                 - appointmentId
+                - rating
+                - comment
               properties:
                 appointmentId:
                   type: string
                   description: ID of the appointment
-                medicinePrice:
+                rating:
                   type: number
-                  description: Price of the medicine (optional)
-                movingPrice:
-                  type: number
-                  description: Price of the moving service (optional)
+                  description: Rating for the appointment
+                comment:
+                  type: string
+                  description: Comment for the appointment
       responses:
-        201:
-          description: Bill created successfully
+        '201':
+          description: Feedback created successfully
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  code:
+                  message:
                     type: string
-                    example: "Tạo hóa đơn thành công"
-                  bill:
-                    type: object
-                    properties:
-                      appointmentId:
-                        type: string
-                        description: ID of the appointment
-                      customerId:
-                        type: string
-                        description: ID of the customer
-                      doctorId:
-                        type: string
-                        description: ID of the doctor
-                      serviceId:
-                        type: string
-                        description: ID of the service
-                      paymentId:
-                        type: string
-                        description: ID of the payment
-                      appointmentDate:
-                        type: string
-                        format: date-time
-                        description: Date of the appointment
-                      servicePrice:
-                        type: number
-                        description: Price of the service
-                      medicinePrice:
-                        type: number
-                        description: Price of the medicine (optional)
-                      totalPrice:
-                        type: number
-                        description: Total price
-                      status:
-                        type: string
-                        enum: ["Đang xử lý", "Hoàn thành", "Lỗi thanh toán", "Hủy"]
-                        description: Status of the bill
-                      paymentMethod:
-                        type: string
-                        enum: ["vnpay"]
-                        description: Payment method
-                      doctorName:
-                        type: string
-                        description: Name of the doctor
-                      customerName:
-                        type: string
-                        description: Name of the customer
-                      serviceName:
-                        type: string
-                        description: Name of the service
-                      typeOfConsulting:
-                        type: string
-                        description: Type of consulting
-                      createdAt:
-                        type: string
-                        format: date-time
-                        description: Creation timestamp
-                      updatedAt:
-                        type: string
-                        format: date-time
-                        description: Last update timestamp
-                  payment:
-                    type: object
-                    properties:
-                      orderId:
-                        type: string
-                        description: Unique order identifier
-                      amount:
-                        type: number
-                        description: Payment amount
-                      orderInfo:
-                        type: string
-                        description: Information about the order
-                      orderType:
-                        type: string
-                        description: Type of the order
-                      transactionNo:
-                        type: string
-                        description: Transaction number (optional)
-                      transactionStatus:
-                        type: string
-                        enum: ['pending', 'success', 'failed']
-                        description: Status of the transaction
-                      paymentMethod:
-                        type: string
-                        enum: ['vnpay']
-                        description: Payment method
-                      paymentDate:
-                        type: string
-                        format: date-time
-                        description: Date of payment
-                      createdAt:
-                        type: string
-                        format: date-time
-                        description: Creation timestamp
-                      updatedAt:
-                        type: string
-                        format: date-time
-                        description: Last update timestamp
-        400:
-          description: Bad Request (e.g., missing fullName)
+                    example: Đánh giá đã được gửi thành công
+                  data:
+                    $ref: '#/components/schemas/Feedback'
+        '400':
+          description: Missing required fields
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  error:
+                  message:
                     type: string
-                    example: "Tên bác sĩ không được để trống"
-        404:
-          description: Appointment, doctor, or customer not found
+        '401':
+          description: Unauthorized
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  error:
+                  message:
                     type: string
-                    example: "Không tìm thấy thông tin bác sĩ, khách hàng hoặc dịch vụ"
-        500:
+        '500':
           description: Server error
           content:
             application/json:
@@ -671,205 +2968,46 @@ paths:
                 properties:
                   message:
                     type: string
-                    example: "Lỗi server"
-                  error:
-                    type: string
-                    example: "Detailed error message"
-  /api/bills/update-status:
-    patch:
-      summary: Update bill status (MANAGER, STAFF)
-      tags: [Bills]
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - billId
-                - status
-              properties:
-                billId:
-                  type: string
-                status:
-                  type: string
-                  enum: [Đang xử lý, Hoàn thành, Lỗi thanh toán, Hủy]
-      responses:
-        200:
-          description: Bill status updated successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Cập nhật trạng thái thành công"
-                  bill:
-                    type: object
-                    properties:
-                      appointmentId:
-                        type: string
-                        description: ID of the appointment
-                      customerId:
-                        type: string
-                        description: ID of the customer
-                      doctorId:
-                        type: string
-                        description: ID of the doctor
-                      serviceId:
-                        type: string
-                        description: ID of the service
-                      paymentId:
-                        type: string
-                        description: ID of the payment
-                      appointmentDate:
-                        type: string
-                        format: date-time
-                        description: Date of the appointment
-                      servicePrice:
-                        type: number
-                        description: Price of the service
-                      medicinePrice:
-                        type: number
-                        description: Price of the medicine (optional)
-                      totalPrice:
-                        type: number
-                        description: Total price
-                      status:
-                        type: string
-                        enum: ["Đang xử lý", "Hoàn thành", "Lỗi thanh toán", "Hủy"]
-                        description: Status of the bill
-                      paymentMethod:
-                        type: string
-                        enum: ["vnpay"]
-                        description: Payment method
-                      doctorName:
-                        type: string
-                        description: Name of the doctor
-                      customerName:
-                        type: string
-                        description: Name of the customer
-                      serviceName:
-                        type: string
-                        description: Name of the service
-                      typeOfConsulting:
-                        type: string
-                        description: Type of consulting
-                      createdAt:
-                        type: string
-                        format: date-time
-                        description: Creation timestamp
-                      updatedAt:
-                        type: string
-                        format: date-time
-                        description: Last update timestamp
-        404:
-          description: Bill not found
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Không tìm thấy hóa đơn"
-        500:
-          description: Server error
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: "Lỗi server"
-                  error:
-                    type: string
-                    example: "Detailed error message"
-  /api/bills/customer/{customerId}:
+  /api/feedback/doctor/{doctorId}:
     get:
-      summary: Get bills by customer ID (ALL EXCEPT GUEST)
-      tags: [Bills]
+      summary: Get feedbacks by doctor ID
+      tags: [Feedback]
       security:
         - bearerAuth: []
       parameters:
         - in: path
-          name: customerId
+          name: doctorId
           required: true
           schema:
             type: string
-          description: ID of the customer
+          description: ID of the doctor
       responses:
-        200:
-          description: List of bills for the customer
+        '200':
+          description: List of feedbacks for the doctor
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    appointmentId:
-                      type: string
-                      description: ID of the appointment
-                    customerId:
-                      type: string
-                      description: ID of the customer
-                    doctorId:
-                      type: string
-                      description: ID of the doctor
-                    serviceId:
-                      type: string
-                      description: ID of the service
-                    paymentId:
-                      type: string
-                      description: ID of the payment
-                    appointmentDate:
-                      type: string
-                      format: date-time
-                      description: Date of the appointment
-                    servicePrice:
-                      type: number
-                      description: Price of the service
-                    medicinePrice:
-                      type: number
-                      description: Price of the medicine (optional)
-                    totalPrice:
-                      type: number
-                      description: Total price
-                    status:
-                      type: string
-                      enum: ["Đang xử lý", "Hoàn thành", "Lỗi thanh toán", "Hủy"]
-                      description: Status of the bill
-                    paymentMethod:
-                      type: string
-                      enum: ["vnpay"]
-                      description: Payment method
-                    doctorName:
-                      type: string
-                      description: Name of the doctor
-                    customerName:
-                      type: string
-                      description: Name of the customer
-                    serviceName:
-                      type: string
-                      description: Name of the service
-                    typeOfConsulting:
-                      type: string
-                      description: Type of consulting
-                    createdAt:
-                      type: string
-                      format: date-time
-                      description: Creation timestamp
-                    updatedAt:
-                      type: string
-                      format: date-time
-                      description: Last update timestamp
-        400:
-          description: Invalid customerId format
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        customerName:
+                          type: string
+                        serviceName:
+                          type: string
+                        feedbackDate:
+                          type: string
+                        rating:
+                          type: number
+                        comment:
+                          type: string
+        '404':
+          description: No feedbacks found
           content:
             application/json:
               schema:
@@ -877,8 +3015,7 @@ paths:
                 properties:
                   message:
                     type: string
-                    example: "Invalid customerId format"
-        500:
+        '500':
           description: Server error
           content:
             application/json:
@@ -887,113 +3024,3 @@ paths:
                 properties:
                   message:
                     type: string
-                    example: "Lỗi server"
-                  error:
-                    type: string
-                    example: "Detailed error message"
-  /api/vnpay/create_payment_url:
-    post:
-      summary: Create a VNPay payment URL (CUSTOMER, STAFF, MANAGER)
-      tags: [VNPay]
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - amount
-                - orderDescription
-              properties:
-                amount:
-                  type: number
-                  description: The amount to be paid
-                orderDescription:
-                  type: string
-                  description: Description of the order
-                orderType:
-                  type: string
-                  description: Type of the order
-                  default: 'other'
-                language:
-                  type: string
-                  description: Language for the payment page
-                  default: 'vn'
-            example:
-              amount: 100000
-              orderDescription: "Thanh toán dịch vụ khám bệnh cho cá Koi"
-              orderType: "billpayment"
-              language: "vn"
-      responses:
-        200:
-          description: Successfully created payment URL
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: number
-                  paymentUrl:
-                    type: string
-        400:
-          description: Bad request
-        404:
-          description: Bill not found
-        500:
-          description: Server error
-
-  /api/bills/customer/{customerId}:
-    get:
-      summary: Get bills for a customer (CUSTOMER)
-      tags: [Bills]
-      security:
-        - bearerAuth: []
-      parameters:
-        - in: path
-          name: customerId
-          required: true
-          schema:
-            type: string
-          description: ID of the customer
-      responses:
-        200:
-          description: Bills retrieved successfully
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    _id:
-                      type: string
-                    appointmentId:
-                      type: string
-                    paymentId:
-                      type: string
-                    appointmentDate:
-                      type: string
-                      format: date-time
-                    servicePrice:
-                      type: number
-                    movingPrice:
-                      type: number
-                    totalPrice:
-                      type: number
-                    status:
-                      type: string
-                      enum: ["Đang xử lý", "Hoàn thành", "Lỗi thanh toán", "Hủy"]
-                    paymentMethod:
-                      type: string
-                      enum: ["vnpay"]
-                    createdAt:
-                      type: string
-                      format: date-time
-                    updatedAt:
-                      type: string
-                      format: date-time
-        400:
-          description: Bad request
-        500:
-          description: Internal server error

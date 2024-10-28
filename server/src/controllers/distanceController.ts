@@ -17,7 +17,6 @@ interface Location {
 interface NominatimResponse {
     lat: string;
     lon: string;
-    // Thêm các trường khác nếu cần
 }
 
 // API Controllers

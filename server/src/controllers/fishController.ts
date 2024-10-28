@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import Fish from "../models/Fish";
 import { Customer, User } from "../models";
+import Fish from "../models/Fish";
 
 export const getAllFish = async (req: Request, res: Response) => {
   try {
