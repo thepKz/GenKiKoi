@@ -11,12 +11,11 @@ import {
   message,
   Row,
   Select,
-  Spin
+  Spin,
 } from "antd";
 
-import axios from "axios";
 import dayjs from "dayjs";
-import { debounce } from "lodash"; // Thêm import này
+import { debounce } from "lodash";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -61,6 +60,7 @@ const Booking = () => {
   const [destination] = useState<L.LatLngExpression>([10.8415, 106.8099]); // Tọa độ cố định của Genkikoi
   const [route, setRoute] = useState<L.LatLngExpression[] | null>(null);
   const [distance, setDistance] = useState<string | null>(null);
+  const [duration, setDuration] = useState<string | null>(null);
   const [movingPrice, setMovingPrice] = useState<number>(0);
 
   const [isAddressDisabled, setIsAddressDisabled] = useState(false);
@@ -254,31 +254,19 @@ const Booking = () => {
 
   // Cập nhật hàm handleAddressSearch với debounce
   const handleAddressSearch = debounce(async (value: string) => {
-    console.log("Search value:", value);
     if (value.length > 2) {
       try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_API_URL}/api/distance/autocomplete`,
-          {
-            params: {
-              query: value,
-            },
-            headers: {
-              Accept: "application/json",
-            },
-          },
-        );
+        const api = `/api/distance/autocomplete`;
+        const res = await handleAPI(api, undefined, "GET", { query: value });
 
-        console.log("API Response:", response.data);
-
-        if (response.data && Array.isArray(response.data.data)) {
-          setAddressOptions(response.data.data);
+        if (Array.isArray(res.data)) {
+          setAddressOptions(res.data);
         } else {
-          console.log("Invalid response format:", response.data);
           setAddressOptions([]);
         }
-      } catch (error: unknown) {
-        console.error("Error details:", (error as { response?: { data: unknown } }).response?.data);
+      } catch (error: any) {
+        console.log(error);
+        message.error(error.message || "Có lỗi xảy ra khi tìm kiếm địa chỉ");
         setAddressOptions([]);
       }
     } else {
@@ -289,20 +277,19 @@ const Booking = () => {
   // Cập nhật hàm handleAddressSelect
   const handleAddressSelect = async (value: string) => {
     try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/api/distance/calculate-route?address=${encodeURIComponent(value)}`,
-      );
-      const { origin, route, distance } = response.data;
+      const api = `/api/distance/calculate-route`;
+      const { data } = await handleAPI(api, undefined, "GET", { address: value });
 
-      if (origin && route) {
-        setOrigin([origin.lat, origin.lon]);
-        setRoute(route); // Đây sẽ là mảng các tọa độ đã được decode
-        setDistance(distance);
-        form.setFieldsValue({ address: value });
+      if (data.origin && data.route) {
+        setOrigin([data.origin.lat, data.origin.lon]);
+        setRoute(data.route);
+        setDistance(data.distance);
+        setDuration(data.duration);
+        form.setFieldsValue({ detailAddress: value });
       }
-    } catch (error) {
-      console.error("Error calculating route:", error);
-      message.error("Không thể tính toán tuyến đường");
+    } catch (error: any) {
+      console.log(error);
+      message.error(error.message || "Không thể tính toán tuyến đường");
     }
   };
 
@@ -518,9 +505,7 @@ const Booking = () => {
                           onSelect={handleAddressSelect}
                           placeholder="Nhập địa chỉ"
                           style={{ width: "100%" }}
-                          notFoundContent={
-                            "Nhập ít nhất 3 ký tự"
-                          }
+                          notFoundContent={"Nhập ít nhất 3 ký tự"}
                           defaultActiveFirstOption={true}
                           allowClear={true}
                           disabled={isAddressDisabled}
