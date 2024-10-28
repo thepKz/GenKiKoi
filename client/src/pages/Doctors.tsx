@@ -36,6 +36,9 @@ const Doctors = () => {
   const handleViewDetails = (doctorId: string) => {
     navigate(`/doctors/${doctorId}`);
   };
+  const handleBooking = () => {
+    navigate(`/booking`);
+  };
 
   return (
     <div>
@@ -99,7 +102,7 @@ const Doctors = () => {
                   <Button onClick={() => handleViewDetails(doctor.id)} type="link" className="mt-4 text-white hover:text-blue-300">
                     Xem chi tiết <ArrowRight2 size={18} />
                   </Button>
-                  <Button onClick={() => handleViewDetails(doctor.id)} type="link" className="mt-4 text-white hover:text-blue-300">
+                  <Button onClick={() => handleBooking()} type="link" className="mt-4 text-white hover:text-blue-300">
                     Đặt lịch <ArrowRight2 size={18} />
                   </Button> 
                 </Card>

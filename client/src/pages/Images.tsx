@@ -34,6 +34,10 @@ import Center24 from "../assets/center-10.png"; // ca benh
 import Center25 from "../assets/center-11.webp"; // ca benh
 
 const Images = () => {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+  
   const [selectedImage, setSelectedImage] = useState<number | null>(null);
   const [filter] = useState("all");
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -100,9 +104,9 @@ const Images = () => {
   }, [selectedImage, isFullscreen]);
 
   return (
-    <div className="container mx-auto bg-gradient-to-b from-blue-50 to-white px-4 py-8">
+    <div className="container mx-auto bg-gradient-to-b from-blue-50 to-white px-4 pt-6 pb-12">
       <div style={{ height: "100px" }}></div>
-      <h1 className="mb-8 text-center text-4xl font-bold text-indigo-800">
+      <h1 className="mb-8 text-center text-4xl font-bold text-blue-primary">
         Bộ Sưu Tập Hình Ảnh Trung Tâm Thú Y Cá Koi
       </h1>
 
