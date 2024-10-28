@@ -1,6 +1,6 @@
-import { Breadcrumb } from "antd";
+import { Breadcrumb, message, Spin } from "antd";
 import { Calendar } from "iconsax-react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { ScheduleXCalendar, useCalendarApp } from "@schedule-x/react";
 import {
   createViewDay,
@@ -8,24 +8,59 @@ import {
   createViewMonthGrid,
 } from "@schedule-x/calendar";
 import { createEventModalPlugin } from "@schedule-x/event-modal";
+import { useEffect, useState } from "react";
+import { handleAPI } from "../../apis/handleAPI";
 
 const DoctorCalendar = () => {
+  const { pathname } = useLocation();
+  const doctorId = pathname.split("/")[3];
+  const [events, setEvents] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [doctorName, setDoctorName] = useState<string>("");
+
   const calendar = useCalendarApp({
     views: [createViewWeek(), createViewDay(), createViewMonthGrid()],
-    events: [
-      {
-        id: 1,
-        start: "2024-10-14 09:00",
-        end: "2024-10-14 11:00",
-        description: "Ca sáng",
-      },
-    ],
     dayBoundaries: {
       start: "07:00",
       end: "22:00",
     },
     plugins: [createEventModalPlugin()],
   });
+
+  useEffect(() => {
+    const getSchedule = async () => {
+      const api = `/api/doctorSchedules/${doctorId}/view-calendar`;
+      try {
+        setIsLoading(true);
+        const res = await handleAPI(api, undefined, "GET");
+        setEvents(res.data.schedules);
+        setDoctorName(res.data.doctorName);
+      } catch (error: any) {
+        console.log(error);
+        message.error(error.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    getSchedule();
+  }, [doctorId]);
+
+  useEffect(() => {
+    if (events && events.length > 0) {
+      events.forEach((event) => {
+        calendar.events.add(event);
+      });
+    }
+  }, [events]);
+
+  if (isLoading) {
+    return (
+      <div className="container mx-auto my-5 flex h-screen items-center justify-center rounded-md bg-white p-5 shadow-sm lg:w-[95%]">
+        <Spin size="large" />
+      </div>
+    );
+  }
+
   return (
     <div className="section">
       <Breadcrumb
@@ -45,7 +80,7 @@ const DoctorCalendar = () => {
             title: <Link to="/staff/doctor-calendar">Danh sách bác sĩ</Link>,
           },
           {
-            title: "Bs. Đỗ Quang Dũng",
+            title: `Bs. ${doctorName}`,
           },
         ]}
       />

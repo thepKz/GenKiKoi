@@ -1,14 +1,85 @@
-import { Avatar, Button, Col, Divider, Form, Input, Row, Select } from "antd";
+import {
+  Avatar,
+  Button,
+  Col,
+  Divider,
+  Form,
+  Input,
+  message,
+  Row,
+  Select,
+  Spin,
+} from "antd";
 import { HeaderPage } from "../../components";
 import { User } from "iconsax-react";
 
-const { TextArea } = Input;
-
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { IAuth } from "../../types";
+import { useDispatch, useSelector } from "react-redux";
+import { handleAPI } from "../../apis/handleAPI";
+import { uploadFile } from "../../utils";
+import { updateAuth } from "../../redux/reducers/authReducer";
 
 const Profile = () => {
+  const auth: IAuth = useSelector((state: any) => state.authReducer.data);
+
   const [form] = Form.useForm();
   const inpRef = useRef<any>();
+
+  const dispatch = useDispatch();
+
+  const [file, setFile] = useState(null);
+
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoadingForm, setIsLoadingForm] = useState(false);
+  const [profile, setProfile] = useState<any>(null);
+
+  useEffect(() => {
+    const getProfile = async () => {
+      try {
+        setIsLoading(true);
+        const api = `/api/staffs/${auth.adminId}`;
+        const res = await handleAPI(api, undefined, "GET");
+
+        setProfile(res.data);
+      } catch (error) {
+        message.error("Có lỗi khi lấy thông tin nhân viên");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    getProfile();
+  }, [auth.adminId]);
+
+  useEffect(() => {
+    if (profile) {
+      form.setFieldsValue(profile);
+    }
+  }, [profile]);
+
+  const handleSubmit = async (values: any) => {
+    try {
+      setIsLoadingForm(true);
+      const api = `/api/staffs/${auth.adminId}`;
+      if (file) {
+        values.photoUrl = await uploadFile(file, "staffs");
+      }
+      const res: any = await handleAPI(api, values, "PATCH");
+      dispatch(updateAuth({ photoUrl: res.data.photoUrl }));
+
+      message.success(res.message);
+    } catch (error) {
+      console.log(error);
+      message.error("Có lỗi xảy ra khi cập nhật thông tin");
+    } finally {
+      setIsLoadingForm(false);
+    }
+  };
+
+  if (isLoading) {
+    return <Spin size="large" />;
+  }
+
   return (
     <div className="section">
       <HeaderPage heading="Hồ sơ cá nhân" />
@@ -16,15 +87,29 @@ const Profile = () => {
         <div className="flex items-center gap-10">
           <div className="">
             <label htmlFor="inpFile">
-              <Avatar
-                shape="square"
-                style={{
-                  backgroundColor: "transparent",
-                  border: "2px dashed #ccc",
-                }}
-                size={150}
-                icon={<User color="#ccc" size={50} />}
-              />
+              {file ? (
+                <Avatar
+                  shape="square"
+                  style={{
+                    backgroundColor: "transparent",
+                    border: "2px dashed #ccc",
+                  }}
+                  size={150}
+                  src={URL.createObjectURL(file)}
+                  icon={<User color="#ccc" size={50} />}
+                />
+              ) : (
+                <Avatar
+                  shape="square"
+                  style={{
+                    backgroundColor: "transparent",
+                    border: "2px dashed #ccc",
+                  }}
+                  size={150}
+                  src={profile?.photoUrl}
+                  icon={<User color="#ccc" size={50} />}
+                />
+              )}
             </label>
           </div>
           <div className="">
@@ -39,7 +124,13 @@ const Profile = () => {
       <div className="flex h-[calc(100vh-310px)] flex-col justify-between">
         <div className="mx-24">
           <Divider />
-          <Form form={form} size="large" layout="vertical">
+          <Form
+            form={form}
+            onFinish={handleSubmit}
+            disabled={isLoadingForm}
+            size="large"
+            layout="vertical"
+          >
             <Row gutter={32}>
               <Col span={12}>
                 <Form.Item name="email" label="Email" required>
@@ -84,12 +175,18 @@ const Profile = () => {
                     </Form.Item>
                   </Col>
                   <Col span={12}>
-                    <Form.Item name="gender" label="Giới tính">
+                    <Form.Item
+                      rules={[
+                        { required: true, message: "Vui lòng chọn giới tính" },
+                      ]}
+                      name="gender"
+                      label="Giới tính"
+                    >
                       <Select
                         placeholder="Giới tính"
                         options={[
-                          { value: "nữ", label: "Nữ" },
                           { value: "nam", label: "Nam" },
+                          { value: "nữ", label: "Nữ" },
                         ]}
                       />
                     </Form.Item>
@@ -130,7 +227,16 @@ const Profile = () => {
                     ]}
                   />
                 </Form.Item>
-                <Form.Item name="workShift" label="Ca làm">
+                <Form.Item
+                  rules={[
+                    {
+                      required: true,
+                      message: "Vui lòng chọn ca làm",
+                    },
+                  ]}
+                  name="workShift"
+                  label="Ca làm"
+                >
                   <Select
                     placeholder="Ca làm"
                     options={[
@@ -147,6 +253,7 @@ const Profile = () => {
         <div className="mx-24 text-right">
           <Button
             size="large"
+            loading={isLoadingForm}
             type="primary"
             className="mt-3 w-fit"
             onClick={() => form.submit()}
@@ -163,7 +270,7 @@ const Profile = () => {
           type="file"
           accept="image/*"
           id="inpFile"
-          // onChange={(e: any) => setFile(e.target.files[0])}
+          onChange={(e: any) => setFile(e.target.files[0])}
         />
       </div>
     </div>

@@ -11,7 +11,6 @@ import {
 } from "../controllers/authController";
 
 const router = express.Router();
-console.log("Log message on backend");
 router.post("/register", register);
 router.post("/verify-email", verifyEmail);
 router.post("/new-verify", sendNewVerifyEmail);

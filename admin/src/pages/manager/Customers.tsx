@@ -72,7 +72,7 @@ const Customers = () => {
       width: 80,
       render: (_text: any, record: any) => (
         <div className="text-center">
-          <Link to={`/staff/customers/${record.id}/appointments`}>
+          <Link to={`/manager/customers/${record.id}/appointments`}>
             <Button type="primary">Xem chi tiết</Button>
           </Link>
         </div>
@@ -88,7 +88,7 @@ const Customers = () => {
         items={[
           {
             title: (
-              <Link to="/staff/customers">
+              <Link to="/manager/customers">
                 <div className="flex items-center gap-2">
                   <CalendarSearch size={20} />
                   Cuộc hẹn khách hàng

@@ -76,6 +76,8 @@ const Booking = () => {
   // Thêm state để theo dõi input value
   const [searchValue, setSearchValue] = useState<string>("");
 
+  const [isAddressDisabled, setIsAddressDisabled] = useState(false);
+
   useEffect(() => {
     const res = VietNamProvinces.map((item: any) => ({
       value: item.Name,
@@ -304,14 +306,17 @@ const Booking = () => {
     console.log("Search value:", value);
     if (value.length > 2) {
       try {
-        const response = await axios.get(`http://localhost:5000/api/distance/autocomplete`, {
-          params: {
-            query: value,
+        const response = await axios.get(
+          `${import.meta.env.VITE_API_URL}/api/distance/autocomplete`,
+          {
+            params: {
+              query: value,
+            },
+            headers: {
+              Accept: "application/json",
+            },
           },
-          headers: {
-            Accept: "application/json",
-          },
-        });
+        );
 
         console.log("API Response:", response.data);
 
@@ -334,7 +339,7 @@ const Booking = () => {
   const handleAddressSelect = async (value: string) => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/distance/calculate-route?address=${encodeURIComponent(value)}`,
+        `${import.meta.env.VITE_API_URL}/api/distance/calculate-route?address=${encodeURIComponent(value)}`,
       );
       const { origin, route, distance, duration } = response.data;
 
@@ -348,6 +353,15 @@ const Booking = () => {
     } catch (error) {
       console.error("Error calculating route:", error);
       message.error("Không thể tính toán tuyến đường");
+    }
+  };
+
+  const handleConsultingTypeChange = (value: string) => {
+    if (value === "Tư vấn trực tuyến" || value === "Tại phòng khám") {
+      setIsAddressDisabled(true);
+      form.setFieldsValue({ detailAddress: "" });
+    } else {
+      setIsAddressDisabled(false);
     }
   };
 
@@ -443,6 +457,7 @@ const Booking = () => {
                       placeholder="Chọn hình thức khám"
                       style={{ width: "100%" }}
                       options={consultingOptions}
+                      onChange={handleConsultingTypeChange}
                     />
                   </Form.Item>
                   <div className="mt-20">
@@ -526,104 +541,6 @@ const Booking = () => {
                   </Form.Item>
                 </div>
                 <div className="lg:w-[45%]">
-                  {/* <Row>
-                    <Col span={24}>
-                      <Form.Item
-                        required
-                        name="fullName"
-                        label="Họ và tên"
-                      >
-                        <Input
-                          defaultValue={profile?.fullName}
-                          placeholder="Họ và tên"
-                        />
-                      </Form.Item>
-                    </Col>
-                  </Row>
-                  <Row gutter={24}>
-                    <Col span={12}>
-                      <Form.Item
-                        required
-                        name="phoneNumber"
-                        label="Số điện thoại"
-                      >
-                        <Input
-                          className="addon-input"
-                          addonBefore="+84"
-                          placeholder="Số điện thoại"
-                          defaultValue={profile?.phoneNumber}
-                        />
-                      </Form.Item>
-                    </Col>
-                    <Col span={12}>
-                      <Form.Item
-                        name="gender"
-                        label="Giới tính"
-                      >
-                        <Select
-                          placeholder="Giới tính"
-                          defaultValue={
-                            profile?.gender === undefined
-                              ? null
-                              : profile?.gender === true
-                                ? "Nam"
-                                : "Nữ"
-                          }
-                          options={[
-                            { value: "nam", label: "Nam" },
-                            { value: "nữ", label: "Nữ" },
-                          ]}
-                        />
-                      </Form.Item>
-                    </Col>
-                  </Row>
-                  <Row gutter={24}>
-                    <Col span={8}>
-                      <Form.Item
-                        name="city"
-                        label="Tỉnh"
-                      >
-                        <Select
-                          placeholder="Thành phố"
-                          value={city}
-                          defaultValue={profile?.city}
-                          onChange={(e) => {
-                            setCity(e);
-                          }}
-                          options={cities}
-                        />
-                      </Form.Item>
-                    </Col>
-                    <Col span={8}>
-                      <Form.Item
-                        name="district"
-                        label="Quận / Huyện"
-                      >
-                        <Select
-                          placeholder="Quận / Huyện"
-                          defaultValue={profile?.district}
-                          onChange={(e) => {
-                            setDistrict(e);
-                          }}
-                          options={districts}
-                        />
-                      </Form.Item>
-                    </Col>
-                    <Col span={8}>
-                      <Form.Item
-                        name="ward"
-                        label="Phường / Xã"
-                      >
-                        <Select
-                          placeholder="Phường / Xã"
-                          defaultValue={profile?.ward}
-                          value={ward}
-                          onChange={(e) => setWard(e)}
-                          options={wards}
-                        />
-                      </Form.Item>
-                    </Col>
-                  </Row> */}
                   <Row>
                     <Col span={24}>
                       <Form.Item
@@ -659,6 +576,7 @@ const Booking = () => {
                           }
                           defaultActiveFirstOption={true}
                           allowClear={true}
+                          disabled={isAddressDisabled}
                         />
                       </Form.Item>
                     </Col>
@@ -675,6 +593,14 @@ const Booking = () => {
                 </div>
               </div>
             </Form>
+            <div className="">
+              <h1 className="text-2xl font-semibold text-white">Lưu ý</h1>
+              <p className="w-1/2 text-justify text-white">
+                Khi quý khách thanh toán thành công cho dịch vụ tư vấn trực tuyến, đường link tham
+                gia cuộc hẹn sẽ được gửi qua email trong vòng 2 giờ. <br />
+                Xin quý khách vui lòng kiểm tra email để nhận thông tin cuộc hẹn!
+              </p>
+            </div>
           </ConfigProvider>
           <div className="text-right">
             <ConfigProvider

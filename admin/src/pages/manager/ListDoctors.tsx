@@ -69,7 +69,7 @@ const ListDoctors = () => {
         items={[
           {
             title: (
-              <Link to="/staff/doctor-calendar">
+              <Link to="/manager/doctor-calendar">
                 <div className="flex items-center gap-2">
                   <Calendar size={20} />
                   Lịch làm việc của bác sĩ
@@ -96,6 +96,7 @@ const ListDoctors = () => {
                       ? "https://placehold.co/150x150"
                       : doctor.photoUrl
                   }
+                  alt=""
                   className="h-full w-full object-cover"
                 />
               </div>
@@ -141,10 +142,12 @@ const ListDoctors = () => {
                   </p>
                 </div>
                 <div className="flex w-1/5 flex-col gap-2 text-right">
-                  <Link to={`/staff/doctor-calendar/${doctor.doctorId}`}>
+                  <Link to={`/manager/doctor-calendar/${doctor.doctorId}`}>
                     <Button type="primary">Xem chi tiết</Button>
                   </Link>
-                  <Link to={`/staff/doctor-calendar/assign/${doctor.doctorId}`}>
+                  <Link
+                    to={`/manager/doctor-calendar/assign/${doctor.doctorId}`}
+                  >
                     <Button>Chỉnh lịch làm việc</Button>
                   </Link>
                 </div>

@@ -3,7 +3,6 @@ import { IDoctor } from "./Doctor";
 
 export interface IDoctorSchedule extends Document {
   doctorId: IDoctor; // ID của bác sĩ
-  weeklySchedule: any[];
   weekSchedule: Array<{
     dayOfWeek: string;
     slots: Array<{

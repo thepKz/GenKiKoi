@@ -8,6 +8,7 @@ export interface IUser {
   phoneNumber?: string;
   role: "customer" | "staff" | "doctor" | "manager";
   gender?: "nam" | "nữ";
+  isDisabled: boolean;
 }
 
 const userSchema = new mongoose.Schema<IUser>(
@@ -26,6 +27,10 @@ const userSchema = new mongoose.Schema<IUser>(
     gender: {
       type: String,
       enum: ["nam", "nữ"],
+    },
+    isDisabled: {
+      type: Boolean,
+      default: false,
     },
   },
   { timestamps: true }

@@ -33,6 +33,38 @@ export const getAllStaffs = async (req: Request, res: Response) => {
   }
 };
 
+export const getStaffByStaffId = async (req: Request, res: Response) => {
+  try {
+    const { staffId } = req.params;
+
+    const staff = await Staff.findById(staffId)
+      .populate({
+        path: "userId",
+        select: "fullName gender phoneNumber email photoUrl",
+      })
+      .select("workShift position");
+
+    if (!staff) {
+      return res.status(404).json({ message: "Không tìm thấy nhân viên" });
+    }
+
+    const formattedData = {
+      id: staff._id,
+      fullName: staff.userId.fullName,
+      gender: staff.userId.gender,
+      phoneNumber: staff.userId.phoneNumber,
+      email: staff.userId.email,
+      photoUrl: staff.userId.photoUrl,
+      workShift: staff.workShift,
+      position: staff.position,
+    };
+
+    return res.status(200).json({ data: formattedData });
+  } catch (error: any) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
 /**
  * API: /api/staffs/
  * Method: POST
@@ -124,14 +156,16 @@ export const addNewStaff = async (req: Request, res: Response) => {
  */
 export const updateStaffById = async (req: Request, res: Response) => {
   try {
-    const staffId = req.params.id;
-    const { fullName, gender, position, email, workShift } = req.body;
-
-    // if (!fullName || !gender || !position || !email || !workShift) {
-    //   return res
-    //     .status(400)
-    //     .json({ message: "Vui lòng cung cấp đầy đủ thông tin" });
-    // }
+    const { staffId } = req.params;
+    const {
+      fullName,
+      gender,
+      position,
+      email,
+      workShift,
+      photoUrl,
+      phoneNumber,
+    } = req.body;
 
     const existsStaff = await Staff.findById(staffId);
 
@@ -158,7 +192,7 @@ export const updateStaffById = async (req: Request, res: Response) => {
 
     const updatedUser = await User.findByIdAndUpdate(
       existsStaff.userId,
-      { fullName, email, gender },
+      { fullName, email, gender, photoUrl, phoneNumber },
       { new: true, runValidators: true }
     );
 
@@ -172,6 +206,7 @@ export const updateStaffById = async (req: Request, res: Response) => {
       _id: updatedStaff._id,
       fullName: updatedUser.fullName,
       gender: updatedUser.gender,
+      photoUrl: updatedUser.photoUrl,
       position: updatedStaff.position,
       email: updatedUser.email,
       workShift: updatedStaff.workShift,
@@ -194,7 +229,7 @@ export const updateStaffById = async (req: Request, res: Response) => {
  */
 export const deleteStaffById = async (req: Request, res: Response) => {
   try {
-    const staffId = req.params.id;
+    const { staffId } = req.params;
 
     await Staff.findByIdAndDelete(staffId);
 

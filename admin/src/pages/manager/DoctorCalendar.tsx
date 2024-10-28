@@ -1,40 +1,22 @@
+import { Breadcrumb, message, Spin } from "antd";
+import { Calendar } from "iconsax-react";
+import { Link, useLocation } from "react-router-dom";
 import { ScheduleXCalendar, useCalendarApp } from "@schedule-x/react";
 import {
   createViewDay,
   createViewWeek,
   createViewMonthGrid,
 } from "@schedule-x/calendar";
-
-import "@schedule-x/theme-default/dist/index.css";
 import { createEventModalPlugin } from "@schedule-x/event-modal";
 import { useEffect, useState } from "react";
 import { handleAPI } from "../../apis/handleAPI";
-import { IAuth } from "../../types";
-import { useSelector } from "react-redux";
-import { message, Spin } from "antd";
 
 const DoctorCalendar = () => {
-  const auth: IAuth = useSelector((state: any) => state.authReducer.data);
-
+  const { pathname } = useLocation();
+  const doctorId = pathname.split("/")[3];
   const [events, setEvents] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    const getSchedule = async () => {
-      const api = `/api/doctorSchedules/${auth.adminId}/view-calendar`;
-      try {
-        setIsLoading(true);
-        const res = await handleAPI(api, undefined, "GET");
-        setEvents(res.data.schedules);
-      } catch (error: any) {
-        console.log(error);
-        message.error(error.message);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    getSchedule();
-  }, [auth.adminId]);
+  const [doctorName, setDoctorName] = useState<string>("");
 
   const calendar = useCalendarApp({
     views: [createViewWeek(), createViewDay(), createViewMonthGrid()],
@@ -44,6 +26,24 @@ const DoctorCalendar = () => {
     },
     plugins: [createEventModalPlugin()],
   });
+
+  useEffect(() => {
+    const getSchedule = async () => {
+      const api = `/api/doctorSchedules/${doctorId}/view-calendar`;
+      try {
+        setIsLoading(true);
+        const res = await handleAPI(api, undefined, "GET");
+        setEvents(res.data.schedules);
+        setDoctorName(res.data.doctorName);
+      } catch (error: any) {
+        console.log(error);
+        message.error(error.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    getSchedule();
+  }, [doctorId]);
 
   useEffect(() => {
     if (events && events.length > 0) {
@@ -63,7 +63,28 @@ const DoctorCalendar = () => {
 
   return (
     <div className="section">
-      <div className="doctor-view">
+      <Breadcrumb
+        separator=">"
+        items={[
+          {
+            title: (
+              <Link to="/manager/doctor-calendar">
+                <div className="flex items-center gap-2">
+                  <Calendar size={20} />
+                  Lịch làm việc của bác sĩ
+                </div>
+              </Link>
+            ),
+          },
+          {
+            title: <Link to="/manager/doctor-calendar">Danh sách bác sĩ</Link>,
+          },
+          {
+            title: `Bs. ${doctorName}`,
+          },
+        ]}
+      />
+      <div className="staff-view mt-2">
         <ScheduleXCalendar calendarApp={calendar} />
       </div>
     </div>

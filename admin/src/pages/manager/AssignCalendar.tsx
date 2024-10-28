@@ -15,7 +15,6 @@ import {
 } from "antd";
 import dayjs from "dayjs";
 import { Calendar as Cal, User } from "iconsax-react";
-
 import { Link, useLocation } from "react-router-dom";
 import { getValue } from "../../utils";
 import { useEffect, useState } from "react";
@@ -100,7 +99,7 @@ const AssignCalendar = () => {
           items={[
             {
               title: (
-                <Link to="/staff/doctor-calendar">
+                <Link to="/manager/doctor-calendar">
                   <div className="flex items-center gap-2">
                     <Cal size={20} />
                     Lịch làm việc của bác sĩ
@@ -110,7 +109,7 @@ const AssignCalendar = () => {
             },
             {
               title: (
-                <Link to="/staff/doctor-calendar">Chỉnh lịch làm việc</Link>
+                <Link to="/manager/doctor-calendar">Chỉnh lịch làm việc</Link>
               ),
             },
             {

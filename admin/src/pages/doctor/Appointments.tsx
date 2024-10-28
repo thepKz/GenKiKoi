@@ -36,8 +36,25 @@ const Appointments = () => {
         : "Xác nhận đây không phải sự nhầm lẫn",
       okText: "Đồng ý",
       cancelText: "Hủy",
-      onOk: () => {
-        console.log(checked, appointmentId);
+      onOk: async () => {
+        try {
+          const api = `/api/appointments/${appointmentId}/status`;
+          const status = checked ? "DONE" : "";
+
+          await handleAPI(api, { status }, "PATCH");
+
+          // Refresh danh sách cuộc hẹn
+          const appointmentsApi = `/api/appointments/doctors/${auth.adminId}`;
+          const res = await handleAPI(appointmentsApi, undefined, "GET");
+          setAppointments(res.data);
+
+          message.success(
+            `${checked ? "Hoàn thành" : "Hoàn tác"} dịch vụ thành công`,
+          );
+        } catch (error: any) {
+          console.log(error);
+          message.error(error.message || "Có lỗi xảy ra");
+        }
       },
     });
   };

@@ -64,9 +64,6 @@ const RecordDetail = () => {
             ),
           },
           {
-            title: <Link to="/doctor/customers">Hồ sơ bệnh án</Link>,
-          },
-          {
             title: (
               <Link to={`/doctor/customers/${customerId}/fishes`}>
                 Danh sách cá

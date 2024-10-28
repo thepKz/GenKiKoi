@@ -22,6 +22,13 @@ import {
   serviceRoutes,
   staffRoutes,
   userRoutes,
+  medicalRecordRoutes,
+  pondRoutes,
+  fishRoutes,
+  doctorScheduleRoutes,
+  feedbackRoutes,
+  customerRoutes,
+
 } from "./routes";
 
 const app = express();
@@ -60,6 +67,7 @@ app.get("/", (_req, res) => {
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use("/api/auth", authRoutes);
+app.use("/api/customers", customerRoutes);
 app.use("/api/appointments", appointmentRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/services", serviceRoutes);

@@ -115,8 +115,7 @@ export const updatePaymentById = async (req: Request, res: Response) => {
       }
 
       appointment.status = "Đã hủy";
-      appointment.notes =
-        "Quý khách sẽ được hoàn tiền theo chính sách của công ty!";
+      appointment.notes = "";
 
       await appointment.save();
     }

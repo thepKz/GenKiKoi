@@ -1,4 +1,4 @@
-import { Breadcrumb, Button, message, TableProps, Tag } from "antd";
+import { Breadcrumb, message, TableProps, Tag } from "antd";
 import { HeaderPage } from "../../components";
 import { CustomTable } from "../../share";
 import { Link, useLocation } from "react-router-dom";
@@ -76,7 +76,7 @@ const Appointments = () => {
         items={[
           {
             title: (
-              <Link to="/staff/customers">
+              <Link to="/manager/customers">
                 <div className="flex items-center gap-2">
                   <CalendarSearch size={20} />
                   Cuộc hẹn khách hàng
@@ -86,7 +86,7 @@ const Appointments = () => {
           },
           {
             title: (
-              <Link to={`/staff/customers/${customerId}/appointments`}>
+              <Link to={`/manager/customers/${customerId}/appointments`}>
                 <div className="flex items-center gap-2">
                   <Calendar size={20} />
                   Danh sách cuộc hẹn
