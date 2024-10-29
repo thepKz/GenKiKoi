@@ -14,7 +14,7 @@ export const getAllStaffs = async (req: Request, res: Response) => {
       .populate("userId", "fullName email gender")
       .select("startDate position workShift");
 
-    if (!staffs) {
+    if (!staffs || staffs.length === 0) {
       return res.status(404).json({ message: "Danh sách nhân viên trống!" });
     }
 
