@@ -121,202 +121,47 @@ const addDoctorSchedule = async () => {
       doctorId: "67015e789a7dce19f9fb0015", // Thay thế bằng ID thực của bác sĩ
       weekSchedule: [
         {
-          dayOfWeek: "23/10/2023", // Thứ Hai
+          dayOfWeek: "30/10/2024", // Thứ 7
           slots: [
             {
               slotTime: "8:00",
               isBooked: false,
-              appointmentId: null,
+              currentCount: 0,
             },
             {
               slotTime: "9:00",
               isBooked: false,
-              appointmentId: null,
+              currentCount: 0,
             },
             {
               slotTime: "10:00",
               isBooked: false,
-              appointmentId: null,
+              currentCount: 0,
             },
             {
               slotTime: "11:00",
               isBooked: false,
-              appointmentId: null,
-            },
-            {
-              slotTime: "12:00",
-              isBooked: false,
-              appointmentId: null,
+              currentCount: 0,
             },
             {
               slotTime: "13:00",
               isBooked: false,
-              appointmentId: null,
+              currentCount: 0,
             },
             {
               slotTime: "14:00",
               isBooked: false,
-              appointmentId: null,
+              currentCount: 0,
             },
             {
               slotTime: "15:00",
               isBooked: false,
-              appointmentId: null,
+              currentCount: 0,
             },
             {
               slotTime: "16:00",
               isBooked: false,
-              appointmentId: null,
-            },
-          ],
-        },
-        {
-          dayOfWeek: "25/10/2023", // Thứ 4
-          slots: [
-            {
-              slotTime: "8:00",
-              isBooked: false,
-              appointmentId: null,
-            },
-            {
-              slotTime: "9:00",
-              isBooked: false,
-              appointmentId: null,
-            },
-            {
-              slotTime: "10:00",
-              isBooked: false,
-              appointmentId: null,
-            },
-            {
-              slotTime: "11:00",
-              isBooked: false,
-              appointmentId: null,
-            },
-            {
-              slotTime: "12:00",
-              isBooked: false,
-              appointmentId: null,
-            },
-            {
-              slotTime: "13:00",
-              isBooked: false,
-              appointmentId: null,
-            },
-            {
-              slotTime: "14:00",
-              isBooked: false,
-              appointmentId: null,
-            },
-            {
-              slotTime: "15:00",
-              isBooked: false,
-              appointmentId: null,
-            },
-            {
-              slotTime: "16:00",
-              isBooked: false,
-              appointmentId: null,
-            },
-          ],
-        },
-        {
-          dayOfWeek: "26/10/2023", // Thứ 5
-          slots: [
-            {
-              slotTime: "8:00",
-              isBooked: false,
-              appointmentId: null,
-            },
-            {
-              slotTime: "9:00",
-              isBooked: false,
-              appointmentId: null,
-            },
-            {
-              slotTime: "10:00",
-              isBooked: false,
-              appointmentId: null,
-            },
-            {
-              slotTime: "11:00",
-              isBooked: false,
-              appointmentId: null,
-            },
-            {
-              slotTime: "12:00",
-              isBooked: false,
-              appointmentId: null,
-            },
-            {
-              slotTime: "13:00",
-              isBooked: false,
-              appointmentId: null,
-            },
-            {
-              slotTime: "14:00",
-              isBooked: false,
-              appointmentId: null,
-            },
-            {
-              slotTime: "15:00",
-              isBooked: false,
-              appointmentId: null,
-            },
-            {
-              slotTime: "16:00",
-              isBooked: false,
-              appointmentId: null,
-            },
-          ],
-        },
-        {
-          dayOfWeek: "28/10/2023", // Thứ 7
-          slots: [
-            {
-              slotTime: "8:00",
-              isBooked: false,
-              appointmentId: null,
-            },
-            {
-              slotTime: "9:00",
-              isBooked: false,
-              appointmentId: null,
-            },
-            {
-              slotTime: "10:00",
-              isBooked: false,
-              appointmentId: null,
-            },
-            {
-              slotTime: "11:00",
-              isBooked: false,
-              appointmentId: null,
-            },
-            {
-              slotTime: "12:00",
-              isBooked: false,
-              appointmentId: null,
-            },
-            {
-              slotTime: "13:00",
-              isBooked: false,
-              appointmentId: null,
-            },
-            {
-              slotTime: "14:00",
-              isBooked: false,
-              appointmentId: null,
-            },
-            {
-              slotTime: "15:00",
-              isBooked: false,
-              appointmentId: null,
-            },
-            {
-              slotTime: "16:00",
-              isBooked: false,
-              appointmentId: null,
+              currentCount: 0,
             },
           ],
         },

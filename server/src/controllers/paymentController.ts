@@ -2,7 +2,7 @@ import { Response, Request } from "express";
 import PayOS from "@payos/node";
 import dotenv from "dotenv";
 import Payment from "../models/Payment";
-import { Appointment } from "../models";
+import { Appointment, DoctorSchedule } from "../models";
 
 dotenv.config();
 
@@ -95,9 +95,13 @@ export const updatePaymentById = async (req: Request, res: Response) => {
       payment.status = status;
     }
 
-    if (status === "PAID") {
-      const appointment = await Appointment.findById(payment.appointmentId);
+    const appointment = await Appointment.findById(payment.appointmentId);
 
+    if (!appointment) {
+      return res.status(404).json({ message: "Không tìm thấy cuộc hẹn" });
+    }
+
+    if (status === "PAID") {
       if (!appointment) {
         return res.status(404).json({ message: "Không tìm thấy cuộc hẹn" });
       }
@@ -108,8 +112,6 @@ export const updatePaymentById = async (req: Request, res: Response) => {
     }
 
     if (status === "CANCELLED") {
-      const appointment = await Appointment.findById(payment.appointmentId);
-
       if (!appointment) {
         return res.status(404).json({ message: "Không tìm thấy cuộc hẹn" });
       }
@@ -118,6 +120,42 @@ export const updatePaymentById = async (req: Request, res: Response) => {
       appointment.notes = "";
 
       await appointment.save();
+    }
+
+    if (status === "CANCELLED") {
+      const doctorSchedule = await DoctorSchedule.findOne({
+        "weekSchedule.slots.appointmentIds": appointment._id.toString(),
+      });
+
+      if (doctorSchedule) {
+        for (let day of doctorSchedule.weekSchedule) {
+          for (let slot of day.slots) {
+            const appointmentIndex = slot.appointmentIds?.indexOf(
+              appointment._id.toString()
+            );
+            if (
+              appointmentIndex !== -1 &&
+              appointmentIndex !== undefined &&
+              slot.appointmentIds
+            ) {
+              slot.appointmentIds.splice(appointmentIndex, 1);
+              slot.currentCount = Math.max(0, slot.currentCount - 1);
+              slot.isBooked = slot.currentCount >= 3;
+              break;
+            }
+          }
+        }
+
+        await DoctorSchedule.findOneAndUpdate(
+          { _id: doctorSchedule._id },
+          {
+            $set: {
+              weekSchedule: doctorSchedule.weekSchedule,
+            },
+          },
+          { new: true }
+        );
+      }
     }
 
     await payment.save();
