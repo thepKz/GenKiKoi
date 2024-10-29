@@ -11,7 +11,8 @@ export const config = {
   output: './output',
   helpers: {
     Playwright: {
-      url: 'http://localhost:5173',
+      url: 'https://staginggenkikoi.netlify.app',
+      // url: 'http://localhost:5173',
       show: true,
       browser: 'chromium',
       waitForTimeout: 2000,
