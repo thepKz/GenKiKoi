@@ -217,20 +217,39 @@ const Profile = () => {
                     </Form.Item>
                   </Col>
                   <Col span={6}>
-                    <Form.Item name="specialization" label="Chứng chỉ">
+                    <Form.Item
+                      name="specialization"
+                      label="Chứng chỉ"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Vui lòng điền tên chứng chỉ",
+                        },
+                      ]}
+                    >
                       <Input allowClear placeholder="Tên chứng chỉ" />
                     </Form.Item>
                     <Form.Item
                       name="licenseNumber"
                       label="Mã số chứng chỉ"
-                      required
+                      rules={[
+                        {
+                          required: true,
+                          message: "Vui lòng điền mã số chứng chỉ",
+                        },
+                      ]}
                     >
                       <Input allowClear placeholder="Mã số chứng chỉ" />
                     </Form.Item>
                     <Form.Item
                       name="movingService"
                       label="Dịch vụ di động"
-                      required
+                      rules={[
+                        {
+                          required: true,
+                          message: "Vui lòng chọn loại dịch vụ di động",
+                        },
+                      ]}
                     >
                       <Select
                         placeholder="Chọn dịch vụ di động"
@@ -243,7 +262,12 @@ const Profile = () => {
                     <Form.Item
                       name="yearOfExperience"
                       label="Năm kinh nghiệm"
-                      required
+                      rules={[
+                        {
+                          required: true,
+                          message: "Vui lòng điền năm kinh nghiệm",
+                        },
+                      ]}
                     >
                       <InputNumber
                         min={0}
@@ -258,6 +282,12 @@ const Profile = () => {
                       name="introduction"
                       tooltip="Hãy giới thiệu một các đầy đủ rõ ràng về bản thân của mình!"
                       label="Giới thiệu"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Vui lòng điền thông tin mô tả",
+                        },
+                      ]}
                     >
                       <TextArea
                         placeholder="Giới thiệu về bản thân"

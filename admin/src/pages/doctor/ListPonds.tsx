@@ -1,32 +1,63 @@
-import { Breadcrumb, Button, Card, Tag } from "antd";
+import { Breadcrumb, Button, Card, Spin, Tag } from "antd";
 import { Stickynote } from "iconsax-react";
 import { Link, useLocation } from "react-router-dom";
 import { HeaderPage } from "../../components";
 import { useEffect, useState } from "react";
 import { handleAPI } from "../../apis/handleAPI";
+import { removeVietnameseTones } from "../../utils";
 
 const ListPonds = () => {
   const { pathname } = useLocation();
   const customerId = pathname.split("/")[3];
   const [ponds, setPonds] = useState([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [searchText, setSearchText] = useState("");
+
+  const handleSearch = (value: string) => {
+    setSearchText(value.toLowerCase());
+  };
 
   useEffect(() => {
     const getAllPondsByCustomer = async () => {
       try {
+        setIsLoading(true);
         const api = `/api/ponds/customers/${customerId}`;
         const res = await handleAPI(api, undefined, "GET");
 
         setPonds(res.data);
       } catch (error) {
         console.log(error);
+      } finally {
+        setIsLoading(false);
       }
     };
     getAllPondsByCustomer();
   }, []);
 
+  const filteredPonds = ponds.filter((pond: any) => {
+    const searchValue = removeVietnameseTones(searchText.toLowerCase());
+    const pondId = removeVietnameseTones(pond.recordId.toLowerCase());
+
+    return (
+      pondId.includes(searchValue) || pond.pondSize.toString() === searchText
+    );
+  });
+
+  if (isLoading) {
+    return (
+      <div className="section flex items-center justify-center">
+        <Spin size="large" />
+      </div>
+    );
+  }
+
   return (
     <div className="section">
-      <HeaderPage heading="Danh sách báo cáo" placeholder="Tìm hồ báo cáo" />
+      <HeaderPage
+        heading="Danh sách báo cáo"
+        placeholder="Tìm hồ báo cáo"
+        onSearch={handleSearch}
+      />
       <Breadcrumb
         separator=">"
         items={[
@@ -46,7 +77,7 @@ const ListPonds = () => {
         ]}
       />
       <div className="mt-3 flex h-[calc(100vh-200px)] flex-col gap-5 overflow-y-auto">
-        {ponds.map((pond: any, i) => (
+        {filteredPonds.map((pond: any, i) => (
           <Card key={i} className="duration-100 ease-in hover:border-[#4096ff]">
             <div className="flex items-center gap-5">
               <div className="">

@@ -1,4 +1,4 @@
-import { Button, TableProps, Tabs, TabsProps, Tag } from "antd";
+import { Button, message, Spin, TableProps, Tabs, TabsProps, Tag } from "antd";
 import { CustomTable } from "../../share";
 import { getValue, removeVietnameseTones } from "../../utils";
 import { HeaderPage } from "../../components";
@@ -9,6 +9,7 @@ import { handleAPI } from "../../apis/handleAPI";
 const Records = () => {
   const [medicalCustomers, setMedicalCustomers] = useState([]);
   const [pondCustomers, setPondCustomers] = useState([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchText, setSearchText] = useState("");
   const [pagination, setPagination] = useState({
     current: 1,
@@ -47,24 +48,36 @@ const Records = () => {
 
   useEffect(() => {
     const getCustomers = async () => {
+      setIsLoading(true);
       try {
         const api = `/api/medicalRecords/customers`;
         const res = await handleAPI(api, undefined, "GET");
 
         setMedicalCustomers(res.data);
-      } catch (error) {}
+      } catch (error) {
+        console.log(error);
+        message.error("Không thể lấy danh sách khách hàng");
+      } finally {
+        setIsLoading(false);
+      }
     };
     getCustomers();
   }, []);
 
   useEffect(() => {
     const getCustomers = async () => {
+      setIsLoading(true);
       try {
         const api = `/api/ponds/customers`;
         const res = await handleAPI(api, undefined, "GET");
 
         setPondCustomers(res.data);
-      } catch (error) {}
+      } catch (error) {
+        console.log(error);
+        message.error("Không thể lấy danh sách khách hàng");
+      } finally {
+        setIsLoading(false);
+      }
     };
     getCustomers();
   }, []);
@@ -203,6 +216,15 @@ const Records = () => {
       ),
     },
   ];
+
+  if (isLoading) {
+    return (
+      <div className="section flex items-center justify-center">
+        <Spin size="large" />
+      </div>
+    );
+  }
+
   return (
     <div>
       <div className="section">

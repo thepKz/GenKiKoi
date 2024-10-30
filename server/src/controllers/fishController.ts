@@ -15,7 +15,7 @@ export const getAllFish = async (req: Request, res: Response) => {
 export const getAllFishesByCustomerId = async (req: Request, res: Response) => {
   try {
     const customerId = req.params.customerId;
-    const fishes = await Fish.find({ customerId });
+    const fishes = await Fish.find({ customerId }).sort({ createdAt: -1 });
 
     if (!fishes) {
       return res.status(404).json({ message: "Danh sách trống" });

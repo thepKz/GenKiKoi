@@ -100,6 +100,10 @@
   height: calc(100vh - 200px);
 }
 
+.doctor-view.feedbacks .ant-table-container {
+  height: calc(100vh - 200px);
+}
+
 .ant-result {
   height: 100vh;
   display: flex;

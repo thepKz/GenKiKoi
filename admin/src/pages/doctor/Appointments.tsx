@@ -1,4 +1,4 @@
-import { message, Modal, Switch, TableProps, Tag } from "antd";
+import { message, Modal, Spin, Switch, TableProps, Tag } from "antd";
 import { CustomTable } from "../../share";
 import { getValue } from "../../utils";
 import { HeaderPage } from "../../components";
@@ -12,6 +12,7 @@ const Appointments = () => {
   const auth: IAuth = useSelector((state: any) => state.authReducer.data);
 
   const [appointments, setAppointments] = useState([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchText, setSearchText] = useState("");
   const [pagination, setPagination] = useState({
     current: 1,
@@ -21,6 +22,7 @@ const Appointments = () => {
   useEffect(() => {
     const getAppointments = async () => {
       try {
+        setIsLoading(true);
         const api = `/api/appointments/doctors/${auth.adminId}`;
 
         const res = await handleAPI(api, undefined, "GET");
@@ -29,6 +31,8 @@ const Appointments = () => {
       } catch (error: any) {
         console.log(error);
         message.error(error.message);
+      } finally {
+        setIsLoading(false);
       }
     };
     getAppointments();
@@ -138,6 +142,14 @@ const Appointments = () => {
       serviceName.includes(searchValue)
     );
   });
+
+  if (isLoading) {
+    return (
+      <div className="section flex items-center justify-center">
+        <Spin size="large" />
+      </div>
+    );
+  }
 
   return (
     <div className="section">

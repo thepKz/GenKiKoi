@@ -1,4 +1,4 @@
-import { Button, Divider, Input } from "antd";
+import { Button, Divider, Dropdown, Input, MenuProps } from "antd";
 import { Sort } from "iconsax-react";
 const { Search } = Input;
 
@@ -7,10 +7,19 @@ interface Props {
   placeholder?: string;
   filter?: boolean;
   onSearch?: (value: string) => void;
+  filterItems?: MenuProps["items"];
+  onFilterSelect?: (key: string) => void;
 }
 
 const HeaderPage = (props: Props) => {
-  const { heading, placeholder, filter, onSearch } = props;
+  const {
+    heading,
+    placeholder,
+    filter,
+    onSearch,
+    filterItems,
+    onFilterSelect,
+  } = props;
   return (
     <div>
       <div className="flex items-center justify-between">
@@ -25,7 +34,16 @@ const HeaderPage = (props: Props) => {
             onChange={(e) => onSearch?.(e.target.value)}
           />
         )}
-        {filter && <Button icon={<Sort size={18} />}>Lọc</Button>}
+        {filter && filterItems && (
+          <Dropdown
+            menu={{
+              items: filterItems,
+              onClick: ({ key }) => onFilterSelect?.(key),
+            }}
+          >
+            <Button icon={<Sort size={18} />}>Lọc</Button>
+          </Dropdown>
+        )}
       </div>
       <Divider />
     </div>
