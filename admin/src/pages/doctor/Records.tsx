@@ -1,6 +1,6 @@
 import { Button, TableProps, Tabs, TabsProps, Tag } from "antd";
 import { CustomTable } from "../../share";
-import { getValue } from "../../utils";
+import { getValue, removeVietnameseTones } from "../../utils";
 import { HeaderPage } from "../../components";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -9,6 +9,41 @@ import { handleAPI } from "../../apis/handleAPI";
 const Records = () => {
   const [medicalCustomers, setMedicalCustomers] = useState([]);
   const [pondCustomers, setPondCustomers] = useState([]);
+  const [searchText, setSearchText] = useState("");
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+  });
+
+  const handleSearch = (value: string) => {
+    setSearchText(value.toLowerCase());
+  };
+
+  const filteredMedicalCustomers = medicalCustomers.filter(
+    (medicalCustomer: any) => {
+      const searchValue = removeVietnameseTones(searchText.toLowerCase());
+      const customerName = removeVietnameseTones(
+        medicalCustomer.customerName.toLowerCase(),
+      );
+
+      return (
+        customerName.includes(searchValue) ||
+        medicalCustomer.phoneNumber.includes(searchText)
+      );
+    },
+  );
+
+  const filteredPondCustomers = pondCustomers.filter((pondCustomer: any) => {
+    const searchValue = removeVietnameseTones(searchText.toLowerCase());
+    const customerName = removeVietnameseTones(
+      pondCustomer.customerName.toLowerCase(),
+    );
+
+    return (
+      customerName.includes(searchValue) ||
+      pondCustomer.phoneNumber.includes(searchText)
+    );
+  });
 
   useEffect(() => {
     const getCustomers = async () => {
@@ -40,7 +75,9 @@ const Records = () => {
       title: "#",
       dataIndex: "key",
       width: 70,
-      render: (_text, _record, index) => index + 1,
+      render: (_text, _record, index) => {
+        return (pagination.current - 1) * pagination.pageSize + index + 1;
+      },
     },
     {
       key: "Tên khách hàng",
@@ -89,7 +126,9 @@ const Records = () => {
       title: "#",
       dataIndex: "key",
       width: 70,
-      render: (_text, _record, index) => index + 1,
+      render: (_text, _record, index) => {
+        return (pagination.current - 1) * pagination.pageSize + index + 1;
+      },
     },
     {
       key: "Tên khách hàng",
@@ -140,9 +179,10 @@ const Records = () => {
         <div className="doctor-view">
           <CustomTable
             columns={medicalColumn}
-            dataSource={medicalCustomers}
-            scroll="calc(100vh - 410px)"
+            dataSource={filteredMedicalCustomers}
+            scroll="calc(100vh - 320px)"
             className="staff-table"
+            onChange={(pagination) => setPagination(pagination)}
           />
         </div>
       ),
@@ -154,9 +194,10 @@ const Records = () => {
         <div className="doctor-view">
           <CustomTable
             columns={pondColumn}
-            dataSource={pondCustomers}
-            scroll="calc(100vh - 410px)"
+            dataSource={filteredPondCustomers}
+            scroll="calc(100vh - 320px)"
             className="staff-table"
+            onChange={(pagination) => setPagination(pagination)}
           />
         </div>
       ),
@@ -165,7 +206,11 @@ const Records = () => {
   return (
     <div>
       <div className="section">
-        <HeaderPage heading="Danh sách hồ sơ" placeholder="Tìm kiếm hồ sơ" />
+        <HeaderPage
+          heading="Danh sách hồ sơ"
+          placeholder="Tìm kiếm hồ sơ"
+          onSearch={handleSearch}
+        />
         <Tabs defaultActiveKey="1" items={items} />
       </div>
     </div>

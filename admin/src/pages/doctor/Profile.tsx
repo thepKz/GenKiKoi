@@ -1,10 +1,8 @@
 import {
-  Alert,
   Avatar,
   Button,
   Col,
   ConfigProvider,
-  Divider,
   Form,
   Input,
   InputNumber,
@@ -12,12 +10,8 @@ import {
   Row,
   Select,
   Spin,
-  Upload,
-  UploadFile,
-  UploadProps,
 } from "antd";
 import { User } from "iconsax-react";
-import { UploadOutlined } from "@ant-design/icons";
 
 const { TextArea } = Input;
 
