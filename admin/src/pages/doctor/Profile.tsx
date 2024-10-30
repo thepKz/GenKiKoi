@@ -11,6 +11,7 @@ import {
   message,
   Row,
   Select,
+  Spin,
   Upload,
   UploadFile,
   UploadProps,
@@ -40,7 +41,6 @@ const Profile = () => {
   const [file, setFile] = useState(null);
 
   const [profile, setProfile] = useState<any>(null);
-  const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isLoadingForm, setIsLoadingForm] = useState(false);
 
@@ -58,43 +58,17 @@ const Profile = () => {
       } catch (error: any) {
         console.log(error);
         message.error(error.message);
+      } finally {
+        setIsLoading(false);
       }
     };
     getProfile();
   }, []);
 
-  const handleUpload: UploadProps["onChange"] = ({ fileList: newFileList }) => {
-    setFileList(newFileList);
-  };
-
-  const beforeUpload = (file: File) => {
-    const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
-    if (!isJpgOrPng) {
-      message.error("Bạn chỉ có thể tải lên file JPG/PNG!");
-    }
-    const isLt2M = file.size / 1024 / 1024 < 2;
-    if (!isLt2M) {
-      message.error("Hình ảnh phải nhỏ hơn 2MB!");
-    }
-    return false;
-  };
-
   const handleSubmit = async (values: any) => {
     try {
       setIsLoadingForm(true);
       const api = `/api/doctors/${auth.adminId}`;
-      if (fileList.length > 0) {
-        const uploadedFiles = await Promise.all(
-          fileList.map(async (file) => {
-            if (file.originFileObj) {
-              const url = await uploadFile(file.originFileObj, "doctors");
-              return url;
-            }
-            return null;
-          }),
-        );
-        values.images = uploadedFiles.filter((file) => file !== null);
-      }
 
       if (file) {
         values.photoUrl = await uploadFile(file, "doctors");
@@ -111,6 +85,14 @@ const Profile = () => {
       setIsLoadingForm(false);
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="section flex items-center justify-center">
+        <Spin size="large" />
+      </div>
+    );
+  }
 
   return (
     <ConfigProvider
@@ -136,7 +118,7 @@ const Profile = () => {
                         backgroundColor: "transparent",
                         border: "2px dashed #ccc",
                       }}
-                      size={150}
+                      size={200}
                       src={URL.createObjectURL(file)}
                       icon={<User color="#ccc" size={50} />}
                     />
@@ -147,38 +129,12 @@ const Profile = () => {
                         backgroundColor: "transparent",
                         border: "2px dashed #ccc",
                       }}
-                      size={150}
+                      size={200}
                       src={profile?.photoUrl}
                       icon={<User color="#ccc" size={50} />}
                     />
                   )}
                 </label>
-              </div>
-              <Divider />
-              <div className="">
-                <h4 className="mb-2 text-base font-semibold">
-                  Upload hình ảnh chứng chỉ
-                </h4>
-
-                <Alert
-                  message="Giấy phép phải được cấp bởi các cơ quan được bộ y tế cấp
-                    phép!"
-                  type="warning"
-                  showIcon
-                />
-                <div className="mt-3">
-                  <Form.Item>
-                    <Upload
-                      accept="image/png, image/jpeg"
-                      fileList={fileList}
-                      beforeUpload={beforeUpload}
-                      onChange={handleUpload}
-                      maxCount={4}
-                    >
-                      <Button icon={<UploadOutlined />}>Upload</Button>
-                    </Upload>
-                  </Form.Item>
-                </div>
               </div>
             </Col>
             <Col span={18}>
@@ -267,15 +223,15 @@ const Profile = () => {
                     </Form.Item>
                   </Col>
                   <Col span={6}>
-                    <Form.Item name="specialization" label="Chứng chỉ" required>
-                      <Input placeholder="Tên chứng chỉ" />
+                    <Form.Item name="specialization" label="Chứng chỉ">
+                      <Input allowClear placeholder="Tên chứng chỉ" />
                     </Form.Item>
                     <Form.Item
                       name="licenseNumber"
                       label="Mã số chứng chỉ"
                       required
                     >
-                      <Input placeholder="Mã số chứng chỉ" />
+                      <Input allowClear placeholder="Mã số chứng chỉ" />
                     </Form.Item>
                     <Form.Item
                       name="movingService"

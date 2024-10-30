@@ -158,7 +158,6 @@ export const updateByDoctorId = async (req: Request, res: Response) => {
     const doctorId = req.params.doctorId;
     const {
       photoUrl,
-      images,
       fullName,
       gender,
       email,
@@ -202,7 +201,6 @@ export const updateByDoctorId = async (req: Request, res: Response) => {
     const updatedDoctor = await Doctor.findByIdAndUpdate(
       doctorId,
       {
-        images,
         introduction,
         specialization,
         licenseNumber,
@@ -232,7 +230,6 @@ export const updateByDoctorId = async (req: Request, res: Response) => {
 
     const updatedInfo = {
       _id: updatedDoctor._id,
-      images: updatedDoctor.images,
       photoUrl: updatedUser.photoUrl,
       fullName: updatedUser.fullName,
       gender: updatedUser.gender,
@@ -317,7 +314,6 @@ export const getDoctorById = async (req: Request, res: Response) => {
     const formatDoctor = {
       _id: doctor._id,
       photoUrl: doctor.userId.photoUrl,
-      images: doctor.images,
       email: doctor.userId.email,
       fullName: doctor.userId.fullName,
       phoneNumber: doctor.userId.phoneNumber,
