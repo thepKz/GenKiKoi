@@ -6,11 +6,13 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { IAuth } from "../../types";
 import { handleAPI } from "../../apis/handleAPI";
+import { removeVietnameseTones } from "../../utils";
 
 const Appointments = () => {
   const auth: IAuth = useSelector((state: any) => state.authReducer.data);
 
   const [appointments, setAppointments] = useState([]);
+  const [searchText, setSearchText] = useState("");
 
   useEffect(() => {
     const getAppointments = async () => {
@@ -111,21 +113,34 @@ const Appointments = () => {
     },
   ];
 
+  const handleSearch = (value: string) => {
+    setSearchText(value.toLowerCase());
+  };
+
+  const filteredAppointments = appointments.filter((appointment: any) => {
+    const searchValue = removeVietnameseTones(searchText.toLowerCase());
+    const customerName = removeVietnameseTones(appointment.customerName.toLowerCase());
+    const serviceName = removeVietnameseTones(appointment.serviceName.toLowerCase());
+    
+    return customerName.includes(searchValue) ||
+           appointment.phoneNumber.includes(searchText) ||
+           serviceName.includes(searchValue);
+  });
+
   return (
-    <div>
-      <div className="section">
-        <HeaderPage
-          heading="Danh sách cuộc hẹn"
-          placeholder="Tìm kiếm cuộc hẹn"
+    <div className="section">
+      <HeaderPage
+        heading="Danh sách cuộc hẹn"
+        placeholder="Tìm kiếm cuộc hẹn"
+        onSearch={handleSearch}
+      />
+      <div className="doctor-view appointments">
+        <CustomTable
+          columns={columns}
+          dataSource={filteredAppointments}
+          scroll="calc(100vh - 410px)"
+          className="staff-table"
         />
-        <div className="doctor-view appointments">
-          <CustomTable
-            columns={columns}
-            dataSource={appointments}
-            scroll="calc(100vh - 410px)"
-            className="staff-table"
-          />
-        </div>
       </div>
     </div>
   );

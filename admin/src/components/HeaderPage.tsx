@@ -6,10 +6,11 @@ interface Props {
   heading: string;
   placeholder?: string;
   filter?: boolean;
+  onSearch?: (value: string) => void;
 }
 
 const HeaderPage = (props: Props) => {
-  const { heading, placeholder, filter } = props;
+  const { heading, placeholder, filter, onSearch } = props;
   return (
     <div>
       <div className="flex items-center justify-between">
@@ -19,7 +20,9 @@ const HeaderPage = (props: Props) => {
             size="large"
             placeholder={placeholder}
             allowClear
+            onSearch={onSearch}
             style={{ width: 300 }}
+            onChange={(e) => onSearch?.(e.target.value)}
           />
         )}
         {filter && <Button icon={<Sort size={18} />}>Lọc</Button>}

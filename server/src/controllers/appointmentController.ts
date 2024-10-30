@@ -29,6 +29,7 @@ export const getAllAppointmentsByDoctorId = async (
     const doctorId = req.params.doctorId;
 
     const appointments = await Appointment.find({ doctorId })
+      .sort({ appointmentDate: -1 })
       .populate({
         path: "customerId",
         populate: {
