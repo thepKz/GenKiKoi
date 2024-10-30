@@ -73,3 +73,64 @@ export const getCustomerByPhoneNumber = async (req: Request, res: Response) => {
     return res.status(500).json({ message: error.message });
   }
 };
+
+export const updateProfileByCustomerId = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const { customerId } = req.params;
+
+    const { fullName, gender, city, district, ward, detailAddress } = req.body;
+
+    const customer = await Customer.findById(customerId);
+
+    if (!customer) {
+      return res.status(404).json("Không tìm thấy khách hàng");
+    }
+
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: customer.userId },
+      {
+        fullName,
+        gender,
+      },
+      { new: true }
+    );
+
+    const updatedCustomer = await Customer.findOneAndUpdate(
+      { _id: customerId },
+      {
+        city,
+        district,
+        ward,
+        detailAddress,
+      },
+      { new: true }
+    );
+
+    if (!updatedCustomer || !updatedUser) {
+      return res
+        .status(500)
+        .json({ message: "Có lỗi xảy ra khi cập nhật thông tin" });
+    }
+
+    const formattedData = {
+      id: updatedCustomer._id,
+      email: updatedUser.email,
+      fullName: updatedUser.fullName,
+      phoneNumber: updatedUser.phoneNumber,
+      gender: updatedUser.gender,
+      city: updatedCustomer.city,
+      district: updatedCustomer.district,
+      ward: updatedCustomer.ward,
+      detailAddress: updatedCustomer.detailAddress,
+    };
+
+    return res.status(200).json({ data: formattedData });
+  } catch (error: any) {
+    return res.status(500).json({
+      message: error.message,
+    });
+  }
+};

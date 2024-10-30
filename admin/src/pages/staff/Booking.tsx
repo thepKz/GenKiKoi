@@ -11,6 +11,7 @@ import {
   Card,
   Button,
   Divider,
+  Modal,
 } from "antd";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
@@ -28,7 +29,7 @@ const Booking = () => {
 
   const [profile, setProfile] = useState<any>(null);
 
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
   const [slot, setSlot] = useState<number | null>(null);
   const [date, setDate] = useState<dayjs.Dayjs | null>(null);
 
@@ -49,6 +50,102 @@ const Booking = () => {
   const [service, setService] = useState<any>(null);
   const [price, setPrice] = useState<number>(0);
   const [totalPrice, setTotalPrice] = useState<number>(0);
+
+  const handleSubmit = async (values: any) => {
+    try {
+      setIsLoadingForm(true);
+
+      if (date && slot && doctorSchedule) {
+        values.appointmentDate = date.format("YYYY-MM-DD");
+        values.doctorScheduleId = doctorSchedule._id;
+        values.slotTime = slot;
+      } else {
+        message.error("Vui lòng chọn ngày và giờ khám");
+        return;
+      }
+
+      let currentProfile = profile;
+
+      if (!profile) {
+        const registerApi = `/api/auth/register-at-center`;
+        const res = await handleAPI(
+          registerApi,
+          {
+            phoneNumber: values.phoneNumber,
+            email: values.email,
+            fullName: values.fullName,
+            gender: values.gender,
+            city: values.city,
+            district: values.district,
+            ward: values.ward,
+            detailAddress: values.detailAddress,
+          },
+          "POST",
+        );
+
+        if (res.data) {
+          currentProfile = res.data;
+          setProfile(res.data);
+        }
+        console.log(profile);
+      } else {
+        const updateApi = `/api/customers/${profile.id}`;
+        const res = await handleAPI(
+          updateApi,
+          {
+            fullName: values.fullName,
+            gender: values.gender,
+            city: values.city,
+            district: values.district,
+            ward: values.ward,
+            detailAddress: values.detailAddress,
+          },
+          "PATCH",
+        );
+
+        if (res.data) {
+          currentProfile = res.data;
+          setProfile(res.data);
+        }
+      }
+
+      const appointmentApi = `/api/appointments/customers/${currentProfile.id}`;
+
+      const bookSlotApi = `/api/doctorSchedules/${doctorSchedule.doctorId}`;
+
+      const appointmentRes = await handleAPI(appointmentApi, values, "POST");
+
+      const paymentApi = `/api/payments/payment-at-center`;
+
+      await handleAPI(
+        paymentApi,
+        {
+          totalPrice,
+          customerId: currentProfile.id,
+          serviceName: service.serviceName,
+          appointmentId: appointmentRes.data.appointmentId,
+        },
+        "POST",
+      );
+
+      await handleAPI(
+        bookSlotApi,
+        {
+          slotTime: slot,
+          appointmentId: appointmentRes.data.appointmentId,
+          appointmentDate: date,
+        },
+        "PATCH",
+      );
+
+      message.success("Tạo cuộc hẹn thành công");
+    } catch (error: any) {
+      console.error(error);
+      message.error(error.message);
+    } finally {
+      setIsLoadingForm(false);
+    }
+  };
 
   useEffect(() => {
     const res = VietNamProvinces.map((item: any) => ({
@@ -177,43 +274,6 @@ const Booking = () => {
     setSlot(null);
   };
 
-  const handleSubmit = async (values: any) => {
-    try {
-      setIsLoadingForm(true);
-
-      if (date && slot && doctorSchedule) {
-        values.appointmentDate = date.format("YYYY-MM-DD");
-        values.doctorScheduleId = doctorSchedule._id;
-        values.slotTime = slot;
-      } else {
-        message.error("Vui lòng chọn ngày và giờ khám");
-        return;
-      }
-
-      const appointmentApi = `/api/appointments/`;
-      const bookSlotApi = `/api/doctorSchedules/${doctorSchedule.doctorId}`;
-
-      const appointmentRes = await handleAPI(appointmentApi, values, "POST");
-
-      await handleAPI(
-        bookSlotApi,
-        {
-          slotTime: slot,
-          appointmentId: appointmentRes.data.appointmentId,
-          appointmentDate: date,
-        },
-        "PATCH",
-      );
-
-      message.success("Tạo cuộc hẹn thành công");
-    } catch (error: any) {
-      console.log(error);
-      message.error(error.message);
-    } finally {
-      setIsLoadingForm(false);
-    }
-  };
-
   const getCustomerByPhoneNumber = async (phoneNumber: string) => {
     try {
       const api = `/api/customers/phoneNumber`;
@@ -222,11 +282,10 @@ const Booking = () => {
 
       if (res.message) {
         message.warning(res.message);
+        setProfile(null);
       }
 
       setProfile(res.data);
-
-      form.setFieldsValue(res.data);
     } catch (error: any) {
       console.log(error);
       message.error(error.message);
@@ -241,16 +300,46 @@ const Booking = () => {
   useEffect(() => {
     if (profile) {
       form.setFieldsValue(profile);
+    } else {
+      form.resetFields([
+        "email",
+        "fullName",
+        "gender",
+        "city",
+        "district",
+        "ward",
+        "detailAddress",
+      ]);
     }
   }, [profile]);
 
-  if (isLoading) {
-    return (
-      <div className="bg-green-dark flex h-screen items-center justify-center">
-        <Spin size="large" />
-      </div>
-    );
-  }
+  // if (isLoading) {
+  //   return (
+  //     <div className="bg-green-dark flex h-screen items-center justify-center">
+  //       <Spin size="large" />
+  //     </div>
+  //   );
+  // }
+
+  const showConfirmModal = () => {
+    Modal.confirm({
+      title: "Hãy đảm bảo khách hàng đã thanh toán hóa đơn",
+      content: (
+        <div>
+          Tổng tiền:{" "}
+          {new Intl.NumberFormat("vi-VN", {
+            style: "currency",
+            currency: "VND",
+          }).format(totalPrice)}
+        </div>
+      ),
+      onOk: () => {
+        form.submit();
+      },
+      okText: "Xác nhận",
+      cancelText: "Hủy",
+    });
+  };
 
   return (
     <div className="section">
@@ -269,8 +358,9 @@ const Booking = () => {
       >
         <div className="flex h-[calc(100vh-145px)] flex-col justify-between">
           <Form
-            onFinish={handleSubmit}
+            disabled={isLoadingForm}
             form={form}
+            onFinish={handleSubmit}
             size="large"
             layout="vertical"
           >
@@ -537,7 +627,7 @@ const Booking = () => {
               size="large"
               type="primary"
               loading={isLoadingForm}
-              onClick={() => form.submit()}
+              onClick={showConfirmModal}
             >
               Tạo cuộc hẹn
             </Button>

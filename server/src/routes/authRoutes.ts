@@ -6,6 +6,7 @@ import {
   loginAdmin,
   loginWithGoogle,
   register,
+  registerAtCenter,
   sendNewVerifyEmail,
   verifyEmail,
 } from "../controllers/authController";
@@ -19,5 +20,6 @@ router.post("/login-google", loginWithGoogle);
 router.post("/login-admin", loginAdmin);
 router.post("/check-username", checkUsername);
 router.post("/check-email", checkEmail);
+router.post("/register-at-center", registerAtCenter);
 
 export default router;

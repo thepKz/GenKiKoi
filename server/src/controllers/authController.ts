@@ -138,6 +138,69 @@ export const register = async (req: Request, res: Response) => {
   }
 };
 
+export const registerAtCenter = async (req: Request, res: Response) => {
+  try {
+    const {
+      phoneNumber,
+      email,
+      fullName,
+      gender,
+      city,
+      district,
+      ward,
+      detailAddress,
+    } = req.body;
+
+    const formatEmail = email.trim().toLowerCase();
+    const formatUserName = email.split("@")[0];
+
+    if (!phoneNumber || !formatEmail || !fullName || !gender) {
+      return res
+        .status(400)
+        .json({ message: "Vui lòng điền đầy đủ các trường" });
+    }
+
+    // Create new user
+    const salt = await bcrypt.genSalt(10);
+    const hashedPass = await bcrypt.hash("12345678", salt);
+
+    const newUser = await User.create({
+      username: formatUserName,
+      email: formatEmail,
+      password: hashedPass,
+      fullName,
+      gender,
+      phoneNumber,
+    });
+
+    const newCustomer = await Customer.create({
+      userId: newUser._id,
+      city,
+      district,
+      ward,
+      detailAddress,
+      isVerified: true,
+    });
+
+    const formattedData = {
+      id: newCustomer._id,
+      email: newUser.email,
+      fullName: newUser.fullName,
+      phoneNumber: newUser.phoneNumber,
+      gender: newUser.gender,
+      city: newCustomer.city,
+      district: newCustomer.district,
+      ward: newCustomer.ward,
+      detailAddress: newCustomer.detailAddress,
+    };
+
+    return res.status(200).json({ data: formattedData });
+  } catch (error: any) {
+    console.log(error);
+    return res.status(500).json({ message: error.message });
+  }
+};
+
 export const verifyEmail = async (req: Request, res: Response) => {
   const { verifyCode } = req.body;
   try {

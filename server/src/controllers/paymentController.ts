@@ -12,7 +12,7 @@ const payOS = new PayOS(
   process.env.CHECKSUM_KEY as string
 );
 
-export const createPayment = async (req: Request, res: Response) => {
+export const createPaymentOnline = async (req: Request, res: Response) => {
   const { totalPrice, customerId, serviceName, appointmentId } = req.body;
   try {
     const body = {
@@ -43,6 +43,37 @@ export const createPayment = async (req: Request, res: Response) => {
         checkoutUrl: paymentLinkResponse.checkoutUrl,
       },
     });
+  } catch (error: any) {
+    console.error(error);
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+export const createPaymentAtCenter = async (req: Request, res: Response) => {
+  const { totalPrice, customerId, serviceName, appointmentId } = req.body;
+  try {
+    await Payment.create({
+      customerId,
+      serviceName,
+      appointmentId,
+      date: new Date(),
+      totalPrice,
+      status: "PAID",
+      description: "Đã thanh toán tại quầy",
+    });
+
+    const appointment = await Appointment.findById(appointmentId);
+
+    if (!appointment) {
+      return res.status(404).json({ message: "Không tìm thấy cuộc hẹn" });
+    }
+
+    appointment.status = "Đã xác nhận";
+    appointment.notes = "Quý khách vui lòng tới trước giờ hẹn 15 phút!";
+
+    await appointment.save();
+
+    return res.status(201).json({ message: "Tạo hóa đơn thành công" });
   } catch (error: any) {
     console.error(error);
     return res.status(500).json({ message: error.message });

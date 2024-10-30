@@ -1,6 +1,7 @@
 import express from "express";
 import {
-  createPayment,
+  createPaymentAtCenter,
+  createPaymentOnline,
   getPaymentByAppointmentId,
   getPaymentById,
   getPaymentsByCustomerId,
@@ -9,7 +10,8 @@ import {
 
 const router = express.Router();
 
-router.post("/create-payment", createPayment);
+router.post("/create-payment", createPaymentOnline);
+router.post("/payment-at-center", createPaymentAtCenter);
 router.get("/:customerId", getPaymentsByCustomerId);
 router.get("/:paymentId", getPaymentById);
 router.post("/:paymentId", updatePaymentById);

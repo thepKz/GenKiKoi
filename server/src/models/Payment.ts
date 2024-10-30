@@ -5,10 +5,10 @@ interface IPayment {
   appointmentId: mongoose.Types.ObjectId;
   serviceName: string;
   date: Date;
-  accountNumber: string;
-  accountName: string;
-  description: string;
-  paymentLinkId: string;
+  accountNumber?: string;
+  accountName?: string;
+  description?: string;
+  paymentLinkId?: string;
   totalPrice: number;
   status: "PENDING" | "PAID" | "CANCELLED";
 }
@@ -40,19 +40,19 @@ const PaymentSchema = new mongoose.Schema<IPayment>(
     },
     accountNumber: {
       type: String,
-      required: true,
+      default: "",
     },
     accountName: {
       type: String,
-      required: true,
+      default: "",
     },
     description: {
       type: String,
-      required: true,
+      default: "",
     },
     paymentLinkId: {
       type: String,
-      required: true,
+      default: "",
     },
     appointmentId: {
       type: mongoose.Schema.Types.ObjectId,
