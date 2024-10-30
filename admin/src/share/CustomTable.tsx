@@ -6,6 +6,7 @@ interface Props {
   scroll?: string;
   loading?: boolean;
   className?: string;
+  onChange?: (pagination: any) => void;
 }
 
 const CustomTable = (props: Props) => {
@@ -13,8 +14,9 @@ const CustomTable = (props: Props) => {
     columns,
     loading,
     dataSource,
-    scroll = "calc(100vh - 330px)",
+    scroll = "calc(100vh - 260px)",
     className,
+    onChange,
   } = props;
   return (
     <Table
@@ -31,6 +33,7 @@ const CustomTable = (props: Props) => {
       scroll={{
         y: scroll,
       }}
+      onChange={onChange}
     />
   );
 };

@@ -13,6 +13,10 @@ const Appointments = () => {
 
   const [appointments, setAppointments] = useState([]);
   const [searchText, setSearchText] = useState("");
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+  });
 
   useEffect(() => {
     const getAppointments = async () => {
@@ -67,7 +71,9 @@ const Appointments = () => {
       title: "#",
       dataIndex: "key",
       width: 70,
-      render: (_text, _record, index) => index + 1,
+      render: (_text, _record, index) => {
+        return (pagination.current - 1) * pagination.pageSize + index + 1;
+      },
     },
     {
       key: "Tên khách hàng",
@@ -119,12 +125,18 @@ const Appointments = () => {
 
   const filteredAppointments = appointments.filter((appointment: any) => {
     const searchValue = removeVietnameseTones(searchText.toLowerCase());
-    const customerName = removeVietnameseTones(appointment.customerName.toLowerCase());
-    const serviceName = removeVietnameseTones(appointment.serviceName.toLowerCase());
-    
-    return customerName.includes(searchValue) ||
-           appointment.phoneNumber.includes(searchText) ||
-           serviceName.includes(searchValue);
+    const customerName = removeVietnameseTones(
+      appointment.customerName.toLowerCase(),
+    );
+    const serviceName = removeVietnameseTones(
+      appointment.serviceName.toLowerCase(),
+    );
+
+    return (
+      customerName.includes(searchValue) ||
+      appointment.phoneNumber.includes(searchText) ||
+      serviceName.includes(searchValue)
+    );
   });
 
   return (
@@ -138,8 +150,8 @@ const Appointments = () => {
         <CustomTable
           columns={columns}
           dataSource={filteredAppointments}
-          scroll="calc(100vh - 410px)"
           className="staff-table"
+          onChange={(pagination) => setPagination(pagination)}
         />
       </div>
     </div>
