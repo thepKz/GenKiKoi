@@ -163,6 +163,15 @@ const Booking = () => {
       const res = await handleAPI(api, undefined, "GET");
       if (res.data) {
         setDoctorSchedule(res.data);
+        const today = dayjs();
+        const formattedToday = today.format("DD/MM/YYYY");
+        const todaySchedule = res.data.weekSchedule.find(
+          (day: any) => day.dayOfWeek === formattedToday,
+        );
+        if (todaySchedule) {
+          setDate(today);
+          setAvailableSlots(todaySchedule.slots);
+        }
       }
     } catch (error: any) {
       console.log(error);

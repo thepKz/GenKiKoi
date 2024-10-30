@@ -4,6 +4,7 @@ import { NotFound } from "../pages/notfound";
 import {
   Appointments,
   AssignCalendar,
+  Booking,
   Customers,
   DoctorCalendar,
   ListDoctors,
@@ -26,6 +27,7 @@ const StaffRouter = () => {
             <Route index element={<Appointments />} />
           </Route>
         </Route>
+        <Route path="booking" element={<Booking />} />
         <Route path="profile" element={<Profile />} />
       </Route>
       <Route path="*" element={<NotFound to="/staff" />} />
