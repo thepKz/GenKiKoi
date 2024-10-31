@@ -14,6 +14,7 @@ const SignUp = () => {
   const [form] = Form.useForm();
 
   const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -238,7 +239,12 @@ const SignUp = () => {
               >
                 <p className="text-sm font-bold text-slate-500">Hoặc</p>
               </Divider>
-              <SocialButton text="Đăng nhập với Google" />
+              <SocialButton 
+                text="Đăng nhập với Google" 
+                loading={isGoogleLoading}
+                onLoginStart={() => setIsGoogleLoading(true)}
+                onLoginEnd={() => setIsGoogleLoading(false)}
+              />
             </div>
             <div className="my-3 flex items-center justify-center gap-1">
               <p className="text-base text-slate-500">Bạn đã có tài khoản?</p>

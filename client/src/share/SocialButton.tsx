@@ -1,6 +1,5 @@
-import { Button, ConfigProvider, message } from "antd";
+import { Button, message } from "antd";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { useDispatch } from "react-redux";
 import { handleAPI } from "../apis/handleAPI";
@@ -10,18 +9,20 @@ import { replaceName } from "../utils";
 
 interface Props {
   text: string;
+  loading?: boolean;
+  onLoginStart?: () => void;
+  onLoginEnd?: () => void;
 }
 
 const provider = new GoogleAuthProvider();
 
 const SocialButton = (props: Props) => {
-  const { text } = props;
-  const [isLoading, setIsLoading] = useState(false);
+  const { text, loading, onLoginStart, onLoginEnd } = props;
   const dispatch = useDispatch();
 
   const handleLoginWithGoogle = async () => {
     try {
-      setIsLoading(true);
+      onLoginStart?.();
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
 
@@ -39,36 +40,29 @@ const SocialButton = (props: Props) => {
 
         message.success(res.message);
         dispatch(addAuth(res.data));
-      } else {
-        message.error("Không thể đăng nhập bằng Google");
       }
     } catch (error: any) {
+      if (error.code === 'auth/popup-closed-by-user' || 
+          error.code === 'auth/cancelled-popup-request') {
+        return;
+      }
       console.error("Lỗi đăng nhập Google:", error);
-      message.error(error.message || "Đã xảy ra lỗi khi đăng nhập");
+      message.error('Đã xảy ra lỗi khi đăng nhập với Google');
     } finally {
-      setIsLoading(false);
+      onLoginEnd?.();
     }
   };
 
   return (
-    <ConfigProvider
-      theme={{
-        inherit: false,
-        token: {
-          fontFamily: "Pro-Rounded",
-        },
-      }}
+    <Button
+      loading={loading}
+      size="large"
+      icon={<FcGoogle size={30} />}
+      onClick={handleLoginWithGoogle}
+      className="w-full"
     >
-      <Button
-        loading={isLoading}
-        size="large"
-        icon={<FcGoogle size={30} />}
-        onClick={handleLoginWithGoogle}
-        className="w-full"
-      >
-        {text}
-      </Button>
-    </ConfigProvider>
+      {text}
+    </Button>
   );
 };
 
