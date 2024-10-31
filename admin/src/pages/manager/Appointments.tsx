@@ -1,4 +1,4 @@
-import { Breadcrumb, message, TableProps, Tag } from "antd";
+import { Breadcrumb, message, Spin, TableProps, Tag } from "antd";
 import { HeaderPage } from "../../components";
 import { CustomTable } from "../../share";
 import { Link, useLocation } from "react-router-dom";
@@ -6,12 +6,18 @@ import { getValue } from "../../utils";
 import { Calendar, CalendarSearch } from "iconsax-react";
 import { useEffect, useState } from "react";
 import { handleAPI } from "../../apis/handleAPI";
+import { removeVietnameseTones } from "../../utils";
 
 const Appointments = () => {
   const { pathname } = useLocation();
   const customerId = pathname.split("/")[3];
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [appointments, setAppointments] = useState([]);
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+  });
+  const [searchText, setSearchText] = useState("");
 
   useEffect(() => {
     const getAppointments = async () => {
@@ -29,12 +35,29 @@ const Appointments = () => {
     getAppointments();
   }, [customerId]);
 
+  const handleSearch = (value: string) => {
+    setSearchText(value.toLowerCase());
+  };
+
+  const filteredAppointments = appointments.filter((appointment: any) => {
+    const searchValue = removeVietnameseTones(searchText.toLowerCase());
+    const serviceName = removeVietnameseTones(appointment.serviceName.toLowerCase());
+    const doctorName = removeVietnameseTones(appointment.doctorFullName.toLowerCase());
+
+    return (
+      serviceName.includes(searchValue) ||
+      doctorName.includes(searchValue)
+    );
+  });
+
   const columns: TableProps["columns"] = [
     {
       key: "#",
       title: "#",
       dataIndex: "key",
-      render: (_text, _record, index) => index + 1,
+      render: (_text, _record, index) => {
+        return (pagination.current - 1) * pagination.pageSize + index + 1;
+      },
       width: 60,
     },
     {
@@ -68,9 +91,21 @@ const Appointments = () => {
     },
   ];
 
+  if (isLoading) {
+    return (
+      <div className="section flex items-center justify-center">
+        <Spin size="large" />
+      </div>
+    );
+  }
+
   return (
     <div className="section">
-      <HeaderPage heading="Danh sách cuộc hẹn" placeholder="Tìm cuộc hẹn" />
+      <HeaderPage 
+        heading="Danh sách cuộc hẹn" 
+        placeholder="Tìm cuộc hẹn" 
+        onSearch={handleSearch}
+      />
       <Breadcrumb
         separator=">"
         items={[
@@ -98,9 +133,9 @@ const Appointments = () => {
       />
       <div className="mt-2">
         <CustomTable
-          loading={isLoading}
           columns={columns}
-          dataSource={appointments}
+          dataSource={filteredAppointments}
+          onChange={(pagination) => setPagination(pagination)}
         />
       </div>
     </div>

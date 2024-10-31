@@ -4,6 +4,7 @@ import { ValidationError } from "../errors/ValidationError";
 import { Customer, Doctor, Manager, Staff } from "../models";
 import User from "../models/User";
 import { randomText, signToken } from "../utils";
+import { sendVerificationEmail } from "../services/emails";
 /**
  * Người Làm: Thép
  * Người Test: Thép
@@ -90,12 +91,12 @@ export const register = async (req: Request, res: Response) => {
       password: hashedPass,
     });
 
-    // const verificationToken = Math.floor(
-    //   100000 + Math.random() * 900000
-    // ).toString();
+    const verificationToken = Math.floor(
+      100000 + Math.random() * 900000
+    ).toString();
 
     // For testing
-    const verificationToken = "123456";
+    // const verificationToken = "123456";
 
     // Create new customer
     const newCustomer = await Customer.create({
@@ -112,11 +113,11 @@ export const register = async (req: Request, res: Response) => {
       role: newUser.role,
     });
 
-    // await sendVerificationEmail(
-    //   newUser.email,
-    //   newUser.username,
-    //   verificationToken
-    // );
+    await sendVerificationEmail(
+      newUser.email,
+      newUser.username,
+      verificationToken
+    );
 
     return res.status(201).json({
       message: "Đăng ký thành công!",
@@ -241,12 +242,12 @@ export const sendNewVerifyEmail = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "Người dùng không tồn tại" });
     }
 
-    // const verificationToken = Math.floor(
-    //   100000 + Math.random() * 900000
-    // ).toString();
+    const verificationToken = Math.floor(
+      100000 + Math.random() * 900000
+    ).toString();
 
     // For testing
-    const verificationToken = "123456";
+    // const verificationToken = "123456";
 
     const verificationTokenExpiresAt = Date.now() + 10 * 60 * 1000; // 10 minutes
 
@@ -255,7 +256,7 @@ export const sendNewVerifyEmail = async (req: Request, res: Response) => {
 
     await customer.save();
 
-    // await sendVerificationEmail(email, username, verificationToken);
+    await sendVerificationEmail(email, username, verificationToken);
 
     return res
       .status(200)

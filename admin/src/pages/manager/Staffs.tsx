@@ -12,6 +12,7 @@ import {
   Select,
   Row,
   Col,
+  Spin,
 } from "antd";
 import { CiEdit } from "react-icons/ci";
 import { AiOutlineDelete } from "react-icons/ai";
@@ -19,6 +20,8 @@ import { CustomTable } from "../../share";
 import { useEffect, useState } from "react";
 import { getValue } from "../../utils";
 import { handleAPI } from "../../apis/handleAPI";
+import { HeaderPage } from "../../components";
+import { removeVietnameseTones } from "../../utils";
 
 const Staffs = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -28,7 +31,12 @@ const Staffs = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoadingForm, setIsLoadingForm] = useState(false);
   const [editingPerson, setEditingPerson] = useState<any>(null);
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+  });
   const [currentTab, setCurrentTab] = useState<"staff" | "doctor">("staff");
+  const [searchText, setSearchText] = useState("");
 
   useEffect(() => {
     const getAllStaffs = async () => {
@@ -50,12 +58,15 @@ const Staffs = () => {
   useEffect(() => {
     const getAllDoctors = async () => {
       try {
+        setIsLoading(true);
         const api = `/api/doctors/`;
         const res = await handleAPI(api, undefined, "GET");
         setDoctors(res.data);
       } catch (error: any) {
         console.log(error);
         message.error(error.message);
+      } finally {
+        setIsLoading(false);
       }
     };
     getAllDoctors();
@@ -195,7 +206,9 @@ const Staffs = () => {
       title: "#",
       dataIndex: "key",
       width: 50,
-      render: (_text, _record, index) => index + 1,
+      render: (_text, _record, index) => {
+        return (pagination.current - 1) * pagination.pageSize + index + 1;
+      },
     },
     {
       key: "Tên nhân viên",
@@ -241,7 +254,9 @@ const Staffs = () => {
       title: "#",
       dataIndex: "key",
       width: 50,
-      render: (_text, _record, index) => index + 1,
+      render: (_text, _record, index) => {
+        return (pagination.current - 1) * pagination.pageSize + index + 1;
+      },
     },
     {
       key: "Tên nhân viên",
@@ -285,6 +300,39 @@ const Staffs = () => {
     getActionColumn(false),
   ];
 
+  const handleSearch = (value: string) => {
+    setSearchText(value.toLowerCase());
+  };
+
+  const getFilteredData = (data: any[], isStaff: boolean) => {
+    return data.filter((person: any) => {
+      const searchValue = removeVietnameseTones(searchText.toLowerCase());
+      const fullName = removeVietnameseTones(person.fullName.toLowerCase());
+      const email = person.email.toLowerCase();
+      
+      let additionalSearchFields = "";
+      
+      if (isStaff) {
+        // Thêm trường tìm kiếm cho nhân viên
+        additionalSearchFields = removeVietnameseTones(person.position.toLowerCase());
+      } else {
+        // Thêm trường tìm kiếm cho bác sĩ
+        additionalSearchFields = removeVietnameseTones(
+          `${person.specialization || ""} ${person.movingService ? "có di động" : "không di động"}`.toLowerCase()
+        );
+      }
+
+      return (
+        fullName.includes(searchValue) ||
+        email.includes(searchText) ||
+        additionalSearchFields.includes(searchValue)
+      );
+    });
+  };
+
+  const filteredStaffs = getFilteredData(staffs, true);
+  const filteredDoctors = getFilteredData(doctors, false);
+
   const items: TabsProps["items"] = [
     {
       key: "1",
@@ -294,9 +342,10 @@ const Staffs = () => {
           <CustomTable
             loading={isLoading}
             columns={staffColumn}
-            dataSource={staffs}
-            scroll="calc(100vh - 410px)"
+            dataSource={filteredStaffs}
+            scroll="calc(100vh - 320px)"
             className="staff-table"
+            onChange={(pagination) => setPagination(pagination)}
           />
         </div>
       ),
@@ -309,20 +358,32 @@ const Staffs = () => {
           <CustomTable
             loading={isLoading}
             columns={doctorColumn}
-            dataSource={doctors}
-            scroll="calc(100vh - 410px)"
+            dataSource={filteredDoctors}
+            scroll="calc(100vh - 320px)"
             className="staff-table"
+            onChange={(pagination) => setPagination(pagination)}
           />
         </div>
       ),
     },
   ];
 
+  if (isLoading) {
+    return (
+      <div className="section flex items-center justify-center">
+        <Spin size="large" />
+      </div>
+    );
+  }
+
   return (
     <div className="section">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <h1 className="heading-3">Danh sách nhân viên và bác sĩ</h1>
+      <HeaderPage 
+        heading="Danh sách nhân viên và bác sĩ" 
+        placeholder={`Tìm ${currentTab === "staff" ? "nhân viên" : "bác sĩ"}`}
+        onSearch={handleSearch}
+      />
+      <div className="absolute right-14 z-10">
         <Button
           type="primary"
           onClick={() => handleOpenModal(undefined, currentTab)}
@@ -330,11 +391,16 @@ const Staffs = () => {
           Thêm {currentTab === "staff" ? "nhân viên" : "bác sĩ"}
         </Button>
       </div>
-      <Divider />
       <Tabs
         defaultActiveKey="1"
         items={items}
-        onChange={(key) => setCurrentTab(key === "1" ? "staff" : "doctor")}
+        onChange={(key) => {
+          setCurrentTab(key === "1" ? "staff" : "doctor");
+          setPagination({
+            current: 1,
+            pageSize: 10,
+          });
+        }}
       />
 
       {/* Add/Edit modal */}

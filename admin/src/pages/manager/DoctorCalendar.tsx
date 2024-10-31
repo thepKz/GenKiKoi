@@ -55,7 +55,7 @@ const DoctorCalendar = () => {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto my-5 flex h-screen items-center justify-center rounded-md bg-white p-5 shadow-sm lg:w-[95%]">
+      <div className="section flex items-center justify-center">
         <Spin size="large" />
       </div>
     );

@@ -104,6 +104,10 @@
   height: calc(100vh - 200px);
 }
 
+.manager.services .ant-table-container {
+  height: calc(100vh - 250px);
+}
+
 .ant-result {
   height: 100vh;
   display: flex;

@@ -79,7 +79,6 @@ const Services = () => {
                   size="large"
                   ghost
                   onClick={() => navigate("/booking")}
-                  type="link"
                   className="mt-4 text-white hover:text-blue-300"
                 >
                   Đặt lịch

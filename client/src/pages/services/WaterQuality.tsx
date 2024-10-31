@@ -57,15 +57,16 @@ const WaterQuality = () => {
                 <h1 className="heading-1">Kiểm tra chất lượng ao hồ</h1>
 
                 <p className="my-5 text-justify">
-                Việc kiểm tra và duy trì chất lượng nước ao hồ là rất quan trọng đối với sức khỏe và sự phát triển của cá Koi. 
-                Cá Koi rất nhạy cảm với các thông số nước như pH, amoniac, nitrit, oxy hòa tan và nhiệt độ. 
-                Kiểm tra thường xuyên giúp phát hiện sớm các vấn đề, từ đó có biện pháp xử lý kịp thời, 
-                đảm bảo môi trường sống tốt nhất và giúp cá Koi phát triển khỏe mạnh, màu sắc rực rỡ.              </p>
+                  Việc kiểm tra và duy trì chất lượng nước ao hồ là rất quan trọng đối với sức khỏe
+                  và sự phát triển của cá Koi. Cá Koi rất nhạy cảm với các thông số nước như pH,
+                  amoniac, nitrit, oxy hòa tan và nhiệt độ. Kiểm tra thường xuyên giúp phát hiện sớm
+                  các vấn đề, từ đó có biện pháp xử lý kịp thời, đảm bảo môi trường sống tốt nhất và
+                  giúp cá Koi phát triển khỏe mạnh, màu sắc rực rỡ.{" "}
+                </p>
                 <Button
                   size="large"
                   ghost
                   onClick={() => navigate("/booking")}
-                  type="link"
                   className="mt-4 text-white hover:text-blue-300"
                 >
                   Đặt lịch
@@ -116,20 +117,27 @@ const WaterQuality = () => {
                       },
                     }}
                   >
-                   
-                    <br/>
+                    <br />
                     <p>
-                    Cá Koi rất nhạy cảm với chất lượng nước, nước không đạt tiêu chuẩn có thể gây ra nhiều vấn đề sức khỏe,
-                     từ stress, suy giảm miễn dịch đến bệnh tật và thậm chí tử vong. Ngoài ra, môi trường nước lý tưởng 
-                     còn giúp cá Koi phát triển tốt, đạt kích thước tối đa và có tuổi thọ cao, đồng thời duy trì màu sắc rực rỡ 
-                     và hoa văn đẹp mắt vốn là đặc trưng của loài cá này.</p>
-                    <br/>
-                    <p>Dịch vụ kiểm tra chất lượng nước của chúng tôi sẽ giúp bạn đảm bảo môi trường sống tốt nhất cho cá Koi của bạn. 
-                    Bằng cách kiểm tra các thông số quan trọng như pH, amoniac, nitrit, 
-                    oxy hòa tan và nhiệt độ, chúng tôi sẽ phát hiện sớm các vấn đề tiềm ẩn và đưa ra giải pháp kịp thời.</p>
-                    <br/>
-                    <p>Đừng để chất lượng nước ảnh hưởng đến sức khỏe và vẻ đẹp của cá Koi của bạn. 
-                    Hãy liên hệ với GenkiKoi ngay hôm nay để được tư vấn và kiểm tra chất lượng nước!</p>
+                      Cá Koi rất nhạy cảm với chất lượng nước, nước không đạt tiêu chuẩn có thể gây
+                      ra nhiều vấn đề sức khỏe, từ stress, suy giảm miễn dịch đến bệnh tật và thậm
+                      chí tử vong. Ngoài ra, môi trường nước lý tưởng còn giúp cá Koi phát triển
+                      tốt, đạt kích thước tối đa và có tuổi thọ cao, đồng thời duy trì màu sắc rực
+                      rỡ và hoa văn đẹp mắt vốn là đặc trưng của loài cá này.
+                    </p>
+                    <br />
+                    <p>
+                      Dịch vụ kiểm tra chất lượng nước của chúng tôi sẽ giúp bạn đảm bảo môi trường
+                      sống tốt nhất cho cá Koi của bạn. Bằng cách kiểm tra các thông số quan trọng
+                      như pH, amoniac, nitrit, oxy hòa tan và nhiệt độ, chúng tôi sẽ phát hiện sớm
+                      các vấn đề tiềm ẩn và đưa ra giải pháp kịp thời.
+                    </p>
+                    <br />
+                    <p>
+                      Đừng để chất lượng nước ảnh hưởng đến sức khỏe và vẻ đẹp của cá Koi của bạn.
+                      Hãy liên hệ với GenkiKoi ngay hôm nay để được tư vấn và kiểm tra chất lượng
+                      nước!
+                    </p>
                   </AnimatedSection>
                 </div>
               </div>

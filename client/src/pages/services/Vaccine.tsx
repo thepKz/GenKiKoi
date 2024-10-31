@@ -57,13 +57,16 @@ const Vaccine = () => {
                 <h1 className="heading-1">Tiêm ngừa</h1>
 
                 <p className="my-5 text-justify">
-                Dịch vụ tiêm ngừa cho thú cưng là quá trình rất quan trọng để bảo vệ sức khỏe và hạn chế lây lan các bệnh truyền nhiễm. Khi thú cưng được tiêm ngừa, chúng sẽ được tiêm một số mũi vắc xin để tạo ra kháng thể giúp phòng chống các bệnh nguy hiểm. Điều này sẽ giúp cải thiện chất lượng cuộc sống, kéo dài thời gian sống của thú cưng và giảm chi phí tiền dưỡng bệnh cho chủ nuôi.
+                  Dịch vụ tiêm ngừa cho thú cưng là quá trình rất quan trọng để bảo vệ sức khỏe và
+                  hạn chế lây lan các bệnh truyền nhiễm. Khi thú cưng được tiêm ngừa, chúng sẽ được
+                  tiêm một số mũi vắc xin để tạo ra kháng thể giúp phòng chống các bệnh nguy hiểm.
+                  Điều này sẽ giúp cải thiện chất lượng cuộc sống, kéo dài thời gian sống của thú
+                  cưng và giảm chi phí tiền dưỡng bệnh cho chủ nuôi.
                 </p>
                 <Button
                   size="large"
                   ghost
                   onClick={() => navigate("/booking")}
-                  type="link"
                   className="mt-4 text-white hover:text-blue-300"
                 >
                   Đặt lịch
@@ -115,20 +118,18 @@ const Vaccine = () => {
                     }}
                   >
                     <p>
-                    Cá Koi thường mắc các bệnh phổ biến như nấm, ký sinh trùng, 
-                    lở loét, đốm trắng, thối vây, nhiễm trùng máu, sưng bụng, và herpes. 
-                    Các nguyên nhân chính bao gồm môi trường nước ô nhiễm, cá bị stress hoặc thương, 
-                    và nhiễm khuẩn, ký sinh trùng. Triệu chứng thường thấy là cá mất màu, lờ đờ, gãi vào vật thể, 
-                    thối vây, loét da hoặc phình bụng. Việc điều trị tùy thuộc vào từng bệnh, chủ yếu bằng cách sử dụng thuốc kháng sinh, 
-                    chống nấm, và cải thiện chất lượng nước. Ngăn ngừa bệnh tốt nhất là giữ nước sạch và theo dõi sức khỏe cá thường xuyên.
+                      Cá Koi thường mắc các bệnh phổ biến như nấm, ký sinh trùng, lở loét, đốm
+                      trắng, thối vây, nhiễm trùng máu, sưng bụng, và herpes. Các nguyên nhân chính
+                      bao gồm môi trường nước ô nhiễm, cá bị stress hoặc thương, và nhiễm khuẩn, ký
+                      sinh trùng. Triệu chứng thường thấy là cá mất màu, lờ đờ, gãi vào vật thể,
+                      thối vây, loét da hoặc phình bụng. Việc điều trị tùy thuộc vào từng bệnh, chủ
+                      yếu bằng cách sử dụng thuốc kháng sinh, chống nấm, và cải thiện chất lượng
+                      nước. Ngăn ngừa bệnh tốt nhất là giữ nước sạch và theo dõi sức khỏe cá thường
+                      xuyên.
                     </p>
-                    <br/>
-                    <p>
-                    GenkiKoi cung cấp các loại vắc xin tiêm ngừa phổ biến như:
-                    </p>
-                    <p>
-                    1. Vắc xin ngừa virus Herpes Koi (KHV - Koi Herpesvirus)
-                    </p>
+                    <br />
+                    <p>GenkiKoi cung cấp các loại vắc xin tiêm ngừa phổ biến như:</p>
+                    <p>1. Vắc xin ngừa virus Herpes Koi (KHV - Koi Herpesvirus)</p>
                     <p>2. Vắc xin ngừa bệnh do vi khuẩn Aeromonas</p>
                     <p>3. Vắc xin ngừa bệnh do Streptococcus</p>
                     <p>4. Vắc xin ngừa bệnh Edwardsiella</p>

@@ -242,7 +242,7 @@ const Booking = () => {
           "POST",
         );
         if (paymentRes.data.checkoutUrl) {
-          window.open(paymentRes.data.checkoutUrl, "_blank");
+          window.location.href = paymentRes.data.checkoutUrl;
         } else {
           message.error("Không thể lấy liên kết thanh toán");
         }

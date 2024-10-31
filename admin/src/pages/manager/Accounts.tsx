@@ -1,13 +1,19 @@
-import { Button, message, TableProps, Tag, Modal } from "antd";
+import { Button, message, TableProps, Tag, Modal, Spin } from "antd";
 import { HeaderPage } from "../../components";
 import { CustomTable } from "../../share";
 import { getValue } from "../../utils";
 import { useEffect, useState } from "react";
 import { handleAPI } from "../../apis/handleAPI";
+import { removeVietnameseTones } from "../../utils";
 
 const Accounts = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [accounts, setAccounts] = useState<any>([]);
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+  });
+  const [searchText, setSearchText] = useState("");
 
   useEffect(() => {
     const getAccounts = async () => {
@@ -58,12 +64,35 @@ const Accounts = () => {
     });
   };
 
+  const handleSearch = (value: string) => {
+    setSearchText(value.toLowerCase());
+  };
+
+  const filteredAccounts = accounts.filter((account: any) => {
+    const searchValue = removeVietnameseTones(searchText.toLowerCase());
+    const username = removeVietnameseTones(account.username.toLowerCase());
+    const email = account.email.toLowerCase();
+    const fullName = removeVietnameseTones(
+      (account.fullName || "").toLowerCase()
+    );
+    const phoneNumber = account.phoneNumber || "";
+
+    return (
+      username.includes(searchValue) ||
+      email.includes(searchText) ||
+      fullName.includes(searchValue) ||
+      phoneNumber.includes(searchText)
+    );
+  });
+
   const columns: TableProps["columns"] = [
     {
       key: "#",
       title: "#",
       dataIndex: "key",
-      render: (_text, _record, index) => index + 1,
+      render: (_text, _record, index) => {
+        return (pagination.current - 1) * pagination.pageSize + index + 1;
+      },
       width: 60,
     },
     {
@@ -124,15 +153,28 @@ const Accounts = () => {
       ),
     },
   ];
+
+  if (isLoading) {
+    return (
+      <div className="section flex items-center justify-center">
+        <Spin size="large" />
+      </div>
+    );
+  }
+
   return (
     <div className="section accounts">
-      <HeaderPage heading="Danh sách tài khoản" placeholder="Tìm tài khoản" />
+      <HeaderPage 
+        heading="Danh sách tài khoản" 
+        placeholder="Tìm tài khoản" 
+        onSearch={handleSearch}
+      />
       <div className="mt-2">
         <CustomTable
           scroll="calc(100vh - 260px)"
-          loading={isLoading}
           columns={columns}
-          dataSource={accounts}
+          dataSource={filteredAccounts}
+          onChange={(pagination) => setPagination(pagination)}
         />
       </div>
     </div>
