@@ -85,7 +85,7 @@ const SignUp = () => {
                 label="Tên tài khoản"
                 required={false}
                 hasFeedback
-                tooltip="Tên tài khoản phải bao gồm chữ thường, số và có thể có dấu _!"
+                tooltip="Tên tài khoản phải bao gồm chữ cái, số và có thể có dấu _!"
                 rules={[
                   {
                     validator: async (_, value) => {
@@ -97,10 +97,10 @@ const SignUp = () => {
                           new Error("Tên tài khoản phải có độ dài từ 8 đến 30 ký tự!"),
                         );
                       }
-                      if (!/^(?=.*[a-z])(?=.*\d)[a-zA-Z0-9_]+$/.test(value)) {
+                      if (!/^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z0-9_-]+$/.test(value)) {
                         return Promise.reject(
                           new Error(
-                            "Tên tài khoản phải bao gồm chữ thường, số và có thể có dấu _!",
+                            "Tên tài khoản phải bao gồm chữ cái, số và có thể có dấu _!",
                           ),
                         );
                       }
