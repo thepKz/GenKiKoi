@@ -26,6 +26,7 @@ import {
 
 // SERVICES
 import { startScheduledTasks } from "./services/sheduledTasks";
+import { updateExpiredPayments } from "./services/updateExpiredPayments";
 
 const app = express();
 
@@ -82,6 +83,7 @@ app.use("/api/customers", customerRoutes);
 export { app };
 
 startScheduledTasks();
+updateExpiredPayments();
 
 // Only start the server if this file is run directly (not imported as a module)
 if (require.main === module) {
