@@ -13,7 +13,6 @@ const Dashboard = () => {
   const [totalEarning, setTotalEarning] = useState<number>(0);
   const [totalBooking, setTotalBooking] = useState<number>(0);
   const [totalCustomers, setTotalCustomers] = useState<number>(0);
-  const [topServices, setTopServices] = useState([null]);
 
   useEffect(() => {
     const getData = async () => {
