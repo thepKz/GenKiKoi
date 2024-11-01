@@ -13,6 +13,8 @@ const Dashboard = () => {
   const [totalEarning, setTotalEarning] = useState<number>(0);
   const [totalBooking, setTotalBooking] = useState<number>(0);
   const [totalCustomers, setTotalCustomers] = useState<number>(0);
+  const [topServices, setTopServices] = useState<any>([]);
+  const [topCustomers, setTopCustomers] = useState<any>([]);
 
   useEffect(() => {
     const getData = async () => {
@@ -20,6 +22,8 @@ const Dashboard = () => {
       try {
         const apiEaringAndBooking = `/api/payments/statistics`;
         const apiTotalCustomers = `/api/customers/total`;
+        const apiTopServices = `/api/payments/top-services`;
+        const apiTopCustomers = `/api/payments/top-customers`;
 
         const resEaringAndBooking = await handleAPI(
           apiEaringAndBooking,
@@ -33,6 +37,18 @@ const Dashboard = () => {
           "GET",
         );
 
+        const resTopServices = await handleAPI(
+          apiTopServices,
+          undefined,
+          "GET",
+        );
+
+        const resTopCustomers = await handleAPI(
+          apiTopCustomers,
+          undefined,
+          "GET",
+        );
+
         if (resEaringAndBooking.data) {
           setTotalEarning(resEaringAndBooking.data.totalEarning);
           setTotalBooking(resEaringAndBooking.data.totalBooking);
@@ -40,6 +56,14 @@ const Dashboard = () => {
 
         if (resTotalCustomers.data) {
           setTotalCustomers(resTotalCustomers.data.totalCustomers);
+        }
+
+        if (resTopServices.data) {
+          setTopServices(resTopServices.data);
+        }
+
+        if (resTopCustomers.data) {
+          setTopCustomers(resTopCustomers.data);
         }
       } catch (error: any) {
         console.log(error);
@@ -206,57 +230,28 @@ const Dashboard = () => {
                 <tr className="text-left text-gray-500">
                   <th className="pb-2">#</th>
                   <th className="pb-2">Tên</th>
-                  <th className="pb-2">Độ phổ biến</th>
+                  <th className="pb-2 pr-2">Độ phổ biến</th>
                   <th className="pb-2">Doanh số</th>
                 </tr>
               </thead>
               <tbody>
-                {[
-                  {
-                    id: "01",
-                    name: "Khảo sát chất lượng hồ",
-                    popularity: 45,
-                    sales: "45%",
-                    color: "bg-blue-500",
-                  },
-                  {
-                    id: "02",
-                    name: "Khám tại trung tâm",
-                    popularity: 29,
-                    sales: "29%",
-                    color: "bg-green-500",
-                  },
-                  {
-                    id: "03",
-                    name: "Khám tại nhà",
-                    popularity: 18,
-                    sales: "18%",
-                    color: "bg-purple-500",
-                  },
-                  {
-                    id: "04",
-                    name: "Tư vấn online",
-                    popularity: 25,
-                    sales: "25%",
-                    color: "bg-yellow-500",
-                  },
-                ].map((service) => (
-                  <tr key={service.id}>
-                    <td className="py-2">{service.id}</td>
-                    <td className="py-2">{service.name}</td>
-                    <td className="py-2">
+                {topServices.map((service: any, index: number) => (
+                  <tr key={index + 1}>
+                    <td className="py-2">{index + 1}</td>
+                    <td className="py-2">{service?.serviceName}</td>
+                    <td className="py-2 pr-2">
                       <div className="h-2 w-full rounded-full bg-gray-200">
                         <div
-                          className={`${service.color} h-2 rounded-full`}
-                          style={{ width: `${service.popularity}%` }}
+                          className={`h-2 rounded-full bg-blue-400`}
+                          style={{ width: `${service?.percentage}%` }}
                         ></div>
                       </div>
                     </td>
                     <td className="py-2">
                       <span
-                        className={`${service.color} rounded-full px-2 py-1 text-xs text-white`}
+                        className={`rounded-full bg-blue-600 px-2 py-1 text-xs text-white`}
                       >
-                        {service.sales}
+                        {service?.percentage}%
                       </span>
                     </td>
                   </tr>
@@ -276,41 +271,19 @@ const Dashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                {[
-                  {
-                    id: "01",
-                    name: "Nguyễn Thị Hồng Hạnh",
-                    amount: "923,450đ",
-                    usageCount: 15,
-                  },
-                  {
-                    id: "02",
-                    name: "Lê Thị Ánh Hồng",
-                    amount: "567,800đ",
-                    usageCount: 10,
-                  },
-                  {
-                    id: "03",
-                    name: "Đỗ Dũng",
-                    amount: "200,000đ",
-                    usageCount: 2,
-                  },
-                  {
-                    id: "04",
-                    name: "Tân Thép",
-                    amount: "150,000đ",
-                    usageCount: 1,
-                  },
-                ].map((customer) => (
-                  <tr key={customer.id}>
-                    <td className="py-2">{customer.id}</td>
-                    <td className="py-2">{customer.name}</td>
-                    <td className="py-2 text-center font-bold">
-                      {customer.amount}
+                {topCustomers.map((customer: any, index: number) => (
+                  <tr key={index + 1}>
+                    <td className="py-2">{index + 1}</td>
+                    <td className="py-2">{customer.customerName}</td>
+                    <td className="py-2 font-bold">
+                      {new Intl.NumberFormat("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      }).format(customer.totalAmount)}
                     </td>
-                    <td className="py-2 text-center">
+                    <td className="py-2">
                       <span className="rounded-full px-2 py-1 font-bold">
-                        {customer.usageCount}
+                        {customer.orderCount}
                       </span>
                     </td>
                   </tr>

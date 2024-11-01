@@ -262,7 +262,7 @@ export const getTopCustomers = async (req: Request, res: Response) => {
 
           return {
             customerId: customer._id,
-            name: customerInfo?.userId?.fullName || "Không xác định",
+            customerName: customerInfo?.userId.fullName,
             totalAmount: customer.totalAmount,
             orderCount: customer.orderCount,
           };
@@ -340,6 +340,7 @@ export const getTopServices = async (req: Request, res: Response) => {
         $group: {
           _id: "$serviceName",
           count: { $sum: 1 },
+          firstId: { $first: "$_id" },
         },
       },
       {
@@ -350,9 +351,10 @@ export const getTopServices = async (req: Request, res: Response) => {
     ]);
 
     const result = statistics.map((item) => ({
+      id: item.firstId,
       serviceName: item._id,
       count: item.count,
-      percentage: ((item.count / totalPayments) * 100).toFixed(2),
+      percentage: (item.count / totalPayments) * 100,
     }));
 
     return res.status(200).json({
