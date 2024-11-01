@@ -27,6 +27,7 @@ const userSchema = new mongoose.Schema<IUser>(
     gender: {
       type: String,
       enum: ["nam", "nữ"],
+      default: "nam",
     },
     isDisabled: {
       type: Boolean,

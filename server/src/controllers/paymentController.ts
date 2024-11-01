@@ -2,7 +2,7 @@ import { Response, Request } from "express";
 import PayOS from "@payos/node";
 import dotenv from "dotenv";
 import Payment from "../models/Payment";
-import { Appointment, DoctorSchedule } from "../models";
+import { Appointment, DoctorSchedule, Customer } from "../models";
 
 dotenv.config();
 
@@ -225,6 +225,231 @@ export const getPaymentByAppointmentId = async (
     console.error(error);
     return res.status(500).json({
       message: "Lỗi khi lấy thông tin thanh toán",
+      error: error.message,
+    });
+  }
+};
+
+export const getTopCustomers = async (req: Request, res: Response) => {
+  try {
+    const topCustomers = await Payment.aggregate([
+      {
+        $match: {
+          status: "PAID",
+        },
+      },
+      {
+        $group: {
+          _id: "$customerId",
+          totalAmount: { $sum: "$totalPrice" },
+          orderCount: { $sum: 1 },
+        },
+      },
+      {
+        $sort: {
+          totalAmount: -1,
+        },
+      },
+    ]);
+
+    const result = await Promise.all(
+      topCustomers.map(async (customer) => {
+        try {
+          const customerInfo = await Customer.findById(customer._id).populate(
+            "userId",
+            "fullName"
+          );
+
+          return {
+            customerId: customer._id,
+            name: customerInfo?.userId?.fullName || "Không xác định",
+            totalAmount: customer.totalAmount,
+            orderCount: customer.orderCount,
+          };
+        } catch (err) {
+          // Nếu không tìm thấy thông tin khách hàng, vẫn trả về dữ liệu cơ bản
+          return {
+            customerId: customer._id,
+            name: "Không xác định",
+            totalAmount: customer.totalAmount,
+            orderCount: customer.orderCount,
+          };
+        }
+      })
+    );
+
+    return res.status(200).json({
+      data: result,
+    });
+  } catch (error: any) {
+    console.error("Lỗi khi lấy top khách hàng:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Lỗi khi lấy top khach hang",
+      error: error.message,
+    });
+  }
+};
+
+export const getStatistics = async (req: Request, res: Response) => {
+  try {
+    const statistics = await Payment.aggregate([
+      {
+        $match: {
+          status: "PAID",
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          totalEarning: { $sum: "$totalPrice" },
+          totalBooking: { $sum: 1 },
+        },
+      },
+    ]);
+
+    // Vì group by null nên kết quả là array với 1 phần tử
+    const result = statistics[0] || {
+      totalEarning: 0,
+      totalBooking: 0,
+    };
+
+    return res.status(200).json({
+      data: result,
+    });
+  } catch (error: any) {
+    console.error("Lỗi:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Lỗi khi lấy thống kê thanh toán",
+      error: error.message,
+    });
+  }
+};
+
+export const getTopServices = async (req: Request, res: Response) => {
+  try {
+    const totalPayments = await Payment.countDocuments({ status: "PAID" });
+    const statistics = await Payment.aggregate([
+      {
+        $match: {
+          status: "PAID",
+        },
+      },
+      {
+        $group: {
+          _id: "$serviceName",
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $sort: {
+          count: -1,
+        },
+      },
+    ]);
+
+    const result = statistics.map((item) => ({
+      serviceName: item._id,
+      count: item.count,
+      percentage: ((item.count / totalPayments) * 100).toFixed(2),
+    }));
+
+    return res.status(200).json({
+      data: result,
+    });
+  } catch (error: any) {
+    console.error("Lỗi:", error);
+    return res.status(500).json({
+      message: "Lỗi khi lấy thống kê dịch vụ",
+    });
+  }
+};
+
+export const getBookingsByMonth = async (req: Request, res: Response) => {
+  try {
+    const bookingsByMonth = await Payment.aggregate([
+      {
+        $match: {
+          status: "PAID",
+        },
+      },
+      {
+        $group: {
+          _id: {
+            month: { $month: "$date" },
+            year: { $year: "$date" },
+          },
+          value: { $sum: 1 },
+        },
+      },
+      {
+        $sort: {
+          "_id.year": 1,
+          "_id.month": 1,
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          month: "$_id.month",
+          value: 1,
+        },
+      },
+    ]);
+
+    return res.status(200).json({
+      data: bookingsByMonth,
+    });
+  } catch (error: any) {
+    console.error("Lỗi:", error);
+    return res.status(500).json({
+      message: "Lỗi khi lấy thống kê cuộc hẹn theo tháng",
+      error: error.message,
+    });
+  }
+};
+
+export const getMoneyByMonth = async (req: Request, res: Response) => {
+  try {
+    const moneyByMonth = await Payment.aggregate([
+      {
+        $match: {
+          status: "PAID",
+        },
+      },
+      {
+        $group: {
+          _id: {
+            month: { $month: "$date" },
+            year: { $year: "$date" },
+          },
+          total: { $sum: "$totalPrice" },
+        },
+      },
+      {
+        $sort: {
+          "_id.year": 1,
+          "_id.month": 1,
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          month: "$_id.month",
+
+          total: 1,
+        },
+      },
+    ]);
+
+    return res.status(200).json({
+      data: moneyByMonth,
+    });
+  } catch (error: any) {
+    console.error("Lỗi:", error);
+    return res.status(500).json({
+      message: "Lỗi khi lấy thống kê doanh thu theo tháng",
       error: error.message,
     });
   }

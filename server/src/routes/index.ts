@@ -26,5 +26,5 @@ export {
   doctorScheduleRoutes,
   paymentRoutes,
   feedbackRoutes,
-  customerRoutes
+  customerRoutes,
 };
