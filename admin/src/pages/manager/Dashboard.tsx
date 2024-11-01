@@ -1,11 +1,55 @@
 import { HeaderPage } from "../../components";
 import { Calendar, Diagram, Profile2User } from "iconsax-react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Line } from "@antv/g2plot";
+import { handleAPI } from "../../apis/handleAPI";
+import { message, Spin } from "antd";
 
 const Dashboard = () => {
   const appointmentChartRef = useRef<any>(null);
   const revenueChartRef = useRef<any>(null);
+
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [totalEarning, setTotalEarning] = useState<number>(0);
+  const [totalBooking, setTotalBooking] = useState<number>(0);
+  const [totalCustomers, setTotalCustomers] = useState<number>(0);
+
+  useEffect(() => {
+    const getData = async () => {
+      setIsLoading(true);
+      try {
+        const apiEaringAndBooking = `/api/payments/statistics`;
+        const apiTotalCustomers = `/api/customers/total`;
+
+        const resEaringAndBooking = await handleAPI(
+          apiEaringAndBooking,
+          undefined,
+          "GET",
+        );
+
+        const resTotalCustomers = await handleAPI(
+          apiTotalCustomers,
+          undefined,
+          "GET",
+        );
+
+        if (resEaringAndBooking.data) {
+          setTotalEarning(resEaringAndBooking.data.totalEarning);
+          setTotalBooking(resEaringAndBooking.data.totalBooking);
+        }
+
+        if (resTotalCustomers.data) {
+          setTotalCustomers(resTotalCustomers.data.totalCustomers);
+        }
+      } catch (error: any) {
+        console.log(error);
+        message.error(error.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    getData();
+  }, []);
 
   useEffect(() => {
     // Dữ liệu cho biểu đồ số lượng cuộc hẹn
@@ -105,6 +149,14 @@ const Dashboard = () => {
     };
   }, []);
 
+  if (isLoading) {
+    return (
+      <div className="section flex items-center justify-center">
+        <Spin size="large" />
+      </div>
+    );
+  }
+
   return (
     <div className="section dashboard">
       <HeaderPage heading="Bảng điều khiển" />
@@ -117,7 +169,12 @@ const Dashboard = () => {
               </div>
               <div>
                 <h3 className="text-sm text-gray-600">Tổng doanh thu</h3>
-                <p className="text-xl font-semibold">24,345,550đ</p>
+                <p className="text-xl font-semibold">
+                  {new Intl.NumberFormat("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                  }).format(totalEarning)}
+                </p>
               </div>
             </div>
             <div className="relative flex items-center overflow-hidden rounded-lg bg-white p-6 shadow">
@@ -126,7 +183,7 @@ const Dashboard = () => {
               </div>
               <div>
                 <h3 className="text-sm text-gray-600">Tổng đặt lịch</h3>
-                <p className="text-xl font-semibold">202</p>
+                <p className="text-xl font-semibold">{totalBooking}</p>
               </div>
             </div>
             <div className="relative flex items-center overflow-hidden rounded-lg bg-white p-6 shadow">
@@ -135,7 +192,7 @@ const Dashboard = () => {
               </div>
               <div>
                 <h3 className="text-sm text-gray-600">Tổng khách hàng</h3>
-                <p className="text-xl font-semibold">554</p>
+                <p className="text-xl font-semibold">{totalCustomers}</p>
               </div>
             </div>
           </div>
@@ -232,8 +289,18 @@ const Dashboard = () => {
                     amount: "567,800đ",
                     usageCount: 10,
                   },
-                  { id: "03", name: "Đỗ Dũng", amount: "200,000đ", usageCount: 2 },
-                  { id: "04", name: "Tân Thép", amount: "150,000đ", usageCount: 1 },
+                  {
+                    id: "03",
+                    name: "Đỗ Dũng",
+                    amount: "200,000đ",
+                    usageCount: 2,
+                  },
+                  {
+                    id: "04",
+                    name: "Tân Thép",
+                    amount: "150,000đ",
+                    usageCount: 1,
+                  },
                 ].map((customer) => (
                   <tr key={customer.id}>
                     <td className="py-2">{customer.id}</td>
