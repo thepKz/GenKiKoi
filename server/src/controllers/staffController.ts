@@ -155,7 +155,6 @@ export const addNewStaff = async (req: Request, res: Response) => {
  * Method: PATCH
  * PROTECTED
  */
-
 export const getStaffById = async (req: Request, res: Response) => {
   const staffId = req.params.id;
   const staff = await Staff.findById(staffId).populate(
@@ -260,6 +259,7 @@ export const updateStaffById = async (req: Request, res: Response) => {
       gender: updatedUser.gender,
       photoUrl: updatedUser.photoUrl,
       position: updatedStaff.position,
+      phoneNumber: updatedUser.phoneNumber,
       email: updatedUser.email,
       workShift: updatedStaff.workShift,
       startDate: updatedStaff.startDate,

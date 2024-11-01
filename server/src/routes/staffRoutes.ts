@@ -11,12 +11,6 @@ import { authMiddleware, roleMiddleware } from "../middleware";
 const router = express.Router();
 
 router.get("/", authMiddleware, roleMiddleware(["manager"]), getAllStaffs);
-router.get(
-  "/:id",
-  authMiddleware,
-  roleMiddleware(["manager", "staff"]),
-  getStaffByStaffId
-);
 
 router.get("/:staffId", authMiddleware, getStaffByStaffId);
 
