@@ -394,7 +394,7 @@ export const getBookingsByMonth = async (req: Request, res: Response) => {
       {
         $project: {
           _id: 0,
-          month: "$_id.month",
+          month: { $concat: ["T", { $toString: "$_id.month" }] },
           value: 1,
         },
       },
@@ -426,7 +426,7 @@ export const getMoneyByMonth = async (req: Request, res: Response) => {
             month: { $month: "$date" },
             year: { $year: "$date" },
           },
-          total: { $sum: "$totalPrice" },
+          value: { $sum: "$totalPrice" },
         },
       },
       {
@@ -438,9 +438,8 @@ export const getMoneyByMonth = async (req: Request, res: Response) => {
       {
         $project: {
           _id: 0,
-          month: "$_id.month",
-
-          total: 1,
+          month: { $concat: ["T", { $toString: "$_id.month" }] },
+          value: 1,
         },
       },
     ]);

@@ -15,6 +15,8 @@ const Dashboard = () => {
   const [totalCustomers, setTotalCustomers] = useState<number>(0);
   const [topServices, setTopServices] = useState<any>([]);
   const [topCustomers, setTopCustomers] = useState<any>([]);
+  const [totalBookingByMonth, setTotalBookingByMonth] = useState<any>([]);
+  const [totalMoneyByMonth, setTotalMoneyByMonth] = useState<any>([]);
 
   useEffect(() => {
     const getData = async () => {
@@ -24,6 +26,8 @@ const Dashboard = () => {
         const apiTotalCustomers = `/api/customers/total`;
         const apiTopServices = `/api/payments/top-services`;
         const apiTopCustomers = `/api/payments/top-customers`;
+        const apiTotalBookingByMonth = `/api/payments/booking-by-month`;
+        const apiTotalMoneyByMonth = `/api/payments/money-by-month`;
 
         const resEaringAndBooking = await handleAPI(
           apiEaringAndBooking,
@@ -49,6 +53,18 @@ const Dashboard = () => {
           "GET",
         );
 
+        const resTotalBookingByMonth = await handleAPI(
+          apiTotalBookingByMonth,
+          undefined,
+          "GET",
+        );
+
+        const resTotalMoneyByMonth = await handleAPI(
+          apiTotalMoneyByMonth,
+          undefined,
+          "GET",
+        );
+
         if (resEaringAndBooking.data) {
           setTotalEarning(resEaringAndBooking.data.totalEarning);
           setTotalBooking(resEaringAndBooking.data.totalBooking);
@@ -65,6 +81,14 @@ const Dashboard = () => {
         if (resTopCustomers.data) {
           setTopCustomers(resTopCustomers.data);
         }
+
+        if (resTotalBookingByMonth.data) {
+          setTotalBookingByMonth(resTotalBookingByMonth.data);
+        }
+
+        if (resTotalMoneyByMonth.data) {
+          setTotalMoneyByMonth(resTotalMoneyByMonth.data);
+        }
       } catch (error: any) {
         console.log(error);
         message.error(error.message);
@@ -76,41 +100,8 @@ const Dashboard = () => {
   }, []);
 
   useEffect(() => {
-    // Dữ liệu cho biểu đồ số lượng cuộc hẹn
-    const appointmentData = [
-      { month: "T1", value: 65 },
-      { month: "T2", value: 59 },
-      { month: "T3", value: 80 },
-      { month: "T4", value: 81 },
-      { month: "T5", value: 56 },
-      { month: "T6", value: 55 },
-      { month: "T7", value: 40 },
-      { month: "T8", value: 50 },
-      { month: "T9", value: 60 },
-      { month: "T10", value: 70 },
-      { month: "T11", value: 80 },
-      { month: "T12", value: 90 },
-    ];
-
-    // Dữ liệu cho biểu đồ doanh thu
-    const revenueData = [
-      { month: "T1", value: 150 },
-      { month: "T2", value: 200 },
-      { month: "T3", value: 180 },
-      { month: "T4", value: 220 },
-      { month: "T5", value: 250 },
-      { month: "T6", value: 280 },
-      { month: "T7", value: 300 },
-      { month: "T8", value: 350 },
-      { month: "T9", value: 400 },
-      { month: "T10", value: 380 },
-      { month: "T11", value: 420 },
-      { month: "T12", value: 450 },
-    ];
-
-    // Tạo biểu đồ số lượng cuộc hẹn
     const appointmentChart = new Line(appointmentChartRef.current, {
-      data: appointmentData,
+      data: totalBookingByMonth,
       xField: "month",
       yField: "value",
       seriesField: "type",
@@ -137,9 +128,8 @@ const Dashboard = () => {
 
     appointmentChart.render();
 
-    // Tạo biểu đồ doanh thu
     const revenueChart = new Line(revenueChartRef.current, {
-      data: revenueData,
+      data: totalMoneyByMonth,
       xField: "month",
       yField: "value",
       seriesField: "type",
@@ -171,7 +161,7 @@ const Dashboard = () => {
       appointmentChart.destroy();
       revenueChart.destroy();
     };
-  }, []);
+  }, [totalBookingByMonth, totalMoneyByMonth]);
 
   if (isLoading) {
     return (

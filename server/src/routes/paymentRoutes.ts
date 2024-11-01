@@ -5,7 +5,7 @@ import {
   getBookingsByMonth,
   getMoneyByMonth,
   getPaymentByAppointmentId,
-  getPaymentById,
+  // getPaymentById,
   getPaymentsByCustomerId,
   getStatistics,
   getTopCustomers,
