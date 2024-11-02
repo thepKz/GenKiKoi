@@ -1,4 +1,4 @@
-import { Breadcrumb, Button, message, TableProps, Tag } from "antd";
+import { Breadcrumb, Button, message, Spin, TableProps, Tag } from "antd";
 import { HeaderPage } from "../../components";
 import { CustomTable } from "../../share";
 import { getValue } from "../../utils";
@@ -80,6 +80,14 @@ const Customers = () => {
     },
   ];
 
+  if (isLoading) {
+    return (
+      <div className="section flex items-center justify-center">
+        <Spin size="large" />
+      </div>
+    );
+  }
+
   return (
     <div className="section">
       <HeaderPage heading="Danh sách khách hàng" placeholder="Tìm khách hàng" />
@@ -99,11 +107,7 @@ const Customers = () => {
         ]}
       />
       <div className="mt-2">
-        <CustomTable
-          loading={isLoading}
-          columns={columns}
-          dataSource={customers}
-        />
+        <CustomTable columns={columns} dataSource={customers} />
       </div>
     </div>
   );

@@ -349,16 +349,24 @@ export const getScheduleByDoctorId = async (req: Request, res: Response) => {
     }
 
     const doctorSchedule = await DoctorSchedule.findOne({ doctorId }).select(
-      "weekSchedule.dayOfWeek"
-    );
-
-    const listDates = doctorSchedule?.weekSchedule.map(
-      (date) => date.dayOfWeek
+      "weekSchedule"
     );
 
     if (!doctorSchedule) {
       return res.status(404).json({ message: "Không tìm thấy lịch bác sĩ" });
     }
+
+    // Lọc các ngày trong tương lai
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const futureDates = doctorSchedule.weekSchedule
+      .filter(schedule => {
+        const [day, month, year] = schedule.dayOfWeek.split('/').map(Number);
+        const scheduleDate = new Date(year, month - 1, day);
+        return scheduleDate >= today;
+      })
+      .map(schedule => schedule.dayOfWeek);
 
     const formattedData = {
       doctorName: doctor.userId.fullName,
@@ -367,7 +375,7 @@ export const getScheduleByDoctorId = async (req: Request, res: Response) => {
       gender: doctor.userId.gender,
       startDate: doctor.startDate,
       movingService: doctor.movingService,
-      doctorSchedule: listDates,
+      doctorSchedule: futureDates,
     };
 
     return res.status(200).json({ data: formattedData });

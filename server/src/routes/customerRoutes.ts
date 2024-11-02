@@ -10,7 +10,12 @@ import {
 
 const router = express.Router();
 
-router.get("/", authMiddleware, roleMiddleware(["manager"]), getAllCustomers);
+router.get(
+  "/",
+  authMiddleware,
+  roleMiddleware(["manager", "staff"]),
+  getAllCustomers
+);
 
 router.patch("/:customerId", updateProfileByCustomerId);
 

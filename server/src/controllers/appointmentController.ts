@@ -82,7 +82,7 @@ export const getAllAppointmentsByDoctorId = async (
 
 export const updateStatusAppointment = async (req: Request, res: Response) => {
   const appointmentId = req.params.appointmentId;
-  let { status } = req.body;
+  let { status, notes } = req.body;
   try {
     const updatedAppointment = await Appointment.findByIdAndUpdate(
       appointmentId,
@@ -96,7 +96,9 @@ export const updateStatusAppointment = async (req: Request, res: Response) => {
             ? "Đã hủy"
             : "Đã xác nhận",
         notes:
-          status === "PENDING"
+          notes.length > 0
+            ? notes
+            : status === "PENDING"
             ? "Quý khách cần thanh toán dịch vụ để được xác nhận!"
             : status === "CANCELLED"
             ? "Quý khách sẽ được hoàn tiền theo chính sách của công ty!"
