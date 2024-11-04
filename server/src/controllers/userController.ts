@@ -3,13 +3,7 @@ import { Customer, User } from "../models";
 import { AuthRequest } from "../types";
 import { ICustomer } from "../models/Customer";
 import { IUser } from "../models/User";
-
-/**
- * Người Làm: Thép, Dũng
- * Người Test: Thép
- * Loại Test: API TEST (Đã xong), UNIT TEST (Đang làm), E2E TEST (Đang làm)
- * Chỉnh Sửa Lần Cuối : 13/10/2024 (Thép)
- */
+import bcrypt from "bcryptjs";
 
 export const getUser = async (req: AuthRequest, res: Response) => {
   try {
@@ -88,7 +82,7 @@ export const updateProfile = async (req: AuthRequest, res: Response) => {
       photoUrl,
       gender,
     };
-    
+
     if (username) {
       userUpdateData.username = username.toLowerCase();
     }
@@ -189,4 +183,34 @@ export const checkPhoneNumber = async (req: Request, res: Response) => {
 
   const user = await User.findOne({ phoneNumber });
   return res.status(200).json({ exists: !!user, userId: user?._id });
+};
+
+export const changePassword = async (req: AuthRequest, res: Response) => {
+  try {
+    const userId = req.user?._id;
+    const { password, newPassword } = req.body;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "Không tìm thấy người dùng" });
+    }
+
+    const isValidPassword = await bcrypt.compare(password, user.password);
+    if (!isValidPassword) {
+      return res.status(400).json({ 
+        message: "Mật khẩu hiện tại không đúng",
+        password: "Mật khẩu hiện tại không đúng"
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedPassword;
+    await user.save();
+
+    return res.status(200).json({ message: "Đổi mật khẩu thành công" });
+  } catch (error: any) {
+    return res.status(500).json({
+      message: error.message || "Đã xảy ra lỗi khi đổi mật khẩu"
+    });
+  }
 };

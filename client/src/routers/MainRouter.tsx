@@ -183,7 +183,9 @@ const MainRouter = () => {
 
         <Route
           path="/change-password"
-          element={<ChangePassword />}
+          element={
+            auth.token && auth.isVerified ? <ChangePassword /> : <Navigate to={"/sign-in"} />
+          }
         />
 
         <Route

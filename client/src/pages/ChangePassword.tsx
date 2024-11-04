@@ -2,10 +2,10 @@ import { Button, ConfigProvider, Form, Input, message } from "antd";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
-import { handleAPI } from "../../apis/handleAPI";
-import Logo from "../../assets/logo-transparent.png";
-import { addAuth } from "../../redux/reducers/authReducer";
-import { handleEnterPress } from "../../utils";
+import { handleAPI } from "../apis/handleAPI";
+import Logo from "../assets/logo-transparent.png";
+import { removeAuth } from "../redux/reducers/authReducer";
+import { handleEnterPress } from "../utils";
 
 const ChangePassword = () => {
   const [form] = Form.useForm();
@@ -15,21 +15,18 @@ const ChangePassword = () => {
   const dispatch = useDispatch();
 
   const handleSubmit = async (values: any) => {
-    const api = `/api/auth/login`;
+    const api = `/api/users/change-password`;
 
     try {
       setIsLoading(true);
-      const res: any = await handleAPI(api, values, "POST");
-      if (res.data) {
+      const res: any = await handleAPI(api, values, "PATCH");
+      if (res.message) {
         message.success(res.message);
-        dispatch(addAuth(res.data));
+        dispatch(removeAuth({}));
       }
     } catch (error: any) {
       console.log(error);
-      form.setFields([
-        { name: "login", errors: error.login ? [error.login] : [] },
-        { name: "password", errors: error.password ? [error.password] : [] },
-      ]);
+      form.setFields([{ name: "password", errors: error.password ? [error.password] : [] }]);
       message.error(error.message);
     } finally {
       setIsLoading(false);
