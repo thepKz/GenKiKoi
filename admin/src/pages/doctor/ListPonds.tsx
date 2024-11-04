@@ -1,9 +1,9 @@
-import { Breadcrumb, Button, Card, Spin, Tag } from "antd";
+import { Breadcrumb, Button, Card, Spin } from "antd";
 import { Stickynote } from "iconsax-react";
-import { Link, useLocation } from "react-router-dom";
-import { HeaderPage } from "../../components";
 import { useEffect, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { handleAPI } from "../../apis/handleAPI";
+import { HeaderPage } from "../../components";
 import { removeVietnameseTones } from "../../utils";
 
 const ListPonds = () => {

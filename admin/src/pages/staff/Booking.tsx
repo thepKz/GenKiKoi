@@ -1,24 +1,23 @@
 import {
+  Button,
+  Card,
   Col,
+  ConfigProvider,
+  Divider,
   Form,
+  Input,
   message,
+  Modal,
   Row,
   Select,
   SelectProps,
-  Input,
-  Spin,
-  ConfigProvider,
-  Card,
-  Button,
-  Divider,
-  Modal,
 } from "antd";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
-import VietNamProvinces from "../../data";
 import { handleAPI } from "../../apis/handleAPI";
-import { CustomCalendar } from "../../share";
 import { HeaderPage } from "../../components";
+import VietNamProvinces from "../../data";
+import { CustomCalendar } from "../../share";
 
 const { TextArea } = Input;
 
