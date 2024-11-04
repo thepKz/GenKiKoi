@@ -6,6 +6,7 @@ import {
   AboutUs,
   Appointment,
   Booking,
+  ChangePassword,
   ConsultingTreatment,
   Doctors,
   FAQ,
@@ -178,6 +179,11 @@ const MainRouter = () => {
               />
             )
           }
+        />
+
+        <Route
+          path="/change-password"
+          element={<ChangePassword />}
         />
 
         <Route
