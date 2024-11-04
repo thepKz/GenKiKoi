@@ -4,9 +4,9 @@ import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import Background from "../assets/background.webp";
 
-import Image2 from "../assets/Image1.jpg";
-import Image1 from "../assets/Image2.jpg";
-import Image3 from "../assets/Image3.jpg";
+import Image2 from "../assets/Image1.png";
+import Image1 from "../assets/Image2.png";
+import Image3 from "../assets/Image3.png";
 
 import Avatar1 from "../assets/avatar1.png";
 import Avatar2 from "../assets/avatar2.png";
