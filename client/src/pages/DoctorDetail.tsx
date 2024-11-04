@@ -1,8 +1,8 @@
-import { Avatar, Button, Card, ConfigProvider } from "antd";
+import { Avatar, Button, Card } from "antd";
 import { ArrowRight2 } from "iconsax-react";
-import { AnimatedSection } from "../share";
-import Doctor1 from "../assets/doctor1.webp";
 import { useEffect } from "react";
+import Doctor1 from "../assets/doctor1.webp";
+import { AnimatedSection } from "../share";
 
 const DoctorDetail = () => {
   useEffect(() => {

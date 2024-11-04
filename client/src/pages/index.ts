@@ -2,12 +2,12 @@ import AboutUs from "./AboutUs";
 import SignIn from "./auth/SignIn";
 import SignUp from "./auth/SignUp";
 import Booking from "./Booking";
+import ChangePassword from "./ChangePassword";
 import Doctors from "./Doctors";
 import FAQ from "./FAQ";
 import Home from "./Home";
 import Images from "./Images";
 import Appointment from "./my-account/Appointment";
-import ChangePassword from "./ChangePassword";
 import History from "./my-account/History";
 import InspectionRecord from "./my-account/InspectionRecord";
 import ListFishRecords from "./my-account/ListFishRecords";
@@ -25,10 +25,8 @@ import VerifyAccount from "./VerifyAccount";
 export {
   AboutUs,
   Appointment,
-  Booking,
-  ConsultingTreatment,
-  Doctors,
-  FAQ,
+  Booking, ChangePassword, ConsultingTreatment,
+  Doctors, FAQ,
   History,
   Home,
   Images,
