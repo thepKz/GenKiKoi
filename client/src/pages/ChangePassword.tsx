@@ -33,19 +33,27 @@ const ChangePassword = () => {
     }
   };
   return (
-    <div className="container m-5 mx-auto px-10 text-black">
-      <div className="mb-16">
-        <Link to={"/"}>
-          <div className="flex w-20 items-center gap-2">
-            <img
-              src={Logo}
-              alt=""
-            />
-            <h3 className="text-2xl font-bold text-blue-primary">GenKiKoi</h3>
-          </div>
-        </Link>
-      </div>
-      <div className="">
+    <ConfigProvider
+      theme={{
+        inherit: false,
+        token: {
+          fontFamily: "Pro-Rounded",
+        },
+      }}
+    >
+      <div className="container m-5 mx-auto px-10 text-black">
+        <div className="mb-16">
+          <Link to={"/"}>
+            <div className="flex w-20 items-center gap-2">
+              <img
+                src={Logo}
+                alt=""
+              />
+              <h3 className="text-2xl font-bold text-blue-primary">GenKiKoi</h3>
+            </div>
+          </Link>
+        </div>
+
         <div className="mx-auto mt-24 w-96">
           <div className="text-center">
             <h1 className="heading-2 text-blue-primary">Đổi mật khẩu</h1>
@@ -128,28 +136,19 @@ const ChangePassword = () => {
             </Form.Item>
           </Form>
           <div className="">
-            <ConfigProvider
-              theme={{
-                inherit: false,
-                token: {
-                  fontFamily: "Pro-Rounded",
-                },
-              }}
+            <Button
+              loading={isLoading}
+              size="large"
+              type="primary"
+              className="mt-3 w-full"
+              onClick={() => form.submit()}
             >
-              <Button
-                loading={isLoading}
-                size="large"
-                type="primary"
-                className="mt-3 w-full"
-                onClick={() => form.submit()}
-              >
-                Xác nhận đổi mật khẩu
-              </Button>
-            </ConfigProvider>
+              Xác nhận đổi mật khẩu
+            </Button>
           </div>
         </div>
       </div>
-    </div>
+    </ConfigProvider>
   );
 };
 

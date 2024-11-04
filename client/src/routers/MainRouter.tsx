@@ -38,6 +38,7 @@ import TermsOfService from "../pages/TermsOfService";
 import ServicePriceTable from "../pages/services/ServicePriceTable";
 import Feedback from "../pages/Feedback";
 import { Spin } from "antd";
+import ForgotPassword from "../pages/ForgotPassword";
 
 const MainRouter = () => {
   const auth: IAuth = useSelector((state: any) => state.authReducer.data);
@@ -186,6 +187,11 @@ const MainRouter = () => {
           element={
             auth.token && auth.isVerified ? <ChangePassword /> : <Navigate to={"/sign-in"} />
           }
+        />
+
+        <Route
+          path="/forgot-password"
+          element={<ForgotPassword />}
         />
 
         <Route
