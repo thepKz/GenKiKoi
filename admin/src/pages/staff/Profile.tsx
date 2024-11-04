@@ -76,6 +76,20 @@ const Profile = () => {
     }
   };
 
+  const handleCheckExistence = async (field: string, value: string) => {
+    const api = `/api/users/check-${field}`;
+    try {
+      const res: any = await handleAPI(api, { [field]: value }, "POST");
+
+      if (res.exists && res.userId !== auth.id) {
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   if (isLoading) {
     return <Spin size="large" />;
   }
@@ -205,6 +219,21 @@ const Profile = () => {
                       pattern: /^[0-9]{10}$/,
                       message: "Số điện thoại không hợp lệ",
                     },
+                    {
+                      validator: async (_, value) => {
+                        const exists = await handleCheckExistence(
+                          "phoneNumber",
+                          value,
+                        );
+
+                        if (exists) {
+                          return Promise.reject(
+                            new Error("Số điện thoại này đã được đăng ký!"),
+                          );
+                        }
+                        return Promise.resolve();
+                      },
+                    },
                   ]}
                   validateDebounce={1000}
                 >
@@ -240,9 +269,8 @@ const Profile = () => {
                   <Select
                     placeholder="Ca làm"
                     options={[
-                      { value: "Morning", label: "Ca sáng" },
-                      { value: "Afternoon", label: "Ca chiều" },
-                      { value: "Night", label: "Ca tối" },
+                      { value: "Sáng", label: "Ca sáng" },
+                      { value: "Chiều", label: "Ca chiều" },
                     ]}
                   />
                 </Form.Item>

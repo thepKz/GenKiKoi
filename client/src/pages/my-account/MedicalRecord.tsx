@@ -1,17 +1,50 @@
-import { Button, Card, ConfigProvider, Spin, Tag } from "antd";
-import { useEffect, useState } from "react";
+import {
+  Avatar,
+  Button,
+  Card,
+  ConfigProvider,
+  Divider,
+  Form,
+  Input,
+  message,
+  Modal,
+  Select,
+  Spin,
+  Tag,
+} from "antd";
+import { useEffect, useRef, useState } from "react";
 import { handleAPI } from "../../apis/handleAPI";
 import { useSelector } from "react-redux";
 import { IAuth } from "../../types";
-import { getValue } from "../../utils";
+import { getValue, uploadFile } from "../../utils";
 import { Link } from "react-router-dom";
 import { HeaderComponent } from "../../components";
+import { GiCirclingFish } from "react-icons/gi";
+
+const { TextArea } = Input;
 
 const MedicalRecord = () => {
+  const inpRef = useRef<any>();
+  const [form] = Form.useForm();
+  const [file, setFile] = useState(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [fishes, setFishes] = useState<any>([]);
+  const [selectedFish, setSelectedFish] = useState<any>(null);
+  const [isFishModalOpen, setIsFishModalOpen] = useState<boolean>(false);
+  const [isLoadingForm, setIsLoadingForm] = useState<boolean>(false);
 
   const auth: IAuth = useSelector((state: any) => state.authReducer.data);
+
+  const handleOpenFishModal = async (fish: any) => {
+    try {
+      form.setFieldsValue(fish);
+      setSelectedFish(fish);
+      setIsFishModalOpen(true);
+    } catch (error: any) {
+      console.log(error);
+      message.error(error.message);
+    }
+  };
 
   useEffect(() => {
     const getAllFishesByCustomer = async () => {
@@ -28,6 +61,32 @@ const MedicalRecord = () => {
     };
     getAllFishesByCustomer();
   }, []);
+
+  const handleFishSubmit = async (values: any) => {
+    try {
+      setIsLoadingForm(true);
+      let api = `/api/fishes/${selectedFish._id}`;
+
+      if (file) {
+        values.photoUrl = await uploadFile(file, "fishes");
+      }
+
+      const res: any = await handleAPI(api, values, "PATCH");
+
+      if (res.data) {
+        setFishes(fishes.map((fish: any) => (fish._id === selectedFish._id ? res.data : fish)));
+      }
+
+      message.success(res.message);
+    } catch (error: any) {
+      console.log(error);
+      message.error(error.message);
+    } finally {
+      setIsLoadingForm(false);
+      setIsFishModalOpen(false);
+      form.resetFields();
+    }
+  };
 
   if (isLoading) {
     return <Spin />;
@@ -91,15 +150,127 @@ const MedicalRecord = () => {
                       {fish.description}
                     </p>
                   </div>
-                  <div className="">
+                  <div className="flex w-1/5 flex-col items-end gap-2">
                     <Link to={`/my-account/medical-record/fishes/${fish._id}/records`}>
                       <Button type="primary">Xem chi tiết</Button>
                     </Link>
+                    <Button
+                      style={{ width: "fit-content" }}
+                      onClick={() => handleOpenFishModal(fish)}
+                    >
+                      Chỉnh sửa
+                    </Button>
                   </div>
                 </div>
               </div>
             </Card>
           ))}
+        </div>
+        <Modal
+          okText="Cập nhật"
+          cancelText="Hủy"
+          open={isFishModalOpen}
+          onCancel={() => setIsFishModalOpen(false)}
+          style={{ top: 30 }}
+          onOk={() => form.submit()}
+        >
+          <div className="mt-3">
+            <h3 className="heading-4 mb-3">Cập nhật thông tin cá</h3>
+            <Form
+              disabled={isLoadingForm}
+              form={form}
+              size="large"
+              layout="vertical"
+              onFinish={handleFishSubmit}
+            >
+              <Form.Item name="photoUrl">
+                <label
+                  htmlFor="inpFile"
+                  className="flex justify-center"
+                >
+                  {file ? (
+                    <Avatar
+                      shape="square"
+                      style={{
+                        backgroundColor: "transparent",
+                        border: "2px dashed #ccc",
+                      }}
+                      icon={<GiCirclingFish color="#ccc" />}
+                      src={URL.createObjectURL(file)}
+                      size={130}
+                    />
+                  ) : (
+                    <Avatar
+                      shape="square"
+                      style={{
+                        backgroundColor: "transparent",
+                        border: "2px dashed #ccc",
+                        margin: "0px auto",
+                      }}
+                      icon={<GiCirclingFish color="#ccc" />}
+                      src={selectedFish?.photoUrl}
+                      size={130}
+                    />
+                  )}
+                </label>
+              </Form.Item>
+              <Divider />
+              <Form.Item
+                name="size"
+                label="Kích thước (cm)"
+                required
+              >
+                <Input
+                  min={0}
+                  type="number"
+                  placeholder="Nhập kích thước"
+                />
+              </Form.Item>
+              <Form.Item
+                name="age"
+                label="Tuổi"
+                required
+              >
+                <Input
+                  min={1}
+                  type="number"
+                  placeholder="Nhập tuổi"
+                />
+              </Form.Item>
+              <Form.Item
+                name="gender"
+                label="Giới tính"
+                required
+              >
+                <Select
+                  placeholder="Chọn giới tính"
+                  options={[
+                    { value: "đực", label: "Đực" },
+                    { value: "cái", label: "Cái" },
+                  ]}
+                />
+              </Form.Item>
+              <Form.Item
+                name="description"
+                label="Mô tả"
+                required
+              >
+                <TextArea
+                  placeholder="Nhập mô tả"
+                  rows={2}
+                />
+              </Form.Item>
+            </Form>
+          </div>
+        </Modal>
+        <div className="hidden">
+          <input
+            ref={inpRef}
+            type="file"
+            accept="image/*"
+            id="inpFile"
+            onChange={(e: any) => setFile(e.target.files[0])}
+          />
         </div>
       </div>
     </ConfigProvider>

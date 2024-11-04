@@ -80,7 +80,11 @@ const AssignCalendar = () => {
   };
 
   if (isLoading) {
-    return <Spin />;
+    return (
+      <div className="section flex items-center justify-center">
+        <Spin size="large" />
+      </div>
+    );
   }
 
   return (

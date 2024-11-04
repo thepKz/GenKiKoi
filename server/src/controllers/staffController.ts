@@ -70,6 +70,7 @@ export const getStaffByStaffId = async (req: Request, res: Response) => {
  * Method: POST
  * PROTECTED
  */
+
 export const addNewStaff = async (req: Request, res: Response) => {
   try {
     const { fullName, gender, position, email, workShift } = req.body;
@@ -154,42 +155,92 @@ export const addNewStaff = async (req: Request, res: Response) => {
  * Method: PATCH
  * PROTECTED
  */
+export const getStaffById = async (req: Request, res: Response) => {
+  const staffId = req.params.id;
+  const staff = await Staff.findById(staffId).populate(
+    "userId",
+    "fullName email phoneNumber gender photoUrl"
+  );
+  if (!staff) {
+    return res.status(404).json({ message: "Không tìm thấy nhân viên" });
+  }
+  const formattedStaff = {
+    _id: staff._id,
+    position: staff.position,
+    workShift: staff.workShift,
+    fullName: staff?.userId?.fullName,
+    email: staff?.userId?.email,
+    phoneNumber: staff?.userId?.phoneNumber,
+    gender: staff?.userId?.gender,
+    photoUrl: staff?.userId?.photoUrl,
+  };
+  res.status(200).json(formattedStaff);
+};
+
 export const updateStaffById = async (req: Request, res: Response) => {
   try {
     const { staffId } = req.params;
     const {
+      phoneNumber,
+      photoUrl,
       fullName,
       gender,
       position,
       email,
       workShift,
-      photoUrl,
-      phoneNumber,
     } = req.body;
 
+    if (
+      !phoneNumber ||
+      !photoUrl ||
+      !fullName ||
+      !gender ||
+      !position ||
+      !email
+    ) {
+      return res
+        .status(400)
+        .json({ message: "Vui lòng cung cấp đầy đủ thông tin" });
+    }
+
+    // check nhan vien co ton tai khong
     const existsStaff = await Staff.findById(staffId);
 
     if (!existsStaff) {
       return res.status(404).json({ message: "Không tìm thấy nhân viên" });
     }
 
-    const existsUser = await User.findOne({
+    // check email co bi trung khong
+    const checkUserEmail = await User.findOne({
       email,
       _id: { $ne: existsStaff.userId },
     });
 
-    if (existsUser) {
+    if (checkUserEmail) {
       return res
         .status(400)
         .json({ message: "Email đã được sử dụng bởi người dùng khác" });
     }
+    // check phone number co bi trung khong
+    const checkPhoneNumber = await Staff.findOne({
+      phoneNumber,
+      _id: { $ne: existsStaff._id },
+    });
 
+    if (checkPhoneNumber) {
+      return res
+        .status(400)
+        .json({ message: "Số điện thoại đã được sử dụng bởi nhân viên khác" });
+    }
+
+    // update staff
     const updatedStaff = await Staff.findByIdAndUpdate(
       staffId,
       { position, workShift },
       { new: true, runValidators: true }
     );
 
+    // update user
     const updatedUser = await User.findByIdAndUpdate(
       existsStaff.userId,
       { fullName, email, gender, photoUrl, phoneNumber },
@@ -208,6 +259,7 @@ export const updateStaffById = async (req: Request, res: Response) => {
       gender: updatedUser.gender,
       photoUrl: updatedUser.photoUrl,
       position: updatedStaff.position,
+      phoneNumber: updatedUser.phoneNumber,
       email: updatedUser.email,
       workShift: updatedStaff.workShift,
       startDate: updatedStaff.startDate,
@@ -218,6 +270,7 @@ export const updateStaffById = async (req: Request, res: Response) => {
       data: updatedInfo,
     });
   } catch (error: any) {
+    console.log(error);
     return res.status(500).json({ message: error.message });
   }
 };

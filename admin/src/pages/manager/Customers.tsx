@@ -1,4 +1,4 @@
-import { Breadcrumb, Button, message, TableProps, Tag } from "antd";
+import { Breadcrumb, Button, message, Spin, TableProps, Tag } from "antd";
 import { HeaderPage } from "../../components";
 import { CustomTable } from "../../share";
 import { getValue } from "../../utils";
@@ -6,10 +6,16 @@ import { Link } from "react-router-dom";
 import { CalendarSearch } from "iconsax-react";
 import { useEffect, useState } from "react";
 import { handleAPI } from "../../apis/handleAPI";
+import { removeVietnameseTones } from "../../utils";
 
 const Customers = () => {
   const [customers, setCustomers] = useState([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+  });
+  const [searchText, setSearchText] = useState("");
 
   useEffect(() => {
     const getCustomers = async () => {
@@ -27,13 +33,34 @@ const Customers = () => {
     getCustomers();
   }, []);
 
+  const handleSearch = (value: string) => {
+    setSearchText(value.toLowerCase());
+  };
+
+  const filteredCustomers = customers.filter((customer: any) => {
+    const searchValue = removeVietnameseTones(searchText.toLowerCase());
+    const customerName = removeVietnameseTones(
+      (customer.customerName || "").toLowerCase(),
+    );
+    const email = customer.email.toLowerCase();
+    const phoneNumber = customer.phoneNumber || "";
+
+    return (
+      customerName.includes(searchValue) ||
+      email.includes(searchText) ||
+      phoneNumber.includes(searchText)
+    );
+  });
+
   const columns: TableProps["columns"] = [
     {
       key: "#",
       title: "#",
       dataIndex: "key",
       width: 30,
-      render: (_text, _record, index) => index + 1,
+      render: (_text, _record, index) => {
+        return (pagination.current - 1) * pagination.pageSize + index + 1;
+      },
     },
     {
       key: "Tên khách hàng",
@@ -80,9 +107,21 @@ const Customers = () => {
     },
   ];
 
+  if (isLoading) {
+    return (
+      <div className="section flex items-center justify-center">
+        <Spin size="large" />
+      </div>
+    );
+  }
+
   return (
     <div className="section">
-      <HeaderPage heading="Danh sách khách hàng" placeholder="Tìm khách hàng" />
+      <HeaderPage
+        heading="Danh sách khách hàng"
+        placeholder="Tìm khách hàng"
+        onSearch={handleSearch}
+      />
       <Breadcrumb
         separator=">"
         items={[
@@ -102,7 +141,8 @@ const Customers = () => {
         <CustomTable
           loading={isLoading}
           columns={columns}
-          dataSource={customers}
+          dataSource={filteredCustomers}
+          onChange={(pagination) => setPagination(pagination)}
         />
       </div>
     </div>

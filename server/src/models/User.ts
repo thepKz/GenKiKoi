@@ -9,6 +9,8 @@ export interface IUser {
   role: "customer" | "staff" | "doctor" | "manager";
   gender?: "nam" | "nữ";
   isDisabled: boolean;
+  resetPasswordToken?: string;
+  resetPasswordExpires?: Date;
 }
 
 const userSchema = new mongoose.Schema<IUser>(
@@ -27,11 +29,14 @@ const userSchema = new mongoose.Schema<IUser>(
     gender: {
       type: String,
       enum: ["nam", "nữ"],
+      default: "nam",
     },
     isDisabled: {
       type: Boolean,
       default: false,
     },
+    resetPasswordToken: String,
+    resetPasswordExpires: Date,
   },
   { timestamps: true }
 );

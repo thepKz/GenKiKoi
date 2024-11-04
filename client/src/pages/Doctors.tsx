@@ -1,9 +1,11 @@
+
 import { Button, Card, Rate } from 'antd';
 import { ArrowRight2 } from 'iconsax-react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Doctor1 from "../assets/doctor1.webp";
 import { AnimatedSection, DividerComponent } from "../share";
+
 // import Doctor2 from "../assets/doctor2.png";
 
 const Doctors = () => {
@@ -15,20 +17,20 @@ const Doctors = () => {
 
   const [doctors] = useState([
     {
-      id: 'D1',
-      name: 'Dr. Nguyễn Văn A',
-      specialty: 'Chuyên gia cá Koi',
+      id: "D1",
+      name: "Dr. Nguyễn Văn A",
+      specialty: "Chuyên gia cá Koi",
       rating: 4.8,
       image: Doctor1,
-      description: 'Bác sĩ Nguyễn Văn A có hơn 10 năm kinh nghiệm trong lĩnh vực chăm sóc cá Koi.',
+      description: "Bác sĩ Nguyễn Văn A có hơn 10 năm kinh nghiệm trong lĩnh vực chăm sóc cá Koi.",
     },
     {
-      id: 'D2',
-      name: 'Dr. Trần Thị B',
-      specialty: 'Chuyên gia bệnh lý thủy sinh',
+      id: "D2",
+      name: "Dr. Trần Thị B",
+      specialty: "Chuyên gia bệnh lý thủy sinh",
       rating: 4.9,
       image: Doctor1,
-      description: 'Bác sĩ Trần Thị B là chuyên gia hàng đầu về bệnh lý thủy sinh tại GenKiKoi.',
+      description: "Bác sĩ Trần Thị B là chuyên gia hàng đầu về bệnh lý thủy sinh tại GenKiKoi.",
     },
     // Add more doctors as needed
   ]);
@@ -53,21 +55,25 @@ const Doctors = () => {
               visible: {
                 opacity: 1,
                 y: 0,
-                transition: { duration: 1.5, delay: 0.5 },
+                transition: { duration: 1.5 },
               },
             }}
           >
+
             <div className='mb-10'>
               <h1 className="text-4xl lg:text-5xl font-bold text-center leading-tight mb-8 bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
                 Đội ngũ bác sĩ tại GenKiKoi
               </h1>
+
               <p className="text-lg">
-                Gặp gỡ đội ngũ bác sĩ chuyên nghiệp và tận tâm của chúng tôi, luôn sẵn sàng chăm sóc cho cá Koi của bạn.
+                Gặp gỡ đội ngũ bác sĩ chuyên nghiệp và tận tâm của chúng tôi, luôn sẵn sàng chăm sóc
+                cho cá Koi của bạn.
               </p>
             </div>
           </AnimatedSection>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+
             {doctors.map((doctor) => (
               <AnimatedSection
                 key={doctor.id}
@@ -76,7 +82,7 @@ const Doctors = () => {
                   visible: {
                     opacity: 1,
                     scale: 1,
-                    transition: { duration: 0.5, delay: 0.3 },
+                    transition: { duration: 1.5, delay: 0.3 },
                   },
                 }}
               >
@@ -95,17 +101,22 @@ const Doctors = () => {
                       />
                     </div>
                   }
+                  onClick={() => handleViewDetails(doctor.id)}
                 >
-                  <Card.Meta
-                    title={<span className="text-white text-xl">{doctor.name}</span>}
-                    description={
-                      <div className="text-gray-300">
-                        <p>{doctor.specialty}</p>
-                        <Rate disabled defaultValue={doctor.rating} className="text-yellow-400" />
-                      </div>
-                    }
-                  />
+                  <Card.Meta title={<span className="text-xl text-white">{doctor.name}</span>} />
                   <p className="mt-4 text-gray-300">{doctor.description}</p>
+                  <div className="flex items-center justify-center gap-5">
+                    <Button
+                      ghost
+                      onClick={() => handleViewDetails(doctor.id)}
+                      className="mt-4 text-white hover:text-blue-300"
+                    >
+                      Xem chi tiết <ArrowRight2 size={18} />
+                    </Button>
+                    <Button
+                      ghost
+                      onClick={() => handleBooking()}
+                      className="mt-4 text-white hover:text-blue-300"
                   <div className="flex gap-4 mt-4">
                     <Button 
                       onClick={() => handleViewDetails(doctor.id)} 
@@ -124,7 +135,6 @@ const Doctors = () => {
               </AnimatedSection>
             ))}
           </div>
-
           <AnimatedSection
             variants={{
               hidden: { opacity: 0, scale: 0.5 },
@@ -144,9 +154,9 @@ const Doctors = () => {
               <ArrowRight2 className="animate-bounce" size={20} />
             </Button>
           </AnimatedSection>
+
         </div>
       </div>
-      <DividerComponent />
     </div>
   );
 };

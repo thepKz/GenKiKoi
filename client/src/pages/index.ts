@@ -7,6 +7,7 @@ import FAQ from "./FAQ";
 import Home from "./Home";
 import Images from "./Images";
 import Appointment from "./my-account/Appointment";
+import ChangePassword from "./ChangePassword";
 import History from "./my-account/History";
 import InspectionRecord from "./my-account/InspectionRecord";
 import ListFishRecords from "./my-account/ListFishRecords";

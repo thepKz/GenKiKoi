@@ -15,7 +15,7 @@ import {
 } from "antd";
 import { Stickynote } from "iconsax-react";
 import { Link, useLocation } from "react-router-dom";
-import { getValue, uploadFile } from "../../utils";
+import { getValue, removeVietnameseTones, uploadFile } from "../../utils";
 import { HeaderPage } from "../../components";
 import { useEffect, useRef, useState } from "react";
 import { handleAPI } from "../../apis/handleAPI";
@@ -34,6 +34,7 @@ const ListFishes = () => {
   const [isFishModalOpen, setIsFishModalOpen] = useState<boolean>(false);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [searchText, setSearchText] = useState("");
   const [isLoadingForm, setIsLoadingForm] = useState<boolean>(false);
   const [selectedFish, setSelectedFish] = useState<any>(null);
 
@@ -94,13 +95,33 @@ const ListFishes = () => {
     }
   };
 
+  const handleSearch = (value: string) => {
+    setSearchText(value.toLowerCase());
+  };
+
+  const filteredFishes = fishes.filter((fish: any) => {
+    const searchValue = removeVietnameseTones(searchText.toLowerCase());
+    const fishId = removeVietnameseTones(fish._id.toLowerCase());
+    const description = removeVietnameseTones(fish.description.toLowerCase());
+
+    return fishId.includes(searchValue) || description.includes(searchValue);
+  });
+
   if (isLoading) {
-    return <Spin />;
+    return (
+      <div className="section flex items-center justify-center">
+        <Spin size="large" />
+      </div>
+    );
   }
 
   return (
     <div className="section">
-      <HeaderPage heading="Danh sách cá" placeholder="Tìm hồ sơ cá" />
+      <HeaderPage
+        heading="Danh sách cá"
+        placeholder="Tìm hồ sơ cá"
+        onSearch={handleSearch}
+      />
       <Breadcrumb
         separator=">"
         items={[
@@ -120,7 +141,7 @@ const ListFishes = () => {
         ]}
       />
       <div className="mt-3 flex h-[calc(100vh-200px)] flex-col gap-5 overflow-y-auto">
-        {fishes.map((fish: any, i: any) => (
+        {filteredFishes.map((fish: any, i: any) => (
           <Card key={i} className="duration-100 ease-in hover:border-[#4096ff]">
             <div className="flex items-center gap-5">
               <div className="h-[150px] w-[250px] overflow-hidden rounded-lg">
@@ -192,6 +213,7 @@ const ListFishes = () => {
           onCancel={() => setIsFishModalOpen(false)}
           style={{ top: 30 }}
           onOk={() => form.submit()}
+          confirmLoading={isLoadingForm}
         >
           <div className="mt-3">
             <h3 className="heading-4 mb-3">Cập nhật thông tin cá</h3>
@@ -231,13 +253,35 @@ const ListFishes = () => {
                 </label>
               </Form.Item>
               <Divider />
-              <Form.Item name="size" label="Kích thước (cm)" required>
+              <Form.Item
+                name="size"
+                label="Kích thước (cm)"
+                rules={[
+                  { required: true, message: "Vui lòng nhập kích thước" },
+                  {
+                    type: "number",
+                    min: 0,
+                    message: "Kích thước phải lớn hơn 0",
+                  },
+                ]}
+              >
                 <Input min={0} type="number" placeholder="Nhập kích thước" />
               </Form.Item>
-              <Form.Item name="age" label="Tuổi" required>
+              <Form.Item
+                name="age"
+                label="Tuổi"
+                rules={[
+                  { required: true, message: "Vui lòng nhập tuổi" },
+                  { type: "number", min: 1, message: "Tuổi phải lớn hơn 0" },
+                ]}
+              >
                 <Input min={1} type="number" placeholder="Nhập tuổi" />
               </Form.Item>
-              <Form.Item name="gender" label="Giới tính" required>
+              <Form.Item
+                name="gender"
+                label="Giới tính"
+                rules={[{ required: true, message: "Vui lòng chọn giới tính" }]}
+              >
                 <Select
                   placeholder="Chọn giới tính"
                   options={[
@@ -246,7 +290,15 @@ const ListFishes = () => {
                   ]}
                 />
               </Form.Item>
-              <Form.Item name="description" label="Mô tả" required>
+              <Form.Item
+                name="description"
+                label="Mô tả"
+                rules={[
+                  { required: true, message: "Vui lòng nhập mô tả" },
+                  { min: 10, message: "Mô tả phải có ít nhất 10 ký tự" },
+                  { max: 500, message: "Mô tả không được vượt quá 500 ký tự" },
+                ]}
+              >
                 <TextArea placeholder="Nhập mô tả" rows={2} />
               </Form.Item>
             </Form>

@@ -7,6 +7,7 @@ import {
   message,
   Modal,
   Select,
+  Spin,
   TableProps,
   Tag,
 } from "antd";
@@ -16,6 +17,8 @@ import { useEffect, useState } from "react";
 import { handleAPI } from "../../apis/handleAPI";
 import { CustomTable } from "../../share";
 import { getValue } from "../../utils";
+import { HeaderPage } from "../../components";
+import { removeVietnameseTones } from "../../utils";
 
 const { TextArea } = Input;
 
@@ -26,6 +29,11 @@ const Services = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingForm, setIsLoadingForm] = useState(false);
   const [editingService, setEditingService] = useState<any>(null);
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+  });
+  const [searchText, setSearchText] = useState("");
 
   const columns: TableProps["columns"] = [
     {
@@ -33,7 +41,9 @@ const Services = () => {
       title: "#",
       dataIndex: "key",
       width: 100,
-      render: (_text, _record, index) => index + 1,
+      render: (_text, _record, index) => {
+        return (pagination.current - 1) * pagination.pageSize + index + 1;
+      },
     },
     {
       key: "Tên dịch vụ",
@@ -187,21 +197,51 @@ const Services = () => {
     }
   };
 
+  const handleSearch = (value: string) => {
+    setSearchText(value.toLowerCase());
+  };
+
+  const filteredServices = services.filter((service: any) => {
+    const searchValue = removeVietnameseTones(searchText.toLowerCase());
+    const serviceName = removeVietnameseTones(
+      service.serviceName.toLowerCase(),
+    );
+    const description = removeVietnameseTones(
+      (service.description || "").toLowerCase(),
+    );
+
+    return (
+      serviceName.includes(searchValue) || description.includes(searchValue)
+    );
+  });
+
+  if (isLoading) {
+    return (
+      <div className="section flex items-center justify-center">
+        <Spin size="large" />
+      </div>
+    );
+  }
+
   return (
-    <div className="section">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <h1 className="heading-3">Danh sách dịch vụ</h1>
+    <div className="section manager services">
+      <HeaderPage
+        heading="Danh sách dịch vụ"
+        placeholder="Tìm kiếm dịch vụ"
+        onSearch={handleSearch}
+      />
+      <div className="mb-4 text-right">
         <Button type="primary" onClick={() => handleOpenModal()}>
           Thêm dịch vụ
         </Button>
       </div>
-      <Divider />
       <div className="staff-view">
         <CustomTable
+          scroll="calc(100vh - 310px)"
           loading={isLoading}
           columns={columns}
-          dataSource={services}
+          dataSource={filteredServices}
+          onChange={(pagination) => setPagination(pagination)}
         />
       </div>
       {/* Add service modal */}

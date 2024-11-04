@@ -206,23 +206,40 @@ export const updateBookAppointment = async (req: Request, res: Response) => {
       (day) => day.dayOfWeek === formattedAppointmentDate
     );
 
-    if (scheduleDate) {
-      const time = scheduleDate.slots.find(
-        (time) => time.slotTime === slotTime
-      );
-      if (time) {
-        time.isBooked = true;
-        time.appointmentId = new mongoose.Types.ObjectId(appointmentId);
-      } else {
-        return res
-          .status(404)
-          .json({ message: "Không tìm thấy slot thời gian này" });
-      }
-    } else {
+    if (!scheduleDate) {
       return res
         .status(404)
         .json({ message: "Không tìm thấy ngày này trong lịch làm việc" });
     }
+
+    const slot = scheduleDate.slots.find((time) => time.slotTime === slotTime);
+
+    if (!slot) {
+      return res
+        .status(404)
+        .json({ message: "Không tìm thấy slot thời gian này" });
+    }
+
+    // Kiểm tra số lượng bệnh nhân trong slot
+    if (slot.currentCount >= 3) {
+      return res
+        .status(400)
+        .json({ message: "Slot này đã đạt số lượng tối đa" });
+    }
+
+    // Cập nhật thông tin slot
+    slot.currentCount += 1;
+
+    // Khởi tạo mảng appointmentIds nếu chưa có
+    if (!Array.isArray(slot.appointmentIds)) {
+      slot.appointmentIds = [];
+    }
+
+    // Thêm appointmentId mới vào mảng
+    slot.appointmentIds.push(appointmentId);
+
+    // Cập nhật trạng thái isBooked nếu đạt số lượng tối đa
+    slot.isBooked = slot.currentCount >= 3;
 
     await doctorSchedule.save();
 

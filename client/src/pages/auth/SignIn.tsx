@@ -100,6 +100,14 @@ const SignIn = () => {
                 />
               </Form.Item>
             </Form>
+            <div className="text-right">
+              <Link
+                to="/forgot-password"
+                className="cursor-pointer text-sm font-bold text-blue-500 underline"
+              >
+                Quên mật khẩu?
+              </Link>
+            </div>
             <div className="">
               <ConfigProvider
                 theme={{

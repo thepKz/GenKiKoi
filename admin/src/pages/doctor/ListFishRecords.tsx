@@ -1,19 +1,29 @@
-import { Breadcrumb, Button, message, TableProps } from "antd";
+import { Breadcrumb, Button, message, Spin, TableProps } from "antd";
 import { HeaderPage } from "../../components";
 import { CustomTable } from "../../share";
 import { Link, useLocation } from "react-router-dom";
 import { Stickynote } from "iconsax-react";
 import { useEffect, useState } from "react";
 import { handleAPI } from "../../apis/handleAPI";
+import { removeVietnameseTones } from "../../utils";
 
 const ListFishRecords = () => {
   const { pathname } = useLocation();
   const customerId = pathname.split("/")[3];
   const fishId = pathname.split("/")[5];
   const [records, setRecords] = useState([]);
+  const [searchText, setSearchText] = useState("");
+
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const handleSearch = (value: string) => {
+    setSearchText(value.toLowerCase());
+  };
+
   useEffect(() => {
     const getAllRecords = async () => {
       try {
+        setIsLoading(true);
         const api = `/api/medicalRecords/fishes/${fishId}`;
 
         const res = await handleAPI(api, undefined, "GET");
@@ -22,6 +32,8 @@ const ListFishRecords = () => {
       } catch (error: any) {
         console.log(error);
         message.error(error.message);
+      } finally {
+        setIsLoading(false);
       }
     };
     getAllRecords();
@@ -82,9 +94,34 @@ const ListFishRecords = () => {
     },
   ];
 
+  const filteredRecords = records.filter((record: any) => {
+    const searchValue = removeVietnameseTones(searchText.toLowerCase());
+    const recordId = removeVietnameseTones(record.recordId.toLowerCase());
+    const serviceName = removeVietnameseTones(record.serviceName.toLowerCase());
+    const doctorName = removeVietnameseTones(record.doctorName.toLowerCase());
+
+    return (
+      recordId.includes(searchValue) ||
+      doctorName.includes(searchValue) ||
+      serviceName.includes(searchValue)
+    );
+  });
+
+  if (isLoading) {
+    return (
+      <div className="section flex items-center justify-center">
+        <Spin size="large" />
+      </div>
+    );
+  }
+
   return (
     <div className="section">
-      <HeaderPage heading="Danh sách hồ sơ" placeholder="Tìm hồ sơ" />
+      <HeaderPage
+        heading="Danh sách hồ sơ"
+        placeholder="Tìm hồ sơ"
+        onSearch={handleSearch}
+      />
       <Breadcrumb
         separator=">"
         items={[
@@ -100,7 +137,9 @@ const ListFishRecords = () => {
           },
           {
             title: (
-              <Link to={`/doctor/customers/${customerId}/fishes`}>Danh sách cá</Link>
+              <Link to={`/doctor/customers/${customerId}/fishes`}>
+                Danh sách cá
+              </Link>
             ),
           },
           {
@@ -109,7 +148,7 @@ const ListFishRecords = () => {
         ]}
       />
       <div className="doctor-view fish-record mt-3">
-        <CustomTable columns={columns} dataSource={records} />
+        <CustomTable columns={columns} dataSource={filteredRecords} />
       </div>
     </div>
   );

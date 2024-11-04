@@ -1,4 +1,4 @@
-import { message, Modal, Switch, TableProps, Tag } from "antd";
+import { message, Modal, Spin, Switch, TableProps, Tag } from "antd";
 import { CustomTable } from "../../share";
 import { getValue } from "../../utils";
 import { HeaderPage } from "../../components";
@@ -6,15 +6,23 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { IAuth } from "../../types";
 import { handleAPI } from "../../apis/handleAPI";
+import { removeVietnameseTones } from "../../utils";
 
 const Appointments = () => {
   const auth: IAuth = useSelector((state: any) => state.authReducer.data);
 
   const [appointments, setAppointments] = useState([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [searchText, setSearchText] = useState("");
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+  });
 
   useEffect(() => {
     const getAppointments = async () => {
       try {
+        setIsLoading(true);
         const api = `/api/appointments/doctors/${auth.adminId}`;
 
         const res = await handleAPI(api, undefined, "GET");
@@ -23,6 +31,8 @@ const Appointments = () => {
       } catch (error: any) {
         console.log(error);
         message.error(error.message);
+      } finally {
+        setIsLoading(false);
       }
     };
     getAppointments();
@@ -65,7 +75,9 @@ const Appointments = () => {
       title: "#",
       dataIndex: "key",
       width: 70,
-      render: (_text, _record, index) => index + 1,
+      render: (_text, _record, index) => {
+        return (pagination.current - 1) * pagination.pageSize + index + 1;
+      },
     },
     {
       key: "Tên khách hàng",
@@ -111,21 +123,48 @@ const Appointments = () => {
     },
   ];
 
+  const handleSearch = (value: string) => {
+    setSearchText(value.toLowerCase());
+  };
+
+  const filteredAppointments = appointments.filter((appointment: any) => {
+    const searchValue = removeVietnameseTones(searchText.toLowerCase());
+    const customerName = removeVietnameseTones(
+      appointment.customerName.toLowerCase(),
+    );
+    const serviceName = removeVietnameseTones(
+      appointment.serviceName.toLowerCase(),
+    );
+
+    return (
+      customerName.includes(searchValue) ||
+      appointment.phoneNumber.includes(searchText) ||
+      serviceName.includes(searchValue)
+    );
+  });
+
+  if (isLoading) {
+    return (
+      <div className="section flex items-center justify-center">
+        <Spin size="large" />
+      </div>
+    );
+  }
+
   return (
-    <div>
-      <div className="section">
-        <HeaderPage
-          heading="Danh sách cuộc hẹn"
-          placeholder="Tìm kiếm cuộc hẹn"
+    <div className="section">
+      <HeaderPage
+        heading="Danh sách cuộc hẹn"
+        placeholder="Tìm kiếm cuộc hẹn"
+        onSearch={handleSearch}
+      />
+      <div className="doctor-view appointments">
+        <CustomTable
+          columns={columns}
+          dataSource={filteredAppointments}
+          className="staff-table"
+          onChange={(pagination) => setPagination(pagination)}
         />
-        <div className="doctor-view appointments">
-          <CustomTable
-            columns={columns}
-            dataSource={appointments}
-            scroll="calc(100vh - 410px)"
-            className="staff-table"
-          />
-        </div>
       </div>
     </div>
   );

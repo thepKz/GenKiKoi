@@ -16,11 +16,7 @@ router.get("/:staffId", authMiddleware, getStaffByStaffId);
 
 router.post("/", authMiddleware, roleMiddleware(["manager"]), addNewStaff);
 
-router.patch(
-  "/:staffId",
-  authMiddleware,
-  updateStaffById
-);
+router.patch("/:staffId", authMiddleware, updateStaffById);
 
 router.delete(
   "/:staffId",
