@@ -32,12 +32,13 @@ import Center22 from "../assets/center-9.jpg"; // ca benh
 import Center23 from "../assets/center-10.webp"; // ca benh
 import Center24 from "../assets/center-10.png"; // ca benh
 import Center25 from "../assets/center-11.webp"; // ca benh
+import { AnimatedSection } from "../share";
 
 const Images = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-  
+
   const [selectedImage, setSelectedImage] = useState<number | null>(null);
   const [filter] = useState("all");
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -104,36 +105,65 @@ const Images = () => {
   }, [selectedImage, isFullscreen]);
 
   return (
-    <div className="container mx-auto bg-gradient-to-b from-blue-50 to-white px-4 pt-6 pb-12">
+    <div className="container mx-auto bg-green-dark from-blue-50 to-white px-4 pb-12 pt-6">
       <div style={{ height: "100px" }}></div>
-      <h1 className="mb-8 text-center text-4xl font-bold text-blue-primary">
-        Bộ Sưu Tập Hình Ảnh Trung Tâm Thú Y Cá Koi
-      </h1>
-
-      <motion.div
-        layout
-        className="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-4"
+      
+      <AnimatedSection
+        variants={{
+          hidden: {
+            opacity: 0,
+            y: -50,
+          },
+          visible: {
+            opacity: 1,
+            y: 0,
+            transition: { duration: 1.5 },
+          },
+        }}
       >
-        {filteredImages.map((image, index) => (
-          <motion.div
-            layout
-            key={index}
-            className="group relative aspect-square cursor-pointer overflow-hidden rounded-lg shadow-lg"
-            whileHover={{ scale: 1.05 }}
-            transition={{ duration: 0.3 }}
-            onClick={() => setSelectedImage(index)}
-          >
-            <img
-              src={image.src}
-              alt={image.alt}
-              className="h-full w-full object-cover transition duration-300 ease-in-out"
-            />
-            <div className="absolute inset-0 flex items-end justify-center bg-gradient-to-t from-black to-transparent p-4 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-              <p className="text-center font-semibold text-white">{image.alt}</p>
-            </div>
-          </motion.div>
-        ))}
-      </motion.div>
+        <h1 className="mb-8 text-center text-4xl font-bold text-white">
+          Bộ Sưu Tập Hình Ảnh Trung Tâm Thú Y Cá Koi
+        </h1>
+      </AnimatedSection>
+
+      <AnimatedSection
+        variants={{
+          hidden: {
+            opacity: 0,
+            y: 100,
+          },
+          visible: {
+            opacity: 1,
+            y: 0,
+            transition: { duration: 1.5, delay: 0.5 },
+          },
+        }}
+      >
+        <motion.div
+          layout
+          className="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-4"
+        >
+          {filteredImages.map((image, index) => (
+            <motion.div
+              layout
+              key={index}
+              className="group relative aspect-square cursor-pointer overflow-hidden rounded-lg shadow-lg"
+              whileHover={{ scale: 1.05 }}
+              transition={{ duration: 0.3 }}
+              onClick={() => setSelectedImage(index)}
+            >
+              <img
+                src={image.src}
+                alt={image.alt}
+                className="h-full w-full object-cover transition duration-300 ease-in-out"
+              />
+              <div className="absolute inset-0 flex items-end justify-center bg-gradient-to-t from-black to-transparent p-4 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                <p className="text-center font-semibold text-white">{image.alt}</p>
+              </div>
+            </motion.div>
+          ))}
+        </motion.div>
+      </AnimatedSection>
 
       <AnimatePresence>
         {selectedImage !== null && (

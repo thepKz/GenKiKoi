@@ -2,7 +2,7 @@ import { Avatar, Button } from "antd";
 import { ArrowLeft2, ArrowRight2, EmojiHappy, Heart, HeartTick, Moneys, Star } from "iconsax-react";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
-import Background from "../assets/background.png";
+import Background from "../assets/background.webp";
 
 import Image1 from "../assets/Image1.png";
 import Image2 from "../assets/Image2.png";
@@ -50,7 +50,7 @@ const Home = () => {
         <div className="absolute inset-0 z-0 bg-blue-secondary"></div>
         <div className="z-10">
           <img
-            className="w-full object-cover opacity-15"
+            className="h-screen w-full object-cover opacity-15"
             src={Background}
             alt=""
           />
