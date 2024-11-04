@@ -111,7 +111,6 @@ const ChangePassword = () => {
               name="confirmPassword"
               label="Xác nhận mật khẩu"
               hasFeedback
-              required={false}
               tooltip="Mật khẩu xác nhận phải khớp nhau!"
               rules={[
                 {

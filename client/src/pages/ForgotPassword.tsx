@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { handleAPI } from "../apis/handleAPI";
 import Logo from "../assets/logo-transparent.png";
 import { handleEnterPress } from "../utils";
+import { ArrowRight } from "iconsax-react";
 
 const ForgotPassword = () => {
   const [form] = Form.useForm();
@@ -79,12 +80,13 @@ const ForgotPassword = () => {
             </Button>
           </Form>
           <div className="mt-4 text-center">
-            <Link to="/sign-in">
+            <Link to="/reset-password">
               <Button
                 type="link"
                 className="text-base"
               >
-                Quay lại đăng nhập
+                Thay đổi mật khẩu
+                <ArrowRight />
               </Button>
             </Link>
           </div>

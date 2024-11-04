@@ -39,6 +39,7 @@ import ServicePriceTable from "../pages/services/ServicePriceTable";
 import Feedback from "../pages/Feedback";
 import { Spin } from "antd";
 import ForgotPassword from "../pages/ForgotPassword";
+import ResetPassword from "../pages/ResetPassword";
 
 const MainRouter = () => {
   const auth: IAuth = useSelector((state: any) => state.authReducer.data);
@@ -192,6 +193,11 @@ const MainRouter = () => {
         <Route
           path="/forgot-password"
           element={<ForgotPassword />}
+        />
+
+        <Route
+          path="/reset-password"
+          element={<ResetPassword />}
         />
 
         <Route

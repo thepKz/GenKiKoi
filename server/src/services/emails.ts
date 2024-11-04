@@ -69,3 +69,62 @@ export const sendVerificationEmail = async (
     throw error;
   }
 };
+
+export const sendResetPasswordEmail = async (
+  email: string,
+  username: string,
+  resetToken: string
+) => {
+  const mailOptions = {
+    from: "GenKiKoi <dodung.dqd@gmail.com>",
+    to: email,
+    subject: "Khôi phục mật khẩu - GenKiKoi",
+    html: `
+    <!DOCTYPE html>
+    <html lang="vi">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Khôi phục mật khẩu</title>
+      <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9; }
+        .header { background-color: #0C3C54; color: white; padding: 10px; text-align: center; }
+        .content { background-color: white; padding: 20px; border-radius: 5px; }
+        .otp { font-size: 24px; font-weight: bold; text-align: center; color: #0C3C54; margin: 20px 0; }
+        .footer { text-align: center; margin-top: 20px; font-size: 12px; color: #666; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>GenKiKoi</h1>
+        </div>
+        <div class="content">
+          <h2>Khôi phục mật khẩu</h2>
+          <p>Xin chào ${username},</p>
+          <p>Chúng tôi nhận được yêu cầu khôi phục mật khẩu cho tài khoản của bạn. Vui lòng sử dụng mã dưới đây để đặt lại mật khẩu:</p>
+          <div class="otp">${resetToken}</div>
+          <p>Mã này sẽ hết hạn sau 10 phút.</p>
+          <p>Nếu bạn không yêu cầu khôi phục mật khẩu, vui lòng bỏ qua email này.</p>
+          <p>Trân trọng,<br>Đội ngũ GenKiKoi</p>
+        </div>
+        <div class="footer">
+          <p>© 2023 GenKiKoi. Tất cả các quyền được bảo lưu.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log("Reset password email sent successfully");
+  } catch (error) {
+    console.error("Error sending reset password email:", error);
+    throw error;
+  }
+};
+
+
