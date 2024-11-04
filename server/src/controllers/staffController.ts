@@ -270,6 +270,7 @@ export const updateStaffById = async (req: Request, res: Response) => {
       data: updatedInfo,
     });
   } catch (error: any) {
+    console.log(error);
     return res.status(500).json({ message: error.message });
   }
 };

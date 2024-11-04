@@ -29,7 +29,6 @@ const Booking = () => {
 
   const [profile, setProfile] = useState<any>(null);
 
-  // const [isLoading, setIsLoading] = useState(false);
   const [slot, setSlot] = useState<number | null>(null);
   const [date, setDate] = useState<dayjs.Dayjs | null>(null);
 
@@ -312,14 +311,6 @@ const Booking = () => {
       ]);
     }
   }, [profile]);
-
-  // if (isLoading) {
-  //   return (
-  //     <div className="bg-green-dark flex h-screen items-center justify-center">
-  //       <Spin size="large" />
-  //     </div>
-  //   );
-  // }
 
   const showConfirmModal = () => {
     Modal.confirm({

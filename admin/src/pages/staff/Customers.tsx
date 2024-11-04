@@ -1,7 +1,7 @@
 import { Breadcrumb, Button, message, Spin, TableProps, Tag } from "antd";
 import { HeaderPage } from "../../components";
 import { CustomTable } from "../../share";
-import { getValue } from "../../utils";
+import { getValue, removeVietnameseTones } from "../../utils";
 import { Link } from "react-router-dom";
 import { CalendarSearch } from "iconsax-react";
 import { useEffect, useState } from "react";
@@ -10,6 +10,28 @@ import { handleAPI } from "../../apis/handleAPI";
 const Customers = () => {
   const [customers, setCustomers] = useState([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [searchText, setSearchText] = useState("");
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+  });
+
+  const handleSearch = (value: string) => {
+    setSearchText(value.toLowerCase());
+  };
+
+  const filteredCustomers = customers.filter((customer: any) => {
+    const searchValue = removeVietnameseTones(searchText.toLowerCase());
+    const customerName = removeVietnameseTones(
+      customer.customerName.toLowerCase(),
+    );
+
+    return (
+      customerName.includes(searchValue) ||
+      customer.phoneNumber.includes(searchText) ||
+      customer.email.toLowerCase().includes(searchText)
+    );
+  });
 
   useEffect(() => {
     const getCustomers = async () => {
@@ -33,14 +55,15 @@ const Customers = () => {
       title: "#",
       dataIndex: "key",
       width: 30,
-      render: (_text, _record, index) => index + 1,
+      render: (_text, _record, index) => {
+        return (pagination.current - 1) * pagination.pageSize + index + 1;
+      },
     },
     {
       key: "Tên khách hàng",
       title: "Tên khách hàng",
       dataIndex: "customerName",
       width: 120,
-      render: (name) => (name === "" ? <Tag>NULL</Tag> : name),
     },
     {
       key: "Giới tính",
@@ -58,7 +81,6 @@ const Customers = () => {
       title: "Số điện thoại",
       dataIndex: "phoneNumber",
       width: 100,
-      render: (phone) => (phone === "" ? <Tag>NULL</Tag> : phone),
     },
     {
       key: "Email",
@@ -90,7 +112,11 @@ const Customers = () => {
 
   return (
     <div className="section">
-      <HeaderPage heading="Danh sách khách hàng" placeholder="Tìm khách hàng" />
+      <HeaderPage
+        heading="Danh sách khách hàng"
+        placeholder="Tìm khách hàng"
+        onSearch={handleSearch}
+      />
       <Breadcrumb
         separator=">"
         items={[
@@ -107,7 +133,11 @@ const Customers = () => {
         ]}
       />
       <div className="mt-2">
-        <CustomTable columns={columns} dataSource={customers} />
+        <CustomTable
+          columns={columns}
+          dataSource={filteredCustomers}
+          onChange={(pagination) => setPagination(pagination)}
+        />
       </div>
     </div>
   );

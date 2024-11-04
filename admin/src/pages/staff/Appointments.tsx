@@ -1,8 +1,16 @@
-import { Breadcrumb, Button, Input, message, Modal, TableProps, Tag } from "antd";
+import {
+  Breadcrumb,
+  Button,
+  Input,
+  message,
+  Modal,
+  TableProps,
+  Tag,
+} from "antd";
 import { HeaderPage } from "../../components";
 import { CustomTable } from "../../share";
 import { Link, useLocation } from "react-router-dom";
-import { getValue } from "../../utils";
+import { getValue, removeVietnameseTones } from "../../utils";
 import { Calendar, CalendarSearch } from "iconsax-react";
 import { useEffect, useState } from "react";
 import { handleAPI } from "../../apis/handleAPI";
@@ -18,6 +26,29 @@ const Appointments = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState<any>(null);
   const [cancelReason, setCancelReason] = useState("");
+  const [searchText, setSearchText] = useState("");
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+  });
+
+  const handleSearch = (value: string) => {
+    setSearchText(value.toLowerCase());
+  };
+
+  const filteredAppointments = appointments.filter((appointment: any) => {
+    const searchValue = removeVietnameseTones(searchText.toLowerCase());
+    const doctorName = removeVietnameseTones(
+      appointment.doctorFullName.toLowerCase(),
+    );
+    const serviceName = removeVietnameseTones(
+      appointment.serviceName.toLowerCase(),
+    );
+
+    return (
+      doctorName.includes(searchValue) || serviceName.includes(searchValue)
+    );
+  });
 
   useEffect(() => {
     const getAppointments = async () => {
@@ -70,7 +101,9 @@ const Appointments = () => {
       key: "#",
       title: "#",
       dataIndex: "key",
-      render: (_text, _record, index) => index + 1,
+      render: (_text, _record, index) => {
+        return (pagination.current - 1) * pagination.pageSize + index + 1;
+      },
       width: 60,
     },
     {
@@ -124,7 +157,11 @@ const Appointments = () => {
 
   return (
     <div className="section">
-      <HeaderPage heading="Danh sách cuộc hẹn" placeholder="Tìm cuộc hẹn" />
+      <HeaderPage
+        heading="Danh sách cuộc hẹn"
+        placeholder="Tìm cuộc hẹn"
+        onSearch={handleSearch}
+      />
       <Breadcrumb
         separator=">"
         items={[
@@ -154,7 +191,8 @@ const Appointments = () => {
         <CustomTable
           loading={isLoading}
           columns={columns}
-          dataSource={appointments}
+          dataSource={filteredAppointments}
+          onChange={(pagination) => setPagination(pagination)}
         />
       </div>
       <Modal

@@ -1,6 +1,6 @@
-import { Breadcrumb, Button, Card, message, Spin, Tag } from "antd";
+import { Breadcrumb, Button, Card, Empty, message, Spin, Tag } from "antd";
 import { HeaderPage } from "../../components";
-import { getValue } from "../../utils";
+import { getValue, removeVietnameseTones } from "../../utils";
 import { Link } from "react-router-dom";
 import { Calendar } from "iconsax-react";
 import { useEffect, useState } from "react";
@@ -9,10 +9,26 @@ import { handleAPI } from "../../apis/handleAPI";
 const ListDoctors = () => {
   const [doctors, setDoctors] = useState([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [searchText, setSearchText] = useState("");
+
+  const handleSearch = (value: string) => {
+    setSearchText(value.toLowerCase());
+  };
+
+  const filteredDoctors = doctors.filter((doctor: any) => {
+    const searchValue = removeVietnameseTones(searchText.toLowerCase());
+    const doctorName = removeVietnameseTones(doctor.doctorName.toLowerCase());
+
+    return (
+      doctorName.includes(searchValue) ||
+      doctor.email.toLowerCase().includes(searchText)
+    );
+  });
 
   useEffect(() => {
     const getDoctors = async () => {
       try {
+        setIsLoading(true);
         const api = `/api/doctorSchedules/`;
         const res = await handleAPI(api, undefined, "GET");
 
@@ -58,12 +74,20 @@ const ListDoctors = () => {
   };
 
   if (isLoading) {
-    return <Spin size="large" />;
+    return (
+      <div className="section flex items-center justify-center">
+        <Spin size="large" />
+      </div>
+    );
   }
 
   return (
     <div className="section">
-      <HeaderPage heading="Danh sách lịch làm việc" placeholder="Tìm bác sĩ" />
+      <HeaderPage
+        heading="Danh sách lịch làm việc"
+        placeholder="Tìm bác sĩ"
+        onSearch={handleSearch}
+      />
       <Breadcrumb
         separator=">"
         items={[
@@ -83,75 +107,87 @@ const ListDoctors = () => {
         ]}
       />
       <div className="my-3 flex h-[calc(100vh-190px)] flex-col gap-5 overflow-y-auto">
-        {doctors.map((doctor: any) => (
-          <Card
-            key={doctor.id}
-            className="duration-100 ease-in hover:border-[#4096ff]"
-          >
-            <div className="flex gap-5">
-              <div className="h-[150px] w-[250px] overflow-hidden rounded-lg">
-                <img
-                  src={
-                    doctor.photoUrl === ""
-                      ? "https://placehold.co/150x150"
-                      : doctor.photoUrl
-                  }
-                  className="h-full w-full object-cover"
-                />
-              </div>
-              <div className="flex w-full">
-                <div className="flex flex-1 flex-col gap-2">
-                  <p>
-                    <span className="font-semibold">Họ và tên: </span>
-                    {doctor.doctorName}
-                  </p>
-                  <p>
-                    <span className="font-semibold">Email: </span>
-                    {doctor.email}
-                  </p>
-                  <p>
-                    <span className="font-semibold">Giới tính: </span>{" "}
-                    <Tag color={getValue(doctor.gender)}>
-                      {doctor.gender === "nam" ? "Nam" : "Nữ"}
-                    </Tag>
-                  </p>
-                  <p>
-                    <span className="font-semibold">Di động: </span>
-                    <Tag color={getValue(doctor.movingService ? "yes" : "no")}>
-                      {doctor.movingService ? "Có" : "Không"}
-                    </Tag>
-                  </p>
-                  <p>
-                    <span className="font-semibold">Lịch làm việc: </span>
-                    {doctor.weekSchedule.map((day: any, index: any) => {
-                      const formattedDate = formatDate(day.dayOfWeek);
-                      return (
-                        formattedDate && (
-                          <Tag key={index} color="blue" className="mr-1">
-                            {formattedDate}
-                          </Tag>
-                        )
-                      );
-                    })}
-                    {countFutureDays(doctor.weekSchedule) > 0 && (
-                      <Tag color="orange" className="">
-                        + {countFutureDays(doctor.weekSchedule)} Ngày
+        {filteredDoctors.length !== 0 ? (
+          filteredDoctors.map((doctor: any) => (
+            <Card
+              key={doctor.id}
+              className="duration-100 ease-in hover:border-[#4096ff]"
+            >
+              <div className="flex gap-5">
+                <div className="h-[150px] w-[250px] overflow-hidden rounded-lg">
+                  <img
+                    src={
+                      doctor.photoUrl === ""
+                        ? "https://placehold.co/150x150"
+                        : doctor.photoUrl
+                    }
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+                <div className="flex w-full">
+                  <div className="flex flex-1 flex-col gap-2">
+                    <p>
+                      <span className="font-semibold">Họ và tên: </span>
+                      {doctor.doctorName}
+                    </p>
+                    <p>
+                      <span className="font-semibold">Email: </span>
+                      {doctor.email}
+                    </p>
+                    <p>
+                      <span className="font-semibold">Giới tính: </span>{" "}
+                      <Tag color={getValue(doctor.gender)}>
+                        {doctor.gender === "nam" ? "Nam" : "Nữ"}
                       </Tag>
-                    )}
-                  </p>
-                </div>
-                <div className="flex w-1/5 flex-col gap-2 text-right">
-                  <Link to={`/staff/doctor-calendar/${doctor.doctorId}`}>
-                    <Button type="primary">Xem chi tiết</Button>
-                  </Link>
-                  <Link to={`/staff/doctor-calendar/assign/${doctor.doctorId}`}>
-                    <Button>Chỉnh lịch làm việc</Button>
-                  </Link>
+                    </p>
+                    <p>
+                      <span className="font-semibold">Di động: </span>
+                      <Tag
+                        color={getValue(doctor.movingService ? "yes" : "no")}
+                      >
+                        {doctor.movingService ? "Có" : "Không"}
+                      </Tag>
+                    </p>
+                    <p>
+                      <span className="font-semibold">Lịch làm việc: </span>
+                      {doctor.weekSchedule.map((day: any, index: any) => {
+                        const formattedDate = formatDate(day.dayOfWeek);
+                        return (
+                          formattedDate && (
+                            <Tag key={index} color="blue" className="mr-1">
+                              {formattedDate}
+                            </Tag>
+                          )
+                        );
+                      })}
+                      {countFutureDays(doctor.weekSchedule) > 0 && (
+                        <Tag color="orange" className="">
+                          + {countFutureDays(doctor.weekSchedule)} Ngày
+                        </Tag>
+                      )}
+                    </p>
+                  </div>
+                  <div className="flex w-1/5 flex-col gap-2 text-right">
+                    <Link to={`/staff/doctor-calendar/${doctor.doctorId}`}>
+                      <Button type="primary">Xem chi tiết</Button>
+                    </Link>
+                    <Link
+                      to={`/staff/doctor-calendar/assign/${doctor.doctorId}`}
+                    >
+                      <Button>Chỉnh lịch làm việc</Button>
+                    </Link>
+                  </div>
                 </div>
               </div>
-            </div>
-          </Card>
-        ))}
+            </Card>
+          ))
+        ) : (
+          <Empty
+            className="mt-20"
+            imageStyle={{ height: 200 }}
+            description="Không tìm thấy bác sĩ nào"
+          />
+        )}
       </div>
     </div>
   );

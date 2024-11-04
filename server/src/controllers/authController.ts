@@ -5,12 +5,6 @@ import { Customer, Doctor, Manager, Staff } from "../models";
 import User from "../models/User";
 import { randomText, signToken } from "../utils";
 import { sendVerificationEmail } from "../services/emails";
-/**
- * Người Làm: Thép
- * Người Test: Thép
- * Loại Test: API TEST (Đã xong), UNIT TEST (Đang làm), E2E TEST (Đã làm)
- * Chỉnh Sửa Lần Cuối : 13/10/2024
- */
 
 export const register = async (req: Request, res: Response) => {
   try {
@@ -515,7 +509,8 @@ export const checkUsername = async (req: Request, res: Response) => {
   const user = await User.findOne({ username: formatUsername });
   return res.status(200).json({ exists: !!user, userId: user?._id });
 };
-// Check email (Update later)
+
+
 export const checkEmail = async (req: Request, res: Response) => {
   const { email } = req.body;
 
