@@ -32,6 +32,7 @@ const authSlice = createSlice({
         token: state.data.token,
         isVerified: true,
       };
+      localStorage.setItem("customer_GenKiKoi", JSON.stringify(state.data));
     },
     checkVerified: (state, _action) => {
       state.data = {

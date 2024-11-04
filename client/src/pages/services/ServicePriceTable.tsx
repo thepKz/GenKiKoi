@@ -23,7 +23,7 @@ const ServicePriceTable: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="bg-green-dark pt-28 pb-10 px-4">
+      <div className="section bg-gradient-to-t from-[#2A7F9E] to-[#175670] py-36 pt-44 text-center">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-4xl font-bold text-center text-white mb-8">
           Bảng Giá Dịch Vụ Chăm Sóc Cá Koi
@@ -56,13 +56,12 @@ const ServicePriceTable: React.FC = () => {
 
         <div className="text-right pr-10">
         <Button
-                  size="large"
-                  onClick={() => navigate("/booking")}
-                  type="link"
-                  className="mt-4 text-white hover:text-blue-300"
-                >
-                  Đặt lịch
-                  <ArrowRight2 size={18} />
+          size="large"
+          onClick={() => navigate("/booking")}
+          className="ml-auto mt-8 px-8 py-6 bg-white/10 hover:bg-white/20 text-white border-none rounded-full text-lg font-semibold flex items-center gap-2 transition-all duration-300 hover:scale-105"
+        >
+          Đặt Lịch Ngay
+          <ArrowRight2 className="animate-bounce" size={20} />
         </Button>
         </div>
       </div>

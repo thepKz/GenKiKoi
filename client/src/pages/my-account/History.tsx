@@ -1,11 +1,12 @@
-import { Button, Card, ConfigProvider, Divider, message, Tag } from "antd";
+
+import { Button, Card, ConfigProvider, message, Tag } from "antd";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { IAuth } from "../../types";
-import { handleAPI } from "../../apis/handleAPI";
-import { getValue } from "../../utils";
 import { Link } from "react-router-dom";
+import { handleAPI } from "../../apis/handleAPI";
 import { HeaderComponent } from "../../components";
+import { IAuth } from "../../types";
+import { getValue } from "../../utils";
 
 const History = () => {
   const auth: IAuth = useSelector((state: any) => state.authReducer.data);

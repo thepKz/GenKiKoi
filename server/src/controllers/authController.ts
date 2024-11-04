@@ -4,12 +4,7 @@ import { ValidationError } from "../errors/ValidationError";
 import { Customer, Doctor, Manager, Staff } from "../models";
 import User from "../models/User";
 import { randomText, signToken } from "../utils";
-/**
- * Người Làm: Thép
- * Người Test: Thép
- * Loại Test: API TEST (Đã xong), UNIT TEST (Đang làm), E2E TEST (Đã làm)
- * Chỉnh Sửa Lần Cuối : 13/10/2024
- */
+import { sendVerificationEmail } from "../services/emails";
 
 export const register = async (req: Request, res: Response) => {
   try {
@@ -90,12 +85,12 @@ export const register = async (req: Request, res: Response) => {
       password: hashedPass,
     });
 
-    // const verificationToken = Math.floor(
-    //   100000 + Math.random() * 900000
-    // ).toString();
+    const verificationToken = Math.floor(
+      100000 + Math.random() * 900000
+    ).toString();
 
     // For testing
-    const verificationToken = "123456";
+    // const verificationToken = "123456";
 
     // Create new customer
     const newCustomer = await Customer.create({
@@ -112,11 +107,11 @@ export const register = async (req: Request, res: Response) => {
       role: newUser.role,
     });
 
-    // await sendVerificationEmail(
-    //   newUser.email,
-    //   newUser.username,
-    //   verificationToken
-    // );
+    await sendVerificationEmail(
+      newUser.email,
+      newUser.username,
+      verificationToken
+    );
 
     return res.status(201).json({
       message: "Đăng ký thành công!",
@@ -135,6 +130,69 @@ export const register = async (req: Request, res: Response) => {
       return res.status(400).json(error.errors);
     }
     res.status(500).json({ message: "Đã xảy ra lỗi server" });
+  }
+};
+
+export const registerAtCenter = async (req: Request, res: Response) => {
+  try {
+    const {
+      phoneNumber,
+      email,
+      fullName,
+      gender,
+      city,
+      district,
+      ward,
+      detailAddress,
+    } = req.body;
+
+    const formatEmail = email.trim().toLowerCase();
+    const formatUserName = email.split("@")[0];
+
+    if (!phoneNumber || !formatEmail || !fullName || !gender) {
+      return res
+        .status(400)
+        .json({ message: "Vui lòng điền đầy đủ các trường" });
+    }
+
+    // Create new user
+    const salt = await bcrypt.genSalt(10);
+    const hashedPass = await bcrypt.hash("12345678", salt);
+
+    const newUser = await User.create({
+      username: formatUserName,
+      email: formatEmail,
+      password: hashedPass,
+      fullName,
+      gender,
+      phoneNumber,
+    });
+
+    const newCustomer = await Customer.create({
+      userId: newUser._id,
+      city,
+      district,
+      ward,
+      detailAddress,
+      isVerified: true,
+    });
+
+    const formattedData = {
+      id: newCustomer._id,
+      email: newUser.email,
+      fullName: newUser.fullName,
+      phoneNumber: newUser.phoneNumber,
+      gender: newUser.gender,
+      city: newCustomer.city,
+      district: newCustomer.district,
+      ward: newCustomer.ward,
+      detailAddress: newCustomer.detailAddress,
+    };
+
+    return res.status(200).json({ data: formattedData });
+  } catch (error: any) {
+    console.log(error);
+    return res.status(500).json({ message: error.message });
   }
 };
 
@@ -178,12 +236,12 @@ export const sendNewVerifyEmail = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "Người dùng không tồn tại" });
     }
 
-    // const verificationToken = Math.floor(
-    //   100000 + Math.random() * 900000
-    // ).toString();
+    const verificationToken = Math.floor(
+      100000 + Math.random() * 900000
+    ).toString();
 
     // For testing
-    const verificationToken = "123456";
+    // const verificationToken = "123456";
 
     const verificationTokenExpiresAt = Date.now() + 10 * 60 * 1000; // 10 minutes
 
@@ -192,7 +250,7 @@ export const sendNewVerifyEmail = async (req: Request, res: Response) => {
 
     await customer.save();
 
-    // await sendVerificationEmail(email, username, verificationToken);
+    await sendVerificationEmail(email, username, verificationToken);
 
     return res
       .status(200)
@@ -224,6 +282,12 @@ export const login = async (req: Request, res: Response) => {
     if (!user) {
       errors.message = "Tài khoản không tồn tại!";
       errors.login = "Vui lòng kiểm tra lại!";
+      throw new ValidationError(errors);
+    }
+
+    if (user.isDisabled) {
+      errors.message =
+        "Tài khoản của bạn đã bị khóa! Vui lòng liên hệ quản trị viên để được hỗ trợ";
       throw new ValidationError(errors);
     }
 
@@ -302,6 +366,13 @@ export const loginWithGoogle = async (req: Request, res: Response) => {
         isVerified: true,
       });
     } else {
+      if (user.isDisabled) {
+        return res.status(403).json({
+          message:
+            "Tài khoản của bạn đã bị khóa! Vui lòng liên hệ quản trị viên để được hỗ trợ",
+        });
+      }
+
       customer = await Customer.findOne({ userId: user._id });
 
       if (!customer) {
@@ -370,6 +441,12 @@ export const loginAdmin = async (req: Request, res: Response) => {
       throw new ValidationError(errors);
     }
 
+    if (user.isDisabled) {
+      errors.message =
+        "Tài khoản của bạn đã bị khóa! Vui lòng liên hệ quản trị viên để được hỗ trợ";
+      throw new ValidationError(errors);
+    }
+
     const comparePassword = await bcrypt.compare(
       trimmedPassword,
       user.password
@@ -432,7 +509,8 @@ export const checkUsername = async (req: Request, res: Response) => {
   const user = await User.findOne({ username: formatUsername });
   return res.status(200).json({ exists: !!user, userId: user?._id });
 };
-// Check email (Update later)
+
+
 export const checkEmail = async (req: Request, res: Response) => {
   const { email } = req.body;
 

@@ -238,7 +238,7 @@ const Appointment = () => {
             columns={columns}
             dataSource={appointments}
             scroll={{
-              y: "calc(100vh - 330px)",
+              y: "calc(100vh - 270px)",
             }}
           />
         </div>

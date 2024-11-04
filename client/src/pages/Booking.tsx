@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   AutoComplete,
   Button,
@@ -10,22 +11,17 @@ import {
   message,
   Row,
   Select,
-  SelectProps,
   Spin,
 } from "antd";
 
-import axios from "axios";
-import { debounce } from "lodash"; // Thêm import này
+import dayjs from "dayjs";
+import { debounce } from "lodash";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import VietNamProvinces from "../../data";
 import { handleAPI } from "../apis/handleAPI";
 import Map from "../components/Map";
-import { CustomerData } from "../models/DataModels";
 import { CustomCalendar } from "../share";
 import { IAuth } from "../types";
-import dayjs from "dayjs";
-import { useNavigate } from "react-router-dom";
 
 const { TextArea } = Input;
 
@@ -33,8 +29,6 @@ const Booking = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-
-  const navigate = useNavigate();
 
   const auth: IAuth = useSelector((state: any) => state.authReducer.data);
 
@@ -44,15 +38,7 @@ const Booking = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [slot, setSlot] = useState<string | null>(null);
   const [date, setDate] = useState<dayjs.Dayjs | null>(null);
-
-  const [city, setCity] = useState<string>("");
-  const [district, setDistrict] = useState<string>("");
-  const [ward, setWard] = useState<string>("");
-
-  const [cities, setCities] = useState<SelectProps["options"]>([]);
-  const [districts, setDistricts] = useState<SelectProps["options"]>([]);
-  const [wards, setWards] = useState<SelectProps["options"]>([]);
-  const [profile, setProfile] = useState<CustomerData | null>(null);
+  const [profile, setProfile] = useState<any | null>(null);
 
   const [services, setServices] = useState([]);
   const [doctors, setDoctors] = useState([]);
@@ -70,47 +56,11 @@ const Booking = () => {
   const [destination] = useState<L.LatLngExpression>([10.8415, 106.8099]); // Tọa độ cố định của Genkikoi
   const [route, setRoute] = useState<L.LatLngExpression[] | null>(null);
   const [distance, setDistance] = useState<string | null>(null);
-  const [duration, setDuration] = useState<string | null>(null);
   const [movingPrice, setMovingPrice] = useState<number>(0);
 
-  // Thêm state để theo dõi input value
-  const [searchValue, setSearchValue] = useState<string>("");
+  const [isAddressDisabled, setIsAddressDisabled] = useState(false);
 
-  useEffect(() => {
-    const res = VietNamProvinces.map((item: any) => ({
-      value: item.Name,
-      label: item.Name,
-    }));
-    setCities(res);
-  }, []);
-
-  useEffect(() => {
-    const res = VietNamProvinces.find((item: any) => item.Name === city);
-    const res1 = res?.Districts?.map((item: any) => ({
-      value: item.Name,
-      label: item.Name,
-    }));
-    setDistricts(res1);
-
-    if (form.getFieldValue(["district"])) {
-      form.setFieldValue("district", "");
-      form.setFieldValue("ward", "");
-    }
-  }, [city]);
-
-  useEffect(() => {
-    const res = VietNamProvinces.find((item: any) => item.Name === city);
-    const res1 = res?.Districts.find((item: any) => item.Name === district);
-    const res2 = res1?.Wards.map((item: any) => ({
-      value: item.Name,
-      label: item.Name,
-    }));
-    setWards(res2);
-
-    if (form.getFieldValue(["ward"])) {
-      form.setFieldValue("ward", "");
-    }
-  }, [district]);
+  console.log(profile);
 
   useEffect(() => {
     const getProfile = async () => {
@@ -119,9 +69,7 @@ const Booking = () => {
         const api = `api/users/`;
         const res = await handleAPI(api, undefined, "GET");
         setProfile(res.data);
-        if (!res.data.phoneNumber || !res.data.gender || !res.data.fullName) {
-          navigate("/my-account/profile");
-        }
+        form.setFieldsValue(res.data);
       } catch (error) {
         console.log(error);
         message.error("Có lỗi xảy ra khi tải thông tin người dùng.");
@@ -130,7 +78,7 @@ const Booking = () => {
       }
     };
     getProfile();
-  }, [navigate]);
+  }, []);
 
   useEffect(() => {
     if (profile) {
@@ -184,7 +132,6 @@ const Booking = () => {
     }
   }, [distance]);
 
-  // Cập nhật useEffect cho tổng giá
   useEffect(() => {
     setTotalPrice(price + movingPrice);
   }, [price, movingPrice]);
@@ -216,6 +163,15 @@ const Booking = () => {
       const res = await handleAPI(api, undefined, "GET");
       if (res.data) {
         setDoctorSchedule(res.data);
+        const today = dayjs();
+        const formattedToday = today.format("DD/MM/YYYY");
+        const todaySchedule = res.data.weekSchedule.find(
+          (day: any) => day.dayOfWeek === formattedToday,
+        );
+        if (todaySchedule) {
+          setDate(today);
+          setAvailableSlots(todaySchedule.slots);
+        }
       }
     } catch (error: any) {
       console.log(error);
@@ -244,8 +200,11 @@ const Booking = () => {
   const handleSubmit = async (values: any) => {
     try {
       setIsLoadingForm(true);
+      const { fullName, phoneNumber, gender } = values;
+
       const appointmentApi = `/api/appointments/customers/${auth.customerId}`;
       const bookSlotApi = `/api/doctorSchedules/${doctorSchedule.doctorId}`;
+      const profileApi = `/api/users/update-profile`;
 
       if (date && slot && doctorSchedule) {
         values.appointmentDate = date.format("YYYY-MM-DD");
@@ -255,6 +214,8 @@ const Booking = () => {
         message.error("Vui lòng chọn ngày và giờ khám");
         return;
       }
+
+      await handleAPI(profileApi, { fullName, phoneNumber, gender }, "PATCH");
 
       const appointmentRes: any = await handleAPI(appointmentApi, values, "POST");
 
@@ -281,9 +242,9 @@ const Booking = () => {
           "POST",
         );
         if (paymentRes.data.checkoutUrl) {
-          window.open(paymentRes.data.checkoutUrl, "_blank");
+          window.location.href = paymentRes.data.checkoutUrl;
         } else {
-          message.error("Không thể từo liên kết thanh toán");
+          message.error("Không thể lấy liên kết thanh toán");
         }
       }
     } catch (error: any) {
@@ -291,38 +252,23 @@ const Booking = () => {
       message.error(error.message);
     } finally {
       setIsLoadingForm(false);
-      setSlot(null);
-      setDate(null);
-      form.resetFields();
     }
   };
 
-  console.log(auth);
-
-  // Cập nhật hàm handleAddressSearch với debounce
   const handleAddressSearch = debounce(async (value: string) => {
-    console.log("Search value:", value);
     if (value.length > 2) {
       try {
-        const response = await axios.get(`http://localhost:5000/api/distance/autocomplete`, {
-          params: {
-            query: value,
-          },
-          headers: {
-            Accept: "application/json",
-          },
-        });
+        const api = `/api/distance/autocomplete`;
+        const res = await handleAPI(api, undefined, "GET", { query: value });
 
-        console.log("API Response:", response.data);
-
-        if (response.data && Array.isArray(response.data.data)) {
-          setAddressOptions(response.data.data);
+        if (Array.isArray(res.data)) {
+          setAddressOptions(res.data);
         } else {
-          console.log("Invalid response format:", response.data);
           setAddressOptions([]);
         }
-      } catch (error: unknown) {
-        console.error("Error details:", (error as { response?: { data: unknown } }).response?.data);
+      } catch (error: any) {
+        console.log(error);
+        message.error(error.message || "Có lỗi xảy ra khi tìm kiếm địa chỉ");
         setAddressOptions([]);
       }
     } else {
@@ -330,24 +276,43 @@ const Booking = () => {
     }
   }, 300);
 
-  // Cập nhật hàm handleAddressSelect
   const handleAddressSelect = async (value: string) => {
     try {
-      const response = await axios.get(
-        `http://localhost:5000/api/distance/calculate-route?address=${encodeURIComponent(value)}`,
-      );
-      const { origin, route, distance, duration } = response.data;
+      const api = `/api/distance/calculate-route`;
+      const { data } = await handleAPI(api, undefined, "GET", { address: value });
 
-      if (origin && route) {
-        setOrigin([origin.lat, origin.lon]);
-        setRoute(route); // Đây sẽ là mảng các tọa độ đã được decode
-        setDistance(distance);
-        setDuration(duration);
-        form.setFieldsValue({ address: value });
+      if (data.origin && data.route) {
+        setOrigin([data.origin.lat, data.origin.lon]);
+        setRoute(data.route);
+        setDistance(data.distance);
+        form.setFieldsValue({ detailAddress: value });
       }
+    } catch (error: any) {
+      console.log(error);
+      message.error(error.message || "Không thể tính toán tuyến đường");
+    }
+  };
+
+  const handleConsultingTypeChange = (value: string) => {
+    if (value === "Tư vấn trực tuyến" || value === "Tại phòng khám") {
+      setIsAddressDisabled(true);
+      form.setFieldsValue({ detailAddress: "" });
+    } else {
+      setIsAddressDisabled(false);
+    }
+  };
+
+  const handleCheckExistence = async (field: string, value: string) => {
+    const api = `/api/users/check-${field}`;
+    try {
+      const res: any = await handleAPI(api, { [field]: value }, "POST");
+
+      if (res.exists && res.userId !== auth.id) {
+        return true;
+      }
+      return false;
     } catch (error) {
-      console.error("Error calculating route:", error);
-      message.error("Không thể tính toán tuyến đường");
+      console.log(error);
     }
   };
 
@@ -371,7 +336,6 @@ const Booking = () => {
               components: {
                 Form: {
                   labelColor: "white",
-                  fontSize: 17,
                 },
                 Divider: {
                   marginLG: 8,
@@ -387,7 +351,7 @@ const Booking = () => {
               layout="vertical"
             >
               <h3 className="heading-3 text-white">Nội dung chi tiết đặt hẹn</h3>
-              <div className="my-5 flex gap-10">
+              <div className="my-5 flex gap-5">
                 <div className="lg:w-1/5">
                   <Form.Item
                     name="serviceName"
@@ -443,6 +407,7 @@ const Booking = () => {
                       placeholder="Chọn hình thức khám"
                       style={{ width: "100%" }}
                       options={consultingOptions}
+                      onChange={handleConsultingTypeChange}
                     />
                   </Form.Item>
                   <div className="mt-20">
@@ -525,50 +490,80 @@ const Booking = () => {
                     </div>
                   </Form.Item>
                 </div>
-                <div className="lg:w-[45%]">
-                  {/* <Row>
-                    <Col span={24}>
+                <div className="lg:w-[50%]">
+                  <Row gutter={16}>
+                    <Col span={8}>
                       <Form.Item
                         required
                         name="fullName"
                         label="Họ và tên"
+                        tooltip="Chỉ chữ cái và khoảng trắng, dài từ 2 đến 50 ký tự!"
+                        rules={[
+                          { required: true, message: "Vui lòng nhập họ và tên" },
+                          { min: 2, message: "Họ và tên phải có ít nhất 2 ký tự" },
+                          { max: 50, message: "Họ và tên không được vượt quá 50 ký tự" },
+                          {
+                            pattern: /^[a-zA-ZÀ-ỹ\s]+$/,
+                            message: "Họ và tên chỉ được chứa chữ cái và khoảng trắng",
+                          },
+                          {
+                            validator: (_, value) => {
+                              if (value && value.trim().split(/\s+/).length < 2) {
+                                return Promise.reject("Họ và tên phải bao gồm ít nhất hai từ");
+                              }
+                              return Promise.resolve();
+                            },
+                          },
+                        ]}
+                        validateDebounce={1000}
                       >
-                        <Input
-                          defaultValue={profile?.fullName}
-                          placeholder="Họ và tên"
-                        />
+                        <Input placeholder="Họ và tên" />
                       </Form.Item>
                     </Col>
-                  </Row>
-                  <Row gutter={24}>
-                    <Col span={12}>
+                    <Col span={8}>
                       <Form.Item
                         required
                         name="phoneNumber"
                         label="Số điện thoại"
+                        hasFeedback
+                        rules={[
+                          { required: true, message: "Vui lòng nhập số điện thoại" },
+                          { pattern: /^[0-9]{10}$/, message: "Số điện thoại không hợp lệ" },
+                          {
+                            validator: async (_, value) => {
+                              const exists = await handleCheckExistence("phoneNumber", value);
+                              if (exists) {
+                                return Promise.reject(
+                                  new Error("Tên số điện thoại này đã tồn tại!"),
+                                );
+                              }
+
+                              return Promise.resolve();
+                            },
+                          },
+                        ]}
+                        validateDebounce={1000}
                       >
                         <Input
                           className="addon-input"
                           addonBefore="+84"
                           placeholder="Số điện thoại"
-                          defaultValue={profile?.phoneNumber}
                         />
                       </Form.Item>
                     </Col>
-                    <Col span={12}>
+                    <Col span={8}>
                       <Form.Item
                         name="gender"
                         label="Giới tính"
+                        rules={[
+                          {
+                            required: true,
+                            message: "Vui lòng chọn giới tính",
+                          },
+                        ]}
                       >
                         <Select
                           placeholder="Giới tính"
-                          defaultValue={
-                            profile?.gender === undefined
-                              ? null
-                              : profile?.gender === true
-                                ? "Nam"
-                                : "Nữ"
-                          }
                           options={[
                             { value: "nam", label: "Nam" },
                             { value: "nữ", label: "Nữ" },
@@ -577,53 +572,6 @@ const Booking = () => {
                       </Form.Item>
                     </Col>
                   </Row>
-                  <Row gutter={24}>
-                    <Col span={8}>
-                      <Form.Item
-                        name="city"
-                        label="Tỉnh"
-                      >
-                        <Select
-                          placeholder="Thành phố"
-                          value={city}
-                          defaultValue={profile?.city}
-                          onChange={(e) => {
-                            setCity(e);
-                          }}
-                          options={cities}
-                        />
-                      </Form.Item>
-                    </Col>
-                    <Col span={8}>
-                      <Form.Item
-                        name="district"
-                        label="Quận / Huyện"
-                      >
-                        <Select
-                          placeholder="Quận / Huyện"
-                          defaultValue={profile?.district}
-                          onChange={(e) => {
-                            setDistrict(e);
-                          }}
-                          options={districts}
-                        />
-                      </Form.Item>
-                    </Col>
-                    <Col span={8}>
-                      <Form.Item
-                        name="ward"
-                        label="Phường / Xã"
-                      >
-                        <Select
-                          placeholder="Phường / Xã"
-                          defaultValue={profile?.ward}
-                          value={ward}
-                          onChange={(e) => setWard(e)}
-                          options={wards}
-                        />
-                      </Form.Item>
-                    </Col>
-                  </Row> */}
                   <Row>
                     <Col span={24}>
                       <Form.Item
@@ -646,19 +594,15 @@ const Booking = () => {
                         label="Địa chỉ"
                       >
                         <AutoComplete
-                          value={searchValue}
                           options={addressOptions}
                           onSearch={handleAddressSearch}
                           onSelect={handleAddressSelect}
                           placeholder="Nhập địa chỉ"
                           style={{ width: "100%" }}
-                          notFoundContent={
-                            searchValue.length > 2
-                              ? "Không tìm thấy địa chỉ"
-                              : "Nhập ít nhất 3 ký tự"
-                          }
+                          notFoundContent={"Nhập ít nhất 3 ký tự"}
                           defaultActiveFirstOption={true}
                           allowClear={true}
+                          disabled={isAddressDisabled}
                         />
                       </Form.Item>
                     </Col>
@@ -675,6 +619,14 @@ const Booking = () => {
                 </div>
               </div>
             </Form>
+            <div className="">
+              <h1 className="text-2xl font-semibold text-white">Lưu ý</h1>
+              <p className="w-1/2 text-justify text-white">
+                Khi quý khách thanh toán thành công cho dịch vụ tư vấn trực tuyến, đường link tham
+                gia cuộc hẹn sẽ được gửi qua email trong vòng 2 giờ. <br />
+                Xin quý khách vui lòng kiểm tra email để nhận thông tin cuộc hẹn!
+              </p>
+            </div>
           </ConfigProvider>
           <div className="text-right">
             <ConfigProvider

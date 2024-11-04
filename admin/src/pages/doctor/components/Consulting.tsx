@@ -104,6 +104,10 @@ const Consulting = () => {
                   hasFeedback
                   rules={[
                     { required: true, message: "Vui lòng nhập số điện thoại" },
+                    {
+                      pattern: /^[0-9]{10}$/,
+                      message: "Số điện thoại không hợp lệ",
+                    },
                   ]}
                   validateDebounce={1000}
                 >
@@ -112,7 +116,12 @@ const Consulting = () => {
                 <Form.Item
                   name="status"
                   label="Tình trạng hồ cá"
-                  rules={[{ required: true }]}
+                  rules={[
+                    {
+                      required: true,
+                      message: "Vui lòng chọn tình trạng hồ cá",
+                    },
+                  ]}
                 >
                   <Select
                     placeholder="Tình trạng hồ cá"
@@ -124,7 +133,10 @@ const Consulting = () => {
                     ]}
                   />
                 </Form.Item>
-                <Form.Item label="Hình ảnh">
+                <Form.Item
+                  label="Hình ảnh"
+                  tooltip="Chỉ tải lên được tối đa 4 hình ảnh"
+                >
                   <Upload
                     accept="image/png, image/jpeg"
                     fileList={fileList}
@@ -137,27 +149,31 @@ const Consulting = () => {
                 </Form.Item>
               </Col>
               <Col span={5}>
-                <Form.Item name="ph" label="Độ pH" rules={[{ required: true }]}>
+                <Form.Item
+                  name="ph"
+                  label="Độ pH"
+                  rules={[{ required: true, message: "Không để trống" }]}
+                >
                   <Input placeholder="Độ pH" />
                 </Form.Item>
                 <Form.Item
                   name="ammoniaLevel"
                   label="Nồng độ amonia"
-                  rules={[{ required: true }]}
+                  rules={[{ required: true, message: "Không để trống" }]}
                 >
                   <Input placeholder="Nồng độ amonia" />
                 </Form.Item>
                 <Form.Item
                   name="nitrateLevel"
                   label="Nồng độ nitrat"
-                  rules={[{ required: true }]}
+                  rules={[{ required: true, message: "Không để trống" }]}
                 >
                   <Input placeholder="Nồng độ nitrat" />
                 </Form.Item>
                 <Form.Item
                   name="oxygenLevel"
                   label="Hàm lượng oxy"
-                  rules={[{ required: true }]}
+                  rules={[{ required: true, message: "Không để trống" }]}
                 >
                   <Input placeholder="Hàm lượng oxy" />
                 </Form.Item>
@@ -166,7 +182,7 @@ const Consulting = () => {
                 <Form.Item
                   name="cleanliness"
                   label="Mức độ sạch sẽ"
-                  rules={[{ required: true }]}
+                  rules={[{ required: true, message: "Không để trống" }]}
                 >
                   <Select
                     placeholder="Mức độ sạch sẽ"
@@ -181,7 +197,7 @@ const Consulting = () => {
                 <Form.Item
                   name="filtrationSystem"
                   label="Hệ thống lọc"
-                  rules={[{ required: true }]}
+                  rules={[{ required: true, message: "Không để trống" }]}
                 >
                   <Select
                     placeholder="Kích cỡ"
@@ -195,14 +211,14 @@ const Consulting = () => {
                 <Form.Item
                   name="pondSize"
                   label="Kích thước hồ cá"
-                  rules={[{ required: true }]}
+                  rules={[{ required: true, message: "Không để trống" }]}
                 >
                   <Input placeholder="Kích thước hồ cá" />
                 </Form.Item>
                 <Form.Item
                   name="waterTemperature"
                   label="Nhiệt độ nước"
-                  rules={[{ required: true }]}
+                  rules={[{ required: true, message: "Không để trống" }]}
                 >
                   <Input placeholder="Nhiệt độ nước" />
                 </Form.Item>
@@ -218,7 +234,12 @@ const Consulting = () => {
             </Row>
           </Form>
           <div className="text-right">
-            <Button onClick={() => form.submit()} size="large" type="primary">
+            <Button
+              loading={isLoading}
+              onClick={() => form.submit()}
+              size="large"
+              type="primary"
+            >
               Tạo hồ sơ
             </Button>
           </div>

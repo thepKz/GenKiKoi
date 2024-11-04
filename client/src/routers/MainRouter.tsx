@@ -6,6 +6,7 @@ import {
   AboutUs,
   Appointment,
   Booking,
+  ChangePassword,
   ConsultingTreatment,
   Doctors,
   FAQ,
@@ -36,9 +37,9 @@ import DoctorDetail from "../pages/DoctorDetail";
 import TermsOfService from "../pages/TermsOfService";
 import ServicePriceTable from "../pages/services/ServicePriceTable";
 import Feedback from "../pages/Feedback";
-import Dashboard from "../pages/Dashboard";
 import { Spin } from "antd";
-
+import ForgotPassword from "../pages/ForgotPassword";
+import ResetPassword from "../pages/ResetPassword";
 
 const MainRouter = () => {
   const auth: IAuth = useSelector((state: any) => state.authReducer.data);
@@ -112,8 +113,6 @@ const MainRouter = () => {
               path="service-price-table"
               element={<ServicePriceTable />}
             />
-            
-            
           </Route>
           <Route
             path="faq"
@@ -123,7 +122,7 @@ const MainRouter = () => {
             path="terms-of-service"
             element={<TermsOfService />}
           />
-          
+
           <Route
             path="booking"
             element={auth.token && auth.isVerified ? <Booking /> : <Navigate to={"/sign-in"} />}
@@ -132,11 +131,7 @@ const MainRouter = () => {
             path="feedback"
             element={<Feedback />}
           />
-          <Route
-            path="dashboard"
-              element={<Dashboard />}
-            />
-          
+
           <Route
             path="unauthorized"
             element={<UnAuthorized />}
@@ -186,6 +181,23 @@ const MainRouter = () => {
               />
             )
           }
+        />
+
+        <Route
+          path="/change-password"
+          element={
+            auth.token && auth.isVerified ? <ChangePassword /> : <Navigate to={"/sign-in"} />
+          }
+        />
+
+        <Route
+          path="/forgot-password"
+          element={<ForgotPassword />}
+        />
+
+        <Route
+          path="/reset-password"
+          element={<ResetPassword />}
         />
 
         <Route

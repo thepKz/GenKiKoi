@@ -1,11 +1,11 @@
 import { Avatar, Breadcrumb, Col, ConfigProvider, Divider, List, message, Row, Spin } from "antd";
-import React, { useEffect, useState } from "react";
+import { Stickynote } from "iconsax-react";
+import { useEffect, useState } from "react";
+import { GiCirclingFish } from "react-icons/gi";
 import { Link, useLocation } from "react-router-dom";
 import { handleAPI } from "../../apis/handleAPI";
 import { HeaderComponent } from "../../components";
-import { GiCirclingFish } from "react-icons/gi";
-import { Stickynote } from "iconsax-react";
-
+/* eslint-disable @typescript-eslint/no-unused-vars */
 const RecordDetail = () => {
   const { pathname } = useLocation();
   const fishId = pathname.split("/")[4];

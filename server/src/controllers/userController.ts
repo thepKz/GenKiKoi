@@ -1,15 +1,10 @@
-import { Response } from "express";
+import { Response, Request } from "express";
 import { Customer, User } from "../models";
 import { AuthRequest } from "../types";
 import { ICustomer } from "../models/Customer";
 import { IUser } from "../models/User";
-
-/**
- * Người Làm: Thép, Dũng
- * Người Test: Thép
- * Loại Test: API TEST (Đã xong), UNIT TEST (Đang làm), E2E TEST (Đang làm)
- * Chỉnh Sửa Lần Cuối : 13/10/2024 (Thép)
- */
+import bcrypt from "bcryptjs";
+import { sendResetPasswordEmail } from "../services/emails";
 
 export const getUser = async (req: AuthRequest, res: Response) => {
   try {
@@ -82,17 +77,20 @@ export const updateProfile = async (req: AuthRequest, res: Response) => {
       detailAddress,
     } = req.body;
 
-    const formatUsername = username.toLowerCase();
+    const userUpdateData: any = {
+      fullName,
+      phoneNumber,
+      photoUrl,
+      gender,
+    };
+
+    if (username) {
+      userUpdateData.username = username.toLowerCase();
+    }
 
     const updatedUser = await User.findOneAndUpdate(
       { _id: userId },
-      {
-        username: formatUsername,
-        fullName,
-        phoneNumber,
-        photoUrl,
-        gender,
-      },
+      userUpdateData,
       { new: true }
     );
 
@@ -127,6 +125,158 @@ export const updateProfile = async (req: AuthRequest, res: Response) => {
   } catch (error: any) {
     return res.status(500).json({
       message: error.message,
+    });
+  }
+};
+
+export const getAllUsers = async (req: Request, res: Response) => {
+  try {
+    const users = await User.find();
+
+    if (!users || users.length === 0) {
+      return res.status(404).json("Danh sách tài khoản trống");
+    }
+
+    const formattedData = users.map((user) => ({
+      id: user._id,
+      username: user.username,
+      email: user.email,
+      photoUrl: user.photoUrl ?? "",
+      fullName: user.fullName ?? "",
+      phoneNumber: user.phoneNumber ?? "",
+      role: user.role,
+      isDisabled: user.isDisabled,
+    }));
+
+    return res.status(200).json({ data: formattedData });
+  } catch (error: any) {
+    return res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+export const toggleUserStatus = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "Không tìm thấy người dùng" });
+    }
+
+    user.isDisabled = !user.isDisabled;
+    await user.save();
+
+    return res.status(200).json({
+      data: user,
+    });
+  } catch (error: any) {
+    return res.status(500).json({
+      message:
+        error.message || "Đã xảy ra lỗi khi cập nhật trạng thái tài khoản",
+    });
+  }
+};
+
+export const checkPhoneNumber = async (req: Request, res: Response) => {
+  const { phoneNumber } = req.body;
+
+  const user = await User.findOne({ phoneNumber });
+  return res.status(200).json({ exists: !!user, userId: user?._id });
+};
+
+export const changePassword = async (req: AuthRequest, res: Response) => {
+  try {
+    const userId = req.user?._id;
+    const { password, newPassword } = req.body;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "Không tìm thấy người dùng" });
+    }
+
+    const isValidPassword = await bcrypt.compare(password, user.password);
+    if (!isValidPassword) {
+      return res.status(400).json({
+        message: "Mật khẩu hiện tại không đúng",
+        password: "Mật khẩu hiện tại không đúng",
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedPassword;
+    await user.save();
+
+    return res.status(200).json({ message: "Đổi mật khẩu thành công" });
+  } catch (error: any) {
+    return res.status(500).json({
+      message: error.message || "Đã xảy ra lỗi khi đổi mật khẩu",
+    });
+  }
+};
+
+export const forgotPassword = async (req: Request, res: Response) => {
+  try {
+    const { email } = req.body;
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({
+        message: "Email không tồn tại trong hệ thống",
+        email: "Email không tồn tại trong hệ thống",
+      });
+    }
+
+    const resetToken = Math.floor(100000 + Math.random() * 900000).toString();
+
+    user.resetPasswordToken = resetToken;
+
+    user.resetPasswordExpires = new Date(Date.now() + 10 * 60 * 1000);
+
+    await user.save();
+
+    await sendResetPasswordEmail(email, user.username, resetToken);
+
+    return res.status(200).json({
+      message: "Email khôi phục mật khẩu đã được gửi",
+    });
+  } catch (error: any) {
+    return res.status(500).json({
+      message: error.message || "Đã xảy ra lỗi khi xử lý yêu cầu",
+    });
+  }
+};
+
+export const resetPassword = async (req: Request, res: Response) => {
+  try {
+    const { token, newPassword } = req.body;
+
+    const user = await User.findOne({
+      resetPasswordToken: token,
+      resetPasswordExpires: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        message: "Token không hợp lệ hoặc đã hết hạn",
+        token: "Token không hợp lệ hoặc đã hết hạn",
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedPassword;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+    await user.save();
+
+    return res.status(200).json({
+      message: "Đặt lại mật khẩu thành công",
+    });
+  } catch (error: any) {
+    return res.status(500).json({
+      message: error.message || "Đã xảy ra lỗi khi đặt lại mật khẩu",
     });
   }
 };

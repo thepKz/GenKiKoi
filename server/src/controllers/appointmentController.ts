@@ -29,6 +29,7 @@ export const getAllAppointmentsByDoctorId = async (
     const doctorId = req.params.doctorId;
 
     const appointments = await Appointment.find({ doctorId })
+      .sort({ appointmentDate: -1 })
       .populate({
         path: "customerId",
         populate: {
@@ -81,7 +82,7 @@ export const getAllAppointmentsByDoctorId = async (
 
 export const updateStatusAppointment = async (req: Request, res: Response) => {
   const appointmentId = req.params.appointmentId;
-  let { status } = req.body;
+  let { status, notes } = req.body;
   try {
     const updatedAppointment = await Appointment.findByIdAndUpdate(
       appointmentId,
@@ -94,7 +95,16 @@ export const updateStatusAppointment = async (req: Request, res: Response) => {
             : status === "CANCELLED"
             ? "Đã hủy"
             : "Đã xác nhận",
-        notes: "Quý khách sẽ được hoàn tiền theo chính sách của công ty!",
+        notes:
+          notes.length > 0
+            ? notes
+            : status === "PENDING"
+            ? "Quý khách cần thanh toán dịch vụ để được xác nhận!"
+            : status === "CANCELLED"
+            ? "Quý khách sẽ được hoàn tiền theo chính sách của công ty!"
+            : status === "DONE"
+            ? ""
+            : "Quý khách vui lòng tới trước giờ hẹn 15 phút!",
       },
       { new: true }
     );
@@ -106,20 +116,36 @@ export const updateStatusAppointment = async (req: Request, res: Response) => {
     // Nếu trạng thái là CANCELLED, cập nhật DoctorSchedule
     if (status === "CANCELLED") {
       const doctorSchedule = await DoctorSchedule.findOne({
-        "weekSchedule.slots.appointmentId": appointmentId,
+        "weekSchedule.slots.appointmentIds": appointmentId,
       });
 
       if (doctorSchedule) {
-        doctorSchedule.weekSchedule.forEach((day) => {
-          day.slots.forEach((slot) => {
-            if (slot.appointmentId?.toString() === appointmentId) {
-              slot.appointmentId = null;
-              slot.isBooked = false;
+        for (let day of doctorSchedule.weekSchedule) {
+          for (let slot of day.slots) {
+            const appointmentIndex =
+              slot.appointmentIds?.indexOf(appointmentId);
+            if (
+              appointmentIndex !== -1 &&
+              appointmentIndex !== undefined &&
+              slot.appointmentIds
+            ) {
+              slot.appointmentIds.splice(appointmentIndex, 1);
+              slot.currentCount = Math.max(0, slot.currentCount - 1);
+              slot.isBooked = slot.currentCount >= 3;
+              break;
             }
-          });
-        });
+          }
+        }
 
-        await doctorSchedule.save();
+        await DoctorSchedule.findOneAndUpdate(
+          { _id: doctorSchedule._id },
+          {
+            $set: {
+              weekSchedule: doctorSchedule.weekSchedule,
+            },
+          },
+          { new: true }
+        );
       }
     }
 
@@ -152,7 +178,7 @@ export const getAppointmentsByCustomerId = async (
         path: "serviceId",
         select: "serviceName",
       })
-      .select("_id appointmentDate status notes isFeedback");
+      .select("_id appointmentDate status notes reasons isFeedback");
 
     const formattedAppointment = appointments.map((appointment: any) => ({
       appointmentId: appointment._id,
@@ -162,6 +188,7 @@ export const getAppointmentsByCustomerId = async (
       status: appointment.status,
       notes: appointment.notes,
       isFeedback: appointment.isFeedback,
+      reasons: appointment.reasons,
     }));
 
     return res.status(200).json({ data: formattedAppointment });

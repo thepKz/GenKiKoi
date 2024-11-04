@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
 import { Button, Card, Rate } from 'antd';
 import { ArrowRight2 } from 'iconsax-react';
-import { AnimatedSection, DividerComponent } from "../share";
-import Doctor1 from "../assets/doctor1.webp";
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Doctor1 from "../assets/doctor1.webp";
+import { AnimatedSection, DividerComponent } from "../share";
 // import Doctor2 from "../assets/doctor2.png";
 
 const Doctors = () => {
@@ -42,7 +42,7 @@ const Doctors = () => {
 
   return (
     <div>
-      <div className="section bg-green-dark text-center text-white">
+      <div className="section bg-gradient-to-t from-[#2A7F9E] to-[#175670] py-36 pt-44 text-center text-white">
         <div className="container mx-auto lg:px-40">
           <AnimatedSection
             variants={{
@@ -57,15 +57,17 @@ const Doctors = () => {
               },
             }}
           >
-            <div className='mt-10'>
-              <h1 className="heading-1 mb-5">Đội ngũ bác sĩ tại GenKiKoi</h1>
+            <div className='mb-10'>
+              <h1 className="text-4xl lg:text-5xl font-bold text-center leading-tight mb-8 bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
+                Đội ngũ bác sĩ tại GenKiKoi
+              </h1>
               <p className="text-lg">
                 Gặp gỡ đội ngũ bác sĩ chuyên nghiệp và tận tâm của chúng tôi, luôn sẵn sàng chăm sóc cho cá Koi của bạn.
               </p>
             </div>
           </AnimatedSection>
 
-          <div className="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {doctors.map((doctor) => (
               <AnimatedSection
                 key={doctor.id}
@@ -80,13 +82,18 @@ const Doctors = () => {
               >
                 <Card
                   hoverable
-                  className="bg-blue-primary text-white"
+                  className="bg-white/10 backdrop-blur-sm hover:bg-white/15 transition-all duration-300 text-white overflow-hidden"
                   cover={
-                    <img
-                      alt={doctor.name}
-                      src={doctor.image}
-                      className="h-64 object-cover"
-                    />
+                    <div className="overflow-hidden">
+                      <img
+                        alt={doctor.name}
+                        src={doctor.image}
+                        className="h-64 w-full object-cover transition-all duration-500 
+                          opacity-90 contrast-125 brightness-90 saturate-[0.85]
+                          hover:opacity-100 hover:contrast-100 hover:brightness-100 hover:saturate-100
+                          hover:scale-110 transform"
+                      />
+                    </div>
                   }
                 >
                   <Card.Meta
@@ -99,12 +106,20 @@ const Doctors = () => {
                     }
                   />
                   <p className="mt-4 text-gray-300">{doctor.description}</p>
-                  <Button onClick={() => handleViewDetails(doctor.id)} type="link" className="mt-4 text-white hover:text-blue-300">
-                    Xem chi tiết <ArrowRight2 size={18} />
-                  </Button>
-                  <Button onClick={() => handleBooking()} type="link" className="mt-4 text-white hover:text-blue-300">
-                    Đặt lịch <ArrowRight2 size={18} />
-                  </Button> 
+                  <div className="flex gap-4 mt-4">
+                    <Button 
+                      onClick={() => handleViewDetails(doctor.id)} 
+                      className="bg-white/10 hover:bg-white/20 text-white border-none rounded-full transition-all duration-300 hover:scale-105 flex items-center gap-2"
+                    >
+                      Xem chi tiết <ArrowRight2 size={18} />
+                    </Button>
+                    <Button 
+                      onClick={() => handleBooking()} 
+                      className="bg-white/10 hover:bg-white/20 text-white border-none rounded-full transition-all duration-300 hover:scale-105 flex items-center gap-2"
+                    >
+                      Đặt lịch <ArrowRight2 size={18} />
+                    </Button>
+                  </div>
                 </Card>
               </AnimatedSection>
             ))}
@@ -112,10 +127,7 @@ const Doctors = () => {
 
           <AnimatedSection
             variants={{
-              hidden: {
-                opacity: 0,
-                scale: 0.5,
-              },
+              hidden: { opacity: 0, scale: 0.5 },
               visible: {
                 opacity: 1,
                 scale: 1,
@@ -125,13 +137,11 @@ const Doctors = () => {
             className="mt-12"
           >
             <Button
-              style={{ fontSize: 18 }}
               size="large"
-              type="primary"
-              ghost
+              className="mx-auto px-8 py-6 bg-white/10 hover:bg-white/20 text-white border-none rounded-full text-lg font-semibold flex items-center gap-2 transition-all duration-300 hover:scale-105"
             >
               Xem tất cả bác sĩ 
-              <ArrowRight2 size={18} />
+              <ArrowRight2 className="animate-bounce" size={20} />
             </Button>
           </AnimatedSection>
         </div>

@@ -180,7 +180,16 @@ const Treatment = () => {
                 >
                   <Input placeholder="Số điện thoại" />
                 </Form.Item>
-                <Form.Item required name="fishId" label="Danh sách hồ sơ">
+                <Form.Item
+                  name="fishId"
+                  label="Danh sách hồ sơ"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Vui lòng chọn hồ sơ",
+                    },
+                  ]}
+                >
                   <Select
                     placeholder="Chọn hồ sơ"
                     style={{ width: "100%" }}
@@ -198,7 +207,16 @@ const Treatment = () => {
                     ]}
                   />
                 </Form.Item>
-                <Form.Item required name="serviceName" label="Dịch vụ">
+                <Form.Item
+                  name="serviceName"
+                  label="Dịch vụ"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Vui lòng chọn loại dịch vụ",
+                    },
+                  ]}
+                >
                   <Select
                     placeholder="Chọn loại dịch vụ"
                     style={{ width: "100%" }}
@@ -209,9 +227,14 @@ const Treatment = () => {
                   />
                 </Form.Item>
                 <Form.Item
-                  required
                   name="examType"
                   label="Khám bệnh / Tái khám"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Vui lòng chọn hình thức khám bệnh",
+                    },
+                  ]}
                 >
                   <Select
                     placeholder="Khám bệnh / Tái khám"
@@ -227,7 +250,10 @@ const Treatment = () => {
                     ]}
                   />
                 </Form.Item>
-                <Form.Item label="Hình ảnh">
+                <Form.Item
+                  label="Hình ảnh"
+                  tooltip="Chỉ tải lên được tối đa 4 hình ảnh"
+                >
                   <Upload
                     accept="image/png, image/jpeg"
                     fileList={fileList}
@@ -301,8 +327,13 @@ const Treatment = () => {
             </Row>
           </Form>
 
-          <div className="text-right">
-            <Button onClick={() => form.submit()} size="large" type="primary">
+          <div className="absolute bottom-0 right-0 z-10">
+            <Button
+              loading={isLoading}
+              onClick={() => form.submit()}
+              size="large"
+              type="primary"
+            >
               Tạo hồ sơ
             </Button>
           </div>

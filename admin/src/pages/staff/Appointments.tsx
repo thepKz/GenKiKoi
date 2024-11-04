@@ -1,17 +1,109 @@
-import { Breadcrumb, Button, TableProps, Tag } from "antd";
+import {
+  Breadcrumb,
+  Button,
+  Input,
+  message,
+  Modal,
+  TableProps,
+  Tag,
+} from "antd";
 import { HeaderPage } from "../../components";
 import { CustomTable } from "../../share";
-import { Link } from "react-router-dom";
-import { getValue } from "../../utils";
+import { Link, useLocation } from "react-router-dom";
+import { getValue, removeVietnameseTones } from "../../utils";
 import { Calendar, CalendarSearch } from "iconsax-react";
+import { useEffect, useState } from "react";
+import { handleAPI } from "../../apis/handleAPI";
+
+const { TextArea } = Input;
 
 const Appointments = () => {
+  const { pathname } = useLocation();
+  const customerId = pathname.split("/")[3];
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoadingForm, setIsLoadingForm] = useState<boolean>(false);
+  const [appointments, setAppointments] = useState<any>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedAppointment, setSelectedAppointment] = useState<any>(null);
+  const [cancelReason, setCancelReason] = useState("");
+  const [searchText, setSearchText] = useState("");
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+  });
+
+  const handleSearch = (value: string) => {
+    setSearchText(value.toLowerCase());
+  };
+
+  const filteredAppointments = appointments.filter((appointment: any) => {
+    const searchValue = removeVietnameseTones(searchText.toLowerCase());
+    const doctorName = removeVietnameseTones(
+      appointment.doctorFullName.toLowerCase(),
+    );
+    const serviceName = removeVietnameseTones(
+      appointment.serviceName.toLowerCase(),
+    );
+
+    return (
+      doctorName.includes(searchValue) || serviceName.includes(searchValue)
+    );
+  });
+
+  useEffect(() => {
+    const getAppointments = async () => {
+      try {
+        setIsLoading(true);
+        const api = `/api/appointments/customers/${customerId}`;
+        const res = await handleAPI(api, undefined, "GET");
+        setAppointments(res.data);
+      } catch (error) {
+        message.error("Có lỗi xảy ra khi lấy danh sách cuộc hẹn");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    getAppointments();
+  }, [customerId]);
+
+  const handleCancelAppointment = async () => {
+    try {
+      setIsLoadingForm(true);
+      const api = `/api/appointments/${selectedAppointment.appointmentId}/status`;
+      await handleAPI(
+        api,
+        {
+          status: "CANCELLED",
+          notes: cancelReason,
+        },
+        "PATCH",
+      );
+
+      message.success("Hủy lịch hẹn thành công");
+      setIsModalOpen(false);
+      setCancelReason("");
+      const updatedAppointments = appointments.map((app: any) => {
+        if (app.appointmentId === selectedAppointment.appointmentId) {
+          return { ...app, status: "Đã hủy" };
+        }
+        return app;
+      });
+      setAppointments(updatedAppointments);
+    } catch (error) {
+      message.error("Có lỗi xảy ra khi hủy lịch hẹn");
+    } finally {
+      setIsLoadingForm(false);
+    }
+  };
+
   const columns: TableProps["columns"] = [
     {
       key: "#",
       title: "#",
       dataIndex: "key",
-      render: (_text, _record, index) => index + 1,
+      render: (_text, _record, index) => {
+        return (pagination.current - 1) * pagination.pageSize + index + 1;
+      },
       width: 60,
     },
     {
@@ -34,39 +126,42 @@ const Appointments = () => {
       key: "Trạng thái",
       title: "Trạng thái",
       dataIndex: "status",
+      width: 150,
       render: (status) => <Tag color={getValue(status)}>{status}</Tag>,
     },
     {
-      key: "Notes",
-      title: "Notes",
-      dataIndex: "notes",
+      key: "Lý do khám",
+      title: "Lý do khám",
+      dataIndex: "reasons",
+      width: 400,
     },
     {
-      key: "Chi tiết",
-      title: "Chi tiết",
-      render: (_text: any, _record: any) => (
-        <div className="text-center">
-          <Link to={"/staff/customers/348/appointments/485"}>
-            <Button type="primary">Xem chi tiết</Button>
-          </Link>
-        </div>
-      ),
+      key: "Hủy lịch",
+      title: "Hủy lịch",
+      render: (_text: any, record: any) =>
+        record.status === "Đã xác nhận" ? (
+          <Button
+            danger
+            onClick={() => {
+              setSelectedAppointment(record);
+              setIsModalOpen(true);
+            }}
+          >
+            Hủy lịch
+          </Button>
+        ) : (
+          ""
+        ),
     },
   ];
 
-  const demoData = [
-    {
-      id: 1,
-      serviceName: "Tiêm phòng",
-      doctorFullName: "Đỗ Quang Dũng",
-      notes: "",
-      appointmentDate: "2024-10-16T15:18:26.465+00:00",
-      status: "Đang chờ xử lý",
-    },
-  ];
   return (
     <div className="section">
-      <HeaderPage heading="Danh sách cuộc hẹn" placeholder="Tìm cuộc hẹn" />
+      <HeaderPage
+        heading="Danh sách cuộc hẹn"
+        placeholder="Tìm cuộc hẹn"
+        onSearch={handleSearch}
+      />
       <Breadcrumb
         separator=">"
         items={[
@@ -82,7 +177,7 @@ const Appointments = () => {
           },
           {
             title: (
-              <Link to="/staff/customers/348/appointments">
+              <Link to={`/staff/customers/${customerId}/appointments`}>
                 <div className="flex items-center gap-2">
                   <Calendar size={20} />
                   Danh sách cuộc hẹn
@@ -93,8 +188,38 @@ const Appointments = () => {
         ]}
       />
       <div className="mt-2">
-        <CustomTable columns={columns} dataSource={demoData} />
+        <CustomTable
+          loading={isLoading}
+          columns={columns}
+          dataSource={filteredAppointments}
+          onChange={(pagination) => setPagination(pagination)}
+        />
       </div>
+      <Modal
+        confirmLoading={isLoadingForm}
+        open={isModalOpen}
+        okText="Xác nhận"
+        onOk={handleCancelAppointment}
+        cancelText="Hủy"
+        onCancel={() => {
+          setIsModalOpen(false);
+          setCancelReason("");
+        }}
+      >
+        <div className="my-3">
+          <h4 className="heading-4">Xác nhận hủy lịch hẹn</h4>
+          <p className="my-2 text-base">
+            Bạn có chắc chắn muốn hủy lịch hẹn này?
+          </p>
+          <TextArea
+            size="large"
+            value={cancelReason}
+            onChange={(e) => setCancelReason(e.target.value)}
+            placeholder="Lý do hủy cuộc hẹn"
+            rows={6}
+          />
+        </div>
+      </Modal>
     </div>
   );
 };

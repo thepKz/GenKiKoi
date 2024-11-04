@@ -1,10 +1,9 @@
 import { Happyemoji, Map, Pet } from "iconsax-react";
-import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
-import { useEffect, useRef } from 'react';
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import Logo from "../assets/logo.jpg";
-
 
 const Footer = () => {
   const mapRef = useRef<L.Map | null>(null);
@@ -14,24 +13,22 @@ const Footer = () => {
       if (mapRef.current) return;
 
       const lat = 10.8411;
-      const lon = 106.8090;
-      const map = L.map('map').setView([lat, lon], 15);
+      const lon = 106.809;
+      const map = L.map("map").setView([lat, lon], 15);
       mapRef.current = map;
-      
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: ''
+
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "",
       }).addTo(map);
-      
+
       const genkikoiIcon = L.icon({
         iconUrl: Logo,
         iconSize: [32, 32],
         iconAnchor: [16, 32],
-        popupAnchor: [0, -32]
+        popupAnchor: [0, -32],
       });
-      
-      L.marker([lat, lon], { icon: genkikoiIcon }).addTo(map)
-        .bindPopup('GenKiKoi')
-        .openPopup();
+
+      L.marker([lat, lon], { icon: genkikoiIcon }).addTo(map).bindPopup("GenKiKoi").openPopup();
     };
 
     initMap();
@@ -43,82 +40,92 @@ const Footer = () => {
       }
     };
   }, []);
-  const footerLinks1 = [
-    { name: "Giới thiệu", path: "/about-us" },
-    { name: "Chọn GenKiKoi", path: "/" },
-    { name: "Hình ảnh hoạt động", path: "/images" },
-    { name: "Đặt lịch khám", path: "/booking" },
-    { name: "Chính sách", path: "/terms-of-service" }
-    
-  ];
-  const footerLinks2 = [
-    { name: "Tư vấn & Điều trị", path: "/services/consulting-treatment" },
-    { name: "Kiểm tra chất lượng nước", path: "/services/water-quality" },
-    { name: "Tiêm ngừa", path: "/services/vaccine" },
-    { name: "Siêu âm", path: "#" },
-    { name: "Bảng giá dịch vụ", path: "/services/service-price-table" }
-
-  ];
 
   return (
-
-    <footer className="section bg-blue-primary text-white py-8 relative z-20">
+    <footer className="section relative z-20 bg-blue-primary py-8 text-white">
       <div className="container mx-auto px-4">
         <div className="flex flex-wrap justify-center">
           {/* Cột 1: Thông tin phòng khám */}
-          <div className="w-full md:w-1/5 mb-6 md:mb-0">
-            <div className="flex items-center mb-4">
-              <img src={Logo} alt="GenKiKoi Logo" className="w-12 h-12 mr-2" />
+          <div className="mb-6 w-full md:mb-0 md:w-1/5">
+            <div className="mb-4 flex items-center">
+              <img
+                src={Logo}
+                alt="GenKiKoi Logo"
+                className="mr-2 h-12 w-12"
+              />
               <div>
-                <h2 className="text-lg font-bold">Phòng khám Thú Y</h2>
+                <h2 className="text-xl font-bold">Phòng khám Thú Y</h2>
                 <h1 className="text-2xl font-bold">GenKiKoi</h1>
               </div>
             </div>
           </div>
 
           {/* Cột 2: Về Phòng Khám và Dịch Vụ */}
-          {/* <div className="w-full md:w-1/4 mb-6 md:mb-0">
-            <div className="flex"> */}
-              <div className="w-full md:w-1/5 mb-6 md:mb-0">
-                <h3 className="font-bold text-lg mb-4 flex items-center">
+          <div className="mb-6 w-full md:mb-0 md:w-1/4">
+            <div className="flex">
+              <div className="w-1/2">
+                <h3 className="mb-4 flex items-center text-lg font-bold">
                   <Happyemoji className="mr-2" /> Về Phòng Khám
                 </h3>
                 <ul className="space-y-2">
-                  {footerLinks1.map((item) => (
-                    <li key={item.name}>
-                      <Link to={item.path} className="hover:text-blue-300 transition-colors">
-                        {item.name}
+                  {["Giới thiệu", "Chọn GenKiKoi", "Hình ảnh hoạt động", "Liên hệ"].map((item) => (
+                    <li key={item}>
+                      <Link
+                        to="#"
+                        className="transition-colors hover:text-blue-300"
+                      >
+                        {item}
                       </Link>
                     </li>
                   ))}
                 </ul>
               </div>
-              <div className="w-full md:w-1/5 mb-6 md:mb-0">
-                <h3 className="font-bold text-lg mb-4 flex items-center">
+              <div className="w-1/2">
+                <h3 className="mb-4 flex items-center text-lg font-bold">
                   <Pet className="mr-2" /> Dịch Vụ
                 </h3>
                 <ul className="space-y-2">
-                {footerLinks2.map((item) => (
-                    <li key={item.name}>
-                      <Link to={item.path} className="hover:text-blue-300 transition-colors">
-                        {item.name}
+                  {[
+                    "Tư vấn & Điều trị",
+                    "Xét nghiệm",
+                    "Ký sinh trùng máu",
+                    "Kháng sinh đồ",
+                    "Siêu âm",
+                    "Phẫu thuật",
+                    "Tiêm ngừa",
+                    "Pet Shop",
+                  ].map((item) => (
+                    <li key={item}>
+                      <Link
+                        to="#"
+                        className="transition-colors hover:text-blue-300"
+                      >
+                        {item}
                       </Link>
                     </li>
                   ))}
                 </ul>
               </div>
-            {/* </div>
-          </div> */}
+            </div>
+          </div>
 
           {/* Cột 3: Google Maps */}
           <div className="w-full md:w-1/3">
-            <h3 className="font-bold text-lg mb-4 flex items-center">
+            <h3 className="mb-4 flex items-center text-lg font-bold">
               <Map className="mr-2" /> Google Maps
             </h3>
-            <div id="map" className="w-full h-80 rounded-md mb-2"></div>
+            <div
+              id="map"
+              className="mb-2 h-80 w-full rounded-md"
+            ></div>
             <button
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition-colors mt-2"
-              onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=FPT+University+Ho+Chi+Minh+City`, '_blank')}
+              className="mt-2 w-full rounded bg-blue-600 px-4 py-2 font-bold text-white transition-colors hover:bg-blue-700"
+              onClick={() =>
+                window.open(
+                  `https://www.google.com/maps/search/?api=1&query=FPT+University+Ho+Chi+Minh+City`,
+                  "_blank",
+                )
+              }
             >
               Xem bản đồ lớn
             </button>
@@ -126,12 +133,10 @@ const Footer = () => {
         </div>
 
         {/* Copyright và Social Icons */}
-        <div className="mt-8 pt-8 border-t border-blue-400">
-          <div className="flex justify-center items-center">
+        <div className="mt-8 border-t border-blue-400 pt-8">
+          <div className="flex items-center justify-center">
             <p>© 2024 Phòng khám Thú Y GenKiKoi. Tất cả các quyền được bảo lưu.</p>
-            <div className="flex space-x-4">
-              {/* Add your social icons here */}
-            </div>
+            <div className="flex space-x-4">{/* Add your social icons here */}</div>
           </div>
         </div>
       </div>

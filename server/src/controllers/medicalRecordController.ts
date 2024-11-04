@@ -10,6 +10,7 @@ export const getAllMedicalRecords = async (req: Request, res: Response) => {
   }
 };
 
+// lay ra Danh Sach medicalRecord theo fishID
 export const getMedicalRecordByFishId = async (req: Request, res: Response) => {
   const fishId = req.params.fishId;
   try {
@@ -33,7 +34,6 @@ export const getMedicalRecordByFishId = async (req: Request, res: Response) => {
     }
     const formattedMedicalRecords = medicalRecords.map((medicalRecord) => {
       return {
-        recordId: medicalRecord._id,
         customerName: medicalRecord.customerId.userId.fullName,
         date: medicalRecord.date,
         examType: medicalRecord.examType,
@@ -53,8 +53,9 @@ export const getMedicalRecordByFishId = async (req: Request, res: Response) => {
   }
 };
 
+// lay medical record theo id
 export const getMedicalRecordById = async (req: Request, res: Response) => {
-  const medicalRecordId = req.params.medicalRecordId;
+  const medicalRecordId = req.params.id;
   try {
     const medicalRecord = await MedicalRecord.findById(medicalRecordId)
       .populate({
@@ -106,38 +107,51 @@ export const createMedicalRecord = async (req: Request, res: Response) => {
     medicines,
   } = req.body;
   try {
-    if (!examType || !phoneNumber || !serviceName || !doctorId || !fishId) {
+    if (
+      !examType ||
+      !images ||
+      !diagnosis ||
+      !treatment ||
+      !medicines ||
+      !phoneNumber ||
+      !fishId ||
+      !doctorId
+    ) {
       return res
         .status(400)
         .json({ message: "Vui lòng điền đầy đủ thông tin" });
     }
-
+    // lay ra customer theo phoneNumber
+    if (!phoneNumber)
+      return res.status(404).json({ message: "Vui lòng nhập số điện thoại " });
     const user = await User.findOne({ phoneNumber });
 
     if (!user) {
       return res.status(400).json({ message: "Người dùng không tồn tại" });
     }
-
     const customer = await Customer.findOne({ userId: user._id });
-
     if (!customer) {
       return res.status(404).json({
-        message: "Không tìm thấy khách hàng",
+        message:
+          "Không tìm thấy khách hàng qua số điện thoại qua số điện thoại này",
       });
     }
 
-    if (fishId === "newRecord") {
+    //neu fishId == null thi tao mot fish moi
+    if (!fishId) {
       const fish = await Fish.create({
         customerId: customer._id,
         description: "Cá mới",
         photoUrl: "https://placehold.co/150x150",
         size: 0,
         age: 0,
+
+        healthStatus: "Chưa xác định",
       });
       fishId = fish._id;
     }
 
-    await MedicalRecord.create({
+    const medicalRecord = await MedicalRecord.create({
       customerId: customer._id,
       fishId,
       doctorId,
@@ -150,6 +164,7 @@ export const createMedicalRecord = async (req: Request, res: Response) => {
     });
     return res.status(200).json({
       message: "Đã tạo hồ sơ bệnh án thành công!",
+      data: medicalRecord,
     });
   } catch (error: any) {
     console.log(error);

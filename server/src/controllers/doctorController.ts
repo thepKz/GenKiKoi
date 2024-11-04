@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import { Request, Response } from "express";
-import { Doctor, User } from "../models";
+import { Doctor, DoctorSchedule, User } from "../models";
 import { randomText, replaceName } from "../utils";
 
 /**
@@ -137,6 +137,8 @@ export const addNewDoctor = async (req: Request, res: Response) => {
       };
     }
 
+    await DoctorSchedule.create({ doctorId: doctor._id, weekSchedule: [] });
+
     return res.status(201).json({
       message: "Nhân viên được thêm thành công!",
       data: formatDoctor,
@@ -156,7 +158,6 @@ export const updateByDoctorId = async (req: Request, res: Response) => {
     const doctorId = req.params.doctorId;
     const {
       photoUrl,
-      images,
       fullName,
       gender,
       email,
@@ -200,7 +201,6 @@ export const updateByDoctorId = async (req: Request, res: Response) => {
     const updatedDoctor = await Doctor.findByIdAndUpdate(
       doctorId,
       {
-        images,
         introduction,
         specialization,
         licenseNumber,
@@ -230,7 +230,6 @@ export const updateByDoctorId = async (req: Request, res: Response) => {
 
     const updatedInfo = {
       _id: updatedDoctor._id,
-      images: updatedDoctor.images,
       photoUrl: updatedUser.photoUrl,
       fullName: updatedUser.fullName,
       gender: updatedUser.gender,
@@ -297,46 +296,13 @@ export const getAllDoctorsForBooking = async (req: Request, res: Response) => {
 };
 
 /**
- * API: /api/doctors/schedules
+ * API: /api/doctors/:doctorId
  * METHOD: GET
  * PROTECTED
  */
-
-// export const getScheduleById = async (req: Request, res: Response) => {
-//   const userId = req.params.id;
-
-//   try {
-//     const doctor = await Doctor.findOne({ userId });
-
-//     if (!doctor) {
-//       return res.status(404).json({ message: "Không tìm thấy bác sĩ" });
-//     }
-
-//     const schedules = await DoctorSchedule.find({ doctorId: doctor._id });
-
-//     if (!schedules) {
-//       return res.status(404).json({ message: "Không tìm thấy lịch trình" });
-//     }
-
-//     const formatSchedule = schedules.map((schedule) => ({
-//       id: schedule._id,
-//       start: schedule.start,
-//       end: schedule.end,
-//     }));
-
-//     return res.status(200).json({ data: formatSchedule });
-//   } catch (error: any) {
-//     return res.status(500).json({
-//       message: "Đã xảy ra lỗi khi lấy lịch trình",
-//       error: error.message,
-//     });
-//   }
-// };
-
 export const getDoctorById = async (req: Request, res: Response) => {
-  const doctorId = req.params.doctorId;
-
   try {
+    const doctorId = req.params.doctorId;
     const doctor = await Doctor.findById(doctorId).populate(
       "userId",
       "photoUrl images email fullName phoneNumber gender"
@@ -348,7 +314,6 @@ export const getDoctorById = async (req: Request, res: Response) => {
     const formatDoctor = {
       _id: doctor._id,
       photoUrl: doctor.userId.photoUrl,
-      images: doctor.images,
       email: doctor.userId.email,
       fullName: doctor.userId.fullName,
       phoneNumber: doctor.userId.phoneNumber,
@@ -362,6 +327,207 @@ export const getDoctorById = async (req: Request, res: Response) => {
 
     return res.status(200).json({
       data: formatDoctor,
+    });
+  } catch (error: any) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+export const getScheduleByDoctorId = async (req: Request, res: Response) => {
+  try {
+    const doctorId = req.params.doctorId;
+
+    const doctor = await Doctor.findById(doctorId)
+      .populate({
+        path: "userId",
+        select: "fullName photoUrl email gender",
+      })
+      .select("startDate movingService");
+
+    if (!doctor) {
+      return res.status(404).json({ message: "Không tìm thấy bác sĩ" });
+    }
+
+    const doctorSchedule = await DoctorSchedule.findOne({ doctorId }).select(
+      "weekSchedule"
+    );
+
+    if (!doctorSchedule) {
+      return res.status(404).json({ message: "Không tìm thấy lịch bác sĩ" });
+    }
+
+    // Lọc các ngày trong tương lai
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const futureDates = doctorSchedule.weekSchedule
+      .filter(schedule => {
+        const [day, month, year] = schedule.dayOfWeek.split('/').map(Number);
+        const scheduleDate = new Date(year, month - 1, day);
+        return scheduleDate >= today;
+      })
+      .map(schedule => schedule.dayOfWeek);
+
+    const formattedData = {
+      doctorName: doctor.userId.fullName,
+      photoUrl: doctor.userId.photoUrl,
+      email: doctor.userId.email,
+      gender: doctor.userId.gender,
+      startDate: doctor.startDate,
+      movingService: doctor.movingService,
+      doctorSchedule: futureDates,
+    };
+
+    return res.status(200).json({ data: formattedData });
+  } catch (error: any) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+export const updateDoctorSchedule = async (req: Request, res: Response) => {
+  try {
+    const doctorId = req.params.doctorId;
+    const { doctorSchedule, movingService } = req.body;
+
+    const doctor = await Doctor.findById(doctorId);
+    if (!doctor) {
+      return res.status(404).json({ message: "Không tìm thấy bác sĩ" });
+    }
+
+    doctor.movingService = movingService;
+    await doctor.save();
+
+    let schedule = await DoctorSchedule.findOne({ doctorId });
+    if (!schedule) {
+      schedule = new DoctorSchedule({ doctorId, weekSchedule: [] });
+    }
+
+    // Tạo một map các ngày hiện có
+    const existingDays = new Map(
+      schedule.weekSchedule.map((day) => [day.dayOfWeek, day])
+    );
+
+    // Kiểm tra các ngày hiện tại có lịch hẹn (currentCount > 0)
+    const daysWithBookings = schedule.weekSchedule.filter((day) =>
+      day.slots.some((slot) => slot.currentCount > 0)
+    );
+
+    // Thêm tất cả ngày có lịch hẹn vào doctorSchedule nếu chưa có
+    const finalSchedule = [
+      ...new Set([
+        ...doctorSchedule,
+        ...daysWithBookings.map((day) => day.dayOfWeek),
+      ]),
+    ];
+
+    // Cập nhật hoặc thêm mới các ngày
+    const updatedWeekSchedule = finalSchedule.map((date: any) => {
+      // Nếu là ngày từ daysWithBookings, sử dụng trực tiếp
+      if (typeof date === "object") {
+        return date;
+      }
+
+      const [day, month, year] = date.split("/").map(Number);
+      const formattedDate = new Date(year, month - 1, day);
+      const dayOfWeek = formattedDate.toLocaleDateString("vi-VN", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      });
+
+      if (existingDays.has(dayOfWeek)) {
+        return existingDays.get(dayOfWeek);
+      } else {
+        return {
+          dayOfWeek,
+          slots: [
+            {
+              slotTime: "8:00",
+              isBooked: false,
+              currentCount: 0,
+              appointmentIds: [],
+            },
+            {
+              slotTime: "9:00",
+              isBooked: false,
+              currentCount: 0,
+              appointmentIds: [],
+            },
+            {
+              slotTime: "10:00",
+              isBooked: false,
+              currentCount: 0,
+              appointmentIds: [],
+            },
+            {
+              slotTime: "11:00",
+              isBooked: false,
+              currentCount: 0,
+              appointmentIds: [],
+            },
+            {
+              slotTime: "13:00",
+              isBooked: false,
+              currentCount: 0,
+              appointmentIds: [],
+            },
+            {
+              slotTime: "14:00",
+              isBooked: false,
+              currentCount: 0,
+              appointmentIds: [],
+            },
+            {
+              slotTime: "15:00",
+              isBooked: false,
+              currentCount: 0,
+              appointmentIds: [],
+            },
+            {
+              slotTime: "16:00",
+              isBooked: false,
+              currentCount: 0,
+              appointmentIds: [],
+            },
+          ],
+        };
+      }
+    });
+
+    schedule.weekSchedule = updatedWeekSchedule;
+    await schedule.save();
+
+    // Lấy thông tin đã cập nhật để trả về
+    const updatedDoctor = await Doctor.findById(doctorId).populate(
+      "userId",
+      "fullName photoUrl email gender"
+    );
+
+    if (!updatedDoctor) {
+      return res.status(404).json({ message: "Không tìm thấy bác sĩ" });
+    }
+
+    const updatedSchedule = await DoctorSchedule.findOne({ doctorId }).select(
+      "weekSchedule.dayOfWeek"
+    );
+
+    if (!updatedSchedule) {
+      return res.status(404).json({ message: "Không tìm thấy lịch làm việc" });
+    }
+
+    const formattedData = {
+      doctorName: updatedDoctor.userId.fullName,
+      photoUrl: updatedDoctor.userId.photoUrl,
+      email: updatedDoctor.userId.email,
+      gender: updatedDoctor.userId.gender,
+      startDate: updatedDoctor.startDate,
+      movingService: updatedDoctor.movingService,
+      doctorSchedule: updatedSchedule.weekSchedule.map((day) => day.dayOfWeek),
+    };
+
+    return res.status(200).json({
+      message: "Cập nhật lịch làm việc thành công",
+      data: formattedData,
     });
   } catch (error: any) {
     return res.status(500).json({ message: error.message });

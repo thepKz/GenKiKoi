@@ -2,14 +2,14 @@ import mongoose, { Schema, Document } from "mongoose";
 import { IDoctor } from "./Doctor";
 
 export interface IDoctorSchedule extends Document {
-  doctorId: IDoctor; // ID của bác sĩ
-  weeklySchedule: any[];
+  doctorId: IDoctor;
   weekSchedule: Array<{
     dayOfWeek: string;
     slots: Array<{
       slotTime: string;
       isBooked: boolean;
-      appointmentId?: mongoose.Types.ObjectId | null;
+      currentCount: number;
+      appointmentIds?: string[];
     }>;
   }>;
 }
@@ -46,11 +46,15 @@ const DoctorScheduleSchema = new Schema<IDoctorSchedule>(
               type: Boolean,
               default: false,
             },
-            appointmentId: {
-              type: mongoose.Schema.Types.ObjectId,
-              ref: "Appointment",
-              required: false,
+            currentCount: {
+              type: Number,
+              default: 0,
             },
+            appointmentIds: [
+              {
+                type: String,
+              },
+            ],
           },
         ],
       },

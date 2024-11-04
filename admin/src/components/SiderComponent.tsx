@@ -11,6 +11,7 @@ import {
   Profile2User,
   Stickynote,
   User,
+  UserOctagon,
 } from "iconsax-react";
 import { Link, useLocation } from "react-router-dom";
 
@@ -43,6 +44,23 @@ const SiderComponent = () => {
       key: "staffs",
       label: <Link to={"/manager/staffs"}>Danh sách nhân viên</Link>,
       icon: <Profile2User size={20} />,
+    },
+    {
+      key: "doctor-calendar",
+      label: (
+        <Link to={"/manager/doctor-calendar"}>Lịch làm việc của bác sĩ</Link>
+      ),
+      icon: <Calendar size={20} />,
+    },
+    {
+      key: "customers",
+      label: <Link to={"/manager/customers"}>Cuộc hẹn khách hàng</Link>,
+      icon: <CalendarSearch size={20} />,
+    },
+    {
+      key: "accounts",
+      label: <Link to={"/manager/accounts"}>Quản lý người dùng</Link>,
+      icon: <UserOctagon size={20} />,
     },
     {
       key: "divider",
@@ -115,8 +133,8 @@ const SiderComponent = () => {
       icon: <CalendarSearch size={20} />,
     },
     {
-      key: "create-appointment",
-      label: <Link to={"/staff/create-appointment"}>Tạo cuộc hẹn</Link>,
+      key: "booking",
+      label: <Link to={"/staff/booking"}>Cuộc hẹn khách hàng</Link>,
       icon: <CalendarAdd size={20} />,
     },
     {

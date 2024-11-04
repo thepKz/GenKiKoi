@@ -14,6 +14,7 @@ const SignUp = () => {
   const [form] = Form.useForm();
 
   const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -84,7 +85,7 @@ const SignUp = () => {
                 label="Tên tài khoản"
                 required={false}
                 hasFeedback
-                tooltip="Tên tài khoản phải bao gồm chữ thường, số và có thể có dấu _!"
+                tooltip="Tên tài khoản phải bao gồm chữ cái, số và có thể có dấu _!"
                 rules={[
                   {
                     validator: async (_, value) => {
@@ -96,10 +97,10 @@ const SignUp = () => {
                           new Error("Tên tài khoản phải có độ dài từ 8 đến 30 ký tự!"),
                         );
                       }
-                      if (!/^(?=.*[a-z])(?=.*\d)[a-zA-Z0-9_]+$/.test(value)) {
+                      if (!/^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z0-9_-]+$/.test(value)) {
                         return Promise.reject(
                           new Error(
-                            "Tên tài khoản phải bao gồm chữ thường, số và có thể có dấu _!",
+                            "Tên tài khoản phải bao gồm chữ cái, số và có thể có dấu _!",
                           ),
                         );
                       }
@@ -238,7 +239,12 @@ const SignUp = () => {
               >
                 <p className="text-sm font-bold text-slate-500">Hoặc</p>
               </Divider>
-              <SocialButton text="Đăng nhập với Google" />
+              <SocialButton 
+                text="Đăng nhập với Google" 
+                loading={isGoogleLoading}
+                onLoginStart={() => setIsGoogleLoading(true)}
+                onLoginEnd={() => setIsGoogleLoading(false)}
+              />
             </div>
             <div className="my-3 flex items-center justify-center gap-1">
               <p className="text-base text-slate-500">Bạn đã có tài khoản?</p>

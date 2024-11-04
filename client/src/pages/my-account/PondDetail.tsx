@@ -1,14 +1,14 @@
 import { Avatar, Breadcrumb, Col, ConfigProvider, Divider, message, Row, Spin } from "antd";
-import { Link, useLocation } from "react-router-dom";
 import { Stickynote } from "iconsax-react";
-import { GiCirclingFish } from "react-icons/gi";
 import { useEffect, useState } from "react";
+import { GiCirclingFish } from "react-icons/gi";
+import { Link, useLocation } from "react-router-dom";
 import { handleAPI } from "../../apis/handleAPI";
 import { HeaderComponent } from "../../components";
-
+/* eslint-disable @typescript-eslint/no-unused-vars */
 const PondDetail = () => {
   const { pathname } = useLocation();
-  const customerId = pathname.split("/")[3];
+  // const customerId = pathname.split("/")[3];
   const pondId = pathname.split("/")[4];
   const [record, setRecord] = useState<any>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
