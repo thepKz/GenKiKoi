@@ -2,7 +2,7 @@ import { Button } from "antd";
 import { ArrowRight2 } from "iconsax-react";
 import { useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
-import Fish4 from "../../assets/fish-care-4.jpg";
+import ServiceBanner from "../../assets/serviceBanner.png";
 import { AnimatedSection, DividerComponent } from "../../share";
 const Services = () => {
   const navigate = useNavigate();
@@ -30,8 +30,10 @@ const Services = () => {
                 }}
               >
                 <img
-                  src={Fish4}
-                  className="rounded-2xl shadow-2xl hover:scale-105 transition-all duration-500"
+                  src={ServiceBanner}
+                  className="rounded-2xl shadow-2xl hover:scale-105 transition-all duration-500 
+                    opacity-90 contrast-125 brightness-90 saturate-[0.85]
+                    hover:opacity-100 hover:contrast-100 hover:brightness-100 hover:saturate-100"
                   alt="Phòng khám thú y GenKiKoi - Chăm sóc thú cưng chuyên nghiệp"
                 />
               </AnimatedSection>

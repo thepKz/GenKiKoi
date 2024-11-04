@@ -8,6 +8,10 @@ import Image2 from "../assets/Image1.jpg";
 import Image1 from "../assets/Image2.jpg";
 import Image3 from "../assets/Image3.jpg";
 
+import Avatar1 from "../assets/avatar1.png";
+import Avatar2 from "../assets/avatar2.png";
+import Avatar3 from "../assets/avatar3.png";
+import Avatar4 from "../assets/avatar4.png";
 
 import Fish1 from "../assets/fish-care-1.jpg";
 import Fish2 from "../assets/fish-care-2.webp";
@@ -227,7 +231,7 @@ const Home = () => {
               style={{ fontSize: 18 }}
               size="large"
               type="link"
-              onClick={() => navigate("/images")}
+              onClick={() => navigate("/about-us")}
               className="hover:scale-110 transition-all duration-300 mt-8 text-white hover:text-blue-300"
             >
               Và thêm nhiều lý do để chọn GenKiKoi
@@ -393,6 +397,7 @@ const Home = () => {
               style={{ fontSize: 18 }}
               size="large"
               type="link"
+              onClick={() => navigate("/images")}
             >
               Thêm hình ảnh
               <ArrowRight2 size={18} />
@@ -470,7 +475,7 @@ const Home = () => {
                   <div className="text-center">
                     <Avatar
                       src={
-                        ""
+                        Avatar1
                       }
                       size="large"
                       className="mb-2 border-2 border-blue-300"
@@ -486,7 +491,7 @@ const Home = () => {
                   <div className="text-center">
                     <Avatar
                       src={
-                        ""
+                        Avatar2
                       }
                       size="large" 
                       className="mb-2 border-2 border-blue-300"
@@ -502,7 +507,7 @@ const Home = () => {
                   <div className="text-center">
                     <Avatar
                       src={
-                        ""
+                        Avatar3
                       }
                       size="large"
                       className="mb-2 border-2 border-blue-300"
@@ -517,7 +522,7 @@ const Home = () => {
                   <div className="text-center">
                     <Avatar
                       src={
-                        ""
+                        Avatar4
                       }
                       size="large"
                       className="mb-2 border-2 border-blue-300"
