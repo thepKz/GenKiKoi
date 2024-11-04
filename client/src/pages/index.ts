@@ -21,7 +21,7 @@ import ConsultingTreatment from "./services/ConsultingTreatment";
 import Services from "./services/Services";
 import UnAuthorized from "./UnAuthorized";
 import VerifyAccount from "./VerifyAccount";
-import VnPayReturn from "./VnPayReturn";
+
 export {
   AboutUs,
   Appointment,
@@ -32,20 +32,12 @@ export {
   History,
   Home,
   Images,
-  InspectionRecord,
-  MedicalRecord,
-  NotFound,
-  Profile,
-  Services,
+  InspectionRecord, ListFishRecords, MedicalRecord,
+  NotFound, PaymentCancel,
+  PaymentSuccess, PondDetail, Profile, RecordDetail, Services,
   SignIn,
   SignUp,
   UnAuthorized,
-  VnPayReturn,
-  VerifyAccount,
-  PaymentCancel,
-  PaymentSuccess,
-  ListFishRecords,
-  RecordDetail,
-  PondDetail,
-  ChangePassword,
+  VerifyAccount
 };
+

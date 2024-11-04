@@ -1,88 +1,88 @@
 import { Button } from "antd";
-import Fish4 from "../../assets/fish-care-4.jpg";
-import { ArrowRight2, Heart } from "iconsax-react";
-import { AnimatedSection, DividerComponent } from "../../share";
-
-import Icon1 from "../../assets/Icon-01.svg";
-import Icon2 from "../../assets/Icon-02.svg";
-import Icon3 from "../../assets/Icon-03.svg";
-import Icon4 from "../../assets/Icon-04.svg";
-import Icon5 from "../../assets/Icon-05.svg";
-import Icon6 from "../../assets/Icon-06.svg";
-
-import { useEffect } from "react";
+import { ArrowRight2 } from "iconsax-react";
+import { useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
-
+import ServiceBanner from "../../assets/serviceBanner.png";
+import { AnimatedSection, DividerComponent } from "../../share";
 const Services = () => {
   const navigate = useNavigate();
+  
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+ 
   return (
-    <div className="">
-      {/* Section 1 */}
-      <div className="section bg-green-dark py-36 pt-44 text-center text-white">
-        <div className="container mx-auto lg:px-40">
-          <div className="flex items-center justify-between gap-10">
-            <div className="w-1/2">
+    <div className="relative">
+      {/* Hero Section */}
+      <div className="min-h-screen pt-32 lg:pt-30 bg-gradient-to-t from-[#2A7F9E] to-[#175670] text-white">
+        <div className="mx-auto px-4 lg:px-40">
+          <div className="flex flex-col lg:flex-row items-start justify-between gap-10">
+            <div className="lg:w-1/2 order-2 lg:order-1">
               <AnimatedSection
                 variants={{
-                  hidden: {
-                    opacity: 0,
-                    x: -100,
-                  },
-                  visible: {
-                    opacity: 1,
+                  hidden: { opacity: 0, x: -100 },
+                  visible: { 
+                    opacity: 1, 
                     x: 0,
-                    transition: { duration: 1.5, delay: 0.5 },
-                  },
+                    transition: { duration: 1.5, delay: 0.5 }
+                  }
                 }}
               >
                 <img
-                  src={Fish4}
-                  className="rounded-xl"
-                  alt=""
+                  src={ServiceBanner}
+                  className="rounded-2xl shadow-2xl hover:scale-105 transition-all duration-500 
+                    opacity-90 contrast-125 brightness-90 saturate-[0.85]
+                    hover:opacity-100 hover:contrast-100 hover:brightness-100 hover:saturate-100"
+                  alt="Phòng khám thú y GenKiKoi - Chăm sóc thú cưng chuyên nghiệp"
                 />
               </AnimatedSection>
             </div>
-            <div className="w-1/2 text-left">
+
+            <div className="lg:w-1/2 text-left order-1 lg:order-2">
               <AnimatedSection
                 variants={{
-                  hidden: {
-                    opacity: 0,
-                    x: 100,
-                  },
+                  hidden: { opacity: 0, x: 100 },
                   visible: {
                     opacity: 1,
                     x: 0,
-                    transition: { duration: 1.5, delay: 0.5 },
-                  },
+                    transition: { duration: 1.5, delay: 0.5 }
+                  }
                 }}
               >
-                <h1 className="heading-1">Đầy đủ tại GenKiKoi</h1>
+                <h1 className="text-4xl lg:text-5xl font-bold text-center leading-tight mb-8 bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
+                  Chăm Sóc Thú Cưng Tại GenKiKoi
+                </h1>
 
-                <div className="my-5 flex flex-col gap-5 text-justify">
-                  <p>
-                    Bạn vẫn còn băn khoăn trong việc tìm một địa chỉ uy tín cho thú cưng của mình ?
-                  </p>
-                  <p>
-                    Bạn muốn được tư vấn bởi một bác sĩ thú y tận tâm, làm việc không mệt mỏi chỉ để
-                    đảm bảo sức khoẻ cho thú cưng của bạn một cách tốt nhất ?
-                  </p>
-                  <p>
-                    GenKiKoi là phòng khám thú y tập trung về chất lượng điều trị và chăm sóc đặc
-                    biệt cho thú cưng. Chúng tôi cam kết đảm bảo an toàn đi cùng chất lượng dịch vụ
-                    cao nhất để khách hàng luôn cảm thấy hài lòng khi đến với GenKiKoi.
-                  </p>
+                <div className="space-y-6">
+                  {[
+                    {
+                      icon: "🤔",
+                      text: <><span className="font-semibold text-blue-100">Tìm nơi uy tín</span> cho thú cưng của bạn?</>
+                    },
+                    {
+                      icon: "👨‍⚕️", 
+                      text: <><span className="font-semibold text-blue-100">Đội ngũ bác sĩ chuyên nghiệp</span> phục vụ 24/7.</>
+                    },
+                    {
+                      icon: "✨",
+                      text: <>Tại <span className="font-semibold text-blue-100">GenKiKoi</span>, chúng tôi là ngôi nhà thứ hai của thú cưng với trang thiết bị hiện đại.</>
+                    }
+                  ].map((item, index) => (
+                    <div key={index} className="flex items-start gap-4 p-4 bg-white/10 rounded-xl backdrop-blur-sm hover:bg-white/15 transition-all duration-300">
+                      <span className="text-2xl">{item.icon}</span>
+                      <p className="text-lg leading-relaxed">{item.text}</p>
+                    </div>
+                  ))}
                 </div>
+
                 <Button
                   size="large"
-                  ghost
                   onClick={() => navigate("/booking")}
-                  className="mt-4 text-white hover:text-blue-300"
+                  className="mt-8 px-8 py-6 bg-white/10 hover:bg-white/20 text-white border-none rounded-full text-lg font-semibold flex items-center gap-2 transition-all duration-300 hover:scale-105"
                 >
-                  Đặt lịch
-                  <ArrowRight2 size={18} />
+                  Đặt Lịch Ngay
+                  <ArrowRight2 className="animate-bounce" size={20} />
                 </Button>
               </AnimatedSection>
             </div>
@@ -90,134 +90,79 @@ const Services = () => {
         </div>
       </div>
 
+      
       {/* Services */}
-      <div className="section bg-blue-primary text-center text-white">
-        <div className="container mx-auto lg:px-40">
-          <AnimatedSection
-            variants={{
-              hidden: {
-                opacity: 0,
-                y: 150,
-              },
-              visible: {
-                opacity: 1,
-                y: 0,
-                transition: { duration: 1.5, delay: 0.5 },
-              },
-            }}
-          >
-            <h1 className="heading-1 mb-5">Đầy đủ dịch vụ cho thú cưng của bạn</h1>
-            <div className="flex justify-center gap-2">
-              <p className="text-center">Tất cả đều có ở GenKiKoi</p>
+      <div className="relative min-h-screen bg-[#2A7F9E] text-white py-16">
+      <div className="container mx-auto px-4 lg:px-40">
+        <AnimatedSection
+          variants={{
+            hidden: { opacity: 0, y: 100 },
+            visible: {
+              opacity: 1,
+              y: 0,
+              transition: { duration: 1.5, delay: 0.5 }
+            }
+          }}
+        >
+          <div className="text-center mb-16">
+            <h1 className="text-4xl font-bold mb-6">Đầy đủ dịch vụ cho thú cưng của bạn</h1>
+            <div className="flex justify-center items-center gap-2">
               <div className="relative">
-                <Heart
-                  variant="Bold"
-                  color="#f7776d"
-                  className="absolute"
-                />
-                <Heart
-                  variant="Bold"
-                  color="#f7776d"
-                  className="absolute animate-ping"
-                />
+                
               </div>
             </div>
-            <div className="my-10 grid grid-cols-2 gap-5">
-              <div className="item-hover gap-6">
-                <div className="w-1/5">
-                  <img
-                    src={Icon1}
-                    alt=""
-                  />
-                </div>
-                <div className="flex-1 text-left">
-                  <h2 className="mb-1 text-2xl font-bold">Tư vấn & Điều trị</h2>
-                  <p>
-                    Với kinh nghiệm của bác sĩ trình độ chuyên môn cao, nhiều năm kinh nghiệm làm
-                    việc tại Sài Gòn.
-                  </p>
-                </div>
-              </div>
+          </div>
 
-              <div className="item-hover gap-6">
-                <div className="w-1/5">
-                  <img
-                    src={Icon2}
-                    alt=""
-                  />
-                </div>
-                <div className="flex-1 text-left">
-                  <h2 className="mb-1 text-2xl font-bold">Xét nghiệm</h2>
-                  <p>Bao gồm xét nghiệm máu và xét nghiệm ký sinh trùng máu.</p>
-                </div>
-              </div>
-
-              <div className="item-hover gap-6">
-                <div className="w-1/5">
-                  <img
-                    src={Icon3}
-                    alt=""
-                  />
-                </div>
-                <div className="flex-1 text-left">
-                  <h2 className="mb-1 text-2xl font-bold">Siêu âm</h2>
-                  <p>Gồm có siêu âm thai và siêu âm giúp phát hiện các bệnh ở mô mềm.</p>
-                </div>
-              </div>
-
-              <div className="item-hover gap-6">
-                <div className="w-1/5">
-                  <img
-                    src={Icon4}
-                    alt=""
-                  />
-                </div>
-                <div className="flex-1 text-left">
-                  <h2 className="mb-1 text-2xl font-bold">Phẫu thuật</h2>
-                  <p>Đem lại những điều an toàn nhất cho thú cưng của bạn.</p>
-                </div>
-              </div>
-
-              <div className="item-hover gap-6">
-                <div className="w-1/5">
-                  <img
-                    src={Icon5}
-                    alt=""
-                  />
-                </div>
-                <div className="flex-1 text-left">
-                  <h2 className="mb-1 text-2xl font-bold">Tiêm ngừa</h2>
-                  <p>
-                    Tiêm chủng vắc xin là biện pháp phòng bệnh truyền nhiễm đơn giản và hiệu quả
-                    nhất hiện nay.
-                  </p>
+          <div className="grid md:grid-cols-2 gap-8">
+            {[
+              {
+                icon: "🏥",
+                title: "Tư vấn & Điều trị",
+                description: "Với kinh nghiệm của bác sĩ trình độ chuyên môn cao, nhiều năm kinh nghiệm làm việc tại Sài Gòn."
+              },
+              {
+                icon: "🔬",
+                title: "Xét nghiệm",
+                description: "Bao gồm xét nghiệm máu và xét nghiệm ký sinh trùng máu."
+              },
+              {
+                icon: "📱",
+                title: "Siêu âm",
+                description: "Gồm có siêu âm thai và siêu âm giúp phát hiện các bệnh ở mô mềm."
+              },
+              {
+                icon: "⚕️",
+                title: "Phẫu thuật",
+                description: "Đem lại những điều an toàn nhất cho thú cưng của bạn."
+              },
+              {
+                icon: "💉",
+                title: "Tiêm ngừa",
+                description: "Tiêm chủng vắc xin là biện pháp phòng bệnh truyền nhiễm đơn giản và hiệu quả nhất hiện nay."
+              },
+              {
+                icon: "🏪",
+                title: "Pet Shop",
+                description: "Chúng tôi cung cấp những mặt hàng thiết yếu nhất cho thú cưng của bạn."
+              }
+            ].map((service, index) => (
+              <div
+                key={index}
+                className="bg-white/10 backdrop-blur-sm rounded-xl p-6 transition-all duration-300 hover:bg-white/20 hover:transform hover:-translate-y-1 hover:shadow-xl"
+              >
+                <div className="flex items-start gap-4">
+                  <div className="text-4xl">{service.icon}</div>
+                  <div className="flex-1">
+                    <h2 className="text-2xl font-bold mb-2">{service.title}</h2>
+                    <p className="text-gray-100 leading-relaxed">{service.description}</p>
+                  </div>
                 </div>
               </div>
-
-              <div className="item-hover gap-6">
-                <div className="w-1/5">
-                  <img
-                    src={Icon6}
-                    alt=""
-                  />
-                </div>
-                <div className="flex-1 text-left">
-                  <h2 className="mb-1 text-2xl font-bold">Pet Shop</h2>
-                  <p>Chúng tôi cung cấp những mặt hàng thiết yếu nhất cho thú cưng của bạn.</p>
-                </div>
-              </div>
-            </div>
-            <Button
-              style={{ fontSize: 18 }}
-              size="large"
-              type="link"
-            >
-              Tất cả dịch vụ tại GenKiKoi
-              <ArrowRight2 size={18} />
-            </Button>
-          </AnimatedSection>
-        </div>
+            ))}
+          </div>
+        </AnimatedSection>
       </div>
+    </div>
       <DividerComponent />
     </div>
   );

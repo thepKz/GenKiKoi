@@ -1,5 +1,4 @@
 import {
-  Alert,
   Avatar,
   Button,
   Col,
@@ -11,19 +10,19 @@ import {
   Row,
   Select,
   SelectProps,
-  Spin,
+  Spin
 } from "antd";
 import { KeySquare, User } from "iconsax-react";
 import { useEffect, useRef, useState } from "react";
 import { handleAPI } from "../../apis/handleAPI";
 
-import VietNamProvinces from "../../../data/index";
-import { uploadFile } from "../../utils";
-import { IAuth, ICustomerData } from "../../types";
 import { useDispatch, useSelector } from "react-redux";
-import { updateAuth } from "../../redux/reducers/authReducer";
-import { HeaderComponent } from "../../components";
 import { Link } from "react-router-dom";
+import VietNamProvinces from "../../../data/index";
+import { HeaderComponent } from "../../components";
+import { updateAuth } from "../../redux/reducers/authReducer";
+import { IAuth, ICustomerData } from "../../types";
+import { uploadFile } from "../../utils";
 
 const Profile = () => {
   const auth: IAuth = useSelector((state: any) => state.authReducer.data);
@@ -251,7 +250,7 @@ const Profile = () => {
                         name="username"
                         label="Tên tài khoản"
                         hasFeedback
-                        tooltip="Tên tài khoản phải bao gồm chữ thường, in hoa, số và có thể có dấu _!"
+                        tooltip="Tên tài khoản phải bao gồm chữ cái, số và có thể có dấu _!"
                         rules={[
                           { required: true, message: "Vui lòng nhập tên tài khoản" },
                           {
@@ -264,7 +263,7 @@ const Profile = () => {
                               if (!/^(?=.*[a-z])(?=.*\d)[a-zA-Z0-9_]+$/.test(value)) {
                                 return Promise.reject(
                                   new Error(
-                                    "Tên tài khoản phải bao gồm chữ thường, số và có thể có dấu _!",
+                                    "Tên tài khoản phải bao gồm chữ cái, số và có thể có dấu _!",
                                   ),
                                 );
                               }

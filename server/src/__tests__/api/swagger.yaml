@@ -3024,3 +3024,59 @@ paths:
                 properties:
                   message:
                     type: string
+  /api/feedback/HELLo/{doctorId}:
+    get:
+      summary: Get feedbacks by doctor ID
+      tags: [Feedback]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: doctorId
+          required: true
+          schema:
+            type: string
+          description: ID of the doctor
+      responses:
+        '200':
+          description: List of feedbacks for the doctor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        customerName:
+                          type: string
+                        serviceName:
+                          type: string
+                        feedbackDate:
+                          type: string
+                        rating:
+                          type: number
+                        comment:
+                          type: string
+        '404':
+          description: No feedbacks found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string

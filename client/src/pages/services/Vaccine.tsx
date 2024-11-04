@@ -3,10 +3,10 @@ import { AnimatedSection } from "../../share";
 import { Button } from "antd";
 import { ArrowRight2 } from "iconsax-react";
 
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Vaccine1 from "../../assets/vaccine-1.jpg";
 import Vaccine2 from "../../assets/vaccine-2.jpg";
-import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
 
 const Vaccine = () => {
   useEffect(() => {
@@ -16,7 +16,7 @@ const Vaccine = () => {
   return (
     <div>
       {/* Section 1 */}
-      <div className="section bg-green-dark py-36 pt-44 text-center text-white">
+      <div className="section bg-gradient-to-t from-[#2A7F9E] to-[#175670] py-36 pt-44 text-center text-white">
         <div className="container mx-auto lg:px-40">
           <div className="flex items-center justify-between gap-10">
             <div className="w-1/2">
@@ -35,7 +35,9 @@ const Vaccine = () => {
               >
                 <img
                   src={Vaccine1}
-                  className="rounded-xl"
+                  className="rounded-2xl shadow-2xl hover:scale-105 transition-all duration-500 
+                    opacity-90 contrast-125 brightness-90 saturate-[0.85]
+                    hover:opacity-100 hover:contrast-100 hover:brightness-100 hover:saturate-100"
                   alt=""
                 />
               </AnimatedSection>
@@ -54,23 +56,26 @@ const Vaccine = () => {
                   },
                 }}
               >
-                <h1 className="heading-1">Tiêm ngừa</h1>
+                <h1 className="text-4xl lg:text-5xl font-bold text-center leading-tight mb-8 bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
+                  Tiêm ngừa
+                </h1>
 
-                <p className="my-5 text-justify">
-                  Dịch vụ tiêm ngừa cho thú cưng là quá trình rất quan trọng để bảo vệ sức khỏe và
-                  hạn chế lây lan các bệnh truyền nhiễm. Khi thú cưng được tiêm ngừa, chúng sẽ được
-                  tiêm một số mũi vắc xin để tạo ra kháng thể giúp phòng chống các bệnh nguy hiểm.
-                  Điều này sẽ giúp cải thiện chất lượng cuộc sống, kéo dài thời gian sống của thú
-                  cưng và giảm chi phí tiền dưỡng bệnh cho chủ nuôi.
-                </p>
+                <div className="space-y-6">
+                  <div className="flex items-start gap-4 p-4 bg-white/10 rounded-xl backdrop-blur-sm hover:bg-white/15 transition-all duration-300">
+                    <span className="text-2xl">💉</span>
+                    <p className="text-lg leading-relaxed">
+                      Dịch vụ tiêm ngừa cho thú cưng là quá trình rất quan trọng để bảo vệ sức khỏe và hạn chế lây lan các bệnh truyền nhiễm. Chúng tôi cam kết mang đến dịch vụ tiêm phòng an toàn và hiệu quả nhất cho thú cưng của bạn.
+                    </p>
+                  </div>
+                </div>
+
                 <Button
                   size="large"
-                  ghost
                   onClick={() => navigate("/booking")}
-                  className="mt-4 text-white hover:text-blue-300"
+                  className="mt-8 px-8 py-6 bg-white/10 hover:bg-white/20 text-white border-none rounded-full text-lg font-semibold flex items-center gap-2 transition-all duration-300 hover:scale-105"
                 >
-                  Đặt lịch
-                  <ArrowRight2 size={18} />
+                  Đặt Lịch Ngay
+                  <ArrowRight2 className="animate-bounce" size={20} />
                 </Button>
               </AnimatedSection>
             </div>
@@ -78,7 +83,7 @@ const Vaccine = () => {
         </div>
       </div>
       {/* Section 2 */}
-      <div className="bg-green-dark">
+      <div className="bg-gradient-to-b from-[#2A7F9E] to-[#1A5F7E]">
         <svg
           viewBox="0 0 1000 100"
           xmlns="http://www.w3.org/2000/svg"
@@ -86,24 +91,38 @@ const Vaccine = () => {
         >
           <path
             opacity="0.15"
-            fill="#0c3c54"
+            fill="url(#gradient1)"
             d="M0 14C0 14 88.64 17.48 300 50C560 90 814 77 1003 40L1015 68L1018 104H0V14Z"
           ></path>
           <path
             opacity="0.3"
-            fill="#0c3c54"
+            fill="url(#gradient2)"
             d="M0 45C0 45 271 90.13 500 77C657 68 830 30 1015 14V100H0V45Z"
           ></path>
           <path
-            fill="#0c3c54"
+            fill="url(#gradient3)"
             d="M0 58C0 58 188.29 90 508 90C798 90 1002 55 1002 55V100H0V58Z"
           ></path>
+          <defs>
+            <linearGradient id="gradient1" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#2A7F9E" />
+              <stop offset="100%" stopColor="#236F8E" />
+            </linearGradient>
+            <linearGradient id="gradient2" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#236F8E" />
+              <stop offset="100%" stopColor="#1C5F7E" />
+            </linearGradient>
+            <linearGradient id="gradient3" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#1C5F7E" />
+              <stop offset="100%" stopColor="#1A5F7E" />
+            </linearGradient>
+          </defs>
         </svg>
-        <div className="section bg-blue-primary text-center text-white">
+        <div className="section bg-gradient-to-b from-[#1A5F7E] hover:bg-white/15 to-[#154F6E] text-center text-white">
           <div className="container mx-auto lg:px-40">
             <div className="flex items-center justify-between gap-10">
               <div className="w-1/2 text-left">
-                <div className="my-5 flex flex-col gap-5 text-justify">
+                <div className="my-5 space-y-6">
                   <AnimatedSection
                     variants={{
                       hidden: {
@@ -117,22 +136,25 @@ const Vaccine = () => {
                       },
                     }}
                   >
-                    <p>
-                      Cá Koi thường mắc các bệnh phổ biến như nấm, ký sinh trùng, lở loét, đốm
-                      trắng, thối vây, nhiễm trùng máu, sưng bụng, và herpes. Các nguyên nhân chính
-                      bao gồm môi trường nước ô nhiễm, cá bị stress hoặc thương, và nhiễm khuẩn, ký
-                      sinh trùng. Triệu chứng thường thấy là cá mất màu, lờ đờ, gãi vào vật thể,
-                      thối vây, loét da hoặc phình bụng. Việc điều trị tùy thuộc vào từng bệnh, chủ
-                      yếu bằng cách sử dụng thuốc kháng sinh, chống nấm, và cải thiện chất lượng
-                      nước. Ngăn ngừa bệnh tốt nhất là giữ nước sạch và theo dõi sức khỏe cá thường
-                      xuyên.
-                    </p>
-                    <br />
-                    <p>GenkiKoi cung cấp các loại vắc xin tiêm ngừa phổ biến như:</p>
-                    <p>1. Vắc xin ngừa virus Herpes Koi (KHV - Koi Herpesvirus)</p>
-                    <p>2. Vắc xin ngừa bệnh do vi khuẩn Aeromonas</p>
-                    <p>3. Vắc xin ngừa bệnh do Streptococcus</p>
-                    <p>4. Vắc xin ngừa bệnh Edwardsiella</p>
+                    <div className="flex items-start gap-4 p-4 bg-white/10 rounded-t-xl backdrop-blur-sm hover:bg-white/15 transition-all duration-300">
+                      <span className="text-2xl">🔍</span>
+                      <p className="text-lg leading-relaxed">
+                        Cá Koi thường mắc các bệnh phổ biến như nấm, ký sinh trùng, lở loét, đốm trắng, thối vây, nhiễm trùng máu, sưng bụng, và herpes.
+                      </p>
+                    </div>
+
+                    <div className="flex items-start gap-4 p-4 bg-white/10 backdrop-blur-sm hover:bg-white/15 transition-all duration-300 rounded-b-xl">
+                      <span className="text-2xl">💉</span>
+                      <div className="text-lg leading-relaxed">
+                        <p className="font-semibold mb-2">GenkiKoi cung cấp các loại vắc xin tiêm ngừa phổ biến:</p>
+                        <ul className="list-disc list-inside space-y-2">
+                          <li>Vắc xin ngừa virus Herpes Koi (KHV)</li>
+                          <li>Vắc xin ngừa bệnh do vi khuẩn Aeromonas</li>
+                          <li>Vắc xin ngừa bệnh do Streptococcus</li>
+                          <li>Vắc xin ngừa bệnh Edwardsiella</li>
+                        </ul>
+                      </div>
+                    </div>
                   </AnimatedSection>
                 </div>
               </div>
@@ -151,7 +173,9 @@ const Vaccine = () => {
                   }}
                 >
                   <img
-                    className="mx-auto w-[90%] rounded-xl object-cover"
+                    className="rounded-2xl shadow-2xl hover:scale-105 transition-all duration-500 
+                    opacity-90 contrast-125 brightness-90 saturate-[0.85]
+                    hover:opacity-100 hover:contrast-100 hover:brightness-100 hover:saturate-100"
                     src={Vaccine2}
                     alt=""
                   />
@@ -159,29 +183,6 @@ const Vaccine = () => {
               </div>
             </div>
           </div>
-        </div>
-        <div className="translate rotate-180">
-          <svg
-            viewBox="0 0 1000 300"
-            xmlns="http://www.w3.org/2000/svg"
-            preserveAspectRatio="none"
-            className="h-[150px] w-full"
-          >
-            <path
-              fill="#0c3c54"
-              d="M0 300L-1 69.71C216 57 299.47 198.86 403 226C506 253 577 196 660 197C740 198 790.09 234.07 874 267C935.23 291 982 282.61 1000 277.61V300H0Z"
-            ></path>
-            <path
-              opacity="0.5"
-              fill="#0c3c54"
-              d="M1 265.094L0 50.5C217 37.79 300.47 186.36 404 213.5C507 240.5 578 196.5 661 197.5C741 198.5 787.59 239.57 871.5 272.5C932.73 296.5 980.5 284.5 998.5 279.5V298.5L1 265.094Z"
-            ></path>
-            <path
-              opacity="0.15"
-              fill="#0c3c54"
-              d="M0.999878 244.094L-0.00012207 27C217 14.29 300.47 173.86 404 201C507 228 578 196 661 197C741 198 787.59 243.07 871.5 276C932.73 300 980.5 284.5 998.5 279.5V299L0.999878 244.094Z"
-            ></path>
-          </svg>
         </div>
       </div>
     </div>
