@@ -20,9 +20,9 @@ const ListDoctors = () => {
         const res = await handleAPI(api, undefined, "GET");
 
         setDoctors(res.data);
-      } catch (error) {
-        console.error("Lỗi khi lấy danh sách bác sĩ:", error);
-        message.error("Không thể lấy danh sách bác sĩ");
+      } catch (error: any) {
+        console.error(error);
+        message.error(error.message);
       } finally {
         setIsLoading(false);
       }

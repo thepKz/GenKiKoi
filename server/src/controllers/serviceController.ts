@@ -1,13 +1,12 @@
 import { Request, Response } from "express";
 import { Service } from "../models";
 
-
 export const getAllServices = async (req: Request, res: Response) => {
   try {
-    const services = await Service.find();
+    const services = await Service.find({ isDeleted: false });
 
-    if (!services) {
-      return res.status(404).json({ message: "Không có dịch vụ nào khả dụng" });
+    if (services.length === 0) {
+      return res.status(404).json({ message: "Danh sách dịch vụ trống!" });
     }
 
     return res.status(200).json({ data: services });
@@ -57,7 +56,11 @@ export const deleteServiceById = async (req: Request, res: Response) => {
   try {
     const serviceId = req.params.id;
 
-    await Service.findByIdAndDelete(serviceId);
+    await Service.findByIdAndUpdate(
+      serviceId,
+      { isDeleted: true },
+      { new: true }
+    );
 
     return res.status(200).json({ message: "Xóa thành công" });
   } catch (error: any) {

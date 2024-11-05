@@ -492,6 +492,7 @@ export const loginAdmin = async (req: Request, res: Response) => {
       },
     });
   } catch (error: any) {
+    console.log(error);
     if (error instanceof ValidationError) {
       return res.status(400).json(error.errors);
     }
@@ -509,7 +510,6 @@ export const checkUsername = async (req: Request, res: Response) => {
   const user = await User.findOne({ username: formatUsername });
   return res.status(200).json({ exists: !!user, userId: user?._id });
 };
-
 
 export const checkEmail = async (req: Request, res: Response) => {
   const { email } = req.body;

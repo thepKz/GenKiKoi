@@ -13,6 +13,7 @@ import {
   Row,
   Col,
   Spin,
+  InputNumber,
 } from "antd";
 import { CiEdit } from "react-icons/ci";
 import { AiOutlineDelete } from "react-icons/ai";
@@ -309,16 +310,18 @@ const Staffs = () => {
       const searchValue = removeVietnameseTones(searchText.toLowerCase());
       const fullName = removeVietnameseTones(person.fullName.toLowerCase());
       const email = person.email.toLowerCase();
-      
+
       let additionalSearchFields = "";
-      
+
       if (isStaff) {
         // Thêm trường tìm kiếm cho nhân viên
-        additionalSearchFields = removeVietnameseTones(person.position.toLowerCase());
+        additionalSearchFields = removeVietnameseTones(
+          person.position.toLowerCase(),
+        );
       } else {
         // Thêm trường tìm kiếm cho bác sĩ
         additionalSearchFields = removeVietnameseTones(
-          `${person.specialization || ""} ${person.movingService ? "có di động" : "không di động"}`.toLowerCase()
+          `${person.specialization || ""} ${person.movingService ? "có di động" : "không di động"}`.toLowerCase(),
         );
       }
 
@@ -378,8 +381,8 @@ const Staffs = () => {
 
   return (
     <div className="section">
-      <HeaderPage 
-        heading="Danh sách nhân viên và bác sĩ" 
+      <HeaderPage
+        heading="Danh sách nhân viên và bác sĩ"
         placeholder={`Tìm ${currentTab === "staff" ? "nhân viên" : "bác sĩ"}`}
         onSearch={handleSearch}
       />
@@ -411,6 +414,7 @@ const Staffs = () => {
         onClose={() => setIsModalOpen(false)}
         onOk={() => form.submit()}
         cancelText="Hủy"
+        confirmLoading={isLoadingForm}
         okText={editingPerson ? "Cập nhật" : "Thêm mới"}
       >
         <div className="p-5 pb-0">
@@ -428,18 +432,45 @@ const Staffs = () => {
               size="large"
               layout="vertical"
             >
-              <Form.Item name="fullName" label="Họ và tên" required>
+              <Form.Item
+                name="fullName"
+                label="Họ và tên"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng nhập họ và tên",
+                  },
+                ]}
+              >
                 <Input
                   allowClear
                   placeholder={`Nhập tên ${currentTab === "staff" ? "nhân viên" : "bác sĩ"}`}
                 />
               </Form.Item>
 
-              <Form.Item name="email" label="Email" required>
+              <Form.Item
+                name="email"
+                label="Email"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng nhập email",
+                  },
+                ]}
+              >
                 <Input allowClear placeholder="Nhập email" />
               </Form.Item>
 
-              <Form.Item name="gender" label="Giới tính" required>
+              <Form.Item
+                name="gender"
+                label="Giới tính"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng chọn giới tính",
+                  },
+                ]}
+              >
                 <Select
                   placeholder="Chọn giới tính"
                   options={[
@@ -449,7 +480,16 @@ const Staffs = () => {
                 />
               </Form.Item>
               {currentTab === "staff" && (
-                <Form.Item name="position" label="Vị trí" required>
+                <Form.Item
+                  name="position"
+                  label="Vị trí"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Vui lòng chọn vị trí công việc",
+                    },
+                  ]}
+                >
                   <Select
                     placeholder="Chọn vị trí"
                     options={[
@@ -466,13 +506,21 @@ const Staffs = () => {
               )}
 
               {currentTab === "staff" && (
-                <Form.Item name="workShift" label="Ca làm" required>
+                <Form.Item
+                  name="workShift"
+                  label="Ca làm"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Vui lòng chọn ca làm",
+                    },
+                  ]}
+                >
                   <Select
                     placeholder="Chọn ca làm"
                     options={[
-                      { value: "Morning", label: "Sáng" },
-                      { value: "Afternoon", label: "Chiều" },
-                      { value: "Night", label: "Tối" },
+                      { value: "Sáng", label: "Sáng" },
+                      { value: "Chiều", label: "Chiều" },
                     ]}
                   />
                 </Form.Item>
@@ -481,7 +529,16 @@ const Staffs = () => {
               {currentTab === "doctor" && (
                 <Row gutter={16}>
                   <Col span={12}>
-                    <Form.Item name="specialization" label="Chứng chỉ" required>
+                    <Form.Item
+                      name="specialization"
+                      label="Chứng chỉ"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Vui lòng nhập tên chứng chỉ",
+                        },
+                      ]}
+                    >
                       <Input placeholder="Tên chứng chỉ" />
                     </Form.Item>
                   </Col>
@@ -489,7 +546,12 @@ const Staffs = () => {
                     <Form.Item
                       name="licenseNumber"
                       label="Mã số chứng chỉ"
-                      required
+                      rules={[
+                        {
+                          required: true,
+                          message: "Vui lòng nhập mã số chứng chỉ",
+                        },
+                      ]}
                     >
                       <Input placeholder="Mã số chứng chỉ" />
                     </Form.Item>
@@ -503,7 +565,12 @@ const Staffs = () => {
                     <Form.Item
                       name="movingService"
                       label="Dịch vụ di động"
-                      required
+                      rules={[
+                        {
+                          required: true,
+                          message: "Vui lòng chọn hình thức",
+                        },
+                      ]}
                     >
                       <Select
                         placeholder="Chọn dịch vụ di động"
@@ -518,9 +585,19 @@ const Staffs = () => {
                     <Form.Item
                       name="yearOfExperience"
                       label="Năm kinh nghiệm"
-                      required
+                      rules={[
+                        {
+                          required: true,
+                          message: "Vui lòng nhập số năm kinh nghiệm",
+                        },
+                      ]}
                     >
-                      <Input placeholder="Số năm kinh nghiệm" />
+                      <InputNumber
+                        min={0}
+                        max={100}
+                        placeholder="Số năm kinh nghiệm"
+                        className="w-full"
+                      />
                     </Form.Item>
                   </Col>
                 </Row>

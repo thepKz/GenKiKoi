@@ -89,8 +89,8 @@ export const getFeedbacksByDoctorId = async (
       })
       .select("rating comment feedbackDate");
 
-    if (!feedbacks) {
-      return res.status(404).json({ message: "Không tìm thấy đánh giá" });
+    if (feedbacks.length === 0) {
+      return res.status(404).json({ message: "Danh sách đánh giá trống" });
     }
 
     const formattedData = feedbacks.map((feedback: any) => ({

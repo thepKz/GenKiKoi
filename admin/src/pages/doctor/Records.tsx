@@ -54,9 +54,9 @@ const Records = () => {
         const res = await handleAPI(api, undefined, "GET");
 
         setMedicalCustomers(res.data);
-      } catch (error) {
+      } catch (error: any) {
         console.log(error);
-        message.error("Không thể lấy danh sách khách hàng");
+        message.error(error.message);
       } finally {
         setIsLoading(false);
       }
@@ -72,9 +72,9 @@ const Records = () => {
         const res = await handleAPI(api, undefined, "GET");
 
         setPondCustomers(res.data);
-      } catch (error) {
+      } catch (error: any) {
         console.log(error);
-        message.error("Không thể lấy danh sách khách hàng");
+        message.error(error.message);
       } finally {
         setIsLoading(false);
       }

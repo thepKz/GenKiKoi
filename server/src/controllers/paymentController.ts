@@ -21,7 +21,7 @@ export const createPaymentOnline = async (req: Request, res: Response) => {
       description: `Thanh toan don hang`,
       cancelUrl: process.env.BASE_URL_CANCELLED_PAYMENT as string,
       returnUrl: process.env.BASE_URL_SUCCESS_PAYMENT as string,
-      expiredAt: 15 * 60,
+      expiredAt: Math.floor(Date.now() / 1000) + 15 * 60,
     };
 
     const paymentLinkResponse = await payOS.createPaymentLink(body);

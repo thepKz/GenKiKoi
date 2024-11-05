@@ -162,7 +162,6 @@ const Services = () => {
     }
   };
 
-  // Ê đoạn này hay nha!
   const handleDelete = async (serviceId: string) => {
     Modal.confirm({
       title: "Xác nhận xóa",
@@ -252,6 +251,7 @@ const Services = () => {
         onClose={() => setIsModalOpen(false)}
         onOk={() => form.submit()}
         cancelText="Hủy"
+        confirmLoading={isLoadingForm}
         okText={editingService ? "Cập nhật" : "Thêm mới"}
       >
         <div className="p-5 pb-0">
@@ -267,10 +267,28 @@ const Services = () => {
               size="large"
               layout="vertical"
             >
-              <Form.Item name="serviceName" label="Tên dịch vụ" required>
+              <Form.Item
+                name="serviceName"
+                label="Tên dịch vụ"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng nhập tên dịch vụ",
+                  },
+                ]}
+              >
                 <Input allowClear placeholder="Nhập tên dịch vụ!" />
               </Form.Item>
-              <Form.Item name="price" label="Giá dịch vụ" required>
+              <Form.Item
+                name="price"
+                label="Giá dịch vụ"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng nhập giá dịch vụ",
+                  },
+                ]}
+              >
                 <InputNumber<number>
                   min={0}
                   max={100000000}
@@ -283,7 +301,16 @@ const Services = () => {
                   style={{ width: "100%" }}
                 />
               </Form.Item>
-              <Form.Item name="availableAt" label="Khả dụng" required>
+              <Form.Item
+                name="availableAt"
+                label="Khả dụng"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng lựa chọn!",
+                  },
+                ]}
+              >
                 <Select
                   mode="multiple"
                   allowClear
@@ -298,7 +325,16 @@ const Services = () => {
                   ]}
                 />
               </Form.Item>
-              <Form.Item name="description" label="Mô tả dịch vụ" required>
+              <Form.Item
+                name="description"
+                label="Mô tả dịch vụ"
+                rules={[
+                  {
+                    required: true,
+                    message: "Vui lòng nhập mô tả dịch vụ",
+                  },
+                ]}
+              >
                 <TextArea
                   placeholder="Nhập mô tả dịch vụ"
                   autoSize={{ minRows: 4, maxRows: 4 }}

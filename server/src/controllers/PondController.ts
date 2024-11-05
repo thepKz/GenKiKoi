@@ -134,29 +134,29 @@ export const getAllCustomers = async (req: Request, res: Response) => {
     const customers = await Pond.aggregate([
       {
         $lookup: {
-          from: "customers", // Tên collection của khách hàng
-          localField: "customerId", // Trường nối từ bảng hiện tại (ponds)
-          foreignField: "_id", // Trường nối từ bảng khách hàng
-          as: "customer", // Đặt tên cho mảng chứa dữ liệu khách hàng
+          from: "customers",
+          localField: "customerId",
+          foreignField: "_id",
+          as: "customer",
         },
       },
-      { $unwind: "$customer" }, // Tách mảng customer thành object đơn
+      { $unwind: "$customer" },
       {
         $lookup: {
-          from: "users", // Tên collection của user
+          from: "users",
           localField: "customer.userId",
           foreignField: "_id",
           as: "user",
         },
       },
-      { $unwind: "$user" }, // Tách mảng user thành object đơn
+      { $unwind: "$user" },
       {
         $group: {
-          _id: "$customer._id", // Gom nhóm theo ID khách hàng
-          customerName: { $first: "$user.fullName" }, // Lấy tên khách hàng
-          gender: { $first: "$user.gender" }, // Lấy giới tính của khách hàng
-          phoneNumber: { $first: "$user.phoneNumber" }, // Lấy số điện thoại của khách hàng
-          numberPond: { $sum: 1 }, // Đếm số lượng hồ cá
+          _id: "$customer._id",
+          customerName: { $first: "$user.fullName" },
+          gender: { $first: "$user.gender" },
+          phoneNumber: { $first: "$user.phoneNumber" },
+          numberPond: { $sum: 1 },
         },
       },
     ]);

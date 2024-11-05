@@ -33,7 +33,6 @@ import Center20 from "../assets/center-7.jpg"; // ca benh
 import Center21 from "../assets/center-8.jpg"; // ca benh
 import Center22 from "../assets/center-9.jpg"; // ca benh
 
-
 const Images = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -105,19 +104,18 @@ const Images = () => {
   }, [selectedImage, isFullscreen]);
 
   return (
-
     <div>
       {/* Section 1: Header */}
-      <div className="section bg-gradient-to-t from-[#2A7F9E] to-[#175670] py-36 pt-30 text-center">
+      <div className="section pt-30 bg-gradient-to-t from-[#2A7F9E] to-[#175670] py-36 text-center">
         <div className="container mx-auto">
-          <h1 className="pb-5 mb-8 text-5xl font-bold text-center leading-tight bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
+          <h1 className="mb-8 bg-gradient-to-r from-white to-blue-100 bg-clip-text pb-5 text-center text-5xl font-bold leading-tight text-transparent">
             Bộ Sưu Tập Hình Ảnh Trung Tâm Thú Y Cá Koi
           </h1>
 
           {/* Image Grid */}
           <motion.div
             layout
-            className="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-4 px-4"
+            className="grid grid-cols-2 gap-6 px-4 md:grid-cols-3 lg:grid-cols-4"
           >
             {filteredImages.map((image, index) => (
               <motion.div
