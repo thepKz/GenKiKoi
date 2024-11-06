@@ -3,6 +3,10 @@ import PayOS from "@payos/node";
 import dotenv from "dotenv";
 import Payment from "../models/Payment";
 import { Appointment, DoctorSchedule, Customer } from "../models";
+import {
+  sendAppointmentConfirmationEmail,
+  sendOnlineAppointmentEmail,
+} from "../services/emails";
 
 dotenv.config();
 
@@ -21,7 +25,7 @@ export const createPaymentOnline = async (req: Request, res: Response) => {
       description: `Thanh toan don hang`,
       cancelUrl: process.env.BASE_URL_CANCELLED_PAYMENT as string,
       returnUrl: process.env.BASE_URL_SUCCESS_PAYMENT as string,
-      expiredAt: 15 * 60,
+      expiredAt: Math.floor(Date.now() / 1000) + 15 * 60,
     };
 
     const paymentLinkResponse = await payOS.createPaymentLink(body);
@@ -127,27 +131,66 @@ export const updatePaymentById = async (req: Request, res: Response) => {
       payment.status = status;
     }
 
-    const appointment = await Appointment.findById(payment.appointmentId);
+    const appointment = await Appointment.findById(payment.appointmentId)
+      .populate({
+        path: "serviceId",
+        select: "serviceName",
+      })
+      .populate({
+        path: "doctorId",
+        select: "userId googleMeetLink",
+        populate: {
+          path: "userId",
+          select: "fullName",
+        },
+      })
+      .populate({
+        path: "customerId",
+        select: "userId",
+        populate: {
+          path: "userId",
+          select: "fullName email",
+        },
+      });
 
     if (!appointment) {
       return res.status(404).json({ message: "Không tìm thấy cuộc hẹn" });
     }
 
     if (status === "PAID") {
-      if (!appointment) {
-        return res.status(404).json({ message: "Không tìm thấy cuộc hẹn" });
-      }
       appointment.status = "Đã xác nhận";
       appointment.notes = "Quý khách vui lòng tới trước giờ hẹn 15 phút!";
 
       await appointment.save();
+
+      if (
+        appointment.typeOfConsulting === "Tại phòng khám" ||
+        appointment.typeOfConsulting === "Tại nhà"
+      ) {
+        await sendAppointmentConfirmationEmail(
+          appointment.appointmentDate,
+          appointment.doctorId.userId.fullName || "",
+          appointment.slotTime,
+          appointment.serviceId.serviceName,
+          appointment.customerId.userId.fullName || "",
+          appointment.typeOfConsulting,
+          appointment.customerId.userId.email
+        );
+      } else {
+        await sendOnlineAppointmentEmail(
+          appointment.appointmentDate,
+          appointment.doctorId.userId.fullName || "",
+          appointment.slotTime,
+          appointment.serviceId.serviceName,
+          appointment.customerId.userId.fullName || "",
+          appointment.typeOfConsulting,
+          appointment.customerId.userId.email,
+          appointment.doctorId.googleMeetLink
+        );
+      }
     }
 
     if (status === "CANCELLED") {
-      if (!appointment) {
-        return res.status(404).json({ message: "Không tìm thấy cuộc hẹn" });
-      }
-
       appointment.status = "Đã hủy";
       appointment.notes = "";
 

@@ -7,6 +7,7 @@ export interface IService {
   price: number;
   availableAt: AvailableAt[];
   description?: string;
+  isDeleted: boolean;
 }
 
 const ServiceSchema = new mongoose.Schema<IService>(
@@ -26,6 +27,10 @@ const ServiceSchema = new mongoose.Schema<IService>(
     },
     description: {
       type: String,
+    },
+    isDeleted: {
+      type: Boolean,
+      default: false,
     },
   },
   {

@@ -12,6 +12,7 @@ import {
   Row,
   Select,
   Spin,
+  Modal,
 } from "antd";
 
 import dayjs from "dayjs";
@@ -22,6 +23,7 @@ import { handleAPI } from "../apis/handleAPI";
 import Map from "../components/Map";
 import { CustomCalendar } from "../share";
 import { IAuth } from "../types";
+import { Link } from "react-router-dom";
 
 const { TextArea } = Input;
 
@@ -60,7 +62,15 @@ const Booking = () => {
 
   const [isAddressDisabled, setIsAddressDisabled] = useState(false);
 
-  console.log(profile);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+  };
 
   useEffect(() => {
     const getProfile = async () => {
@@ -252,6 +262,7 @@ const Booking = () => {
       message.error(error.message);
     } finally {
       setIsLoadingForm(false);
+      setIsModalVisible(false);
     }
   };
 
@@ -640,9 +651,8 @@ const Booking = () => {
               <Button
                 size="large"
                 type="primary"
-                loading={isLoadingForm}
                 className="mt-3 w-fit"
-                onClick={() => form.submit()}
+                onClick={showModal}
               >
                 Thanh toán
               </Button>
@@ -650,6 +660,66 @@ const Booking = () => {
           </div>
         </div>
       </div>
+      <ConfigProvider
+        theme={{
+          inherit: false,
+          token: {
+            fontFamily: "Pro-Rounded",
+          },
+          components: {
+            Divider: {
+              marginLG: 10,
+            },
+          },
+        }}
+      >
+        <Modal
+          open={isModalVisible}
+          onOk={() => form.submit()}
+          onCancel={handleCancel}
+          okText="Đồng ý"
+          confirmLoading={isLoadingForm}
+          cancelText="Thoát"
+        >
+          <div className="py-4">
+            <h1 className="heading-4">Xác nhận thanh toán</h1>
+            <Divider />
+            <p className="mb-2 text-base">
+              Quý khách vui lòng tham khảo trước các{" "}
+              <Link
+                to="/terms-of-service"
+                className="text-blue-600"
+                target="_blank"
+              >
+                điều khoản của công ty.
+              </Link>
+            </p>
+            <ol className="ml-5 flex list-decimal flex-col gap-2 text-base">
+              <li>
+                <span className="font-semibold">Đặt lịch:</span> Khách hàng có thể đặt lịch hẹn
+                thông qua website, ứng dụng hoặc gọi điện trực tiếp.
+              </li>
+              <li>
+                <span className="font-semibold">Hủy lịch hẹn:</span> Việc hủy hoặc thay đổi lịch hẹn
+                phải được thực hiện ít nhất 30 phút trước giờ hẹn.
+              </li>
+              <li>
+                <span className="font-semibold">Chính sách hoàn tiền:</span>
+                <ol className="ml-5 list-disc">
+                  <li>
+                    <span className="font-semibold">Hủy lịch hẹn trước 30 phút:</span> Hoàn tiền
+                    100%.
+                  </li>
+                  <li>
+                    <span className="font-semibold">Không đến mà không báo trước:</span> Không hoàn
+                    tiền.
+                  </li>
+                </ol>
+              </li>
+            </ol>
+          </div>
+        </Modal>
+      </ConfigProvider>
     </div>
   );
 };

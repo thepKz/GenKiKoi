@@ -71,7 +71,6 @@ const SignIn = () => {
               <Form.Item
                 name="email"
                 label="Email"
-                required={false}
                 rules={[
                   {
                     required: true,
@@ -95,7 +94,6 @@ const SignIn = () => {
               <Form.Item
                 name="password"
                 label="Mật khẩu"
-                required={false}
                 tooltip="Mật khẩu chỉ chứa chữ thường, in hoa, số và trên 8 ký tự!"
                 rules={[{ required: true, message: "Vui lòng nhập mật khẩu!" }]}
                 validateDebounce={1000}

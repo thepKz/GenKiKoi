@@ -64,6 +64,7 @@ const Customers = () => {
       title: "Tên khách hàng",
       dataIndex: "customerName",
       width: 120,
+      render: (text) => <Tag>{text ? text : "NULL"}</Tag>,
     },
     {
       key: "Giới tính",
@@ -81,6 +82,7 @@ const Customers = () => {
       title: "Số điện thoại",
       dataIndex: "phoneNumber",
       width: 100,
+      render: (text) => <Tag>{text ? text : "NULL"}</Tag>,
     },
     {
       key: "Email",

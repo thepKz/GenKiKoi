@@ -29,7 +29,7 @@ const StaffSchema = new mongoose.Schema<IStaff>(
     isAvailable: { type: Boolean, default: true },
     startDate: {
       type: Date,
-      default: () => new Date(),
+      default: new Date(),
     },
   },
   {

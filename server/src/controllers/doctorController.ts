@@ -11,12 +11,18 @@ import { randomText, replaceName } from "../utils";
 export const getAllDoctors = async (req: Request, res: Response) => {
   try {
     const doctors = await Doctor.find()
-      .populate("userId", "fullName email gender")
+      .populate({
+        path: "userId",
+        match: { isDisabled: false },
+        select: "fullName email gender",
+      })
       .select(
-        "startDate movingService specialization licenseNumber yearOfExperience"
+        "startDate movingService specialization licenseNumber yearOfExperience googleMeetLink"
       );
 
-    if (!doctors) {
+    const filteredDoctors = doctors.filter((doctor) => doctor.userId !== null);
+
+    if (filteredDoctors.length === 0) {
       return res.status(404).json({ message: "Danh sách bác sĩ trống!" });
     }
 
@@ -30,6 +36,7 @@ export const getAllDoctors = async (req: Request, res: Response) => {
       licenseNumber: doctor.licenseNumber,
       yearOfExperience: doctor.yearOfExperience,
       email: doctor.userId.email,
+      googleMeetLink: doctor.googleMeetLink,
     }));
 
     return res.status(200).json({ data: formatDoctor });
@@ -167,6 +174,7 @@ export const updateByDoctorId = async (req: Request, res: Response) => {
       yearOfExperience,
       movingService,
       introduction,
+      googleMeetLink,
     } = req.body;
 
     const existsDoctor = await Doctor.findById(doctorId);
@@ -186,16 +194,18 @@ export const updateByDoctorId = async (req: Request, res: Response) => {
         .status(400)
         .json({ message: "Email đã được sử dụng bởi người dùng khác" });
     }
-    // check sdt k ddc trung voi tai khoan khac
-    const checkPhoneNumber = await User.findOne({
-      phoneNumber,
-      _id: { $ne: existsDoctor.userId },
-    });
 
-    if (checkPhoneNumber) {
-      return res
-        .status(400)
-        .json({ message: "Số điện thoại đã được sử dụng bởi người dùng khác" });
+    if (phoneNumber) {
+      const checkPhoneNumber = await User.findOne({
+        phoneNumber,
+        _id: { $ne: existsDoctor.userId },
+      });
+
+      if (checkPhoneNumber) {
+        return res.status(400).json({
+          message: "Số điện thoại đã được sử dụng bởi người dùng khác",
+        });
+      }
     }
 
     const updatedDoctor = await Doctor.findByIdAndUpdate(
@@ -206,6 +216,7 @@ export const updateByDoctorId = async (req: Request, res: Response) => {
         licenseNumber,
         yearOfExperience,
         movingService,
+        googleMeetLink,
       },
       { new: true, runValidators: true }
     );
@@ -240,6 +251,7 @@ export const updateByDoctorId = async (req: Request, res: Response) => {
       email: updatedUser.email,
       phoneNumber: updatedUser.phoneNumber,
       introduction: updatedDoctor.introduction,
+      googleMeetLink: updatedDoctor.googleMeetLink,
     };
 
     return res.status(200).json({
@@ -260,7 +272,17 @@ export const deleteDoctorById = async (req: Request, res: Response) => {
   try {
     const doctorId = req.params.doctorId;
 
-    await Doctor.findByIdAndDelete(doctorId);
+    const doctor = await Doctor.findById(doctorId);
+
+    if (!doctor) {
+      return res.status(404).json({ message: "Không tìm thấy bác sĩ này" });
+    }
+
+    await User.findByIdAndUpdate(
+      doctor.userId,
+      { isDisabled: true },
+      { new: true }
+    );
 
     return res.status(200).json({ message: "Xóa thành công" });
   } catch (error: any) {
@@ -361,12 +383,12 @@ export const getScheduleByDoctorId = async (req: Request, res: Response) => {
     today.setHours(0, 0, 0, 0);
 
     const futureDates = doctorSchedule.weekSchedule
-      .filter(schedule => {
-        const [day, month, year] = schedule.dayOfWeek.split('/').map(Number);
+      .filter((schedule) => {
+        const [day, month, year] = schedule.dayOfWeek.split("/").map(Number);
         const scheduleDate = new Date(year, month - 1, day);
         return scheduleDate >= today;
       })
-      .map(schedule => schedule.dayOfWeek);
+      .map((schedule) => schedule.dayOfWeek);
 
     const formattedData = {
       doctorName: doctor.userId.fullName,

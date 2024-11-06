@@ -11,14 +11,20 @@ import { randomText, replaceName } from "../utils";
 export const getAllStaffs = async (req: Request, res: Response) => {
   try {
     const staffs = await Staff.find()
-      .populate("userId", "fullName email gender")
+      .populate({
+        path: "userId",
+        match: { isDisabled: false },
+        select: "fullName email gender",
+      })
       .select("startDate position workShift");
 
-    if (!staffs || staffs.length === 0) {
+    const filteredStaffs = staffs.filter((staff) => staff.userId !== null);
+
+    if (filteredStaffs.length === 0) {
       return res.status(404).json({ message: "Danh sách nhân viên trống!" });
     }
 
-    const formatStaff = staffs.map((staff: any) => ({
+    const formatStaff = filteredStaffs.map((staff: any) => ({
       _id: staff._id,
       fullName: staff.userId.fullName,
       gender: staff.userId.gender,
@@ -190,18 +196,18 @@ export const updateStaffById = async (req: Request, res: Response) => {
       workShift,
     } = req.body;
 
-    if (
-      !phoneNumber ||
-      !photoUrl ||
-      !fullName ||
-      !gender ||
-      !position ||
-      !email
-    ) {
-      return res
-        .status(400)
-        .json({ message: "Vui lòng cung cấp đầy đủ thông tin" });
-    }
+    // if (
+    //   !phoneNumber ||
+    //   !photoUrl ||
+    //   !fullName ||
+    //   !gender ||
+    //   !position ||
+    //   !email
+    // ) {
+    //   return res
+    //     .status(400)
+    //     .json({ message: "Vui lòng cung cấp đầy đủ thông tin" });
+    // }
 
     // check nhan vien co ton tai khong
     const existsStaff = await Staff.findById(staffId);
@@ -221,16 +227,18 @@ export const updateStaffById = async (req: Request, res: Response) => {
         .status(400)
         .json({ message: "Email đã được sử dụng bởi người dùng khác" });
     }
-    // check phone number co bi trung khong
-    const checkPhoneNumber = await Staff.findOne({
-      phoneNumber,
-      _id: { $ne: existsStaff._id },
-    });
 
-    if (checkPhoneNumber) {
-      return res
-        .status(400)
-        .json({ message: "Số điện thoại đã được sử dụng bởi nhân viên khác" });
+    if (phoneNumber) {
+      const checkPhoneNumber = await Staff.findOne({
+        phoneNumber,
+        _id: { $ne: existsStaff._id },
+      });
+
+      if (checkPhoneNumber) {
+        return res.status(400).json({
+          message: "Số điện thoại đã được sử dụng bởi nhân viên khác",
+        });
+      }
     }
 
     // update staff
@@ -284,7 +292,17 @@ export const deleteStaffById = async (req: Request, res: Response) => {
   try {
     const { staffId } = req.params;
 
-    await Staff.findByIdAndDelete(staffId);
+    const staff = await Staff.findById(staffId);
+
+    if (!staff) {
+      return res.status(404).json({ message: "Không tìm thấy nhân viên này" });
+    }
+
+    await User.findByIdAndUpdate(
+      staff.userId,
+      { isDisabled: true },
+      { new: true }
+    );
 
     return res.status(200).json({ message: "Xóa thành công" });
   } catch (error: any) {

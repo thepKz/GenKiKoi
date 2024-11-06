@@ -44,7 +44,7 @@ export const getAllAppointmentsByDoctorId = async (
       .select("status appointmentDate isFeedback");
 
     if (!appointments || appointments.length === 0) {
-      return res.status(404).json({ message: "Không tìm thấy cuộc hẹn" });
+      return res.status(404).json({ message: "Danh sách cuộc hẹn trống!" });
     }
 
     const paidAppointments = await Promise.all(

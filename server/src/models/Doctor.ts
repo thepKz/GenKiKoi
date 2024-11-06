@@ -10,6 +10,7 @@ export interface IDoctor {
   startDate?: Date;
   introduction?: string;
   _id: string;
+  googleMeetLink: string;
 }
 
 const DoctorSchema = new mongoose.Schema<IDoctor>(
@@ -41,6 +42,10 @@ const DoctorSchema = new mongoose.Schema<IDoctor>(
     },
     introduction: {
       type: String,
+    },
+    googleMeetLink: {
+      type: String,
+      default: "",
     },
   },
   {
