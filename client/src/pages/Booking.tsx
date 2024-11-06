@@ -72,8 +72,6 @@ const Booking = () => {
     setIsModalVisible(false);
   };
 
-  console.log(profile);
-
   useEffect(() => {
     const getProfile = async () => {
       try {

@@ -20,7 +20,7 @@ export const sendVerificationEmail = async (
   verificationToken: string
 ) => {
   const mailOptions = {
-    from: "GenKiKoi <dodung.dqd@gmail.com>",
+    from: "GenKiKoi",
     to: email,
     subject: "Xác thực Email của bạn - GenKiKoi",
     html: `
@@ -76,7 +76,7 @@ export const sendResetPasswordEmail = async (
   resetToken: string
 ) => {
   const mailOptions = {
-    from: "GenKiKoi <dodung.dqd@gmail.com>",
+    from: "GenKiKoi",
     to: email,
     subject: "Khôi phục mật khẩu - GenKiKoi",
     html: `
@@ -127,4 +127,128 @@ export const sendResetPasswordEmail = async (
   }
 };
 
+export const sendAppointmentConfirmationEmail = async (
+  appointmentDate: Date,
+  doctorName: string,
+  slotTime: string,
+  serviceName: string,
+  customerName: string,
+  typeOfConsulting: string,
+  email: string
+) => {
+  const mailOptions = {
+    from: "GenKiKoi",
+    to: email,
+    subject: "Xác thực Email của bạn - GenKiKoi",
+    html: `
+    <!DOCTYPE html>
+    <html lang="vi">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Thông báo đặt lịch thành công</title>
+      <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9; }
+        .header { background-color: #0C3C54; color: white; padding: 10px; text-align: center; }
+        .content { background-color: white; padding: 20px; border-radius: 5px; }
+        .footer { text-align: center; margin-top: 20px; font-size: 12px; color: #666; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>GenKiKoi</h1>
+        </div>
+        <div class="content">
+          <h2>Thông báo đặt lịch thành công</h2>
+          <p>Xin chào, ${customerName}</p>
+          <p>Cảm ơn bạn đã đặt dịch vụ của trung tâm chúng tôi. Dưới đây là thông tin về cuộc hẹn của bạn!</p>
+          <p><strong>Bác sĩ:</strong> ${doctorName}</p>
+          <p><strong>Ngày:</strong> ${appointmentDate.toLocaleDateString()}</p>
+          <p><strong>Giờ:</strong> ${slotTime}</p>
+          <p><strong>Dịch vụ:</strong> ${serviceName}</p>
+          <p><strong>Hình thức khám:</strong> ${typeOfConsulting}</p>
+          <p>Trân trọng,<br>Đội ngũ GenKiKoi</p>
+        </div>
+        <div class="footer">
+          <p>© 2023 GenKiKoi. Tất cả các quyền được bảo lưu.</p>          
+          <p>Hotline hỗ trợ: 0352195876</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `,
+  };
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log("Verification email sent successfully");
+  } catch (error) {
+    console.error("Error sending verification email:", error);
+    throw error;
+  }
+};
 
+export const sendOnlineAppointmentEmail = async (
+  appointmentDate: Date,
+  doctorName: string,
+  slotTime: string,
+  serviceName: string,
+  customerName: string,
+  typeOfConsulting: string,
+  email: string,
+  googleMeetLink: string
+) => {
+  const mailOptions = {
+    from: "GenKiKoi",
+    to: email,
+    subject: "Xác thực Email của bạn - GenKiKoi",
+    html: `
+<!DOCTYPE html>
+    <html lang="vi">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Thông báo đặt lịch thành công</title>
+      <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9; }
+        .header { background-color: #0C3C54; color: white; padding: 10px; text-align: center; }
+        .content { background-color: white; padding: 20px; border-radius: 5px; }
+        .footer { text-align: center; margin-top: 20px; font-size: 12px; color: #666; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>GenKiKoi</h1>
+        </div>
+        <div class="content">
+          <h2>Thông báo đặt lịch thành công</h2>
+          <p>Xin chào, ${customerName}</p>
+          <p>Cảm ơn bạn đã đặt dịch vụ của trung tâm chúng tôi. Dưới đây là thông tin về cuộc hẹn của bạn!</p>
+          <p><strong>Bác sĩ:</strong> ${doctorName}</p>
+          <p><strong>Ngày:</strong> ${appointmentDate.toLocaleDateString()}</p>
+          <p><strong>Giờ:</strong> ${slotTime}</p>
+          <p><strong>Dịch vụ:</strong> ${serviceName}</p>
+          <p><strong>Hình thức khám:</strong> ${typeOfConsulting}</p>
+          <p><strong>Link Google Meet:</strong> <a href="${googleMeetLink}">${googleMeetLink}</a></p>
+          <p>Trân trọng,<br>Đội ngũ GenKiKoi</p>
+        </div>
+        <div class="footer">
+          <p>© 2023 GenKiKoi. Tất cả các quyền được bảo lưu.</p>          
+          <p>Hotline hỗ trợ: 0352195876</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `,
+  };
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log("Verification email sent successfully");
+  } catch (error) {
+    console.error("Error sending verification email:", error);
+    throw error;
+  }
+};

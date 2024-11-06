@@ -12,6 +12,8 @@ export interface IAppointment {
   serviceId: IService;
   feedback?: IFeedback;
   appointmentDate: Date;
+  slotTime: string;
+  typeOfConsulting: string;
   status: string;
   reasons?: string;
   notes?: string;
@@ -63,6 +65,15 @@ const AppointmentSchema = new mongoose.Schema<IAppointment>(
     isFeedback: {
       type: Boolean,
       default: false,
+    },
+    slotTime: {
+      type: String,
+      required: true,
+    },
+    typeOfConsulting: {
+      type: String,
+      enum: ["Tại phòng khám", "Tại nhà", "Tư vấn trực tuyến"],
+      required: true,
     },
   },
   {
