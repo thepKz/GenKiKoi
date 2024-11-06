@@ -1,4 +1,4 @@
-import { message, Modal, Spin, Switch, TableProps, Tag } from "antd";
+import { Button, message, Modal, Spin, Switch, TableProps, Tag } from "antd";
 import { CustomTable } from "../../share";
 import { getValue } from "../../utils";
 import { HeaderPage } from "../../components";
@@ -14,10 +14,14 @@ const Appointments = () => {
   const [appointments, setAppointments] = useState([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchText, setSearchText] = useState("");
+  const [switchStates, setSwitchStates] = useState<{ [key: string]: boolean }>(
+    {},
+  );
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 10,
   });
+  const [selectedAppointment, setSelectedAppointment] = useState<any>(null);
 
   useEffect(() => {
     const getAppointments = async () => {
@@ -39,6 +43,8 @@ const Appointments = () => {
   }, [auth.adminId]);
 
   const handleCheck = (checked: boolean, appointmentId: string) => {
+    const currentState = switchStates[appointmentId] || false;
+
     Modal.confirm({
       title: `${checked ? "Xác nhận hoàn thành" : "Hoàn tác"}` + ` dịch vụ`,
       content: checked
@@ -66,7 +72,20 @@ const Appointments = () => {
           message.error(error.message || "Có lỗi xảy ra");
         }
       },
+      onCancel: () => {
+        setSwitchStates((prev) => ({ ...prev, [appointmentId]: currentState }));
+      },
     });
+
+    setSwitchStates((prev) => ({ ...prev, [appointmentId]: checked }));
+  };
+
+  const handleViewDetails = (appointment: any) => {
+    setSelectedAppointment(appointment);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedAppointment(null);
   };
 
   const columns: TableProps["columns"] = [
@@ -89,39 +108,58 @@ const Appointments = () => {
       key: "Số điện thoại",
       title: "Số điện thoại",
       dataIndex: "phoneNumber",
-      width: 120,
+      width: 130,
     },
     {
       key: "Tên dịch vụ",
       title: "Tên dịch vụ",
       dataIndex: "serviceName",
-      width: 200,
+      width: 170,
     },
     {
       key: "Ngày hẹn",
       title: "Ngày hẹn",
       dataIndex: "appointmentDate",
-      width: 200,
+      width: 120,
       render: (date) => new Date(date).toLocaleDateString(),
     },
     {
       key: "Trạng thái",
       title: "Trạng thái",
-      width: 150,
+      width: 120,
       dataIndex: "status",
       render: (status) => <Tag color={getValue(status)}>{status}</Tag>,
     },
     {
+      key: "Hình thức khám",
+      title: "Hình thức khám",
+      width: 150,
+      dataIndex: "typeOfConsulting",
+      render: (status) => <Tag color={getValue(status)}>{status}</Tag>,
+    },
+    {
+      key: "Chi tiết",
+      title: "Xem chi tiết",
+      render: (record) => (
+        <Button onClick={() => handleViewDetails(record)}>Xem chi tiết</Button>
+      ),
+    },
+    {
       key: "Xác nhận",
       title: "Xác nhận",
-      width: 100,
+      width: 80,
       render: (_text: any, record: any) => (
         <div className="text-center">
-          <Switch onChange={(checked) => handleCheck(checked, record.id)} />
+          <Switch
+            checked={switchStates[record.id] || false}
+            onChange={(checked) => handleCheck(checked, record.id)}
+          />
         </div>
       ),
     },
   ];
+
+  console.log(appointments);
 
   const handleSearch = (value: string) => {
     setSearchText(value.toLowerCase());
@@ -166,6 +204,23 @@ const Appointments = () => {
           onChange={(pagination) => setPagination(pagination)}
         />
       </div>
+      <Modal
+        title="Chi tiết cuộc hẹn"
+        open={!!selectedAppointment}
+        onCancel={handleCloseModal}
+        footer={null}
+      >
+        {selectedAppointment && (
+          <div>
+            <p><strong>Tên khách hàng:</strong> {selectedAppointment.customerName}</p>
+            <p><strong>Số điện thoại:</strong> {selectedAppointment.phoneNumber}</p>
+            <p><strong>Tên dịch vụ:</strong> {selectedAppointment.serviceName}</p>
+            <p><strong>Ngày hẹn:</strong> {new Date(selectedAppointment.appointmentDate).toLocaleDateString()}</p>
+            <p><strong>Trạng thái:</strong> {selectedAppointment.status}</p>
+            <p><strong>Hình thức khám:</strong> {selectedAppointment.typeOfConsulting}</p>
+          </div>
+        )}
+      </Modal>
     </div>
   );
 };

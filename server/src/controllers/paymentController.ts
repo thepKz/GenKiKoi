@@ -398,7 +398,7 @@ export const getTopServices = async (req: Request, res: Response) => {
       id: item.firstId,
       serviceName: item._id,
       count: item.count,
-      percentage: (item.count / totalPayments) * 100,
+      percentage: ((item.count / totalPayments) * 100).toFixed(2),
     }));
 
     return res.status(200).json({
