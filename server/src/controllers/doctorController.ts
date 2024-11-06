@@ -17,7 +17,7 @@ export const getAllDoctors = async (req: Request, res: Response) => {
         select: "fullName email gender",
       })
       .select(
-        "startDate movingService specialization licenseNumber yearOfExperience"
+        "startDate movingService specialization licenseNumber yearOfExperience googleMeetLink"
       );
 
     const filteredDoctors = doctors.filter((doctor) => doctor.userId !== null);
@@ -36,6 +36,7 @@ export const getAllDoctors = async (req: Request, res: Response) => {
       licenseNumber: doctor.licenseNumber,
       yearOfExperience: doctor.yearOfExperience,
       email: doctor.userId.email,
+      googleMeetLink: doctor.googleMeetLink,
     }));
 
     return res.status(200).json({ data: formatDoctor });
@@ -173,6 +174,7 @@ export const updateByDoctorId = async (req: Request, res: Response) => {
       yearOfExperience,
       movingService,
       introduction,
+      googleMeetLink,
     } = req.body;
 
     const existsDoctor = await Doctor.findById(doctorId);
@@ -214,6 +216,7 @@ export const updateByDoctorId = async (req: Request, res: Response) => {
         licenseNumber,
         yearOfExperience,
         movingService,
+        googleMeetLink,
       },
       { new: true, runValidators: true }
     );
@@ -248,6 +251,7 @@ export const updateByDoctorId = async (req: Request, res: Response) => {
       email: updatedUser.email,
       phoneNumber: updatedUser.phoneNumber,
       introduction: updatedDoctor.introduction,
+      googleMeetLink: updatedDoctor.googleMeetLink,
     };
 
     return res.status(200).json({
