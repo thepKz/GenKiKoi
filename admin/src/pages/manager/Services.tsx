@@ -89,6 +89,7 @@ const Services = () => {
           />
 
           <Button
+            danger
             onClick={() => handleDelete(record._id)}
             shape="circle"
             icon={<AiOutlineDelete color="#ff4d4f" size={20} />}
@@ -153,7 +154,7 @@ const Services = () => {
       }
     } catch (error: any) {
       console.log(error);
-      message.error(error.message || "Có lỗi xảy ra, vui lòng thử lại sau.");
+      message.error(error.message || "Có lỗi xảy ra, vui lòng thử lại sau!");
     } finally {
       setIsLoadingForm(false);
       setIsModalOpen(false);

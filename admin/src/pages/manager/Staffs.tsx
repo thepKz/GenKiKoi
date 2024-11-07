@@ -49,7 +49,9 @@ const Staffs = () => {
         setStaffs(res.data);
       } catch (error: any) {
         console.log(error);
-        message.error(error.message);
+        message.error(
+          error.message || "Có lỗi xảy ra khi lấy danh sách nhân viên!",
+        );
       } finally {
         setIsLoading(false);
       }
@@ -66,7 +68,9 @@ const Staffs = () => {
         setDoctors(res.data);
       } catch (error: any) {
         console.log(error);
-        message.error(error.message);
+        message.error(
+          error.message || "Có lỗi xảy ra khi lấy danh sách bác sĩ!",
+        );
       } finally {
         setIsLoading(false);
       }
@@ -126,7 +130,7 @@ const Staffs = () => {
       }
     } catch (error: any) {
       console.log(error);
-      message.error(error.message);
+      message.error(error.message || "Có lỗi xảy ra, vui lòng thử lại sau!");
     } finally {
       setIsLoadingForm(false);
       setIsModalOpen(false);
@@ -180,7 +184,6 @@ const Staffs = () => {
     }
   };
 
-  // Cập nhật cột action trong staffColumn và doctorColumn
   const getActionColumn = (isStaff: boolean) => ({
     key: "action",
     title: "Sửa / Xóa",
@@ -193,6 +196,7 @@ const Staffs = () => {
           icon={<CiEdit size={20} color="#1677ff" />}
         />
         <Button
+          danger
           onClick={() => handleDelete(record._id, isStaff)}
           shape="circle"
           icon={<AiOutlineDelete size={20} color="#ff4d4f" />}
@@ -201,7 +205,6 @@ const Staffs = () => {
     ),
   });
 
-  // Thêm getActionColumn vào cuối staffColumn và doctorColumn
   const staffColumn: TableProps["columns"] = [
     {
       key: "#",
@@ -315,14 +318,8 @@ const Staffs = () => {
       let additionalSearchFields = "";
 
       if (isStaff) {
-        // Thêm trường tìm kiếm cho nhân viên
         additionalSearchFields = removeVietnameseTones(
           person.position.toLowerCase(),
-        );
-      } else {
-        // Thêm trường tìm kiếm cho bác sĩ
-        additionalSearchFields = removeVietnameseTones(
-          `${person.specialization || ""} ${person.movingService ? "có di động" : "không di động"}`.toLowerCase(),
         );
       }
 
@@ -393,7 +390,8 @@ const Staffs = () => {
       <div className="section">
         <HeaderPage
           heading="Danh sách nhân viên và bác sĩ"
-          placeholder={`Tìm ${currentTab === "staff" ? "nhân viên" : "bác sĩ"}`}
+          placeholder={`Tìm ${currentTab === "staff" ? "nhân viên (Tên, email, vị trí công việc)" : "bác sĩ (Tên, email)"}`}
+          alt={`${currentTab === "staff" ? "Tìm nhân viên (Tên, email, vị trí công việc)" : "Tìm bác sĩ (Tên, email)"}`}
           onSearch={handleSearch}
         />
         <div className="absolute right-14 z-10">
@@ -449,7 +447,18 @@ const Staffs = () => {
                       required: true,
                       message: "Vui lòng nhập họ và tên",
                     },
+                    {
+                      max: 50,
+                      message: "Họ và tên không được vượt quá 50 ký tự",
+                    },
+                    {
+                      pattern:
+                        /^[a-zA-ZÀÁẢÃẠÂẤẦẨẪẬĂẮẰẲẴẶĐÊẾỀỂỄỆÔỐỒỔỖỘƠỚỜỞỠỢƯỨỪỬỮỰ\s]+$/,
+                      message: "Họ và tên chỉ chứa chữ cái và khoảng trắng",
+                    },
                   ]}
+                  hasFeedback
+                  validateDebounce={1000}
                 >
                   <Input
                     allowClear
@@ -465,7 +474,13 @@ const Staffs = () => {
                       required: true,
                       message: "Vui lòng nhập email",
                     },
+                    {
+                      type: "email",
+                      message: "Email không hợp lệ",
+                    },
                   ]}
+                  hasFeedback
+                  validateDebounce={1000}
                 >
                   <Input allowClear placeholder="Nhập email" />
                 </Form.Item>
@@ -546,6 +561,11 @@ const Staffs = () => {
                             required: true,
                             message: "Vui lòng nhập tên chứng chỉ",
                           },
+                          {
+                            max: 200,
+                            message:
+                              "Tên chứng chỉ không được vượt quá 200 ký tự",
+                          },
                         ]}
                       >
                         <Input placeholder="Tên chứng chỉ" />
@@ -559,6 +579,11 @@ const Staffs = () => {
                           {
                             required: true,
                             message: "Vui lòng nhập mã số chứng chỉ",
+                          },
+                          {
+                            pattern: /^[A-Za-z0-9-]+$/,
+                            message:
+                              "Mã số chứng chỉ chỉ chứa chữ cái, số và dấu -",
                           },
                         ]}
                       >

@@ -22,7 +22,7 @@ const ListDoctors = () => {
         setDoctors(res.data);
       } catch (error: any) {
         console.error(error);
-        message.error(error.message);
+        message.error(error.message || "Lỗi khi lấy danh sách bác sĩ");
       } finally {
         setIsLoading(false);
       }
@@ -84,7 +84,8 @@ const ListDoctors = () => {
     <div className="section">
       <HeaderPage
         heading="Danh sách lịch làm việc"
-        placeholder="Tìm bác sĩ"
+        placeholder="Tìm bác sĩ (Tên bác sĩ, email)"
+        alt="Tìm bác sĩ (Tên bác sĩ, email)"
         onSearch={handleSearch}
       />
       <Breadcrumb

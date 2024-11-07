@@ -364,7 +364,9 @@ export const getScheduleByDoctorId = async (req: Request, res: Response) => {
         path: "userId",
         select: "fullName photoUrl email gender",
       })
-      .select("startDate movingService");
+      .select(
+        "startDate movingService googleMeetLink specialization licenseNumber yearOfExperience"
+      );
 
     if (!doctor) {
       return res.status(404).json({ message: "Không tìm thấy bác sĩ" });
@@ -397,6 +399,10 @@ export const getScheduleByDoctorId = async (req: Request, res: Response) => {
       gender: doctor.userId.gender,
       startDate: doctor.startDate,
       movingService: doctor.movingService,
+      googleMeetLink: doctor.googleMeetLink,
+      specialization: doctor.specialization,
+      licenseNumber: doctor.licenseNumber,
+      yearOfExperience: doctor.yearOfExperience,
       doctorSchedule: futureDates,
     };
 

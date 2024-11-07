@@ -22,9 +22,11 @@ const Accounts = () => {
         const api = `/api/users/all`;
         const res = await handleAPI(api, undefined, "GET");
         setAccounts(res.data);
-      } catch (error) {
+      } catch (error: any) {
         console.error(error);
-        message.error("Có lỗi xảy ra khi lấy danh sách tài khoản");
+        message.error(
+          error.message || "Có lỗi xảy ra khi lấy danh sách tài khoản",
+        );
       } finally {
         setIsLoading(false);
       }
@@ -54,9 +56,11 @@ const Accounts = () => {
 
           setAccounts(updatedAccounts);
           message.success("Cập nhật thành công");
-        } catch (error) {
+        } catch (error: any) {
           console.error(error);
-          message.error("Có lỗi xảy ra khi cập nhật trạng thái tài khoản");
+          message.error(
+            error.message || "Có lỗi xảy ra khi cập nhật trạng thái tài khoản",
+          );
         } finally {
           setIsLoading(false);
         }
@@ -73,7 +77,7 @@ const Accounts = () => {
     const username = removeVietnameseTones(account.username.toLowerCase());
     const email = account.email.toLowerCase();
     const fullName = removeVietnameseTones(
-      (account.fullName || "").toLowerCase()
+      (account.fullName || "").toLowerCase(),
     );
     const phoneNumber = account.phoneNumber || "";
 
@@ -164,9 +168,10 @@ const Accounts = () => {
 
   return (
     <div className="section accounts">
-      <HeaderPage 
-        heading="Danh sách tài khoản" 
-        placeholder="Tìm tài khoản" 
+      <HeaderPage
+        heading="Danh sách tài khoản"
+        placeholder="Tìm tài khoản (Tên tài khoản, email, họ và tên, số điện thoại)"
+        alt="Tìm tài khoản (Tên tài khoản, email, họ và tên, số điện thoại)"
         onSearch={handleSearch}
       />
       <div className="mt-2">
