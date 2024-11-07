@@ -19,20 +19,39 @@ interface NominatimResponse {
     lon: string;
 }
 
+// Tạo instance axios riêng cho Nominatim
+const nominatimAxios = axios.create({
+    baseURL: NOMINATIM_BASE_URL,
+    headers: {
+        'User-Agent': 'GenKiKoi/1.0 (https://staginggenkikoi.netlify.app)',
+        'Accept-Language': 'vi,en',
+        'Referer': 'https://staginggenkikoi.netlify.app'
+      },
+    // Thêm delay giữa các request
+    timeout: 10000
+});
+
 // API Controllers
 export const addressAutocomplete = async (req: Request, res: Response) => {
     try {
         const { query } = req.query;
-        if (!query) {
-            return res.status(400).json({ error: 'Vui lòng nhập địa chỉ để tìm kiếm' });
+        if (!query || typeof query !== 'string') {
+            return res.status(400).json({ 
+                message: "Vui lòng nhập địa chỉ để tìm kiếm" 
+            });
         }
 
-        const response = await axios.get(`${NOMINATIM_BASE_URL}/search`, {
+        // Thêm delay 1s giữa các request
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        const response = await nominatimAxios.get('/search', {
             params: {
                 q: query,
                 format: 'json',
                 limit: 5,
-                countrycodes: 'vn'
+                countrycodes: 'vn',
+                addressdetails: 1,
+                'accept-language': 'vi'
             }
         });
 
@@ -48,11 +67,31 @@ export const addressAutocomplete = async (req: Request, res: Response) => {
             lon: item.lon
         }));
 
-        // Trả về kết quả
-        return res.json({ data: suggestions });
-    } catch (error) {
-        console.error('Lỗi khi tìm kiếm địa chỉ:', error);
-        res.status(500).json({ error: 'Đã xảy ra lỗi khi tìm kiếm địa chỉ' });
+        return res.status(200).json({ data: suggestions });
+
+    } catch (error: any) {
+        console.error('Address Search Error:', {
+            message: error.message,
+            response: error.response?.data
+        });
+
+        // Xử lý các lỗi cụ thể
+        if (error.response?.status === 403) {
+            return res.status(429).json({
+                message: "Đã vượt quá giới hạn request, vui lòng thử lại sau"
+            });
+        }
+
+        if (error.response?.status === 429) {
+            return res.status(429).json({
+                message: "Quá nhiều yêu cầu, vui lòng thử lại sau"
+            });
+        }
+
+        return res.status(500).json({
+            message: "Có lỗi xảy ra khi tìm kiếm địa chỉ",
+            error: error.message
+        });
     }
 };
 
