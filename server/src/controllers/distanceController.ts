@@ -23,7 +23,7 @@ interface NominatimResponse {
 const nominatimAxios = axios.create({
     baseURL: NOMINATIM_BASE_URL,
     headers: {
-        'User-Agent': 'GenKiKoi/1.0 (https://staginggenkikoi.netlify.app)',
+        'User-Agent': 'GenKiKoi/1.0 (https://staginggenkikoi.netlify.app; maitanthepmrthep@gmail.com)',
         'Accept-Language': 'vi,en',
         'Referer': 'https://staginggenkikoi.netlify.app'
       },
@@ -102,12 +102,14 @@ export const calculateRoute = async (req: Request, res: Response) => {
             return res.status(400).json({ error: 'Vui lòng nhập địa chỉ xuất phát' });
         }
 
-        // Tìm tọa độ của địa chỉ xuất phát
-        const originResponse = await axios.get<NominatimResponse[]>(`${NOMINATIM_BASE_URL}/search`, {
+        // Sử dụng nominatimAxios thay vì axios
+        const originResponse = await nominatimAxios.get<NominatimResponse[]>('/search', {
             params: {
                 q: address,
                 format: 'json',
-                limit: 1
+                limit: 1,
+                countrycodes: 'vn',
+                'accept-language': 'vi'
             }
         });
 
@@ -119,6 +121,9 @@ export const calculateRoute = async (req: Request, res: Response) => {
             lat: parseFloat(originResponse.data[0].lat),
             lon: parseFloat(originResponse.data[0].lon)
         };
+
+        // Thêm delay trước khi gọi OSRM
+        await new Promise(resolve => setTimeout(resolve, 1000));
 
         // Sử dụng tọa độ cố định cho Genkikoi
         const destination = { lat: 10.8415, lon: 106.8099 };
