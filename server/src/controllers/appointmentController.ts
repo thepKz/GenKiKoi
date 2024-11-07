@@ -182,6 +182,7 @@ export const getAppointmentsByCustomerId = async (
     const appointments = await Appointment.find({
       customerId: customerId,
     })
+      .sort({ appointmentDate: -1 })
       .populate({
         path: "doctorId",
         select: "userId",

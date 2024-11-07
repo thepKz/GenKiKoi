@@ -282,7 +282,7 @@ const Staffs = () => {
       width: 100,
       render: (text) => (
         <Tag color={getValue(text === true ? "yes" : "no")}>
-          {text === true ? "Yes" : "No"}
+          {text === true ? "Có" : "Không"}
         </Tag>
       ),
     },
