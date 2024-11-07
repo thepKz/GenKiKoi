@@ -147,7 +147,7 @@ export const updateStatusAppointment = async (req: Request, res: Response) => {
             ) {
               slot.appointmentIds.splice(appointmentIndex, 1);
               slot.currentCount = Math.max(0, slot.currentCount - 1);
-              slot.isBooked = slot.currentCount >= 3;
+              slot.isBooked = slot.currentCount >= 2;
               break;
             }
           }

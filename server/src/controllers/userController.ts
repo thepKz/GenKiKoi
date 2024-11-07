@@ -123,6 +123,7 @@ export const updateProfile = async (req: AuthRequest, res: Response) => {
       .status(200)
       .json({ message: "Cập nhật thành công!", data: formattedUser });
   } catch (error: any) {
+    console.log(error);
     return res.status(500).json({
       message: error.message,
     });
@@ -150,6 +151,7 @@ export const getAllUsers = async (req: Request, res: Response) => {
 
     return res.status(200).json({ data: formattedData });
   } catch (error: any) {
+    console.log(error);
     return res.status(500).json({
       message: error.message,
     });
@@ -172,6 +174,7 @@ export const toggleUserStatus = async (req: Request, res: Response) => {
       data: user,
     });
   } catch (error: any) {
+    console.log(error);
     return res.status(500).json({
       message:
         error.message || "Đã xảy ra lỗi khi cập nhật trạng thái tài khoản",
@@ -180,10 +183,17 @@ export const toggleUserStatus = async (req: Request, res: Response) => {
 };
 
 export const checkPhoneNumber = async (req: Request, res: Response) => {
-  const { phoneNumber } = req.body;
+  try {
+    const { phoneNumber } = req.body;
 
-  const user = await User.findOne({ phoneNumber });
-  return res.status(200).json({ exists: !!user, userId: user?._id });
+    const user = await User.findOne({ phoneNumber });
+    return res.status(200).json({ exists: !!user, userId: user?._id });
+  } catch (error: any) {
+    console.log(error);
+    return res.status(500).json({
+      message: error.message,
+    });
+  }
 };
 
 export const changePassword = async (req: AuthRequest, res: Response) => {
@@ -210,6 +220,7 @@ export const changePassword = async (req: AuthRequest, res: Response) => {
 
     return res.status(200).json({ message: "Đổi mật khẩu thành công" });
   } catch (error: any) {
+    console.log(error);
     return res.status(500).json({
       message: error.message || "Đã xảy ra lỗi khi đổi mật khẩu",
     });
@@ -243,6 +254,7 @@ export const forgotPassword = async (req: Request, res: Response) => {
       message: "Email khôi phục mật khẩu đã được gửi",
     });
   } catch (error: any) {
+    console.log(error);
     return res.status(500).json({
       message: error.message || "Đã xảy ra lỗi khi xử lý yêu cầu",
     });
@@ -275,6 +287,7 @@ export const resetPassword = async (req: Request, res: Response) => {
       message: "Đặt lại mật khẩu thành công",
     });
   } catch (error: any) {
+    console.log(error);
     return res.status(500).json({
       message: error.message || "Đã xảy ra lỗi khi đặt lại mật khẩu",
     });

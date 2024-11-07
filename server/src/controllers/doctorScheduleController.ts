@@ -221,7 +221,7 @@ export const updateBookAppointment = async (req: Request, res: Response) => {
     }
 
     // Kiểm tra số lượng bệnh nhân trong slot
-    if (slot.currentCount >= 3) {
+    if (slot.currentCount >= 2) {
       return res
         .status(400)
         .json({ message: "Slot này đã đạt số lượng tối đa" });
@@ -239,7 +239,7 @@ export const updateBookAppointment = async (req: Request, res: Response) => {
     slot.appointmentIds.push(appointmentId);
 
     // Cập nhật trạng thái isBooked nếu đạt số lượng tối đa
-    slot.isBooked = slot.currentCount >= 3;
+    slot.isBooked = slot.currentCount >= 2;
 
     await doctorSchedule.save();
 

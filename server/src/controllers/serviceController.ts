@@ -43,6 +43,7 @@ export const createNewService = async (req: Request, res: Response) => {
       data: createdService,
     });
   } catch (error: any) {
+    console.log(error);
     return res.status(500).json({ message: error.message });
   }
 };

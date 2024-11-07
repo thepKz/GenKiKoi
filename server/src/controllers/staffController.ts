@@ -35,6 +35,7 @@ export const getAllStaffs = async (req: Request, res: Response) => {
     }));
     return res.status(200).json({ data: formatStaff });
   } catch (error: any) {
+    console.log(error);
     return res.status(500).json({ message: error.message });
   }
 };
@@ -67,6 +68,7 @@ export const getStaffByStaffId = async (req: Request, res: Response) => {
 
     return res.status(200).json({ data: formattedData });
   } catch (error: any) {
+    console.log(error);
     return res.status(500).json({ message: error.message });
   }
 };
@@ -152,6 +154,7 @@ export const addNewStaff = async (req: Request, res: Response) => {
       data: formatStaff,
     });
   } catch (error: any) {
+    console.log(error);
     return res.status(500).json({ message: error.message });
   }
 };
@@ -162,25 +165,30 @@ export const addNewStaff = async (req: Request, res: Response) => {
  * PROTECTED
  */
 export const getStaffById = async (req: Request, res: Response) => {
-  const staffId = req.params.id;
-  const staff = await Staff.findById(staffId).populate(
-    "userId",
-    "fullName email phoneNumber gender photoUrl"
-  );
-  if (!staff) {
-    return res.status(404).json({ message: "Không tìm thấy nhân viên" });
+  try {
+    const staffId = req.params.id;
+    const staff = await Staff.findById(staffId).populate(
+      "userId",
+      "fullName email phoneNumber gender photoUrl"
+    );
+    if (!staff) {
+      return res.status(404).json({ message: "Không tìm thấy nhân viên" });
+    }
+    const formattedStaff = {
+      _id: staff._id,
+      position: staff.position,
+      workShift: staff.workShift,
+      fullName: staff?.userId?.fullName,
+      email: staff?.userId?.email,
+      phoneNumber: staff?.userId?.phoneNumber,
+      gender: staff?.userId?.gender,
+      photoUrl: staff?.userId?.photoUrl,
+    };
+    return res.status(200).json(formattedStaff);
+  } catch (error: any) {
+    console.log(error);
+    return res.status(500).json({ message: error.message });
   }
-  const formattedStaff = {
-    _id: staff._id,
-    position: staff.position,
-    workShift: staff.workShift,
-    fullName: staff?.userId?.fullName,
-    email: staff?.userId?.email,
-    phoneNumber: staff?.userId?.phoneNumber,
-    gender: staff?.userId?.gender,
-    photoUrl: staff?.userId?.photoUrl,
-  };
-  res.status(200).json(formattedStaff);
 };
 
 export const updateStaffById = async (req: Request, res: Response) => {
@@ -306,6 +314,7 @@ export const deleteStaffById = async (req: Request, res: Response) => {
 
     return res.status(200).json({ message: "Xóa thành công" });
   } catch (error: any) {
+    console.log(error);
     return res.status(500).json({ message: error.message });
   }
 };

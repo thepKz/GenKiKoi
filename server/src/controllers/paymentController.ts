@@ -215,7 +215,7 @@ export const updatePaymentById = async (req: Request, res: Response) => {
             ) {
               slot.appointmentIds.splice(appointmentIndex, 1);
               slot.currentCount = Math.max(0, slot.currentCount - 1);
-              slot.isBooked = slot.currentCount >= 3;
+              slot.isBooked = slot.currentCount >= 2;
               break;
             }
           }
@@ -311,7 +311,6 @@ export const getTopCustomers = async (req: Request, res: Response) => {
             orderCount: customer.orderCount,
           };
         } catch (err) {
-          // Nếu không tìm thấy thông tin khách hàng, vẫn trả về dữ liệu cơ bản
           return {
             customerId: customer._id,
             name: "Không xác định",

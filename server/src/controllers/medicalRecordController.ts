@@ -145,7 +145,6 @@ export const createMedicalRecord = async (req: Request, res: Response) => {
         photoUrl: "https://placehold.co/150x150",
         size: 0,
         age: 0,
-
         healthStatus: "Chưa xác định",
       });
       fishId = fish._id;
