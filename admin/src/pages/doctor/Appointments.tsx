@@ -137,11 +137,11 @@ const Appointments = () => {
       render: (date) => new Date(date).toLocaleDateString(),
     },
     {
-      key: "Trạng thái",
-      title: "Trạng thái",
+      key: "Giờ khám",
+      title: "Giờ khám",
       width: 120,
-      dataIndex: "status",
-      render: (status) => <Tag color={getValue(status)}>{status}</Tag>,
+      dataIndex: "slotTime",
+      render: (slotTime) => <Tag>{slotTime}</Tag>,
     },
     {
       key: "Hình thức khám",

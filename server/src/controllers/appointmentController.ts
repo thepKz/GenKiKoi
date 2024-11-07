@@ -35,7 +35,7 @@ export const getAllAppointmentsByDoctorId = async (
       },
       status: "Đã xác nhận",
     })
-      .sort({ appointmentDate: -1 })
+      // .sort({ appointmentDate: -1 })
       .populate({
         path: "customerId",
         select: "detailAddress",
