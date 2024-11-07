@@ -1,4 +1,14 @@
-import { Button, message, Modal, Spin, Switch, TableProps, Tag } from "antd";
+import {
+  Button,
+  Divider,
+  message,
+  Modal,
+  Spin,
+  Switch,
+  TableProps,
+  Tag,
+  Input,
+} from "antd";
 import { CustomTable } from "../../share";
 import { getValue } from "../../utils";
 import { HeaderPage } from "../../components";
@@ -7,6 +17,9 @@ import { useSelector } from "react-redux";
 import { IAuth } from "../../types";
 import { handleAPI } from "../../apis/handleAPI";
 import { removeVietnameseTones } from "../../utils";
+import GoogleMeetButton from "../../share/GoogleMeetButton";
+
+const { TextArea } = Input;
 
 const Appointments = () => {
   const auth: IAuth = useSelector((state: any) => state.authReducer.data);
@@ -205,19 +218,71 @@ const Appointments = () => {
         />
       </div>
       <Modal
-        title="Chi tiết cuộc hẹn"
         open={!!selectedAppointment}
         onCancel={handleCloseModal}
         footer={null}
       >
         {selectedAppointment && (
-          <div>
-            <p><strong>Tên khách hàng:</strong> {selectedAppointment.customerName}</p>
-            <p><strong>Số điện thoại:</strong> {selectedAppointment.phoneNumber}</p>
-            <p><strong>Tên dịch vụ:</strong> {selectedAppointment.serviceName}</p>
-            <p><strong>Ngày hẹn:</strong> {new Date(selectedAppointment.appointmentDate).toLocaleDateString()}</p>
-            <p><strong>Trạng thái:</strong> {selectedAppointment.status}</p>
-            <p><strong>Hình thức khám:</strong> {selectedAppointment.typeOfConsulting}</p>
+          <div className="my-5 text-base">
+            <h1 className="heading-4">Chi tiết cuộc hẹn</h1>
+            <Divider />
+            <div className="flex flex-col gap-2">
+              <p>
+                <strong>Tên khách hàng:</strong>{" "}
+                {selectedAppointment.customerName}
+              </p>
+              <p className="flex items-center gap-2">
+                <strong>Giới tính:</strong>
+                {selectedAppointment.gender === "nam" ? (
+                  <Tag color={getValue("nam")}>Nam</Tag>
+                ) : (
+                  <Tag color={getValue("nữ")}>Nữ</Tag>
+                )}
+              </p>
+              <p>
+                <strong>Số điện thoại:</strong>{" "}
+                {selectedAppointment.phoneNumber}
+              </p>
+              {selectedAppointment.typeOfConsulting === "Tại nhà" && (
+                <p>
+                  <strong>Địa chỉ:</strong> {selectedAppointment.detailAddress}
+                </p>
+              )}
+              <p>
+                <strong>Tên dịch vụ:</strong> {selectedAppointment.serviceName}
+              </p>
+              <p className="flex items-center gap-2">
+                <strong>Hình thức khám:</strong>{" "}
+                <Tag color={getValue(selectedAppointment.typeOfConsulting)}>
+                  {selectedAppointment.typeOfConsulting}
+                </Tag>
+              </p>
+              <p>
+                <strong>Ngày hẹn:</strong>{" "}
+                {new Date(
+                  selectedAppointment.appointmentDate,
+                ).toLocaleDateString()}
+              </p>
+              <p>
+                <strong>Giờ hẹn:</strong> {selectedAppointment.slotTime}
+              </p>
+              <p className="flex items-center gap-2">
+                <strong>Trạng thái:</strong>
+                <Tag color={getValue(selectedAppointment.status)}>
+                  {selectedAppointment.status}
+                </Tag>
+              </p>
+              {selectedAppointment.typeOfConsulting === "Tư vấn trực tuyến" && (
+                <p className="flex items-center gap-2">
+                  <strong>Google Meet:</strong>{" "}
+                  <GoogleMeetButton to={selectedAppointment.googleMeetLink} />
+                </p>
+              )}
+              <strong>Lý do khám:</strong>
+              {selectedAppointment.reasons && (
+                <TextArea value={selectedAppointment.reasons} readOnly />
+              )}
+            </div>
           </div>
         )}
       </Modal>

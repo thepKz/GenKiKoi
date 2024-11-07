@@ -27,9 +27,12 @@ export const getAllAppointmentsByDoctorId = async (
       return res.status(404).json({ message: "Không tìm thấy bác sĩ" });
     }
 
+    // Chưa đúng lắm nhưng fix tạm
     const appointments = await Appointment.find({
       doctorId,
-      appointmentDate: { $gte: new Date() },
+      appointmentDate: {
+        $gte: new Date(new Date().setDate(new Date().getDate() - 1)),
+      },
       status: "Đã xác nhận",
     })
       .sort({ appointmentDate: -1 })
@@ -45,7 +48,9 @@ export const getAllAppointmentsByDoctorId = async (
         path: "serviceId",
         select: "serviceName",
       })
-      .select("status appointmentDate isFeedback typeOfConsulting slotTime");
+      .select(
+        "status appointmentDate isFeedback typeOfConsulting slotTime reasons"
+      );
 
     if (!appointments || appointments.length === 0) {
       return res.status(404).json({ message: "Danh sách cuộc hẹn trống!" });
@@ -73,6 +78,7 @@ export const getAllAppointmentsByDoctorId = async (
             detailAddress: appointment.customerId.detailAddress,
             gender: appointment.customerId.userId.gender,
             email: appointment.customerId.userId.email,
+            reasons: appointment.reasons,
           };
         }
         return null;
