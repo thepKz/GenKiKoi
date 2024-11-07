@@ -369,9 +369,9 @@ export const getTopServices = async (req: Request, res: Response) => {
   }
 };
 
-export const getBookingsByMonth = async (req: Request, res: Response) => {
+export const getBookingsByDay = async (req: Request, res: Response) => {
   try {
-    const bookingsByMonth = await Payment.aggregate([
+    const bookingsByDay = await Payment.aggregate([
       {
         $match: {
           status: "PAID",
@@ -380,6 +380,7 @@ export const getBookingsByMonth = async (req: Request, res: Response) => {
       {
         $group: {
           _id: {
+            day: { $dayOfMonth: "$date" },
             month: { $month: "$date" },
             year: { $year: "$date" },
           },
@@ -390,32 +391,34 @@ export const getBookingsByMonth = async (req: Request, res: Response) => {
         $sort: {
           "_id.year": 1,
           "_id.month": 1,
+          "_id.day": 1,
         },
       },
       {
         $project: {
           _id: 0,
-          month: { $concat: ["T", { $toString: "$_id.month" }] },
+          day: "$_id.day",
+          month: "$_id.month",
           value: 1,
         },
       },
     ]);
 
     return res.status(200).json({
-      data: bookingsByMonth,
+      data: bookingsByDay,
     });
   } catch (error: any) {
     console.error("Lỗi:", error);
     return res.status(500).json({
-      message: "Lỗi khi lấy thống kê cuộc hẹn theo tháng",
+      message: "Lỗi khi lấy thống kê cuộc hẹn theo ngày",
       error: error.message,
     });
   }
 };
 
-export const getMoneyByMonth = async (req: Request, res: Response) => {
+export const getMoneyByDay = async (req: Request, res: Response) => {
   try {
-    const moneyByMonth = await Payment.aggregate([
+    const moneyByDay = await Payment.aggregate([
       {
         $match: {
           status: "PAID",
@@ -424,6 +427,7 @@ export const getMoneyByMonth = async (req: Request, res: Response) => {
       {
         $group: {
           _id: {
+            day: { $dayOfMonth: "$date" },
             month: { $month: "$date" },
             year: { $year: "$date" },
           },
@@ -434,24 +438,26 @@ export const getMoneyByMonth = async (req: Request, res: Response) => {
         $sort: {
           "_id.year": 1,
           "_id.month": 1,
+          "_id.day": 1,
         },
       },
       {
         $project: {
           _id: 0,
-          month: { $concat: ["T", { $toString: "$_id.month" }] },
+          day: "$_id.day",
+          month: "$_id.month",
           value: 1,
         },
       },
     ]);
 
     return res.status(200).json({
-      data: moneyByMonth,
+      data: moneyByDay,
     });
   } catch (error: any) {
     console.error("Lỗi:", error);
     return res.status(500).json({
-      message: "Lỗi khi lấy thống kê doanh thu theo tháng",
+      message: "Lỗi khi lấy thống kê doanh thu theo ngày",
       error: error.message,
     });
   }
