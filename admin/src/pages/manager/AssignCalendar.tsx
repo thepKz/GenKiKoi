@@ -14,7 +14,7 @@ import {
   Tag,
 } from "antd";
 import dayjs from "dayjs";
-import { Calendar as Cal, TruckRemove, User } from "iconsax-react";
+import { Calendar as Cal, User } from "iconsax-react";
 import { Link, useLocation } from "react-router-dom";
 import { getValue } from "../../utils";
 import { useEffect, useState } from "react";

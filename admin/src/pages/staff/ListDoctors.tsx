@@ -1,41 +1,28 @@
 import { Breadcrumb, Button, Card, Empty, message, Spin, Tag } from "antd";
 import { HeaderPage } from "../../components";
-import { getValue, removeVietnameseTones } from "../../utils";
+import { getValue } from "../../utils";
 import { Link } from "react-router-dom";
 import { Calendar } from "iconsax-react";
 import { useEffect, useState } from "react";
 import { handleAPI } from "../../apis/handleAPI";
+import { removeVietnameseTones } from "../../utils";
 
 const ListDoctors = () => {
   const [doctors, setDoctors] = useState([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchText, setSearchText] = useState("");
 
-  const handleSearch = (value: string) => {
-    setSearchText(value.toLowerCase());
-  };
-
-  const filteredDoctors = doctors.filter((doctor: any) => {
-    const searchValue = removeVietnameseTones(searchText.toLowerCase());
-    const doctorName = removeVietnameseTones(doctor.doctorName.toLowerCase());
-
-    return (
-      doctorName.includes(searchValue) ||
-      doctor.email.toLowerCase().includes(searchText)
-    );
-  });
-
   useEffect(() => {
     const getDoctors = async () => {
+      setIsLoading(true);
       try {
-        setIsLoading(true);
         const api = `/api/doctorSchedules/`;
         const res = await handleAPI(api, undefined, "GET");
 
         setDoctors(res.data);
-      } catch (error) {
-        console.error("Lỗi khi lấy danh sách bác sĩ:", error);
-        message.error("Không thể lấy danh sách bác sĩ");
+      } catch (error: any) {
+        console.error(error);
+        message.error(error.message || "Lỗi khi lấy danh sách bác sĩ");
       } finally {
         setIsLoading(false);
       }
@@ -73,6 +60,18 @@ const ListDoctors = () => {
     }, 0);
   };
 
+  const handleSearch = (value: string) => {
+    setSearchText(value.toLowerCase());
+  };
+
+  const filteredDoctors = doctors.filter((doctor: any) => {
+    const searchValue = removeVietnameseTones(searchText.toLowerCase());
+    const doctorName = removeVietnameseTones(doctor.doctorName.toLowerCase());
+    const email = doctor.email.toLowerCase();
+
+    return doctorName.includes(searchValue) || email.includes(searchText);
+  });
+
   if (isLoading) {
     return (
       <div className="section flex items-center justify-center">
@@ -85,7 +84,8 @@ const ListDoctors = () => {
     <div className="section">
       <HeaderPage
         heading="Danh sách lịch làm việc"
-        placeholder="Tìm bác sĩ"
+        placeholder="Tìm bác sĩ (Tên bác sĩ, email)"
+        alt="Tìm bác sĩ (Tên bác sĩ, email)"
         onSearch={handleSearch}
       />
       <Breadcrumb
@@ -121,6 +121,7 @@ const ListDoctors = () => {
                         ? "https://placehold.co/150x150"
                         : doctor.photoUrl
                     }
+                    alt=""
                     className="h-full w-full object-cover"
                   />
                 </div>
