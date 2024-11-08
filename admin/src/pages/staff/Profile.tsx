@@ -221,15 +221,17 @@ const Profile = () => {
                     },
                     {
                       validator: async (_, value) => {
-                        const exists = await handleCheckExistence(
-                          "phoneNumber",
-                          value,
-                        );
-
-                        if (exists) {
-                          return Promise.reject(
-                            new Error("Số điện thoại này đã được đăng ký!"),
+                        if (value && value.trim().length > 0) {
+                          const exists = await handleCheckExistence(
+                            "phoneNumber",
+                            value,
                           );
+
+                          if (exists) {
+                            return Promise.reject(
+                              new Error("Số điện thoại này đã được đăng ký!"),
+                            );
+                          }
                         }
                         return Promise.resolve();
                       },
@@ -237,7 +239,24 @@ const Profile = () => {
                   ]}
                   validateDebounce={1000}
                 >
-                  <Input addonBefore="+84" placeholder="Số điện thoại" />
+                  <Input
+                    addonBefore={
+                      <svg
+                        width="24"
+                        height="24"
+                        viewBox="0 0 30 20"
+                        xmlns="http://www.w3.org/2000/svg"
+                        version="1.1"
+                      >
+                        <rect width="30" height="20" fill="#da251d" rx={3} />
+                        <polygon
+                          points="15,4 11.47,14.85 20.71,8.15 9.29,8.15 18.53,14.85"
+                          fill="#ff0"
+                        />
+                      </svg>
+                    }
+                    placeholder="Số điện thoại"
+                  />
                 </Form.Item>
               </Col>
               <Col span={12}>
