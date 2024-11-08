@@ -10,6 +10,7 @@ import {
   ListDoctors,
   Profile,
 } from "../pages/staff";
+import ChangePassword from "../pages/ChangePassword";
 
 const StaffRouter = () => {
   return (
@@ -30,6 +31,7 @@ const StaffRouter = () => {
         <Route path="booking" element={<Booking />} />
         <Route path="profile" element={<Profile />} />
       </Route>
+      <Route path="change-password" element={<ChangePassword />} />
       <Route path="*" element={<NotFound to="/staff" />} />
     </Routes>
   );
