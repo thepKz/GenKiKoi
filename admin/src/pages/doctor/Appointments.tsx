@@ -160,7 +160,7 @@ const Appointments = () => {
     {
       key: "Xác nhận",
       title: "Xác nhận",
-      width: 80,
+      width: 100,
       render: (_text: any, record: any) => (
         <div className="text-center">
           <Switch
@@ -212,6 +212,7 @@ const Appointments = () => {
       <div className="doctor-view appointments">
         <CustomTable
           columns={columns}
+          scroll = "calc(100vh - 280px)"
           dataSource={filteredAppointments}
           className="staff-table"
           onChange={(pagination) => setPagination(pagination)}
