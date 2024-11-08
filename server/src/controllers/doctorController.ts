@@ -297,19 +297,23 @@ export const deleteDoctorById = async (req: Request, res: Response) => {
  */
 export const getAllDoctorsForBooking = async (req: Request, res: Response) => {
   try {
-    const doctors = await Doctor.find({}, "fullName").populate(
-      "userId",
-      "fullName"
-    );
+    const doctors = await Doctor.find({}).populate({
+      path: "userId",
+      select: "fullName isDisabled",
+      match: { isDisabled: false }, // Chỉ bao gồm người dùng có isDisabled là false
+    });
 
-    if (!doctors || doctors.length === 0) {
+    // Lọc ra các bác sĩ có userId không null (tức là isDisabled là false)
+    const doctorList = doctors
+      .filter((doctor: any) => doctor.userId !== null)
+      .map((doctor: any) => ({
+        id: doctor._id,
+        fullName: doctor.userId.fullName,
+      }));
+
+    if (doctorList.length === 0) {
       return res.status(404).json({ message: "Không tìm thấy bác sĩ nào" });
     }
-
-    const doctorList = doctors.map((doctor: any) => ({
-      id: doctor._id,
-      fullName: doctor.userId ? doctor.userId.fullName : doctor.fullName,
-    }));
 
     return res.status(200).json({ data: doctorList });
   } catch (error: any) {
