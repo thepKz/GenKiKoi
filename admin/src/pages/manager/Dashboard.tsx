@@ -15,8 +15,8 @@ const Dashboard = () => {
   const [totalCustomers, setTotalCustomers] = useState<number>(0);
   const [topServices, setTopServices] = useState<any>([]);
   const [topCustomers, setTopCustomers] = useState<any>([]);
-  const [totalBookingByMonth, setTotalBookingByMonth] = useState<any>([]);
-  const [totalMoneyByMonth, setTotalMoneyByMonth] = useState<any>([]);
+  const [totalBookingByDay, setTotalBookingByDay] = useState<any>([]);
+  const [totalMoneyByDay, setTotalMoneyByDay] = useState<any>([]);
 
   useEffect(() => {
     const getData = async () => {
@@ -26,8 +26,8 @@ const Dashboard = () => {
         const apiTotalCustomers = `/api/customers/total`;
         const apiTopServices = `/api/payments/top-services`;
         const apiTopCustomers = `/api/payments/top-customers`;
-        const apiTotalBookingByMonth = `/api/payments/booking-by-month`;
-        const apiTotalMoneyByMonth = `/api/payments/money-by-month`;
+        const apiTotalBookingByDay = `/api/payments/booking-by-day`;
+        const apiTotalMoneyByDay = `/api/payments/money-by-day`;
 
         const resEaringAndBooking = await handleAPI(
           apiEaringAndBooking,
@@ -53,14 +53,14 @@ const Dashboard = () => {
           "GET",
         );
 
-        const resTotalBookingByMonth = await handleAPI(
-          apiTotalBookingByMonth,
+        const resTotalBookingByDay = await handleAPI(
+          apiTotalBookingByDay,
           undefined,
           "GET",
         );
 
-        const resTotalMoneyByMonth = await handleAPI(
-          apiTotalMoneyByMonth,
+        const resTotalMoneyByDay = await handleAPI(
+          apiTotalMoneyByDay,
           undefined,
           "GET",
         );
@@ -82,12 +82,12 @@ const Dashboard = () => {
           setTopCustomers(resTopCustomers.data);
         }
 
-        if (resTotalBookingByMonth.data) {
-          setTotalBookingByMonth(resTotalBookingByMonth.data);
+        if (resTotalBookingByDay.data) {
+          setTotalBookingByDay(resTotalBookingByDay.data);
         }
 
-        if (resTotalMoneyByMonth.data) {
-          setTotalMoneyByMonth(resTotalMoneyByMonth.data);
+        if (resTotalMoneyByDay.data) {
+          setTotalMoneyByDay(resTotalMoneyByDay.data);
         }
       } catch (error: any) {
         console.log(error);
@@ -101,13 +101,13 @@ const Dashboard = () => {
 
   useEffect(() => {
     const appointmentChart = new Line(appointmentChartRef.current, {
-      data: totalBookingByMonth,
-      xField: "month",
+      data: totalBookingByDay,
+      xField: "day",
       yField: "value",
       seriesField: "type",
       smooth: true,
       xAxis: {
-        title: { text: "Tháng" },
+        title: { text: "Ngày" },
       },
       yAxis: {
         title: { text: "Số lượng cuộc hẹn" },
@@ -129,16 +129,16 @@ const Dashboard = () => {
     appointmentChart.render();
 
     const revenueChart = new Line(revenueChartRef.current, {
-      data: totalMoneyByMonth,
-      xField: "month",
+      data: totalMoneyByDay,
+      xField: "day",
       yField: "value",
       seriesField: "type",
       smooth: true,
       xAxis: {
-        title: { text: "Tháng" },
+        title: { text: "Ngày" },
       },
       yAxis: {
-        title: { text: "Doanh thu (triệu đồng)" },
+        title: { text: "Doanh thu (VNĐ)" },
       },
       tooltip: {
         showMarkers: false,
@@ -161,7 +161,7 @@ const Dashboard = () => {
       appointmentChart.destroy();
       revenueChart.destroy();
     };
-  }, [totalBookingByMonth, totalMoneyByMonth]);
+  }, [totalBookingByDay, totalMoneyByDay]);
 
   if (isLoading) {
     return (

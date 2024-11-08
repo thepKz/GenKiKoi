@@ -10,19 +10,14 @@ import { authMiddleware, roleMiddleware } from "../middleware";
 
 const router = express.Router();
 
-router.get("/", authMiddleware, roleMiddleware(["manager"]), getAllStaffs);
+router.get("/", authMiddleware, getAllStaffs);
 
 router.get("/:staffId", authMiddleware, getStaffByStaffId);
 
-router.post("/", authMiddleware, roleMiddleware(["manager"]), addNewStaff);
+router.post("/", authMiddleware, addNewStaff);
 
 router.patch("/:staffId", authMiddleware, updateStaffById);
 
-router.delete(
-  "/:staffId",
-  authMiddleware,
-  roleMiddleware(["manager"]),
-  deleteStaffById
-);
+router.delete("/:staffId", authMiddleware, deleteStaffById);
 
 export default router;

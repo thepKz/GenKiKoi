@@ -89,6 +89,7 @@ const Services = () => {
           />
 
           <Button
+            danger
             onClick={() => handleDelete(record._id)}
             shape="circle"
             icon={<AiOutlineDelete color="#ff4d4f" size={20} />}
@@ -153,7 +154,7 @@ const Services = () => {
       }
     } catch (error: any) {
       console.log(error);
-      message.error(error.message);
+      message.error(error.message || "Có lỗi xảy ra, vui lòng thử lại sau!");
     } finally {
       setIsLoadingForm(false);
       setIsModalOpen(false);
@@ -226,7 +227,8 @@ const Services = () => {
     <div className="section manager services">
       <HeaderPage
         heading="Danh sách dịch vụ"
-        placeholder="Tìm kiếm dịch vụ"
+        placeholder="Tìm kiếm dịch vụ (Tên dịch vụ, mô tả dịch vụ)"
+        alt="Tìm kiếm dịch vụ (Tên dịch vụ, mô tả dịch vụ)"
         onSearch={handleSearch}
       />
       <div className="mb-4 text-right">
@@ -275,6 +277,10 @@ const Services = () => {
                     required: true,
                     message: "Vui lòng nhập tên dịch vụ",
                   },
+                  {
+                    max: 50,
+                    message: "Tên dịch vụ không được vượt quá 50 ký tự",
+                  },
                 ]}
               >
                 <Input allowClear placeholder="Nhập tên dịch vụ!" />
@@ -287,11 +293,18 @@ const Services = () => {
                     required: true,
                     message: "Vui lòng nhập giá dịch vụ",
                   },
+                  {
+                    type: "number",
+                    min: 0,
+                    max: 10000000,
+                    message:
+                      "Giá dịch vụ phải nằm trong khoảng từ 0 đến 10.000.000",
+                  },
                 ]}
               >
                 <InputNumber<number>
                   min={0}
-                  max={100000000}
+                  max={10000000}
                   formatter={(value) =>
                     `đ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
                   }
@@ -332,6 +345,10 @@ const Services = () => {
                   {
                     required: true,
                     message: "Vui lòng nhập mô tả dịch vụ",
+                  },
+                  {
+                    max: 1000,
+                    message: "Mô tả dịch vụ không được vượt quá 1000 ký tự",
                   },
                 ]}
               >

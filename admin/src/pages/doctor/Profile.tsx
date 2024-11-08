@@ -3,6 +3,7 @@ import {
   Button,
   Col,
   ConfigProvider,
+  Divider,
   Form,
   Input,
   InputNumber,
@@ -11,7 +12,7 @@ import {
   Select,
   Spin,
 } from "antd";
-import { User } from "iconsax-react";
+import { KeySquare, User } from "iconsax-react";
 
 const { TextArea } = Input;
 
@@ -22,6 +23,7 @@ import { handleAPI } from "../../apis/handleAPI";
 import { useDispatch, useSelector } from "react-redux";
 import { IAuth } from "../../types";
 import { updateAuth } from "../../redux/reducers/authReducer";
+import { Link } from "react-router-dom";
 
 const Profile = () => {
   const auth: IAuth = useSelector((state: any) => state.authReducer.data);
@@ -80,6 +82,20 @@ const Profile = () => {
     }
   };
 
+  const handleCheckExistence = async (field: string, value: string) => {
+    const api = `/api/users/check-${field}`;
+    try {
+      const res: any = await handleAPI(api, { [field]: value }, "POST");
+
+      if (res.exists && res.userId !== auth.id) {
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="section flex items-center justify-center">
@@ -130,6 +146,13 @@ const Profile = () => {
                   )}
                 </label>
               </div>
+              <Divider />
+              <Link to="/doctor/change-password">
+                <Button size="large" className="w-full">
+                  <KeySquare />
+                  Thay đổi mật khẩu ở đây!
+                </Button>
+              </Link>
             </Col>
             <Col span={18}>
               <Form
@@ -140,7 +163,7 @@ const Profile = () => {
                 disabled={isLoadingForm}
               >
                 <Row gutter={32}>
-                  <Col span={6}>
+                  <Col span={7}>
                     <Form.Item name="email" label="Email" required>
                       <Input disabled allowClear placeholder="Nhập email" />
                     </Form.Item>
@@ -192,10 +215,51 @@ const Profile = () => {
                           pattern: /^[0-9]{10}$/,
                           message: "Số điện thoại không hợp lệ",
                         },
+                        {
+                          validator: async (_, value) => {
+                            if (value && value.trim().length > 0) {
+                              const exists = await handleCheckExistence(
+                                "phoneNumber",
+                                value,
+                              );
+
+                              if (exists) {
+                                return Promise.reject(
+                                  new Error(
+                                    "Số điện thoại này đã được đăng ký!",
+                                  ),
+                                );
+                              }
+                            }
+                            return Promise.resolve();
+                          },
+                        },
                       ]}
                       validateDebounce={1000}
                     >
-                      <Input addonBefore="+84" placeholder="Số điện thoại" />
+                      <Input
+                        addonBefore={
+                          <svg
+                            width="24"
+                            height="24"
+                            viewBox="0 0 30 20"
+                            xmlns="http://www.w3.org/2000/svg"
+                            version="1.1"
+                          >
+                            <rect
+                              width="30"
+                              height="20"
+                              fill="#da251d"
+                              rx={3}
+                            />
+                            <polygon
+                              points="15,4 11.47,14.85 20.71,8.15 9.29,8.15 18.53,14.85"
+                              fill="#ff0"
+                            />
+                          </svg>
+                        }
+                        placeholder="Số điện thoại"
+                      />
                     </Form.Item>
                     <Form.Item
                       name="gender"
@@ -277,7 +341,7 @@ const Profile = () => {
                       />
                     </Form.Item>
                   </Col>
-                  <Col span={12}>
+                  <Col span={11}>
                     <Form.Item
                       name="introduction"
                       tooltip="Hãy giới thiệu một các đầy đủ rõ ràng về bản thân của mình!"

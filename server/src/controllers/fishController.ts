@@ -11,7 +11,6 @@ export const getAllFish = async (req: Request, res: Response) => {
   }
 };
 
-// Đoạn này t test thử
 export const getAllFishesByCustomerId = async (req: Request, res: Response) => {
   try {
     const customerId = req.params.customerId;

@@ -2503,7 +2503,7 @@ paths:
                 properties:
                   error:
                     type: string
-  /api/distance/calculate:
+  /api/distance/calculate-route:
     get:
       summary: Calculate route
       tags: [Distance]

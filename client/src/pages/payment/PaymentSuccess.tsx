@@ -43,7 +43,7 @@ const PaymentSuccess = () => {
               Trang chủ
             </Button>
           </Link>,
-          <Link to="/my-account/history">
+          <Link to="/my-account/appointment">
             <Button size="large">Xem danh sách cuộc hẹn</Button>,
           </Link>
         ]}

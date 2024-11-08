@@ -15,11 +15,11 @@ import {
 } from "antd";
 import dayjs from "dayjs";
 import { Calendar as Cal, User } from "iconsax-react";
-
 import { Link, useLocation } from "react-router-dom";
 import { getValue } from "../../utils";
 import { useEffect, useState } from "react";
 import { handleAPI } from "../../apis/handleAPI";
+import GoogleMeetButton from "../../share/GoogleMeetButton";
 
 const AssignCalendar = () => {
   const [form] = Form.useForm();
@@ -36,9 +36,9 @@ const AssignCalendar = () => {
         const api = `/api/doctors/${doctorId}/schedule`;
         const res = await handleAPI(api, undefined, "GET");
         setDoctor(res.data);
-      } catch (error) {
+      } catch (error: any) {
         console.error(error);
-        message.error("Không thể lấy thông tin lịch bác sĩ");
+        message.error(error.message || "Không thể lấy thông tin lịch bác sĩ");
       } finally {
         setIsLoading(false);
       }
@@ -72,9 +72,9 @@ const AssignCalendar = () => {
       const res = await handleAPI(api, data, "PATCH");
       setDoctor(res.data);
       message.success("Cập nhật lịch làm việc thành công");
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      message.error("Không thể cập nhật lịch làm việc");
+      message.error(error.message || "Không thể cập nhật lịch làm việc");
     } finally {
       setIsLoadingForm(false);
     }
@@ -148,24 +148,48 @@ const AssignCalendar = () => {
                       icon={<User color="#ccc" size={50} />}
                     />
                     <p>
-                      <span className="font-semibold">Họ và tên: </span>{" "}
-                      {doctor?.doctorName}
-                    </p>
-                    <p>
                       <span className="font-semibold">Email: </span>{" "}
                       {doctor?.email}
                     </p>
                     <p>
+                      <span className="font-semibold">Họ và tên: </span>{" "}
+                      {doctor?.doctorName}
+                    </p>
+                    <p className="flex items-center gap-2">
                       <span className="font-semibold">Giới tính: </span>{" "}
                       <Tag color={getValue(doctor?.gender)}>
                         {doctor?.gender === "nam" ? "Nam" : "Nữ"}
                       </Tag>
                     </p>
                     <p>
+                      <span className="font-semibold">Tên chứng chỉ: </span>{" "}
+                      {doctor?.specialization}
+                    </p>
+                    <p>
+                      <span className="font-semibold">Mã số chứng chỉ: </span>{" "}
+                      {doctor?.licenseNumber}
+                    </p>
+                    <p>
+                      <span className="font-semibold">Số năm kinh nghiệm:</span>{" "}
+                      {doctor?.yearOfExperience}
+                    </p>
+                    <p className="flex items-center gap-2">
+                      <span className="font-semibold">Di chuyển: </span>{" "}
+                      {doctor?.movingService ? (
+                        <Tag color="green">Có</Tag>
+                      ) : (
+                        <Tag color="red">Không</Tag>
+                      )}
+                    </p>
+                    <p>
                       <span className="font-semibold">
                         Ngày bắt đầu công việc:{" "}
                       </span>{" "}
                       {new Date(doctor?.startDate).toLocaleDateString()}
+                    </p>
+                    <p className="flex items-center gap-2">
+                      <span className="font-semibold">Google Meet: </span>
+                      <GoogleMeetButton to={doctor?.googleMeetLink} />
                     </p>
                   </div>
                 </div>
@@ -175,7 +199,16 @@ const AssignCalendar = () => {
                   <h4 className="heading-4">Chỉnh lịch</h4>
                   <Divider />
                   <div className="gap-2">
-                    <Form.Item name="doctorSchedule" label="Ngày làm việc">
+                    <Form.Item
+                      name="doctorSchedule"
+                      label="Ngày làm việc"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Vui lòng chọn ngày",
+                        },
+                      ]}
+                    >
                       <DatePicker
                         disabledDate={(current) =>
                           current && current < dayjs().startOf("day")
@@ -195,7 +228,16 @@ const AssignCalendar = () => {
                   <h4 className="heading-4">Di chuyển</h4>
                   <Divider />
                   <div className="">
-                    <Form.Item name="movingService" label="Di chuyển">
+                    <Form.Item
+                      name="movingService"
+                      label="Di chuyển"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Vui lòng chọn hình thức di chuyển",
+                        },
+                      ]}
+                    >
                       <Select
                         placeholder="Di chuyển"
                         options={[
