@@ -8,6 +8,7 @@ import {
   Dashboard,
   DoctorCalendar,
   ListDoctors,
+  Profile,
   Services,
   Staffs,
 } from "../pages/manager";
@@ -35,6 +36,7 @@ const ManagerRouter = () => {
         <Route path="accounts">
           <Route index element={<Accounts />} />
         </Route>
+        <Route path="profile" element={<Profile />} />
       </Route>
       <Route path="*" element={<NotFound to="/" />} />
     </Routes>

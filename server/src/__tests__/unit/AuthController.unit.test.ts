@@ -60,6 +60,7 @@ describe('AuthController', () => {
                 }),
             }));
         });
+
         it('should return validation error if email already exists', async () => {
             (User.findOne as jest.Mock).mockResolvedValue({ email: 'test@example.com' });
 
@@ -82,6 +83,7 @@ describe('AuthController', () => {
                 confirmPassword: 'Mật khẩu xác nhận không khớp!',
             }));
         });
+        
         it('should return validation error if username format is invalid', async () => {
             req.body.username = 'inva';
             (User.findOne as jest.Mock).mockResolvedValue(null);
