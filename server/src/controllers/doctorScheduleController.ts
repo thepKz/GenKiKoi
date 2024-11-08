@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import mongoose from "mongoose";
 import { Doctor, DoctorSchedule } from "../models";
 
 export const getAllDoctorSchedules = async (req: Request, res: Response) => {
