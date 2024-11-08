@@ -1,37 +1,21 @@
 import { Breadcrumb, Button, message, Spin, TableProps, Tag } from "antd";
 import { HeaderPage } from "../../components";
 import { CustomTable } from "../../share";
-import { getValue, removeVietnameseTones } from "../../utils";
+import { getValue } from "../../utils";
 import { Link } from "react-router-dom";
 import { CalendarSearch } from "iconsax-react";
 import { useEffect, useState } from "react";
 import { handleAPI } from "../../apis/handleAPI";
+import { removeVietnameseTones } from "../../utils";
 
 const Customers = () => {
   const [customers, setCustomers] = useState([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [searchText, setSearchText] = useState("");
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 10,
   });
-
-  const handleSearch = (value: string) => {
-    setSearchText(value.toLowerCase());
-  };
-
-  const filteredCustomers = customers.filter((customer: any) => {
-    const searchValue = removeVietnameseTones(searchText.toLowerCase());
-    const customerName = removeVietnameseTones(
-      customer.customerName.toLowerCase(),
-    );
-
-    return (
-      customerName.includes(searchValue) ||
-      customer.phoneNumber.includes(searchText) ||
-      customer.email.toLowerCase().includes(searchText)
-    );
-  });
+  const [searchText, setSearchText] = useState("");
 
   useEffect(() => {
     const getCustomers = async () => {
@@ -40,14 +24,34 @@ const Customers = () => {
         const api = `/api/customers/`;
         const res = await handleAPI(api, undefined, "GET");
         setCustomers(res.data);
-      } catch (error) {
-        message.error("Lỗi khi lấy dữ liệu người dùng");
+      } catch (error: any) {
+        console.log(error);
+        message.error(error.message || "Lỗi khi lấy dữ liệu người dùng");
       } finally {
         setIsLoading(false);
       }
     };
     getCustomers();
   }, []);
+
+  const handleSearch = (value: string) => {
+    setSearchText(value.toLowerCase());
+  };
+
+  const filteredCustomers = customers.filter((customer: any) => {
+    const searchValue = removeVietnameseTones(searchText.toLowerCase());
+    const customerName = removeVietnameseTones(
+      (customer.customerName || "").toLowerCase(),
+    );
+    const email = customer.email.toLowerCase();
+    const phoneNumber = customer.phoneNumber || "";
+
+    return (
+      customerName.includes(searchValue) ||
+      email.includes(searchText) ||
+      phoneNumber.includes(searchText)
+    );
+  });
 
   const columns: TableProps["columns"] = [
     {
@@ -64,7 +68,7 @@ const Customers = () => {
       title: "Tên khách hàng",
       dataIndex: "customerName",
       width: 120,
-      render: (text) => <Tag>{text ? text : "NULL"}</Tag>,
+      render: (name) => (name === "" ? <Tag>NULL</Tag> : name),
     },
     {
       key: "Giới tính",
@@ -82,7 +86,7 @@ const Customers = () => {
       title: "Số điện thoại",
       dataIndex: "phoneNumber",
       width: 100,
-      render: (text) => <Tag>{text ? text : "NULL"}</Tag>,
+      render: (phone) => (phone === "" ? <Tag>NULL</Tag> : phone),
     },
     {
       key: "Email",
@@ -116,7 +120,8 @@ const Customers = () => {
     <div className="section">
       <HeaderPage
         heading="Danh sách khách hàng"
-        placeholder="Tìm khách hàng"
+        placeholder="Tìm khách hàng (Tên, email, số điện thoại)"
+        alt="Tìm khách hàng (Tên, email, số điện thoại)"
         onSearch={handleSearch}
       />
       <Breadcrumb
@@ -136,6 +141,8 @@ const Customers = () => {
       />
       <div className="mt-2">
         <CustomTable
+          scroll="calc(100vh - 280px)"
+          loading={isLoading}
           columns={columns}
           dataSource={filteredCustomers}
           onChange={(pagination) => setPagination(pagination)}

@@ -48,6 +48,9 @@ const Booking = () => {
   const [service, setService] = useState<any>(null);
   const [price, setPrice] = useState<number>(0);
   const [totalPrice, setTotalPrice] = useState<number>(0);
+  const [transportFee, setTransportFee] = useState<number>(0);
+
+  const [isDistanceDisabled, setIsDistanceDisabled] = useState(false);
 
   const handleSubmit = async (values: any) => {
     try {
@@ -292,8 +295,8 @@ const Booking = () => {
 
   useEffect(() => {
     setTotalPrice(0);
-    setTotalPrice((prevPrice) => prevPrice + price);
-  }, [price]);
+    setTotalPrice((prevPrice) => prevPrice + price + transportFee);
+  }, [price, transportFee]);
 
   useEffect(() => {
     if (profile) {
@@ -329,6 +332,26 @@ const Booking = () => {
       okText: "Xác nhận",
       cancelText: "Hủy",
     });
+  };
+
+  const handleDistanceChange = (value: string) => {
+    const distanceValue = parseFloat(value);
+    if (!isNaN(distanceValue)) {
+      const fee = distanceValue * 5000;
+      setTransportFee(fee);
+    } else {
+      setTransportFee(0);
+    }
+  };
+
+  const handleConsultingChange = (value: string) => {
+    if (value === "Tại trung tâm" || value === "Tư vấn trực tuyến") {
+      setIsDistanceDisabled(true);
+      setTransportFee(0);
+      form.setFieldValue("distance", undefined);
+    } else {
+      setIsDistanceDisabled(false);
+    }
   };
 
   return (
@@ -410,6 +433,7 @@ const Booking = () => {
                     placeholder="Chọn hình thức khám"
                     style={{ width: "100%" }}
                     options={consultingOptions}
+                    onChange={handleConsultingChange}
                   />
                 </Form.Item>
                 <div className="mt-20">
@@ -422,6 +446,16 @@ const Booking = () => {
                         style: "currency",
                         currency: "VND",
                       }).format(price)}
+                    </span>
+                  </div>
+                  <Divider />
+                  <div className="flex items-center justify-between">
+                    <span>Phí di chuyển:</span>
+                    <span>
+                      {new Intl.NumberFormat("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      }).format(transportFee)}
                     </span>
                   </div>
                   <Divider />
@@ -585,10 +619,28 @@ const Booking = () => {
                     </Form.Item>
                   </Col>
                 </Row>
-                <Row>
-                  <Col span={24}>
+                <Row gutter={24}>
+                  <Col span={16}>
                     <Form.Item name="detailAddress" label="Địa chỉ">
                       <Input placeholder="Địa chỉ" />
+                    </Form.Item>
+                  </Col>
+                  <Col span={8}>
+                    <Form.Item
+                      name="distance"
+                      label="Khoảng cách"
+                      rules={[
+                        {
+                          pattern: /^(?:[0-9]|1[0-9]|20)(\.\d+)?$/,
+                          message: "Khoảng cách phải từ 0 đến 20 km",
+                        },
+                      ]}
+                    >
+                      <Input
+                        placeholder="Khoảng cách"
+                        onChange={(e) => handleDistanceChange(e.target.value)}
+                        disabled={isDistanceDisabled}
+                      />
                     </Form.Item>
                   </Col>
                 </Row>
