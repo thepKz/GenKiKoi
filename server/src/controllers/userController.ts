@@ -130,6 +130,38 @@ export const updateProfile = async (req: AuthRequest, res: Response) => {
   }
 };
 
+export const checkEmailWithPhoneNumber = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const { email, phoneNumber } = req.body;
+
+    const user = await User.findOne({ phoneNumber });
+
+    if (!user) {
+      const existedEmail = await User.findOne({ email });
+
+      if (existedEmail) {
+        return res.status(400).json({ message: "Email này đã được sử dụng!" });
+      }
+    } else {
+      const emailCheck = await User.findOne({ email });
+
+      if (emailCheck && emailCheck._id.toString() !== user._id.toString()) {
+        return res.status(200).json({ exists: true });
+      } else {
+        return res.status(200).json({ exists: false });
+      }
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "Đã xảy ra lỗi khi kiểm tra thông tin",
+    });
+  }
+};
+
 export const getAllUsers = async (req: Request, res: Response) => {
   try {
     const users = await User.find();

@@ -293,6 +293,27 @@ const Booking = () => {
     }
   };
 
+  const getCustomerByEmailAndPhoneNumber = async (
+    email: string,
+    phoneNumber: string,
+  ) => {
+    try {
+      const api = `/api/users/check-email-with-phoneNumber`;
+      const res: any = await handleAPI(api, { email, phoneNumber }, "POST");
+
+      if (res.exists) {
+        message.warning("Email này đã được sử dụng bởi người khác!");
+        return true;
+      }
+      return false;
+    } catch (error: any) {
+      console.log(error);
+      message.error(
+        error.message || "Có lỗi xảy ra, vui lòng thử lại sau ít phút!",
+      );
+    }
+  };
+
   useEffect(() => {
     setTotalPrice(0);
     setTotalPrice((prevPrice) => prevPrice + price + transportFee);
@@ -537,12 +558,44 @@ const Booking = () => {
                     <Form.Item
                       name="email"
                       label="Email"
+                      hasFeedback
                       rules={[
                         {
                           required: true,
                           message: "Vui lòng nhập email",
                         },
+                        {
+                          validator: async (_, value) => {
+                            // Kiểm tra định dạng email trước
+                            if (
+                              value &&
+                              !/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(value)
+                            ) {
+                              return Promise.reject(
+                                "Vui lòng nhập đúng định dạng email!",
+                              );
+                            }
+                            const phoneNumber =
+                              form.getFieldValue("phoneNumber");
+
+                            if (value.trim().length > 0) {
+                              const isExist =
+                                await getCustomerByEmailAndPhoneNumber(
+                                  value,
+                                  phoneNumber,
+                                );
+
+                              if (isExist) {
+                                return Promise.reject(
+                                  "Email này đã có người sử dụng",
+                                );
+                              }
+                            }
+                            return Promise.resolve();
+                          },
+                        },
                       ]}
+                      validateDebounce={1000}
                     >
                       <Input placeholder="Email" />
                     </Form.Item>
