@@ -1,4 +1,4 @@
-import { Breadcrumb, Button, Card, Spin } from "antd";
+import { Breadcrumb, Button, Card, message, Spin } from "antd";
 import { Stickynote } from "iconsax-react";
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
@@ -25,8 +25,12 @@ const ListPonds = () => {
         const res = await handleAPI(api, undefined, "GET");
 
         setPonds(res.data);
-      } catch (error) {
+      } catch (error: any) {
         console.log(error);
+        message.error(
+          error.message ||
+            "Có lỗi khi lấy dữ liệu, vui lòng thử lại sau ít phút!",
+        );
       } finally {
         setIsLoading(false);
       }

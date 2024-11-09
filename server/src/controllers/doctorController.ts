@@ -526,10 +526,14 @@ export const updateDoctorSchedule = async (req: Request, res: Response) => {
     await schedule.save();
 
     // Lấy thông tin đã cập nhật để trả về
-    const updatedDoctor = await Doctor.findById(doctorId).populate(
-      "userId",
-      "fullName photoUrl email gender"
-    );
+    const updatedDoctor = await Doctor.findById(doctorId)
+      .populate({
+        path: "userId",
+        select: "fullName photoUrl email gender",
+      })
+      .select(
+        "startDate movingService googleMeetLink specialization licenseNumber yearOfExperience"
+      );
 
     if (!updatedDoctor) {
       return res.status(404).json({ message: "Không tìm thấy bác sĩ" });
@@ -551,6 +555,10 @@ export const updateDoctorSchedule = async (req: Request, res: Response) => {
       startDate: updatedDoctor.startDate,
       movingService: updatedDoctor.movingService,
       doctorSchedule: updatedSchedule.weekSchedule.map((day) => day.dayOfWeek),
+      googleMeetLink: doctor.googleMeetLink,
+      specialization: doctor.specialization,
+      licenseNumber: doctor.licenseNumber,
+      yearOfExperience: doctor.yearOfExperience,
     };
 
     return res.status(200).json({

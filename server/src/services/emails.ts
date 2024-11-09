@@ -252,3 +252,64 @@ export const sendOnlineAppointmentEmail = async (
     throw error;
   }
 };
+
+export const sendPasswordChangeAlert = async (
+  email: string,
+  username: string
+) => {
+  const mailOptions = {
+    from: "GenKiKoi",
+    to: email,
+    subject: "Cảnh báo bảo mật - Mật khẩu đã được thay đổi",
+    html: `
+    <!DOCTYPE html>
+    <html lang="vi">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Thông báo thay đổi mật khẩu</title>
+      <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9; }
+        .header { background-color: #0C3C54; color: white; padding: 10px; text-align: center; }
+        .content { background-color: white; padding: 20px; border-radius: 5px; }
+        .warning { color: #721c24; background-color: #f8d7da; padding: 10px; border-radius: 5px; margin: 10px 0; }
+        .footer { text-align: center; margin-top: 20px; font-size: 12px; color: #666; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>GenKiKoi</h1>
+        </div>
+        <div class="content">
+          <h2>Thông báo thay đổi mật khẩu</h2>
+          <p>Xin chào ${username},</p>
+          <p>Chúng tôi phát hiện mật khẩu tài khoản của bạn vừa được thay đổi thành công.</p>
+          <div class="warning">
+            <p>Nếu bạn không thực hiện thay đổi này, vui lòng:</p>
+            <ol>
+              <li>Thay đổi mật khẩu ngay lập tức</li>
+              <li>Liên hệ với bộ phận hỗ trợ của chúng tôi</li>
+            </ol>
+          </div>
+          <p>Trân trọng,<br>Đội ngũ GenKiKoi</p>
+        </div>
+        <div class="footer">
+          <p>© 2023 GenKiKoi. Tất cả các quyền được bảo lưu.</p>
+          <p>Hotline hỗ trợ: 0352195876</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log("Password change alert email sent successfully");
+  } catch (error) {
+    console.error("Error sending password change alert email:", error);
+    throw error;
+  }
+};

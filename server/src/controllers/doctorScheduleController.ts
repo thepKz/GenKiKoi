@@ -9,18 +9,23 @@ export const getAllDoctorSchedules = async (req: Request, res: Response) => {
         populate: {
           path: "userId",
           select: "fullName email gender photoUrl",
+          match: { isDisabled: false },
         },
         select: "movingService _id",
       })
       .select("weekSchedule.dayOfWeek");
 
-    if (!schedules || schedules.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "Không tìm thấy lịch làm việc nào" });
+    const validSchedules = schedules.filter(
+      (schedule) => schedule.doctorId?.userId != null
+    );
+
+    if (!validSchedules || validSchedules.length === 0) {
+      return res.status(404).json({
+        message: "Không tìm thấy lịch làm việc nào của bác sĩ đang hoạt động",
+      });
     }
 
-    const formattedData = schedules.map((schedule) => ({
+    const formattedData = validSchedules.map((schedule) => ({
       id: schedule._id,
       doctorId: schedule.doctorId._id,
       doctorName: schedule.doctorId.userId.fullName,

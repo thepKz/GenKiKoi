@@ -168,6 +168,10 @@ const Treatment = () => {
                       message: "Vui lòng nhập số điện thoại",
                     },
                     {
+                      pattern: /^(0[3|5|7|8|9])+([0-9]{8})\b/,
+                      message: "Số điện thoại không hợp lệ",
+                    },
+                    {
                       validator: async (_, value) => {
                         if (value) {
                           await getFishRecordByPhoneNumber(value);
@@ -283,10 +287,45 @@ const Treatment = () => {
                 </Form.Item>
               </Col>
               <Col span={9}>
-                <Form.Item name="diagnosis" label="Chẩn đoán">
+                <Form.Item
+                  name="diagnosis"
+                  label="Chẩn đoán"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Vui lòng nhập chẩn đoán",
+                    },
+                    {
+                      min: 3,
+                      message: "Chẩn đoán phải có ít nhất 3 ký tự",
+                    },
+                    {
+                      max: 200,
+                      message: "Chẩn đoán không được vượt quá 200 ký tự",
+                    },
+                  ]}
+                >
                   <Input placeholder="Chẩn đoán" />
                 </Form.Item>
-                <Form.Item name="treatment" label="Phác đồ điều trị">
+                <Form.Item
+                  name="treatment"
+                  label="Phác đồ điều trị"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Vui lòng nhập phác đồ điều trị",
+                    },
+                    {
+                      min: 10,
+                      message: "Phác đồ điều trị phải có ít nhất 10 ký tự",
+                    },
+                    {
+                      max: 1000,
+                      message:
+                        "Phác đồ điều trị không được vượt quá 1000 ký tự",
+                    },
+                  ]}
+                >
                   <TextArea placeholder="Phác đồ điều trị" rows={10} />
                 </Form.Item>
               </Col>

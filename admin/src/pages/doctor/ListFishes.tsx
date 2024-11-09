@@ -7,6 +7,7 @@ import {
   Divider,
   Form,
   Input,
+  InputNumber,
   message,
   Modal,
   Select,
@@ -261,21 +262,39 @@ const ListFishes = () => {
                   {
                     type: "number",
                     min: 0,
-                    message: "Kích thước phải lớn hơn 0",
+                    max: 200,
+                    message: "Kích thước phải nằm trong khoảng từ 0 tới 200",
                   },
                 ]}
               >
-                <Input min={0} type="number" placeholder="Nhập kích thước" />
+                <InputNumber
+                  min={0}
+                  max={200}
+                  type="number"
+                  placeholder="Nhập kích thước"
+                  style={{ width: "100%" }}
+                />
               </Form.Item>
               <Form.Item
                 name="age"
                 label="Tuổi"
                 rules={[
                   { required: true, message: "Vui lòng nhập tuổi" },
-                  { type: "number", min: 1, message: "Tuổi phải lớn hơn 0" },
+                  {
+                    type: "number",
+                    min: 0,
+                    max: 200,
+                    message: "Tuổi phải lớn hơn 0",
+                  },
                 ]}
               >
-                <Input min={1} type="number" placeholder="Nhập tuổi" />
+                <InputNumber
+                  min={0}
+                  max={200}
+                  type="number"
+                  placeholder="Nhập tuổi"
+                  style={{ width: "100%" }}
+                />
               </Form.Item>
               <Form.Item
                 name="gender"

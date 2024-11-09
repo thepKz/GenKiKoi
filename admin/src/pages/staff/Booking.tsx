@@ -366,7 +366,7 @@ const Booking = () => {
   };
 
   const handleConsultingChange = (value: string) => {
-    if (value === "Tại trung tâm" || value === "Tư vấn trực tuyến") {
+    if (value === "Tại phòng khám" || value === "Tư vấn trực tuyến") {
       setIsDistanceDisabled(true);
       setTransportFee(0);
       form.setFieldValue("distance", undefined);

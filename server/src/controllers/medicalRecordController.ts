@@ -34,6 +34,7 @@ export const getMedicalRecordByFishId = async (req: Request, res: Response) => {
     }
     const formattedMedicalRecords = medicalRecords.map((medicalRecord) => {
       return {
+        recordId: medicalRecord._id,
         customerName: medicalRecord.customerId.userId.fullName,
         date: medicalRecord.date,
         examType: medicalRecord.examType,
@@ -55,7 +56,7 @@ export const getMedicalRecordByFishId = async (req: Request, res: Response) => {
 
 // lay medical record theo id
 export const getMedicalRecordById = async (req: Request, res: Response) => {
-  const medicalRecordId = req.params.id;
+  const { medicalRecordId } = req.params;
   try {
     const medicalRecord = await MedicalRecord.findById(medicalRecordId)
       .populate({
@@ -72,9 +73,11 @@ export const getMedicalRecordById = async (req: Request, res: Response) => {
           select: "fullName",
         },
       });
+
     if (!medicalRecord) {
       return res.status(404).json({ message: "Không tìm thấy bệnh án" });
     }
+
     const formattedMedicalRecord = {
       recordId: medicalRecord._id,
       customerName: medicalRecord.customerId.userId.fullName,
@@ -109,10 +112,8 @@ export const createMedicalRecord = async (req: Request, res: Response) => {
   try {
     if (
       !examType ||
-      !images ||
       !diagnosis ||
       !treatment ||
-      !medicines ||
       !phoneNumber ||
       !fishId ||
       !doctorId
@@ -138,14 +139,13 @@ export const createMedicalRecord = async (req: Request, res: Response) => {
     }
 
     //neu fishId == null thi tao mot fish moi
-    if (!fishId) {
+    if (fishId === "newRecord" || !fishId) {
       const fish = await Fish.create({
         customerId: customer._id,
         description: "Cá mới",
         photoUrl: "https://placehold.co/150x150",
         size: 0,
         age: 0,
-        healthStatus: "Chưa xác định",
       });
       fishId = fish._id;
     }

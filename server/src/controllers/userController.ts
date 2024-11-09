@@ -4,7 +4,10 @@ import { AuthRequest } from "../types";
 import { ICustomer } from "../models/Customer";
 import { IUser } from "../models/User";
 import bcrypt from "bcryptjs";
-import { sendResetPasswordEmail } from "../services/emails";
+import {
+  sendPasswordChangeAlert,
+  sendResetPasswordEmail,
+} from "../services/emails";
 
 export const getUser = async (req: AuthRequest, res: Response) => {
   try {
@@ -249,6 +252,9 @@ export const changePassword = async (req: AuthRequest, res: Response) => {
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     user.password = hashedPassword;
     await user.save();
+
+    // Gửi email cảnh báo
+    await sendPasswordChangeAlert(user.email, user.username);
 
     return res.status(200).json({ message: "Đổi mật khẩu thành công" });
   } catch (error: any) {

@@ -61,7 +61,7 @@ const Profile = () => {
 
       const res: any = await handleAPI(api, values, "PATCH");
       dispatch(updateAuth({ photoUrl: res.data.photoUrl }));
-      message.success(res.message);
+      message.success("Cập nhật thông tin thành công!");
     } catch (error: any) {
       console.log(error);
       message.error(error.message);
@@ -202,7 +202,7 @@ const Profile = () => {
                               message: "Vui lòng nhập số điện thoại",
                             },
                             {
-                              pattern: /^[0-9]{10}$/,
+                              pattern: /^(0[3|5|7|8|9])+([0-9]{8})\b/,
                               message: "Số điện thoại không hợp lệ",
                             },
                             {
