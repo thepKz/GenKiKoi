@@ -13,6 +13,7 @@ import {
   Staffs,
 } from "../pages/manager";
 import { NotFound } from "../pages/notfound";
+import ChangePassword from "../pages/ChangePassword";
 
 const ManagerRouter = () => {
   return (
@@ -38,6 +39,7 @@ const ManagerRouter = () => {
         </Route>
         <Route path="profile" element={<Profile />} />
       </Route>
+      <Route path="change-password" element={<ChangePassword />} />
       <Route path="*" element={<NotFound to="/" />} />
     </Routes>
   );

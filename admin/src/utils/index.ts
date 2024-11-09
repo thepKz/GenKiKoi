@@ -71,7 +71,14 @@ export const removeVietnameseTones = (str: string) => {
 
 export const uploadFile = async (
   file: any,
-  folder: "customers" | "fishes" | "staffs" | "doctors" | "records" | "ponds",
+  folder:
+    | "customers"
+    | "fishes"
+    | "staffs"
+    | "doctors"
+    | "records"
+    | "ponds"
+    | "managers",
 ) => {
   const compressedFile: any = await handleResize(file);
 
