@@ -9,6 +9,7 @@ export const transporter = nodemailer.createTransport({
   port: 465, // Sử dụng cổng 465 cho SSL
   secure: true, // Bật SSL
   auth: {
+    // user: "maitanthepmrthep@gmail.com", 
     user: "dodung.dqd@gmail.com",
     pass: process.env.MAIL_PASSWORD, // Thay bằng mật khẩu ứng dụng của Gmail
   },

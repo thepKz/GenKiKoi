@@ -3,8 +3,8 @@ import { Request, Response } from "express";
 import { ValidationError } from "../errors/ValidationError";
 import { Customer, Doctor, Manager, Staff } from "../models";
 import User from "../models/User";
-import { randomText, signToken } from "../utils";
 import { sendVerificationEmail } from "../services/emails";
+import { randomText, signToken } from "../utils";
 
 export const register = async (req: Request, res: Response) => {
   try {
