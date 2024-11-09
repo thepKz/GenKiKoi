@@ -8,18 +8,25 @@ export const getAllCustomers = async (req: Request, res: Response) => {
         path: "userId",
         select: "fullName gender phoneNumber email",
       })
-      .select("userId");
+      .select("userId")
+      .sort({ createdAt: -1 });
 
-      const customersWithAppointments = await Promise.all(customers.map(async (customer) => {
-        const appointmentCount = await Appointment.countDocuments({ customerId: customer._id });
+    const customersWithAppointments = await Promise.all(
+      customers.map(async (customer) => {
+        const appointmentCount = await Appointment.countDocuments({
+          customerId: customer._id,
+        });
         return appointmentCount > 0 ? customer : null;
-      }));
-  
-      const filteredCustomers = customersWithAppointments.filter(customer => customer !== null);
-  
-      if (!filteredCustomers || filteredCustomers.length === 0) {
-        return res.status(404).json({ message: "Danh sách khách hàng trống" });
-      }
+      })
+    );
+
+    const filteredCustomers = customersWithAppointments.filter(
+      (customer) => customer !== null
+    );
+
+    if (!filteredCustomers || filteredCustomers.length === 0) {
+      return res.status(404).json({ message: "Danh sách khách hàng trống" });
+    }
 
     const formattedData = filteredCustomers.map((customer) => ({
       id: customer._id,

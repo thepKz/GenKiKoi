@@ -173,6 +173,20 @@ const Staffs = () => {
     });
   };
 
+  const handleCheckExistence = async (field: string, value: string) => {
+    const api = `/api/auth/check-${field}`;
+    try {
+      const res: any = await handleAPI(api, { [field]: value }, "POST");
+
+      if (res.exists) {
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const handleUpdate = (personId: string, isStaff: boolean) => {
     const person = isStaff
       ? staffs.find((s: any) => s._id === personId)
@@ -448,13 +462,27 @@ const Staffs = () => {
                       message: "Vui lòng nhập họ và tên",
                     },
                     {
+                      min: 2,
+                      message: "Họ và tên phải có ít nhất 2 ký tự",
+                    },
+                    {
                       max: 50,
                       message: "Họ và tên không được vượt quá 50 ký tự",
                     },
                     {
-                      pattern:
-                        /^[a-zA-ZÀÁẢÃẠÂẤẦẨẪẬĂẮẰẲẴẶĐÊẾỀỂỄỆÔỐỒỔỖỘƠỚỜỞỠỢƯỨỪỬỮỰ\s]+$/,
-                      message: "Họ và tên chỉ chứa chữ cái và khoảng trắng",
+                      pattern: /^[a-zA-ZÀ-ỹ\s]+$/,
+                      message:
+                        "Họ và tên chỉ được chứa chữ cái và khoảng trắng",
+                    },
+                    {
+                      validator: (_, value) => {
+                        if (value && value.trim().split(/\s+/).length < 2) {
+                          return Promise.reject(
+                            "Họ và tên phải bao gồm ít nhất hai từ",
+                          );
+                        }
+                        return Promise.resolve();
+                      },
                     },
                   ]}
                   hasFeedback
@@ -477,6 +505,18 @@ const Staffs = () => {
                     {
                       type: "email",
                       message: "Email không hợp lệ",
+                    },
+                    {
+                      validator: async (_, value) => {
+                        const exists = await handleCheckExistence(
+                          "email",
+                          value,
+                        );
+                        if (exists) {
+                          return Promise.reject(new Error("Email đã tồn tại!"));
+                        }
+                        return Promise.resolve();
+                      },
                     },
                   ]}
                   hasFeedback

@@ -16,7 +16,8 @@ export const getAllStaffs = async (req: Request, res: Response) => {
         match: { isDisabled: false },
         select: "fullName email gender",
       })
-      .select("startDate position workShift");
+      .select("startDate position workShift")
+      .sort({ createdAt: -1 });
 
     const filteredStaffs = staffs.filter((staff) => staff.userId !== null);
 

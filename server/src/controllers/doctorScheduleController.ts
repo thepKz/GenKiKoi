@@ -13,7 +13,8 @@ export const getAllDoctorSchedules = async (req: Request, res: Response) => {
         },
         select: "movingService _id",
       })
-      .select("weekSchedule.dayOfWeek");
+      .select("weekSchedule.dayOfWeek")
+      .sort({ createdAt: -1 });
 
     const validSchedules = schedules.filter(
       (schedule) => schedule.doctorId?.userId != null

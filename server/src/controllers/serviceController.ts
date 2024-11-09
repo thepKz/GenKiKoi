@@ -3,7 +3,9 @@ import { Service } from "../models";
 
 export const getAllServices = async (req: Request, res: Response) => {
   try {
-    const services = await Service.find({ isDeleted: false });
+    const services = await Service.find({ isDeleted: false }).sort({
+      createdAt: -1,
+    });
 
     if (services.length === 0) {
       return res.status(404).json({ message: "Danh sách dịch vụ trống!" });

@@ -129,7 +129,7 @@ const SiderComponent = () => {
     },
     {
       key: "booking",
-      label: <Link to={"/staff/booking"}>Cuộc hẹn khách hàng</Link>,
+      label: <Link to={"/staff/booking"}>Tạo cuộc hẹn</Link>,
       icon: <CalendarAdd size={20} />,
     },
     {

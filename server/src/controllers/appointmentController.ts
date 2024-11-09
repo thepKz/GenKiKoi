@@ -196,7 +196,6 @@ export const getAppointmentsByCustomerId = async (
         select: "serviceName",
       })
       .select("_id appointmentDate status notes reasons isFeedback");
-
     const formattedAppointment = appointments.map((appointment: any) => ({
       appointmentId: appointment._id,
       serviceName: appointment.serviceId.serviceName,

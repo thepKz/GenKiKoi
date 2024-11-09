@@ -18,7 +18,8 @@ export const getAllDoctors = async (req: Request, res: Response) => {
       })
       .select(
         "startDate movingService specialization licenseNumber yearOfExperience googleMeetLink"
-      );
+      )
+      .sort({ createdAt: -1 });
 
     const filteredDoctors = doctors.filter((doctor) => doctor.userId !== null);
 
