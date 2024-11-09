@@ -19,7 +19,7 @@ export const getAllAppointmentsByDoctorId = async (
   res: Response
 ) => {
   try {
-    const doctorId = req.params.doctorId;
+    const { doctorId } = req.params;
 
     const doctor = await Doctor.findById(doctorId);
 

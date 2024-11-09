@@ -87,7 +87,8 @@ export const getFeedbacksByDoctorId = async (
         path: "serviceId",
         select: "serviceName",
       })
-      .select("rating comment feedbackDate");
+      .select("rating comment feedbackDate")
+      .sort({ feedbackDate: -1 });
 
     if (feedbacks.length === 0) {
       return res.status(404).json({ message: "Danh sách đánh giá trống" });

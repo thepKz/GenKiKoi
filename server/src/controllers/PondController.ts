@@ -174,8 +174,8 @@ export const getAllCustomers = async (req: Request, res: Response) => {
 
 export const getAllPondsByCustomerId = async (req: Request, res: Response) => {
   try {
-    const customerId = req.params.customerId;
-    const ponds = await Pond.find({ customerId });
+    const { customerId } = req.params;
+    const ponds = await Pond.find({ customerId }).sort({ createAt: 1 });
 
     if (!ponds) {
       return res.status(404).json({ message: "Danh sách trống" });
@@ -185,8 +185,8 @@ export const getAllPondsByCustomerId = async (req: Request, res: Response) => {
       recordId: pond._id,
       pondSize: pond.pondSize,
       status: pond.status,
-      filtrationSystem: pond.filtrationSystem,
       notes: pond.notes,
+      createAt: pond.createdAt,
     }));
 
     return res.status(200).json({ data: formattedPond });
