@@ -4,6 +4,7 @@ import { checkEmail, checkUsername, login, loginAdmin, loginWithGoogle, register
 import Customer from '../../models/Customer';
 import Manager from '../../models/Manager';
 import User from '../../models/User';
+import * as emailService from '../../services/emails';
 
 jest.mock('../../models/User');
 jest.mock('../../models/Customer');
@@ -13,16 +14,40 @@ jest.mock('../../utils', () => ({
     signToken: jest.fn().mockResolvedValue('mocked-token'),
     randomText: jest.fn().mockReturnValue('random-text'),
 }));
+
+jest.mock('../../services/emails', () => ({
+  sendVerificationEmail: jest.fn().mockResolvedValue(true),
+  sendResetPasswordEmail: jest.fn().mockResolvedValue(true),
+  sendAppointmentConfirmation: jest.fn().mockResolvedValue(true),
+}));
+
+
+
 describe('AuthController', () => {
     let req: Partial<Request>;
     let res: Partial<Response>;
     let jsonMock: jest.Mock;
     let statusMock: jest.Mock;
 
+    beforeAll(() => {
+      process.env.NODE_ENV = 'test';
+      process.env.EMAIL_SERVICE = 'test';
+      process.env.EMAIL_USER = 'test@example.com';
+      process.env.EMAIL_PASS = 'test-password';
+    });
+
     beforeEach(() => {
         jsonMock = jest.fn();
         statusMock = jest.fn().mockReturnValue({ json: jsonMock });
         res = { status: statusMock, json: jsonMock } as Partial<Response>;
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    afterAll(() => {
+      jest.restoreAllMocks();
     });
 
     describe('register', () => {
@@ -52,6 +77,7 @@ describe('AuthController', () => {
 
             await register(req as Request, res as Response);
 
+            expect(emailService.sendVerificationEmail).toHaveBeenCalledTimes(1);
             expect(statusMock).toHaveBeenCalledWith(201);
             expect(jsonMock).toHaveBeenCalledWith(expect.objectContaining({
                 message: 'Đăng ký thành công!',

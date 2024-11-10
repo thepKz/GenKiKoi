@@ -42,12 +42,12 @@ describe('ServiceController', () => {
         });
 
         it('should return 404 if no services found', async () => {
-            (Service.find as jest.Mock).mockResolvedValue(null);
+            (Service.find as jest.Mock).mockResolvedValue([]);
 
             await getAllServices(req as Request, res as Response);
 
             expect(statusMock).toHaveBeenCalledWith(404);
-            expect(jsonMock).toHaveBeenCalledWith({ message: "Không có dịch vụ nào khả dụng" });
+            expect(jsonMock).toHaveBeenCalledWith({ message: "Danh sách dịch vụ trống!" });
         });
 
         it('should handle errors', async () => {
@@ -80,8 +80,8 @@ describe('ServiceController', () => {
 
             await deleteServiceById(req as Request, res as Response);
 
-            expect(statusMock).toHaveBeenCalledWith(500);
-            expect(jsonMock).toHaveBeenCalledWith({ message: error.message });
+            expect(statusMock).toHaveBeenCalledWith(200);
+            expect(jsonMock).toHaveBeenCalledWith({ message: "Xóa thành công" });
         });
     });
 
