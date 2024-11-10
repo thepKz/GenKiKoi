@@ -148,7 +148,7 @@ const Services = () => {
             ),
           );
         } else {
-          setServices([...services, res.data]);
+          setServices([res.data, ...services]);
         }
         message.success(res.message);
       }

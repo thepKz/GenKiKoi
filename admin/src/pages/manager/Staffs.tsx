@@ -121,9 +121,9 @@ const Staffs = () => {
           }
         } else {
           if (isStaff) {
-            setStaffs([...staffs, res.data]);
+            setStaffs([res.data, ...staffs]);
           } else {
-            setDoctors([...doctors, res.data]);
+            setDoctors([res.data, ...doctors]);
           }
         }
         message.success(res.message);
