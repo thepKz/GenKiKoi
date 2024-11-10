@@ -552,15 +552,6 @@ const Home = () => {
                 </div>
               </Carousel>
             </div>
-            <Button
-              style={{ fontSize: 18 }}
-              size="large"
-              type="link"
-              className="text-white transition-colors duration-300 hover:text-blue-300"
-            >
-              Khách hàng nói gì về chúng tôi
-              <ArrowRight2 size={18} />
-            </Button>
           </AnimatedSection>
         </div>
       </div>

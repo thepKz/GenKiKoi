@@ -28,7 +28,7 @@ const DoctorDetail = () => {
                   className="mb-4"
                 />
                 <h1 className="heading-3 mb-2">Bác sĩ Nguyễn Văn A</h1>
-                <h2 className="mb-4 text-xl font-bold">Chuyên gia cá Koi</h2>
+                <h2 className="mb-4 text-xl font-bold">Chuyên gia chăm sóc sức khỏe cá Koi</h2>
                 <p className="mb-4 text-lg">
                   Với hơn 10 năm kinh nghiệm trong lĩnh vực chăm sóc và điều trị bệnh cho cá Koi,
                   Bác sĩ Nguyễn Văn A là một trong những chuyên gia hàng đầu tại Việt Nam về lĩnh

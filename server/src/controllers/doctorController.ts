@@ -14,10 +14,10 @@ export const getAllDoctors = async (req: Request, res: Response) => {
       .populate({
         path: "userId",
         match: { isDisabled: false },
-        select: "fullName email gender",
+        select: "fullName email gender photoUrl",
       })
       .select(
-        "startDate movingService specialization licenseNumber yearOfExperience googleMeetLink"
+        "startDate movingService specialization licenseNumber yearOfExperience googleMeetLink introduction"
       )
       .sort({ createdAt: -1 });
 
@@ -27,9 +27,10 @@ export const getAllDoctors = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "Danh sách bác sĩ trống!" });
     }
 
-    const formatDoctor = doctors.map((doctor: any) => ({
+    const formatDoctor = filteredDoctors.map((doctor: any) => ({
       _id: doctor._id,
       fullName: doctor.userId.fullName,
+      photoUrl: doctor.userId.photoUrl,
       gender: doctor.userId.gender,
       movingService: doctor.movingService,
       startDate: doctor.startDate,
@@ -38,10 +39,12 @@ export const getAllDoctors = async (req: Request, res: Response) => {
       yearOfExperience: doctor.yearOfExperience,
       email: doctor.userId.email,
       googleMeetLink: doctor.googleMeetLink,
+      introduction: doctor.introduction,
     }));
 
     return res.status(200).json({ data: formatDoctor });
   } catch (error: any) {
+    console.log(error);
     return res.status(500).json({ message: error.message });
   }
 };

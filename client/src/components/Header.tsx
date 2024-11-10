@@ -27,9 +27,6 @@ const Header = () => {
       key: "4",
       label: <Link to={"/services/service-price-table"}>Bảng giá dịch vụ</Link>,
     },
-    
-    
-    
   ];
 
   const profile: MenuProps["items"] = [
@@ -89,6 +86,11 @@ const Header = () => {
 
             <div className="link cursor-pointer">
               <Link to="/faq">Hỏi & Đáp</Link>
+              <div className="h-[1.5px] bg-white duration-300 ease-in" />
+            </div>
+
+            <div className="link cursor-pointer">
+              <Link to="/terms-of-service">Điều khoản dịch vụ</Link>
               <div className="h-[1.5px] bg-white duration-300 ease-in" />
             </div>
           </ul>
