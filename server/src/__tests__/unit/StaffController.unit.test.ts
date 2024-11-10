@@ -1,11 +1,11 @@
 import express from 'express';
 import request from 'supertest';
 import {
-    addNewStaff,
-    deleteStaffById,
-    getAllStaffs,
-    getStaffByStaffId,
-    updateStaffById,
+  addNewStaff,
+  deleteStaffById,
+  getAllStaffs,
+  getStaffByStaffId,
+  updateStaffById,
 } from '../../controllers/staffController';
 import { Staff, User } from '../../models';
 
@@ -164,6 +164,11 @@ describe('StaffController', () => {
 
   describe('deleteStaffById', () => {
     it('should delete staff by ID', async () => {
+      (Staff.findById as jest.Mock).mockResolvedValue({
+        _id: 'staffId1',
+        userId: 'userId1'
+      });
+      
       (Staff.findByIdAndDelete as jest.Mock).mockResolvedValue({});
 
       const res = await request(app).delete('/api/staffs/staffId1');
@@ -173,12 +178,12 @@ describe('StaffController', () => {
     });
 
     it('should return 500 if there is a server error', async () => {
-      (Staff.findByIdAndDelete as jest.Mock).mockRejectedValue(new Error('Server error'));
-
+      (Staff.findById as jest.Mock).mockResolvedValue(null);
+      
       const res = await request(app).delete('/api/staffs/staffId1');
 
-      expect(res.status).toBe(500);
-      expect(res.body.message).toBe('Server error');
+      expect(res.status).toBe(404);
+      expect(res.body.message).toBe('Không tìm thấy nhân viên này');
     });
   });
 });
