@@ -539,14 +539,19 @@ const Booking = () => {
                         hasFeedback
                         rules={[
                           { required: true, message: "Vui lòng nhập số điện thoại" },
-                          { pattern: /^[0-9]{10}$/, message: "Số điện thoại không hợp lệ" },
+                          {
+                            pattern: /^(0[3|5|7|8|9])+([0-9]{8})\b/,
+                            message: "Số điện thoại không hợp lệ",
+                          },
                           {
                             validator: async (_, value) => {
-                              const exists = await handleCheckExistence("phoneNumber", value);
-                              if (exists) {
-                                return Promise.reject(
-                                  new Error("Tên số điện thoại này đã tồn tại!"),
-                                );
+                              if (value && value.trim().length > 0) {
+                                const exists = await handleCheckExistence("phoneNumber", value);
+                                if (exists) {
+                                  return Promise.reject(
+                                    new Error("Tên số điện thoại này đã tồn tại!"),
+                                  );
+                                }
                               }
 
                               return Promise.resolve();
