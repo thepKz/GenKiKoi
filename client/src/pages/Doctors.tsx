@@ -1,5 +1,5 @@
 import { Button, Card, message, Rate, Spin } from "antd";
-import { ArrowRight2 } from "iconsax-react";
+import { ArrowRight2, User } from "iconsax-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AnimatedSection } from "../share";
@@ -115,17 +115,26 @@ const Doctors = () => {
                   hoverable
                   className="overflow-hidden bg-white/10 text-white backdrop-blur-sm transition-all duration-300 hover:bg-white/15"
                   cover={
-                    <div className="overflow-hidden">
-                      <img
-                        alt={doctor.fullName}
-                        src={doctor.photoUrl || "https://placehold.co/400x300"}
-                        className="h-64 w-full transform object-cover opacity-90 brightness-90 contrast-125 saturate-[0.85] transition-all duration-500 hover:scale-110 hover:opacity-100 hover:brightness-100 hover:contrast-100 hover:saturate-100"
-                      />
-                    </div>
+                    doctor.photoUrl ? (
+                      <div className="overflow-hidden">
+                        <img
+                          alt={doctor.fullName}
+                          src={doctor.photoUrl}
+                          className="h-64 w-full transform object-cover opacity-90 brightness-90 contrast-125 saturate-[0.85] transition-all duration-500 hover:scale-110 hover:opacity-100 hover:brightness-100 hover:contrast-100 hover:saturate-100"
+                        />
+                      </div>
+                    ) : (
+                      <div className="h-64 w-full bg-gray-400 pt-12">
+                        <User
+                          size={150}
+                          className="mx-auto"
+                        />
+                      </div>
+                    )
                   }
                 >
                   <Card.Meta
-                    title={<span className="text-xl text-white">{doctor.fullName}</span>}
+                    title={<span className="text-xl text-white">Bác sĩ {doctor.fullName}</span>}
                     description={
                       <div className="text-gray-300">
                         <p>Chuyên gia chăm sóc sức khỏe cá Koi</p>

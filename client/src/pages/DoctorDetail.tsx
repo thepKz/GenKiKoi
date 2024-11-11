@@ -1,16 +1,54 @@
-import { Avatar, Button, Card } from "antd";
-import { ArrowRight2 } from "iconsax-react";
-import { useEffect } from "react";
+import { Avatar, Button, Card, message, Spin } from "antd";
+import { ArrowRight2, User } from "iconsax-react";
+import { useEffect, useState } from "react";
 import Doctor1 from "../assets/doctor1.webp";
 import { AnimatedSection } from "../share";
+import { useLocation } from "react-router-dom";
+import { handleAPI } from "../apis/handleAPI";
 
 const DoctorDetail = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
+  const { pathname } = useLocation();
+  const doctorId = pathname.split("/")[2];
+
+  const [doctor, setDoctor] = useState<any>(null);
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    const getDoctor = async () => {
+      try {
+        setIsLoading(true);
+        const api = `/api/doctors/${doctorId}`;
+
+        const res = await handleAPI(api, undefined, "GET");
+
+        if (res.data) {
+          setDoctor(res.data);
+        }
+      } catch (error: any) {
+        console.log(error);
+        message.error(error.message || "Đã có lỗi xảy ra vui lòng thử lại sau ít phút");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    getDoctor();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-gradient-to-t from-[#2A7F9E] to-[#175670]">
+        <Spin size="large" />
+      </div>
+    );
+  }
+
   return (
-    <div className="h-screen bg-green-dark text-white">
+    <div className="h-min-screen bg-green-dark pb-10 text-white">
       <div className="container mx-auto px-4 lg:px-20">
         <div className="flex flex-col gap-8 lg:flex-row">
           {/* Left column */}
@@ -24,16 +62,13 @@ const DoctorDetail = () => {
               >
                 <Avatar
                   size={200}
-                  src={Doctor1}
+                  src={doctor?.photoUrl}
+                  icon={<User size={150} />}
                   className="mb-4"
                 />
-                <h1 className="heading-3 mb-2">Bác sĩ Nguyễn Văn A</h1>
+                <h1 className="heading-3 mb-2">Bác sĩ {doctor?.fullName}</h1>
                 <h2 className="mb-4 text-xl font-bold">Chuyên gia chăm sóc sức khỏe cá Koi</h2>
-                <p className="mb-4 text-lg">
-                  Với hơn 10 năm kinh nghiệm trong lĩnh vực chăm sóc và điều trị bệnh cho cá Koi,
-                  Bác sĩ Nguyễn Văn A là một trong những chuyên gia hàng đầu tại Việt Nam về lĩnh
-                  vực này.
-                </p>
+                <p className="mb-4 text-justify text-lg">{doctor?.introduction}</p>
                 <Button
                   type="primary"
                   size="large"
