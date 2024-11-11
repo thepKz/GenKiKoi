@@ -92,7 +92,11 @@ const Profile = () => {
   };
 
   if (isLoading) {
-    return <Spin size="large" />;
+    return (
+      <div className="section flex items-center justify-center">
+        <Spin size="large" />
+      </div>
+    );
   }
 
   return (

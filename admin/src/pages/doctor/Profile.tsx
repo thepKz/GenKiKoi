@@ -96,6 +96,20 @@ const Profile = () => {
     }
   };
 
+  const handleCheckLicenseNumber = async (field: string, value: string) => {
+    const api = `/api/doctors/check-${field}`;
+    try {
+      const res: any = await handleAPI(api, { [field]: value }, "POST");
+
+      if (res.exists && res.doctorId !== auth.adminId) {
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="section flex items-center justify-center">
@@ -296,12 +310,33 @@ const Profile = () => {
                     <Form.Item
                       name="licenseNumber"
                       label="Mã số chứng chỉ"
+                      hasFeedback
                       rules={[
                         {
                           required: true,
                           message: "Vui lòng điền mã số chứng chỉ",
                         },
+                        {
+                          validator: async (_, value) => {
+                            if (value && value.trim().length > 0) {
+                              const exists = await handleCheckLicenseNumber(
+                                "licenseNumber",
+                                value,
+                              );
+
+                              if (exists) {
+                                return Promise.reject(
+                                  new Error(
+                                    "Chứng chỉ này đã được đăng ký!",
+                                  ),
+                                );
+                              }
+                            }
+                            return Promise.resolve();
+                          },
+                        },
                       ]}
+                      validateDebounce={1000}
                     >
                       <Input allowClear placeholder="Mã số chứng chỉ" />
                     </Form.Item>

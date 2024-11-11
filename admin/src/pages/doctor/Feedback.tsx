@@ -1,4 +1,4 @@
-import { MenuProps, message, Rate, TableProps } from "antd";
+import { MenuProps, message, Rate, Spin, TableProps } from "antd";
 import { HeaderPage } from "../../components";
 import { CustomTable } from "../../share";
 import { useEffect, useState } from "react";
@@ -6,55 +6,26 @@ import { handleAPI } from "../../apis/handleAPI";
 
 const Feedback = () => {
   const [feedbacks, setFeedbacks] = useState<any>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 10,
   });
 
-  const filterItems: MenuProps["items"] = [
-    {
-      key: "all",
-      label: "Tất cả đánh giá",
-    },
-    {
-      key: "high",
-      label: "Đánh giá cao (4-5 sao)",
-    },
-    {
-      key: "medium",
-      label: "Đánh giá trung bình (3 sao)",
-    },
-    {
-      key: "low",
-      label: "Đánh giá thấp (1-2 sao)",
-    },
-  ];
-
-  const handleFilterSelect = (key: string) => {
-    const filteredData = feedbacks.filter((feedback: any) => {
-      switch (key) {
-        case "high":
-          return feedback.rating >= 4;
-        case "medium":
-          return feedback.rating === 3;
-        case "low":
-          return feedback.rating <= 2;
-        default:
-          return true;
-      }
-    });
-    setFeedbacks(filteredData);
-  };
-
   useEffect(() => {
     const getFeedbacks = async () => {
       try {
+        setIsLoading(true);
         const api = `/api/feedbacks/doctor`;
         const res = await handleAPI(api, undefined, "GET");
         setFeedbacks(res.data);
       } catch (error: any) {
         console.log(error);
-        message.error(error.message);
+        message.error(
+          error.message || "Có lỗi đã xảy ra, vui lòng thử lại sau ít phút",
+        );
+      } finally {
+        setIsLoading(false);
       }
     };
     getFeedbacks();
@@ -101,14 +72,17 @@ const Feedback = () => {
     },
   ];
 
+  if (isLoading) {
+    return (
+      <div className="section flex items-center justify-center">
+        <Spin size="large" />
+      </div>
+    );
+  }
+
   return (
     <div className="section doctor-view feedbacks">
-      <HeaderPage
-        heading="Phản hồi từ khách hàng"
-        filter
-        filterItems={filterItems}
-        onFilterSelect={handleFilterSelect}
-      />
+      <HeaderPage heading="Phản hồi từ khách hàng" filter />
       <div className="">
         <CustomTable
           columns={columns}

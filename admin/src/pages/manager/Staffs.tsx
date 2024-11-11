@@ -383,6 +383,20 @@ const Staffs = () => {
     },
   ];
 
+  const handleCheckLicenseNumber = async (field: string, value: string) => {
+    const api = `/api/doctors/check-${field}`;
+    try {
+      const res: any = await handleAPI(api, { [field]: value }, "POST");
+
+      if (res.exists) {
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="section flex items-center justify-center">
@@ -508,12 +522,16 @@ const Staffs = () => {
                     },
                     {
                       validator: async (_, value) => {
-                        const exists = await handleCheckExistence(
-                          "email",
-                          value,
-                        );
-                        if (exists) {
-                          return Promise.reject(new Error("Email đã tồn tại!"));
+                        if (value && value.trim().length > 0) {
+                          const exists = await handleCheckExistence(
+                            "email",
+                            value,
+                          );
+                          if (exists) {
+                            return Promise.reject(
+                              new Error("Email đã tồn tại!"),
+                            );
+                          }
                         }
                         return Promise.resolve();
                       },
@@ -615,17 +633,31 @@ const Staffs = () => {
                       <Form.Item
                         name="licenseNumber"
                         label="Mã số chứng chỉ"
+                        hasFeedback
                         rules={[
                           {
                             required: true,
                             message: "Vui lòng nhập mã số chứng chỉ",
                           },
                           {
-                            pattern: /^[A-Za-z0-9-]+$/,
-                            message:
-                              "Mã số chứng chỉ chỉ chứa chữ cái, số và dấu -",
+                            validator: async (_, value) => {
+                              if (value && value.trim().length > 0) {
+                                const exists = await handleCheckLicenseNumber(
+                                  "licenseNumber",
+                                  value,
+                                );
+
+                                if (exists) {
+                                  return Promise.reject(
+                                    new Error("Chứng chỉ này đã được đăng ký!"),
+                                  );
+                                }
+                              }
+                              return Promise.resolve();
+                            },
                           },
                         ]}
+                        validateDebounce={1000}
                       >
                         <Input placeholder="Mã số chứng chỉ" />
                       </Form.Item>

@@ -1,6 +1,7 @@
 import express from "express";
 import {
   addNewDoctor,
+  checkLicenseNumber,
   deleteDoctorById,
   getAllDoctors,
   getAllDoctorsForBooking,
@@ -13,34 +14,22 @@ import { authMiddleware, roleMiddleware } from "../middleware";
 
 const router = express.Router();
 
-// Lấy tất cả bác sĩ
 router.get("/", getAllDoctors);
 
 router.get("/all", getAllDoctorsForBooking);
 
-// Lấy thông tin bác sĩ theo Id
 router.get("/:doctorId", authMiddleware, getDoctorById);
 
 router.get("/:doctorId/schedule", authMiddleware, getScheduleByDoctorId);
 
-router.patch(
-  "/:doctorId/schedule",
-  authMiddleware,
-  updateDoctorSchedule
-);
+router.patch("/:doctorId/schedule", authMiddleware, updateDoctorSchedule);
 
-// Thêm bác sĩ mới
 router.post("/", authMiddleware, roleMiddleware(["manager"]), addNewDoctor);
 
-// Cập nhật thông tin bác sĩ theo ID
-router.patch(
-  "/:doctorId",
-  authMiddleware,
-  // roleMiddleware(["manager", "doctor"]),
-  updateByDoctorId
-);
+router.post("/check-licenseNumber", authMiddleware, checkLicenseNumber);
 
-// Xóa bác sĩ theo ID
+router.patch("/:doctorId", authMiddleware, updateByDoctorId);
+
 router.delete(
   "/:doctorId",
   authMiddleware,
