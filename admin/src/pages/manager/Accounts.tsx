@@ -129,6 +129,13 @@ const Accounts = () => {
       dataIndex: "role",
       width: 120,
       render: (role) => <Tag color={getValue(role)}>{role}</Tag>,
+      filters: [
+        { text: "Quản lý", value: "manager" },
+        { text: "Bác sĩ", value: "doctor" },
+        { text: "Nhân viên", value: "staff" },
+        { text: "Khách hàng", value: "customer" },
+      ],
+      onFilter: (value: any, record) => record.role === value,
     },
     {
       key: "isDisabled",
@@ -140,6 +147,11 @@ const Accounts = () => {
           {status ? "Đã khóa" : "Hoạt động"}
         </Tag>
       ),
+      filters: [
+        { text: "Hoạt động", value: false },
+        { text: "Đã khóa", value: true },
+      ],
+      onFilter: (value: any, record) => record.isDisabled === value,
     },
     {
       key: "action",

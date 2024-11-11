@@ -239,10 +239,15 @@ const Staffs = () => {
       key: "Giới tính",
       title: "Giới tính",
       dataIndex: "gender",
-      width: 60,
+      width: 80,
       render: (text) => (
         <Tag color={getValue(text)}>{text === "nam" ? "Nam" : "Nữ"}</Tag>
       ),
+      filters: [
+        { text: "Nam", value: "nam" },
+        { text: "Nữ", value: "nữ" },
+      ],
+      onFilter: (value: any, record) => record.gender === value,
     },
     {
       key: "Vị trí",
@@ -250,6 +255,13 @@ const Staffs = () => {
       dataIndex: "position",
       width: 100,
       render: (text) => <Tag color={getValue(text)}>{text}</Tag>,
+      filters: [
+        { text: "Hỗ trợ khách hàng", value: "Hỗ trợ khách hàng" },
+        { text: "Tiếp tân", value: "Tiếp tân" },
+        { text: "Trợ lý", value: "Trợ lý" },
+        { text: "Thu ngân", value: "Thu ngân" },
+      ],
+      onFilter: (value: any, record) => record.position === value,
     },
     {
       key: "Ngày bắt đầu công việc",
@@ -257,6 +269,11 @@ const Staffs = () => {
       dataIndex: "startDate",
       width: 150,
       render: (date) => new Date(date).toLocaleDateString(),
+      sorter: (a, b) => {
+        const dateA = new Date(a.startDate);
+        const dateB = new Date(b.startDate);
+        return dateA.getTime() - dateB.getTime();
+      },
     },
     {
       key: "Email",
@@ -287,10 +304,15 @@ const Staffs = () => {
       key: "Giới tính",
       title: "Giới tính",
       dataIndex: "gender",
-      width: 60,
+      width: 80,
       render: (text) => (
         <Tag color={getValue(text)}>{text === "nam" ? "Nam" : "Nữ"}</Tag>
       ),
+      filters: [
+        { text: "Nam", value: "nam" },
+        { text: "Nữ", value: "nữ" },
+      ],
+      onFilter: (value: any, record) => record.gender === value,
     },
     {
       key: "Dịch vụ di động",
@@ -302,6 +324,11 @@ const Staffs = () => {
           {text === true ? "Có" : "Không"}
         </Tag>
       ),
+      filters: [
+        { text: "Có", value: true },
+        { text: "Không", value: false },
+      ],
+      onFilter: (value: any, record) => record.movingService === value,
     },
     {
       key: "Ngày bắt đầu công việc",
@@ -309,6 +336,11 @@ const Staffs = () => {
       dataIndex: "startDate",
       width: 150,
       render: (date) => new Date(date).toLocaleDateString(),
+      sorter: (a, b) => {
+        const dateA = new Date(a.startDate);
+        const dateB = new Date(b.startDate);
+        return dateA.getTime() - dateB.getTime();
+      },
     },
     {
       key: "Email",

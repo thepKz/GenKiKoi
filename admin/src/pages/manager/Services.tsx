@@ -61,6 +61,7 @@ const Services = () => {
           style: "currency",
           currency: "VND",
         }).format(price),
+      sorter: (a, b) => a.price - b.price,
     },
     {
       key: "Khả dụng",
@@ -70,6 +71,21 @@ const Services = () => {
         values.map((value: string) => (
           <Tag color={getValue(value)}>{value}</Tag>
         )),
+      filters: [
+        {
+          text: "Tại phòng khám",
+          value: "Tại phòng khám",
+        },
+        {
+          text: "Tại nhà",
+          value: "Tại nhà",
+        },
+        {
+          text: "Tư vấn trực tuyến",
+          value: "Tư vấn trực tuyến",
+        },
+      ],
+      onFilter: (value: any, record) => record.availableAt.includes(value),
     },
     {
       key: "Mô tả dịch vụ",

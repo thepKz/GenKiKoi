@@ -80,6 +80,11 @@ const Customers = () => {
           {text === "nam" ? "Nam" : text === "" ? "NULL" : "Nữ"}
         </Tag>
       ),
+      filters: [
+        { text: "Nam", value: "nam" },
+        { text: "Nữ", value: "nữ" },
+      ],
+      onFilter: (value: any, record) => record.gender === value,
     },
     {
       key: "Số điện thoại",

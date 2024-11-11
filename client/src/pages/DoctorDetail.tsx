@@ -1,7 +1,6 @@
 import { Avatar, Button, Card, message, Spin } from "antd";
 import { ArrowRight2, User } from "iconsax-react";
 import { useEffect, useState } from "react";
-import Doctor1 from "../assets/doctor1.webp";
 import { AnimatedSection } from "../share";
 import { useLocation } from "react-router-dom";
 import { handleAPI } from "../apis/handleAPI";
