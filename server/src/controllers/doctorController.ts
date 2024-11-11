@@ -29,6 +29,7 @@ export const getAllDoctors = async (req: Request, res: Response) => {
     const formatDoctor = doctors.map((doctor: any) => ({
       _id: doctor._id,
       fullName: doctor.userId.fullName,
+      photoUrl: doctor.userId.photoUrl,
       gender: doctor.userId.gender,
       movingService: doctor.movingService,
       startDate: doctor.startDate,
