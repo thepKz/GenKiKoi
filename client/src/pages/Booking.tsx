@@ -40,7 +40,6 @@ const Booking = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [slot, setSlot] = useState<string | null>(null);
   const [date, setDate] = useState<dayjs.Dayjs | null>(null);
-  const [profile, setProfile] = useState<any | null>(null);
 
   const [services, setServices] = useState([]);
   const [doctors, setDoctors] = useState([]);
@@ -64,8 +63,22 @@ const Booking = () => {
 
   const [isModalVisible, setIsModalVisible] = useState(false);
 
-  const showModal = () => {
-    setIsModalVisible(true);
+  const showModal = async () => {
+    try {
+      await form.validateFields();
+
+      if (!date || !slot || !doctorSchedule) {
+        message.error("Vui lòng chọn đầy đủ ngày và giờ khám");
+        return;
+      }
+
+      setIsModalVisible(true);
+    } catch (error) {
+      const errorFields = (error as any).errorFields;
+      if (errorFields?.length) {
+        message.error("Vui lòng điền đầy đủ thông tin bắt buộc");
+      }
+    }
   };
 
   const handleCancel = () => {
@@ -78,8 +91,10 @@ const Booking = () => {
         setIsLoading(true);
         const api = `api/users/`;
         const res = await handleAPI(api, undefined, "GET");
-        setProfile(res.data);
-        form.setFieldsValue(res.data);
+        form.setFieldsValue({
+          ...res.data,
+          detailAddress: "",
+        });
       } catch (error) {
         console.log(error);
         message.error("Có lỗi xảy ra khi tải thông tin người dùng.");
@@ -89,14 +104,6 @@ const Booking = () => {
     };
     getProfile();
   }, []);
-
-  useEffect(() => {
-    if (profile) {
-      form.setFieldsValue({
-        detailAddress: profile.detailAddress,
-      });
-    }
-  }, [profile]);
 
   useEffect(() => {
     const getAllServices = async () => {
@@ -137,7 +144,6 @@ const Booking = () => {
       const pricePerKm = 5000; // 5.000 VNĐ/km
       const calculatedPrice = distanceInKm * pricePerKm;
 
-      // Làm tròn đến hàng nghìn
       setMovingPrice(Math.round(calculatedPrice / 1000) * 1000);
     }
   }, [distance]);
@@ -216,14 +222,9 @@ const Booking = () => {
       const bookSlotApi = `/api/doctorSchedules/${doctorSchedule.doctorId}`;
       const profileApi = `/api/users/update-profile`;
 
-      if (date && slot && doctorSchedule) {
-        values.appointmentDate = date.format("YYYY-MM-DD");
-        values.doctorScheduleId = doctorSchedule._id;
-        values.slotTime = slot;
-      } else {
-        message.error("Vui lòng chọn ngày và giờ khám");
-        return;
-      }
+      values.appointmentDate = date?.format("YYYY-MM-DD");
+      values.doctorScheduleId = doctorSchedule._id;
+      values.slotTime = slot;
 
       await handleAPI(profileApi, { fullName, phoneNumber, gender }, "PATCH");
 
@@ -627,6 +628,15 @@ const Booking = () => {
                       <Form.Item
                         name="detailAddress"
                         label="Địa chỉ"
+                        required={!isAddressDisabled}
+                        rules={[
+                          !isAddressDisabled
+                            ? {
+                                required: true,
+                                message: "Vui lòng nhập địa chỉ",
+                              }
+                            : {},
+                        ]}
                       >
                         <AutoComplete
                           options={addressOptions}

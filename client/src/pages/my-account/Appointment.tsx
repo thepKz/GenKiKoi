@@ -135,6 +135,11 @@ const Appointment = () => {
       dataIndex: "appointmentDate",
       width: 120,
       render: (date) => new Date(date).toLocaleDateString(),
+      sorter: (a, b) => {
+        const dateA = new Date(a.appointmentDate);
+        const dateB = new Date(b.appointmentDate);
+        return dateA.getTime() - dateB.getTime();
+      },
     },
     {
       key: "Bác sĩ",
@@ -147,7 +152,7 @@ const Appointment = () => {
       key: "Trạng thái cuộc hẹn",
       title: "Trạng thái cuộc hẹn",
       dataIndex: "status",
-      width: 170,
+      width: 180,
       render: (status) => (
         <>
           <Tag
@@ -158,6 +163,25 @@ const Appointment = () => {
           </Tag>
         </>
       ),
+      filters: [
+        {
+          text: "Đang chờ xử lý",
+          value: "Đang chờ xử lý",
+        },
+        {
+          text: "Đã xác nhận",
+          value: "Đã xác nhận",
+        },
+        {
+          text: "Đã hoàn thành",
+          value: "Đã hoàn thành",
+        },
+        {
+          text: "Đã hủy",
+          value: "Đã hủy",
+        },
+      ],
+      onFilter: (value: any, record) => record.status === value,
     },
     {
       key: "Ghi chú",
