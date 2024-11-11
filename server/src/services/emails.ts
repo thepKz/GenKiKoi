@@ -10,6 +10,7 @@ export const transporter = nodemailer.createTransport({
   secure: true, // Bật SSL
   auth: {
     user: "dodung.dqd@gmail.com",
+    // user: "maitanthepmrthep@gmail.com",
     pass: process.env.MAIL_PASSWORD, // Thay bằng mật khẩu ứng dụng của Gmail
   },
 });

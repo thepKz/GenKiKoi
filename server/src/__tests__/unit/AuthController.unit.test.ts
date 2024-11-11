@@ -1,3 +1,10 @@
+// Test register(authController.ts)
+// Test login(authController.ts)
+// Test loginWithGoogle(authController.ts)
+// Test loginAdmin(authController.ts)
+// Test checkUsername(authController.ts)
+// Test checkEmail(authController.ts)
+// Model: User, Customer, Manager
 import bcrypt from 'bcryptjs';
 import { Request, Response } from 'express';
 import { checkEmail, checkUsername, login, loginAdmin, loginWithGoogle, register } from '../../controllers/authController';

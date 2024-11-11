@@ -1,3 +1,10 @@
+// Test register(POST /api/auth/register)
+// Test login(POST /api/auth/login)
+// Test login-admin(POST /api/auth/login-admin)
+// Test check-username(POST /api/auth/check-username)
+// Test check-email(POST /api/auth/check-email)
+// Model: User
+// Service: emails
 import bcrypt from 'bcryptjs';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose from 'mongoose';

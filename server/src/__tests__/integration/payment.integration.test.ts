@@ -1,3 +1,5 @@
+// Test create payment(POST /api/payments)
+// Model: Payment, Appointment, Customer, User
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { MongoMemoryServer } from "mongodb-memory-server";

@@ -1,4 +1,6 @@
-// UserController.unit.test.ts
+// Test getUser(userController.ts)
+// Test updateProfile(userController.ts)
+// Model: Customer, User
 import { Response } from 'express';
 import { getUser, updateProfile } from '../../controllers/userController';
 import { Customer, User } from '../../models';

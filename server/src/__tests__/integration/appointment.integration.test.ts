@@ -1,3 +1,7 @@
+// Test add new appointment(POST /api/appointments/customers/:customerId)
+// Test get all appointments of customer(GET /api/appointments/customers/:customerId)
+// Test update appointment status(PATCH /api/appointments/:appointmentId/status)
+// Model: Appointment, Customer, Doctor, DoctorSchedule, Service, User
 import { MongoMemoryServer } from "mongodb-memory-server";
 import mongoose from "mongoose";
 import request from "supertest";
