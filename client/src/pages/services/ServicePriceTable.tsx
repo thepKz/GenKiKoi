@@ -1,23 +1,9 @@
-import { Button, message, Tag } from "antd";
+import { Button, message, Spin, Tag } from "antd";
 import { ArrowRight2 } from "iconsax-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { handleAPI } from "../../apis/handleAPI";
 import { getValue } from "../../utils";
-
-const koiServices = [
-  { key: "1", service: "Khám tổng quát", unit: "lần", price: "500,000" },
-  { key: "2", service: "Tư vấn tại trung tâm", unit: "lần", price: "300,000" },
-  { key: "3", service: "Kiểm tra chất lượng nước", unit: "mẫu", price: "400,000" },
-  { key: "4", service: "Điều trị bệnh nấm", unit: "lần", price: "600,000" },
-  { key: "5", service: "Điều trị ký sinh trùng", unit: "lần", price: "700,000" },
-  { key: "6", service: "Tiêm vắc-xin", unit: "con", price: "250,000" },
-  { key: "7", service: "Điều trị stress", unit: "lần", price: "400,000" },
-  { key: "8", service: "Cắt tỉa vây", unit: "con", price: "300,000" },
-  { key: "9", service: "Siêu âm", unit: "lần", price: "800,000" },
-  { key: "10", service: "Xét nghiệm máu", unit: "mẫu", price: "600,000" },
-  { key: "11", service: "Tư vấn online", unit: "30 phút", price: "200,000" },
-];
 
 const ServicePriceTable = () => {
   const navigate = useNavigate();
@@ -44,6 +30,14 @@ const ServicePriceTable = () => {
     };
     getServices();
   }, []);
+
+  if (isLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-gradient-to-t from-[#2A7F9E] to-[#175670]">
+        <Spin size="large" />
+      </div>
+    );
+  }
 
   return (
     <div className="section bg-gradient-to-t from-[#2A7F9E] to-[#175670] py-36 pt-44 text-center">

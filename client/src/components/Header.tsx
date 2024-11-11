@@ -144,16 +144,6 @@ const Header = () => {
                   </Button>
                 </Link>
               )}
-              <Badge
-                count={9}
-                size="small"
-                offset={[-4, 3]}
-              >
-                <Notification
-                  className="cursor-pointer"
-                  color="white"
-                />
-              </Badge>
               <Dropdown menu={{ items: profile }}>
                 <Avatar
                   src={auth.photoUrl}

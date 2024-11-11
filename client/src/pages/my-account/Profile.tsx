@@ -156,7 +156,7 @@ const Profile = () => {
 
   if (isLoading) {
     return (
-      <div className="flex h-[calc(100vh-115px)] items-center justify-center">
+      <div className="my-account-section flex items-center justify-center">
         <Spin size="large" />
       </div>
     );
@@ -219,10 +219,15 @@ const Profile = () => {
               </label>
             </div>
             <Divider />
-            <div className="mx-5 flex items-center gap-2">
-              <KeySquare />
-              <Link to="/change-password">Thay đổi mật khẩu ở đây!</Link>
-            </div>
+            <Link to="/change-password">
+              <Button
+                size="large"
+                className="w-full"
+              >
+                <KeySquare />
+                Thay đổi mật khẩu ở đây!
+              </Button>
+            </Link>
           </Col>
           <Col span={18}>
             <div className="mr-10 mt-8">

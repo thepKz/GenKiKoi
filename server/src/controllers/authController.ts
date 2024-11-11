@@ -379,6 +379,11 @@ export const loginWithGoogle = async (req: Request, res: Response) => {
         return res.status(404).json({ message: "Không tìm thấy khách hàng" });
       }
 
+      if (user.photoUrl === "") {
+        user.photoUrl = photoUrl;
+        await user.save();
+      }
+
       customer.isVerified = true;
       customer.verificationToken = undefined;
       customer.verificationTokenExpiresAt = undefined;

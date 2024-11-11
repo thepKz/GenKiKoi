@@ -55,12 +55,6 @@ const SiderComponent = () => {
         />
       ),
     },
-    {
-      key: "logout",
-      label: "Đăng xuất",
-      icon: <Logout size={20} />,
-      onClick: () => dispatch(removeAuth({})),
-    },
   ];
 
   return (
@@ -92,7 +86,18 @@ const SiderComponent = () => {
             [items.find((item) => item?.key === location.pathname.split("/")[2])?.key] as string[]
           }
         />
-        <p className="text-center font-bold text-blue-primary">© 2024 GenKiKoi</p>
+        <div>
+          <div
+            className="m-1 rounded-md px-6 py-[10px] transition-colors duration-150 ease-in hover:bg-[#f0f0f0]"
+            onClick={() => dispatch(removeAuth({}))}
+          >
+            <div className="flex items-center justify-center gap-2">
+              <Logout size={20} />
+              <span>Đăng xuất</span>
+            </div>
+          </div>
+          <p className="text-center font-bold text-blue-primary">© 2024 GenKiKoi</p>
+        </div>
       </div>
     </Sider>
   );

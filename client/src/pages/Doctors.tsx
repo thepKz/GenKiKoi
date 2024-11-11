@@ -12,26 +12,6 @@ const Doctors = () => {
     window.scrollTo(0, 0);
   }, []);
 
-  // const [doctors] = useState([
-  //   {
-  //     id: "D1",
-  //     name: "Dr. Nguyễn Văn A",
-  //     specialty: "Chuyên gia cá Koi",
-  //     rating: 4.8,
-  //     image: Doctor1,
-  //     description: "Bác sĩ Nguyễn Văn A có hơn 10 năm kinh nghiệm trong lĩnh vực chăm sóc cá Koi.",
-  //   },
-  //   {
-  //     id: "D2",
-  //     name: "Dr. Trần Thị B",
-  //     specialty: "Chuyên gia bệnh lý thủy sinh",
-  //     rating: 4.9,
-  //     image: Doctor1,
-  //     description: "Bác sĩ Trần Thị B là chuyên gia hàng đầu về bệnh lý thủy sinh tại GenKiKoi.",
-  //   },
-  //   // Add more doctors as needed
-  // ]);
-
   const [doctors, setDoctors] = useState<any>([]);
   const [isLoading, setIsLoading] = useState(false);
 

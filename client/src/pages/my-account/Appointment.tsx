@@ -232,7 +232,7 @@ const Appointment = () => {
 
   if (isLoading) {
     return (
-      <div className="flex h-[calc(100vh-115px)] items-center justify-center">
+      <div className="my-account-section flex items-center justify-center">
         <Spin size="large" />
       </div>
     );
