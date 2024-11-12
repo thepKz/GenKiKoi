@@ -30,6 +30,7 @@ export const getAllDoctors = async (req: Request, res: Response) => {
     const formatDoctor = filteredDoctors.map((doctor: any) => ({
       _id: doctor._id,
       fullName: doctor.userId.fullName,
+      userId: doctor.userId._id,
       photoUrl: doctor.userId.photoUrl,
       gender: doctor.userId.gender,
       movingService: doctor.movingService,
@@ -64,6 +65,7 @@ export const addNewDoctor = async (req: Request, res: Response) => {
       licenseNumber,
       yearOfExperience,
       movingService,
+      googleMeetLink,
     } = req.body;
 
     if (
@@ -72,7 +74,8 @@ export const addNewDoctor = async (req: Request, res: Response) => {
       !specialization ||
       !email ||
       !licenseNumber ||
-      !yearOfExperience
+      !yearOfExperience ||
+      !googleMeetLink
     ) {
       return res
         .status(400)
@@ -98,10 +101,12 @@ export const addNewDoctor = async (req: Request, res: Response) => {
           licenseNumber,
           yearOfExperience,
           movingService,
+          googleMeetLink,
         });
 
         formatDoctor = {
           _id: doctor._id,
+          userId: existUser._id,
           fullName: existUser.fullName,
           gender: existUser.gender,
           movingService: doctor.movingService,
@@ -109,6 +114,7 @@ export const addNewDoctor = async (req: Request, res: Response) => {
           licenseNumber: doctor.licenseNumber,
           yearOfExperience: doctor.yearOfExperience,
           startDate: doctor.startDate,
+          googleMeetLink: doctor.googleMeetLink,
           email: existUser.email,
         };
       }
@@ -132,17 +138,20 @@ export const addNewDoctor = async (req: Request, res: Response) => {
         licenseNumber,
         yearOfExperience,
         movingService,
+        googleMeetLink,
       });
 
       formatDoctor = {
         _id: doctor._id,
         fullName: newUser.fullName,
+        userId: newUser._id,
         gender: newUser.gender,
         movingService: doctor.movingService,
         specialization: doctor.specialization,
         licenseNumber: doctor.licenseNumber,
         yearOfExperience: doctor.yearOfExperience,
         startDate: doctor.startDate,
+        googleMeetLink: doctor.googleMeetLink,
         email: newUser.email,
       };
     }
@@ -244,6 +253,7 @@ export const updateByDoctorId = async (req: Request, res: Response) => {
 
     const updatedInfo = {
       _id: updatedDoctor._id,
+      userId: updatedUser._id,
       photoUrl: updatedUser.photoUrl,
       fullName: updatedUser.fullName,
       gender: updatedUser.gender,
@@ -251,6 +261,7 @@ export const updateByDoctorId = async (req: Request, res: Response) => {
       specialization: updatedDoctor.specialization,
       licenseNumber: updatedDoctor.licenseNumber,
       yearOfExperience: updatedDoctor.yearOfExperience,
+      startDate: updatedDoctor.startDate,
       email: updatedUser.email,
       phoneNumber: updatedUser.phoneNumber,
       introduction: updatedDoctor.introduction,

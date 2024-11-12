@@ -167,10 +167,10 @@ export const checkEmailWithPhoneNumber = async (
 
 export const getAllUsers = async (req: Request, res: Response) => {
   try {
-    const users = await User.find();
+    const users = await User.find({ role: { $ne: "manager" } });
 
     if (!users || users.length === 0) {
-      return res.status(404).json("Danh sách tài khoản trống");
+      return res.status(404).json({ message: "Danh sách tài khoản trống" });
     }
 
     const formattedData = users.map((user) => ({

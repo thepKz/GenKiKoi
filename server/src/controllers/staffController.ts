@@ -27,6 +27,7 @@ export const getAllStaffs = async (req: Request, res: Response) => {
 
     const formatStaff = filteredStaffs.map((staff: any) => ({
       _id: staff._id,
+      userId: staff.userId._id,
       fullName: staff.userId.fullName,
       gender: staff.userId.gender,
       position: staff.position,
@@ -112,6 +113,7 @@ export const addNewStaff = async (req: Request, res: Response) => {
         formatStaff = {
           _id: staff._id,
           fullName: existUser.fullName,
+          userId: existUser._id,
           gender: existUser.gender,
           position: staff.position,
           startDate: staff.startDate,
@@ -205,19 +207,6 @@ export const updateStaffById = async (req: Request, res: Response) => {
       workShift,
     } = req.body;
 
-    // if (
-    //   !phoneNumber ||
-    //   !photoUrl ||
-    //   !fullName ||
-    //   !gender ||
-    //   !position ||
-    //   !email
-    // ) {
-    //   return res
-    //     .status(400)
-    //     .json({ message: "Vui lòng cung cấp đầy đủ thông tin" });
-    // }
-
     // check nhan vien co ton tai khong
     const existsStaff = await Staff.findById(staffId);
 
@@ -273,6 +262,7 @@ export const updateStaffById = async (req: Request, res: Response) => {
     const updatedInfo = {
       _id: updatedStaff._id,
       fullName: updatedUser.fullName,
+      userId: updatedUser._id,
       gender: updatedUser.gender,
       photoUrl: updatedUser.photoUrl,
       position: updatedStaff.position,

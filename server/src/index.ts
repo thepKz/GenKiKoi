@@ -94,11 +94,12 @@ const AddManager = async () => {
     const hashedPass = await bcrypt.hash("11111111", salt);
 
     const newUser = new User({
-      username: "managerDemo",
-      email: "manager@gmail.com",
+      username: "lehuy89",
+      email: "manager.lehuy@gmail.com",
       password: hashedPass,
-      fullName: "Nguyễn Văn A",
-      phoneNumber: "0123456789",
+      fullName: "Lê Huy Vũ",
+      phoneNumber: "0352195824",
+      photoUrl: "https://firebasestorage.googleapis.com/v0/b/genkikoi-e18b5.appspot.com/o/managers%2Fmanager.jpg?alt=media&token=8733e5a4-fdb5-48b4-8132-66d5d90f08ba",
       role: "manager",
       gender: "nam",
       isDisabled: false,

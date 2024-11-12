@@ -177,9 +177,13 @@ const Staffs = () => {
     try {
       const res: any = await handleAPI(api, { [field]: value }, "POST");
 
-      if (res.exists) {
+      if (
+        res.exists &&
+        (!editingPerson || res.userId !== editingPerson.userId)
+      ) {
         return true;
       }
+
       return false;
     } catch (error) {
       console.log(error);
@@ -190,6 +194,8 @@ const Staffs = () => {
     const person = isStaff
       ? staffs.find((s: any) => s._id === personId)
       : doctors.find((d: any) => d._id === personId);
+
+    console.log(person);
     if (person) {
       handleOpenModal(person, isStaff ? "staff" : "doctor");
     } else {
@@ -419,7 +425,10 @@ const Staffs = () => {
     try {
       const res: any = await handleAPI(api, { [field]: value }, "POST");
 
-      if (res.exists) {
+      if (
+        res.exists &&
+        (!editingPerson || editingPerson._id !== res.doctorId)
+      ) {
         return true;
       }
       return false;
@@ -645,11 +654,12 @@ const Staffs = () => {
                       <Form.Item
                         name="specialization"
                         label="Chứng chỉ"
+                        hasFeedback
+                        validateDebounce={1000}
                         rules={[
                           {
                             required: true,
                             message: "Vui lòng nhập tên chứng chỉ",
-                            
                           },
                           {
                             min: 20,
@@ -677,11 +687,12 @@ const Staffs = () => {
                           },
                           {
                             min: 6,
-                            message: "Mã số chứng chỉ phải có ít nhất 2 ký tự",
+                            message: "Mã số chứng chỉ phải có ít nhất 6 ký tự",
                           },
                           {
                             max: 20,
-                            message: "Mã số chứng chỉ không được vượt quá 20 ký tự",
+                            message:
+                              "Mã số chứng chỉ không được vượt quá 20 ký tự",
                           },
                           {
                             validator: async (_, value) => {
@@ -759,6 +770,8 @@ const Staffs = () => {
                       <Form.Item
                         name="googleMeetLink"
                         label="Link google meet"
+                        hasFeedback
+                        validateDebounce={1000}
                         rules={[
                           {
                             required: true,
@@ -767,8 +780,7 @@ const Staffs = () => {
                           {
                             pattern:
                               /^https:\/\/meet\.google\.com\/[a-z0-9-]+$/i,
-                            message:
-                              "Link Google Meet không hợp lệ",
+                            message: "Link Google Meet không hợp lệ",
                           },
                         ]}
                       >
