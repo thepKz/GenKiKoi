@@ -112,6 +112,7 @@ const Doctors = () => {
                       </div>
                     )
                   }
+                  onClick={() => handleViewDetails(doctor._id)}
                 >
                   <Card.Meta
                     title={<span className="text-xl text-white">Bác sĩ {doctor.fullName}</span>}

@@ -2,10 +2,11 @@ import { Avatar, Button, Card, message, Spin } from "antd";
 import { ArrowRight2, User } from "iconsax-react";
 import { useEffect, useState } from "react";
 import { AnimatedSection } from "../share";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { handleAPI } from "../apis/handleAPI";
 
 const DoctorDetail = () => {
+  const navigate = useNavigate();
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -73,6 +74,7 @@ const DoctorDetail = () => {
                   size="large"
                   className="mt-4 flex items-center"
                   ghost
+                  onClick={() => navigate("/booking")}
                 >
                   Đặt lịch hẹn
                   <ArrowRight2 size={18} />

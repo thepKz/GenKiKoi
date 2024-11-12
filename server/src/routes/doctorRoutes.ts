@@ -18,7 +18,7 @@ router.get("/", getAllDoctors);
 
 router.get("/all", getAllDoctorsForBooking);
 
-router.get("/:doctorId", authMiddleware, getDoctorById);
+router.get("/:doctorId", getDoctorById);
 
 router.get("/:doctorId/schedule", authMiddleware, getScheduleByDoctorId);
 
