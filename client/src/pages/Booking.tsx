@@ -227,7 +227,7 @@ const Booking = () => {
   const handleSubmit = async (values: any) => {
     try {
       setIsLoadingForm(true);
-      const { fullName, phoneNumber, gender, detailAddress } = values;
+      const { fullName, phoneNumber, gender } = values;
 
       const appointmentApi = `/api/appointments/customers/${auth.customerId}`;
       const bookSlotApi = `/api/doctorSchedules/${doctorSchedule.doctorId}`;

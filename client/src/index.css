@@ -91,4 +91,6 @@
   height: calc(100vh - 260px);
 }
 
-
+.feedback .ant-form-item-label {
+  font-weight: bold;
+}

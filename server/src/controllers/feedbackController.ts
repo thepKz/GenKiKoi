@@ -29,6 +29,10 @@ export const createNewFeedback = async (req: AuthRequest, res: Response) => {
         .json({ message: "Không tìm thấy cuộc hẹn hợp lệ" });
     }
 
+    appointment.isFeedback = true;
+
+    await appointment.save();
+
     const existingFeedback = await Feedback.findOne({ appointmentId });
 
     if (existingFeedback) {

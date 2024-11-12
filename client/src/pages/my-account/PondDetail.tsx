@@ -5,6 +5,8 @@ import { GiCirclingFish } from "react-icons/gi";
 import { Link, useLocation } from "react-router-dom";
 import { handleAPI } from "../../apis/handleAPI";
 import { HeaderComponent } from "../../components";
+import { AnimatePresence, motion } from "framer-motion";
+import { FaTimes } from "react-icons/fa";
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 const PondDetail = () => {
@@ -12,6 +14,7 @@ const PondDetail = () => {
   const pondId = pathname.split("/")[4];
   const [record, setRecord] = useState<any>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   useEffect(() => {
     const getRecord = async () => {
@@ -24,7 +27,7 @@ const PondDetail = () => {
         setRecord(res.data);
       } catch (error: any) {
         console.log(error);
-        message.error(error.message);
+        message.error(error.message || "Có lỗi khi lấy dữ liệu, vui lòng thử lại sau ít phút!");
       } finally {
         setIsLoading(false);
       }
@@ -103,18 +106,24 @@ const PondDetail = () => {
                   <p className="font-semibold">Hình ảnh:</p>
                   <div className="mt-3 grid grid-cols-2 gap-5">
                     {record?.images.map((image: string, i: any) => (
-                      <Avatar
+                      <div
                         key={i}
-                        shape="square"
-                        style={{
-                          backgroundColor: "transparent",
-                          border: "2px dashed #ccc",
-                          margin: "0px auto",
-                        }}
-                        src={image}
-                        icon={<GiCirclingFish color="#ccc" />}
-                        size={155}
-                      />
+                        className="cursor-pointer"
+                        onClick={() => setSelectedImage(image)}
+                      >
+                        <Avatar
+                          key={i}
+                          shape="square"
+                          style={{
+                            backgroundColor: "transparent",
+                            border: "2px dashed #ccc",
+                            margin: "0px auto",
+                          }}
+                          src={image}
+                          icon={<GiCirclingFish color="#ccc" />}
+                          size={155}
+                        />
+                      </div>
                     ))}
                   </div>
                 </div>
@@ -128,31 +137,31 @@ const PondDetail = () => {
               <div className="flex flex-col gap-1">
                 <p>
                   <span className="font-semibold">Độ pH: </span>
-                  {record?.ph}
+                  {record?.ph} (mg/L)
                 </p>
                 <p>
                   <span className="font-semibold">Nồng độ amonia: </span>
-                  {record?.ammoniaLevel}%
+                  {record?.ammoniaLevel} (mg/L)
                 </p>
                 <p>
                   <span className="font-semibold">Nồng độ nitrat: </span>
-                  {record?.nitrateLevel}%
+                  {record?.nitrateLevel} (mg/L)
                 </p>
                 <p>
                   <span className="font-semibold">Hàm lượng oxy: </span>
-                  {record?.oxygenLevel}%
+                  {record?.oxygenLevel} (mg/L)
                 </p>
                 <p>
                   <span className="font-semibold">Mức độ sạch sẽ: </span>
                   {record?.cleanliness}
                 </p>
                 <p>
-                  <span className="font-semibold">Tình trạng hệ thống lọc: </span>
+                  <span className="font-semibold">Kích cỡ hệ thống lọc: </span>
                   {record?.filtrationSystem}
                 </p>
                 <p>
                   <span className="font-semibold">Kích thước hồ cá: </span>
-                  {record?.pondSize}
+                  {record?.pondSize} (L)
                 </p>
                 <p>
                   <span className="font-semibold">Nhiệt độ nước: </span>
@@ -185,6 +194,34 @@ const PondDetail = () => {
             </div>
           </Col>
         </Row>
+        <AnimatePresence>
+          {selectedImage && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90"
+              onClick={() => setSelectedImage(null)}
+            >
+              <div className="relative max-h-[90vh] max-w-[90vw]">
+                <motion.img
+                  src={selectedImage}
+                  alt="Hình ảnh chi tiết"
+                  className="max-h-[70vh] max-w-[70vw] object-contain"
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ duration: 0.3 }}
+                />
+                <button
+                  className="absolute -right-10 -top-10 text-2xl text-white"
+                  onClick={() => setSelectedImage(null)}
+                >
+                  <FaTimes />
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </ConfigProvider>
   );

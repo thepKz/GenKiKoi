@@ -9,6 +9,8 @@ import {
   TableProps,
   Tag,
   Input,
+  Divider,
+  Form,
 } from "antd";
 import { getValue } from "../../utils";
 import { useEffect, useState } from "react";
@@ -25,8 +27,7 @@ const Appointment = () => {
   const [feedbackLoading, setFeedbackLoading] = useState(false);
   const [isFeedbackModalVisible, setIsFeedbackModalVisible] = useState<boolean>(false);
   const [currentAppointment, setCurrentAppointment] = useState<any>(null);
-  const [rating, setRating] = useState(0);
-  const [comment, setComment] = useState("");
+  const [form] = Form.useForm();
 
   console.log(currentAppointment);
 
@@ -88,14 +89,14 @@ const Appointment = () => {
     }
   };
 
-  const handleFeedbackSubmit = async () => {
+  const handleFeedbackSubmit = async (values: any) => {
     try {
       setFeedbackLoading(true);
       const api = `/api/feedbacks`;
       const feedbackData = {
         appointmentId: currentAppointment.appointmentId,
-        rating,
-        comment,
+        rating: values.rating,
+        comment: values.comment,
       };
       const res: any = await handleAPI(api, feedbackData, "POST");
       message.success(res.message);
@@ -105,14 +106,14 @@ const Appointment = () => {
       message.error("Có lỗi xảy ra khi gửi đánh giá");
     } finally {
       setFeedbackLoading(false);
-      setComment("");
-      setRating(0);
+      form.resetFields();
     }
   };
 
   const showFeedbackModal = (record: any) => {
     setCurrentAppointment(record);
     setIsFeedbackModalVisible(true);
+    form.resetFields();
   };
 
   const columns: TableProps["columns"] = [
@@ -272,13 +273,16 @@ const Appointment = () => {
         okText="Gửi nhận xét"
         cancelText="Hủy"
         open={isFeedbackModalVisible}
-        onOk={handleFeedbackSubmit}
+        onOk={() => form.submit()}
         confirmLoading={feedbackLoading}
-        onCancel={() => setIsFeedbackModalVisible(false)}
-        okButtonProps={{ disabled: rating === 0 || comment.trim() === "" }}
+        onCancel={() => {
+          setIsFeedbackModalVisible(false);
+          form.resetFields();
+        }}
       >
-        <div className="my-5">
+        <div className="feedback py-5 pb-0">
           <h1 className="heading-4">Viết đánh giá</h1>
+          <Divider style={{ margin: "10px 0" }} />
           <div className="my-2 flex flex-col gap-3 text-base">
             <p>
               <span className="font-semibold">Đánh giá dịch vụ:</span>{" "}
@@ -289,22 +293,52 @@ const Appointment = () => {
             </p>
             <p className="font-semibold">Bạn có hài lòng với cuộc hẹn này không 🥰</p>
           </div>
-          <div className="mt-3 text-center">
-            <Rate
-              onChange={setRating}
-              value={rating}
-              tooltips={["Rất tệ", "Tệ", "Ổn", "Tốt", "Rất tốt"]}
-              style={{ fontSize: 28 }}
-            />
-          </div>
-          <p className="mb-2 text-base font-semibold">Nhận xét</p>
-          <TextArea
+
+          <Form
+            form={form}
+            onFinish={handleFeedbackSubmit}
+            layout="vertical"
             size="large"
-            placeholder="Hãy viết nhận xét của mình ở đây nhé"
-            rows={5}
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-          />
+          >
+            <Form.Item
+              name="rating"
+              rules={[
+                {
+                  required: true,
+                  message: "Vui lòng đánh giá số sao",
+                },
+              ]}
+              className="mb-0 flex justify-center"
+            >
+              <Rate
+                tooltips={["Rất tệ", "Tệ", "Ổn", "Tốt", "Rất tốt"]}
+                style={{ fontSize: 28 }}
+                className=""
+              />
+            </Form.Item>
+
+            <Form.Item
+              name="comment"
+              label="Nhận xét"
+              validateTrigger="onBlur"
+              rules={[
+                {
+                  min: 10,
+                  message: "Nhận xét phải có ít nhất 10 ký tự",
+                },
+                {
+                  max: 500,
+                  message: "Nhận xét không được vượt quá 500 ký tự",
+                },
+              ]}
+            >
+              <TextArea
+                size="large"
+                placeholder="Hãy viết nhận xét của mình ở đây nhé"
+                rows={5}
+              />
+            </Form.Item>
+          </Form>
         </div>
       </Modal>
     </ConfigProvider>

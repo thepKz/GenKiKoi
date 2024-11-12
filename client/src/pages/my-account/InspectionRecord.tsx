@@ -62,42 +62,33 @@ const InspectionRecord = () => {
                 key={i}
                 className="duration-100 ease-in hover:border-[#4096ff]"
               >
-                <div className="flex items-center gap-5">
-                  <div className="h-[150px] w-[250px] overflow-hidden rounded-lg">
-                    <img
-                      src="https://placehold.co/150x150"
-                      alt=""
-                      className="h-full w-full object-cover"
-                    />
+                <div className="flex w-full">
+                  <div className="flex flex-1 flex-col gap-2">
+                    <p>
+                      <span className="font-semibold">Mã báo cáo: </span>
+                      {pond.recordId}
+                    </p>
+                    <p>
+                      <span className="font-semibold">Kích cỡ hồ: </span>
+                      {pond.pondSize}
+                    </p>
+                    <p>
+                      <span className="font-semibold">Tình trạng: </span>
+                      {pond.status}
+                    </p>
+                    <p>
+                      <span className="font-semibold">Ngày khảo sát: </span>
+                      {new Date(pond.createAt).toLocaleDateString()}
+                    </p>
+                    <p>
+                      <span className="font-semibold">Ghi chú: </span>
+                      {pond.notes}
+                    </p>
                   </div>
-                  <div className="flex w-full">
-                    <div className="flex flex-1 flex-col gap-2">
-                      <p>
-                        <span className="font-semibold">Mã báo cáo: </span>
-                        {pond.recordId}
-                      </p>
-                      <p>
-                        <span className="font-semibold">Kích cỡ hồ: </span>
-                        {pond.pondSize}
-                      </p>
-                      <p>
-                        <span className="font-semibold">Tình trạng: </span>
-                        {pond.status}
-                      </p>
-                      <p>
-                        <span className="font-semibold">Kích cỡ hệ thống lọc: </span>
-                        {pond.filtrationSystem}
-                      </p>
-                      <p>
-                        <span className="font-semibold">Ghi chú: </span>
-                        {pond.notes}
-                      </p>
-                    </div>
-                    <div className="flex w-1/5 flex-col gap-2 text-right">
-                      <Link to={`/my-account/inspection-record/ponds/${pond.recordId}/records`}>
-                        <Button type="primary">Xem chi tiết</Button>
-                      </Link>
-                    </div>
+                  <div className="flex w-1/5 flex-col gap-2 text-right">
+                    <Link to={`/my-account/inspection-record/ponds/${pond.recordId}/records`}>
+                      <Button type="primary">Xem chi tiết</Button>
+                    </Link>
                   </div>
                 </div>
               </Card>

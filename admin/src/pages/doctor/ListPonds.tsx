@@ -1,4 +1,4 @@
-import { Breadcrumb, Button, Card, message, Spin } from "antd";
+import { Breadcrumb, Button, Card, Empty, message, Spin } from "antd";
 import { Stickynote } from "iconsax-react";
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
@@ -81,41 +81,52 @@ const ListPonds = () => {
         ]}
       />
       <div className="mt-3 flex h-[calc(100vh-200px)] flex-col gap-5 overflow-y-auto">
-        {filteredPonds.map((pond: any, i) => (
-          <Card key={i} className="duration-100 ease-in hover:border-[#4096ff]">
-            <div className="flex w-full">
-              <div className="flex flex-1 flex-col gap-2">
-                <p>
-                  <span className="font-semibold">Mã báo cáo: </span>
-                  {pond.recordId}
-                </p>
-                <p>
-                  <span className="font-semibold">Kích cỡ hồ: </span>
-                  {pond.pondSize} (L)
-                </p>
-                <p>
-                  <span className="font-semibold">Tình trạng: </span>
-                  {pond.status}
-                </p>
-                <p>
-                  <span className="font-semibold">Ngày khảo sát: </span>
-                  {new Date(pond.createAt).toLocaleDateString()}
-                </p>
-                <p>
-                  <span className="font-semibold">Ghi chú: </span>
-                  {pond.notes}
-                </p>
+        {filteredPonds ? (
+          filteredPonds.map((pond: any, i) => (
+            <Card
+              key={i}
+              className="duration-100 ease-in hover:border-[#4096ff]"
+            >
+              <div className="flex w-full">
+                <div className="flex flex-1 flex-col gap-2">
+                  <p>
+                    <span className="font-semibold">Mã báo cáo: </span>
+                    {pond.recordId}
+                  </p>
+                  <p>
+                    <span className="font-semibold">Kích cỡ hồ: </span>
+                    {pond.pondSize} (L)
+                  </p>
+                  <p>
+                    <span className="font-semibold">Tình trạng: </span>
+                    {pond.status}
+                  </p>
+                  <p>
+                    <span className="font-semibold">Ngày khảo sát: </span>
+                    {new Date(pond.createAt).toLocaleDateString()}
+                  </p>
+                  <p>
+                    <span className="font-semibold">Ghi chú: </span>
+                    {pond.notes}
+                  </p>
+                </div>
+                <div className="flex w-1/5 flex-col gap-2 text-right">
+                  <Link
+                    to={`/doctor/customers/${customerId}/ponds/${pond.recordId}/records`}
+                  >
+                    <Button type="primary">Xem chi tiết</Button>
+                  </Link>
+                </div>
               </div>
-              <div className="flex w-1/5 flex-col gap-2 text-right">
-                <Link
-                  to={`/doctor/customers/${customerId}/ponds/${pond.recordId}/records`}
-                >
-                  <Button type="primary">Xem chi tiết</Button>
-                </Link>
-              </div>
-            </div>
-          </Card>
-        ))}
+            </Card>
+          ))
+        ) : (
+          <Empty
+            className="mt-20"
+            imageStyle={{ height: 200 }}
+            description="Không tìm thấy hồ sơ nào"
+          />
+        )}
       </div>
     </div>
   );

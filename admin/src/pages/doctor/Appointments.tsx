@@ -47,7 +47,9 @@ const Appointments = () => {
         setAppointments(res.data);
       } catch (error: any) {
         console.log(error);
-        message.error(error.message);
+        message.error(
+          error.message || "Đã có lỗi xẩy ra, vui lòng thử lại sau ít phút!",
+        );
       } finally {
         setIsLoading(false);
       }

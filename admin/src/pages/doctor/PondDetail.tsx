@@ -74,7 +74,7 @@ const PondDetail = () => {
           },
         ]}
       />
-      <Row gutter={32} className="">
+      <Row gutter={32}>
         <Col span={7}>
           <div className="text-base">
             <h4 className="heading-4">Thông tin chung</h4>
@@ -99,13 +99,14 @@ const PondDetail = () => {
               <div className="">
                 <p className="font-semibold">Hình ảnh:</p>
                 <div className="mt-3 grid grid-cols-2 gap-5">
-                  {record?.images.map((image: string, i: number) => (
+                  {record?.images.map((image: string, i: any) => (
                     <div
                       key={i}
                       className="cursor-pointer"
                       onClick={() => setSelectedImage(image)}
                     >
                       <Avatar
+                        key={i}
                         shape="square"
                         style={{
                           backgroundColor: "transparent",
