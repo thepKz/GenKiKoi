@@ -650,6 +650,11 @@ const Staffs = () => {
                           {
                             required: true,
                             message: "Vui lòng nhập tên chứng chỉ",
+                            
+                          },
+                          {
+                            min: 20,
+                            message: "Tên chứng chỉ phải có ít nhất 20 ký tự",
                           },
                           {
                             max: 200,
@@ -670,6 +675,14 @@ const Staffs = () => {
                           {
                             required: true,
                             message: "Vui lòng nhập mã số chứng chỉ",
+                          },
+                          {
+                            min: 6,
+                            message: "Mã số chứng chỉ phải có ít nhất 2 ký tự",
+                          },
+                          {
+                            max: 20,
+                            message: "Mã số chứng chỉ không được vượt quá 20 ký tự",
                           },
                           {
                             validator: async (_, value) => {
@@ -751,6 +764,12 @@ const Staffs = () => {
                           {
                             required: true,
                             message: "Vui lòng nhập link google meet",
+                          },
+                          {
+                            pattern:
+                              /^https:\/\/meet\.google\.com\/[a-z0-9-]+$/i,
+                            message:
+                              "Link Google Meet không hợp lệ",
                           },
                         ]}
                       >

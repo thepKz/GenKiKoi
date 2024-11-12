@@ -72,8 +72,7 @@ export const addNewDoctor = async (req: Request, res: Response) => {
       !specialization ||
       !email ||
       !licenseNumber ||
-      !yearOfExperience ||
-      !movingService
+      !yearOfExperience
     ) {
       return res
         .status(400)
