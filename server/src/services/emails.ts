@@ -140,7 +140,7 @@ export const sendAppointmentConfirmationEmail = async (
   const mailOptions = {
     from: "GenKiKoi",
     to: email,
-    subject: "Xác thực Email của bạn - GenKiKoi",
+    subject: "Thông báo đặt lịch thành công - GenKiKoi",
     html: `
     <!DOCTYPE html>
     <html lang="vi">
@@ -203,7 +203,7 @@ export const sendOnlineAppointmentEmail = async (
   const mailOptions = {
     from: "GenKiKoi",
     to: email,
-    subject: "Xác thực Email của bạn - GenKiKoi",
+    subject: "Thông báo đặt lịch thành công - GenKiKoi",
     html: `
 <!DOCTYPE html>
     <html lang="vi">
@@ -261,7 +261,7 @@ export const sendPasswordChangeAlert = async (
   const mailOptions = {
     from: "GenKiKoi",
     to: email,
-    subject: "Cảnh báo bảo mật - Mật khẩu đã được thay đổi",
+    subject: "Cảnh báo bảo mật - GenKiKoi",
     html: `
     <!DOCTYPE html>
     <html lang="vi">

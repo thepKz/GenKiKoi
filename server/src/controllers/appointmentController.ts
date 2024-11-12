@@ -49,7 +49,7 @@ export const getAllAppointmentsByDoctorId = async (
         select: "serviceName",
       })
       .select(
-        "status appointmentDate isFeedback typeOfConsulting slotTime reasons"
+        "status appointmentDate isFeedback typeOfConsulting slotTime reasons address"
       );
 
     if (!appointments || appointments.length === 0) {
@@ -75,7 +75,7 @@ export const getAllAppointmentsByDoctorId = async (
             slotTime: appointment.slotTime,
             typeOfConsulting: appointment.typeOfConsulting,
             googleMeetLink: doctor.googleMeetLink,
-            detailAddress: appointment.customerId.detailAddress,
+            detailAddress: appointment.address,
             gender: appointment.customerId.userId.gender,
             email: appointment.customerId.userId.email,
             reasons: appointment.reasons,
@@ -224,6 +224,7 @@ export const createNewAppointment = async (req: Request, res: Response) => {
       slotTime,
       reasons,
       doctorScheduleId,
+      detailAddress,
     } = req.body;
 
     const customerId = req.params.customerId;
@@ -258,6 +259,7 @@ export const createNewAppointment = async (req: Request, res: Response) => {
       slotTime,
       typeOfConsulting,
       reasons,
+      address: detailAddress,
       notes: "Quý khách cần thanh toán dịch vụ để được xác nhận!",
     });
 

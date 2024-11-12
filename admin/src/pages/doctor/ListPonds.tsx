@@ -91,7 +91,7 @@ const ListPonds = () => {
                 </p>
                 <p>
                   <span className="font-semibold">Kích cỡ hồ: </span>
-                  {pond.pondSize}
+                  {pond.pondSize} (L)
                 </p>
                 <p>
                   <span className="font-semibold">Tình trạng: </span>

@@ -8,6 +8,10 @@ import { getValue } from "../../utils";
 const ServicePriceTable = () => {
   const navigate = useNavigate();
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const [isLoading, setIsLoading] = useState(false);
   const [services, setServices] = useState<any>([]);
 

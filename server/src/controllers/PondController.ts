@@ -28,6 +28,7 @@ export const createPond = async (req: Request, res: Response) => {
       filtrationSystem,
       pondSize,
       notes,
+      treatment,
       diagnosis,
     } = req.body;
     if (!phoneNumber)
@@ -73,6 +74,7 @@ export const createPond = async (req: Request, res: Response) => {
       pondSize,
       notes,
       diagnosis,
+      treatment,
     });
 
     return res.status(200).json({

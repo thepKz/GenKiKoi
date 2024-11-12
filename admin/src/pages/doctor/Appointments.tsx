@@ -127,7 +127,7 @@ const Appointments = () => {
       key: "Tên dịch vụ",
       title: "Tên dịch vụ",
       dataIndex: "serviceName",
-      width: 170,
+      width: 180,
     },
     {
       key: "Ngày hẹn",
@@ -135,11 +135,16 @@ const Appointments = () => {
       dataIndex: "appointmentDate",
       width: 120,
       render: (date) => new Date(date).toLocaleDateString(),
+      sorter: (a, b) => {
+        const dateA = new Date(a.appointmentDate);
+        const dateB = new Date(b.appointmentDate);
+        return dateA.getTime() - dateB.getTime();
+      },
     },
     {
       key: "Giờ khám",
       title: "Giờ khám",
-      width: 120,
+      width: 100,
       dataIndex: "slotTime",
       render: (slotTime) => <Tag>{slotTime}</Tag>,
     },
@@ -149,6 +154,21 @@ const Appointments = () => {
       width: 150,
       dataIndex: "typeOfConsulting",
       render: (status) => <Tag color={getValue(status)}>{status}</Tag>,
+      filters: [
+        {
+          text: "Tại nhà",
+          value: "Tại nhà",
+        },
+        {
+          text: "Tại phòng khám",
+          value: "Tại phòng khám",
+        },
+        {
+          text: "Tư vấn trực tuyến",
+          value: "Tư vấn trực tuyến",
+        },
+      ],
+      onFilter: (value: any, record) => record.typeOfConsulting === value,
     },
     {
       key: "Chi tiết",
@@ -212,13 +232,14 @@ const Appointments = () => {
       <div className="doctor-view appointments">
         <CustomTable
           columns={columns}
-          scroll = "calc(100vh - 280px)"
+          scroll="calc(100vh - 280px)"
           dataSource={filteredAppointments}
           className="staff-table"
           onChange={(pagination) => setPagination(pagination)}
         />
       </div>
       <Modal
+        style={{ top: 70 }}
         open={!!selectedAppointment}
         onCancel={handleCloseModal}
         footer={null}
@@ -281,7 +302,11 @@ const Appointments = () => {
               )}
               <strong>Lý do khám:</strong>
               {selectedAppointment.reasons && (
-                <TextArea value={selectedAppointment.reasons} readOnly />
+                <TextArea
+                  size="large"
+                  value={selectedAppointment.reasons}
+                  readOnly
+                />
               )}
             </div>
           </div>

@@ -190,15 +190,15 @@ const Booking = () => {
       const res = await handleAPI(api, undefined, "GET");
       if (res.data) {
         setDoctorSchedule(res.data);
-        const today = dayjs();
-        const formattedToday = today.format("DD/MM/YYYY");
-        const todaySchedule = res.data.weekSchedule.find(
-          (day: any) => day.dayOfWeek === formattedToday,
-        );
-        if (todaySchedule) {
-          setDate(today);
-          setAvailableSlots(todaySchedule.slots);
-        }
+        // const today = dayjs();
+        // const formattedToday = today.format("DD/MM/YYYY");
+        // const todaySchedule = res.data.weekSchedule.find(
+        //   (day: any) => day.dayOfWeek === formattedToday,
+        // );
+        // if (todaySchedule) {
+        //   setDate(today);
+        //   setAvailableSlots(todaySchedule.slots);
+        // }
       }
     } catch (error: any) {
       console.log(error);
@@ -227,7 +227,7 @@ const Booking = () => {
   const handleSubmit = async (values: any) => {
     try {
       setIsLoadingForm(true);
-      const { fullName, phoneNumber, gender } = values;
+      const { fullName, phoneNumber, gender, detailAddress } = values;
 
       const appointmentApi = `/api/appointments/customers/${auth.customerId}`;
       const bookSlotApi = `/api/doctorSchedules/${doctorSchedule.doctorId}`;
@@ -329,6 +329,7 @@ const Booking = () => {
     if (value === "Tư vấn trực tuyến" || value === "Tại phòng khám") {
       setIsAddressDisabled(true);
       form.setFieldsValue({ detailAddress: "" });
+      setMovingPrice(0);
       setIsOutOfRange(false); // Reset trạng thái khi chọn dịch vụ không cần địa chỉ
     } else {
       setIsAddressDisabled(false);
@@ -364,7 +365,7 @@ const Booking = () => {
   }
 
   return (
-    <div className="min-h-screen pt-32 lg:pt-30 bg-gradient-to-t from-[#2A7F9E] to-[#175670] pb-20">
+    <div className="lg:pt-30 booking min-h-screen bg-gradient-to-t from-[#2A7F9E] to-[#175670] pb-20 pt-32">
       <div className="container mx-auto lg:px-28">
         <div className="rounded-md bg-blue-primary p-5 px-10">
           <ConfigProvider
@@ -709,13 +710,13 @@ const Booking = () => {
                 },
                 components: {
                   Button: {
-                    colorPrimary: '#2196F3', // Màu xanh dương cho trạng thái bình thường
-                    colorPrimaryHover: '#1976D2', // Màu hover
-                    colorPrimaryActive: '#1976D2', // Màu active 
-                    colorBgContainerDisabled: 'rgba(33, 150, 243, 0.5)', // Màu nền mờ
-                    colorTextDisabled: 'rgba(255, 255, 255, 0.8)', // Màu chữ mờ
-                  }
-                }
+                    colorPrimary: "#2196F3", // Màu xanh dương cho trạng thái bình thường
+                    colorPrimaryHover: "#1976D2", // Màu hover
+                    colorPrimaryActive: "#1976D2", // Màu active
+                    colorBgContainerDisabled: "rgba(33, 150, 243, 0.5)", // Màu nền mờ
+                    colorTextDisabled: "rgba(255, 255, 255, 0.8)", // Màu chữ mờ
+                  },
+                },
               }}
             >
               <Button
@@ -723,11 +724,13 @@ const Booking = () => {
                 type="primary"
                 className={`mt-3 w-fit transition-all duration-300 ${
                   isOutOfRange || (!isAddressDisabled && !form.getFieldValue("detailAddress"))
-                    ? 'opacity-70 cursor-not-allowed hover:opacity-70'
-                    : 'hover:shadow-lg hover:-translate-y-0.5'
+                    ? "cursor-not-allowed opacity-70 hover:opacity-70"
+                    : "hover:-translate-y-0.5 hover:shadow-lg"
                 }`}
                 onClick={showModal}
-                disabled={isOutOfRange || (!isAddressDisabled && !form.getFieldValue("detailAddress"))}
+                disabled={
+                  isOutOfRange || (!isAddressDisabled && !form.getFieldValue("detailAddress"))
+                }
               >
                 Thanh toán
               </Button>
