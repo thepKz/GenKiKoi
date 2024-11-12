@@ -1,29 +1,28 @@
 import {
   Button,
+  Col,
+  ConfigProvider,
   Divider,
+  Form,
+  Input,
+  InputNumber,
   message,
+  Modal,
+  Row,
+  Select,
+  Spin,
   TableProps,
   Tabs,
   TabsProps,
   Tag,
-  Form,
-  Input,
-  Modal,
-  Select,
-  Row,
-  Col,
-  Spin,
-  InputNumber,
-  ConfigProvider,
 } from "antd";
-import { CiEdit } from "react-icons/ci";
-import { AiOutlineDelete } from "react-icons/ai";
-import { CustomTable } from "../../share";
 import { useEffect, useState } from "react";
-import { getValue } from "../../utils";
+import { AiOutlineDelete } from "react-icons/ai";
+import { CiEdit } from "react-icons/ci";
 import { handleAPI } from "../../apis/handleAPI";
 import { HeaderPage } from "../../components";
-import { removeVietnameseTones } from "../../utils";
+import { CustomTable } from "../../share";
+import { getValue, removeVietnameseTones } from "../../utils";
 
 const Staffs = () => {
   const [isLoading, setIsLoading] = useState(false);

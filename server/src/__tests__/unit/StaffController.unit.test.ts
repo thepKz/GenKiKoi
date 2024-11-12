@@ -1,3 +1,8 @@
+// Test getAllStaffs(staffController.ts)
+// Test getStaffByStaffId(staffController.ts)
+// Test updateStaffById(staffController.ts)
+// Test deleteStaffById(staffController.ts)
+// Model: Staff, User
 import express from 'express';
 import request from 'supertest';
 import {
@@ -13,7 +18,7 @@ const app = express();
 app.use(express.json());
 
 // Mock Routes
-app.get('/api/staffs', getAllStaffs);
+app.get('/api/', getAllStaffs);
 app.post('/api/staffs', addNewStaff);
 app.get('/api/staffs/:staffId', getStaffByStaffId);
 app.patch('/api/staffs/:staffId', updateStaffById);
@@ -24,13 +29,15 @@ jest.mock('../../models', () => ({
   Staff: {
     find: jest.fn(() => ({
       populate: jest.fn(() => ({
-        select: jest.fn().mockResolvedValue([{
-          _id: 'staffId1',
-          userId: { fullName: 'John Doe', email: 'john@example.com', gender: 'male' },
-          position: 'Manager',
-          startDate: '2023-01-01',
-          workShift: 'Morning',
-        }])
+        select: jest.fn(() => ({
+          sort: jest.fn().mockResolvedValue([{
+            _id: 'staffId1',
+            userId: { fullName: 'John Doe', email: 'john@example.com', gender: 'male' },
+            position: 'Manager',
+            startDate: '2023-01-01',
+            workShift: 'Morning',
+          }])
+        }))
       }))
     })),
     create: jest.fn(),
@@ -67,7 +74,7 @@ describe('StaffController', () => {
 
   describe('getAllStaffs', () => {
     it('should return all staffs', async () => {
-      const res = await request(app).get('/api/staffs');
+      const res = await request(app).get('/api/');
 
       expect(res.status).toBe(200);
       expect(res.body.data[0].fullName).toBe('John Doe');
@@ -76,11 +83,13 @@ describe('StaffController', () => {
     it('should return 404 if no staffs found', async () => {
       (Staff.find as jest.Mock).mockImplementationOnce(() => ({
         populate: jest.fn(() => ({
-          select: jest.fn().mockResolvedValue([])
+          select: jest.fn(() => ({
+            sort: jest.fn().mockResolvedValue([])
+          }))
         }))
       }));
 
-      const res = await request(app).get('/api/staffs');
+      const res = await request(app).get('/api/');
 
       expect(res.status).toBe(404);
       expect(res.body.message).toBe('Danh sách nhân viên trống!');

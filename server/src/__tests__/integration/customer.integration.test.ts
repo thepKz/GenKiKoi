@@ -1,3 +1,6 @@
+// Test create customer profile(POST /api/customers)
+// Test update customer profile(PATCH /api/customers/:customerId)
+// Model: Customer, User
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { MongoMemoryServer } from "mongodb-memory-server";

@@ -1,8 +1,8 @@
-import { MenuProps, message, Rate, Spin, TableProps } from "antd";
-import { HeaderPage } from "../../components";
-import { CustomTable } from "../../share";
+import { message, Rate, Spin, TableProps } from "antd";
 import { useEffect, useState } from "react";
 import { handleAPI } from "../../apis/handleAPI";
+import { HeaderPage } from "../../components";
+import { CustomTable } from "../../share";
 
 const Feedback = () => {
   const [feedbacks, setFeedbacks] = useState<any>([]);

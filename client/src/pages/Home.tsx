@@ -1,5 +1,5 @@
 import { Avatar, Button } from "antd";
-import { ArrowLeft2, ArrowRight2, EmojiHappy, Heart, HeartTick, Moneys, Star } from "iconsax-react";
+import { ArrowLeft2, ArrowRight2, Calendar, Call, EmojiHappy, Heart, HeartTick, Moneys, Profile2User, Star } from "iconsax-react";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import Background from "../assets/background.webp";
@@ -73,19 +73,40 @@ const Home = () => {
               vực điều trị và chăm sóc cho cá Koi. <br />
               Tôn chỉ của chúng tôi là Uy tín – Chất lượng – Tận tâm.
             </p>
-            <Button
-              ghost
-              size="large"
-              type="primary"
-              onClick={() => navigate("/about-us")}
-              className="z-20 mt-4 border-2 border-white transition-all duration-300 hover:bg-white hover:text-blue-700"
-            >
-              Tìm hiểu thêm về GenKiKoi
-              <ArrowRight2
-                size={18}
-                className="ml-2"
-              />
-            </Button>
+            <div className="flex gap-4">
+              <Button
+                ghost
+                size="large"
+                type="primary"
+                onClick={() => window.open('https://zalo.me/0888500703', '_blank')}
+                className="z-20 mt-4 border-2 border-white transition-all duration-300 hover:bg-white hover:text-blue-700 flex items-center"
+              >
+                Gọi tổng đài
+                <Call size={18} className="ml-2" />
+              </Button>
+
+              <Button
+                ghost
+                size="large"
+                type="primary"
+                onClick={() => navigate('/booking')}
+                className="z-20 mt-4 border-2 border-white transition-all duration-300 hover:bg-white hover:text-blue-700 flex items-center"
+              >
+                Đặt lịch hẹn
+                <Calendar size={18} className="ml-2" />
+              </Button>
+
+              <Button
+                ghost
+                size="large"
+                type="primary" 
+                onClick={() => navigate('/doctors')}
+                className="z-20 mt-4 border-2 border-white transition-all duration-300 hover:bg-white hover:text-blue-700 flex items-center"
+              >
+                Tìm bác sĩ
+                <Profile2User size={18} className="ml-2" />
+              </Button>
+            </div>
           </AnimatedSection>
           <div className="ml-8 flex w-1/2 items-center justify-center gap-4">
             <AnimatedSection

@@ -1,3 +1,7 @@
+// Test create doctor schedule(POST /api/doctor-schedules)
+// Test get doctor schedule by ID(GET /api/doctor-schedules/:doctorId)
+// Model: DoctorSchedule, Doctor, User
+
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { MongoMemoryServer } from "mongodb-memory-server";

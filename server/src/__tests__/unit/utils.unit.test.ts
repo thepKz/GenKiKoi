@@ -1,3 +1,9 @@
+// Test isStrongPassword(utils.ts)
+// Test isValidUserName(utils.ts)
+// Test signToken(utils.ts)
+// Test replaceName(utils.ts)
+// Test randomText(utils.ts)
+// Model: none
 import jwt from 'jsonwebtoken';
 import { Types } from 'mongoose';
 import { isStrongPassword, isValidUserName, randomText, replaceName, signToken } from '../../utils';

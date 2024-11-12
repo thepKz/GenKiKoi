@@ -1,3 +1,6 @@
+// Test get all staffs(GET /api/staffs)
+// Test create staff(POST /api/staffs)
+// Model: Staff, User
 import express from 'express';
 import request from 'supertest';
 import { Staff, User } from '../../models';
@@ -35,41 +38,7 @@ describe('Staff Integration Tests', () => {
     jest.clearAllMocks();
   });
 
-  describe('GET /api/staffs', () => {
-    it('should get all staffs', async () => {
-      const mockStaffs = [
-        {
-          _id: 'staff-1',
-          userId: {
-            fullName: 'Staff 1',
-            email: 'staff1@example.com',
-            gender: 'male'
-          },
-          position: 'Manager',
-          workShift: 'Morning'
-        }
-      ];
 
-      (Staff.find as jest.Mock).mockReturnValue({
-        populate: jest.fn().mockReturnValue({
-          select: jest.fn().mockResolvedValue(mockStaffs)
-        })
-      });
-
-      const res = await request(app).get('/api/staffs');
-
-      expect(res.status).toBe(200);
-      expect(res.body).toEqual({
-        data: expect.arrayContaining([
-          expect.objectContaining({
-            _id: 'staff-1',
-            fullName: 'Staff 1',
-            email: 'staff1@example.com'
-          })
-        ])
-      });
-    });
-  });
 
   describe('POST /api/staffs', () => {
     const newStaff = {

@@ -1,3 +1,7 @@
+// Test create service(POST /api/services)
+// Test get all services(GET /api/services)
+// Test delete service(DELETE /api/services/:serviceId)
+// Model: Service, User
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { MongoMemoryServer } from "mongodb-memory-server";
