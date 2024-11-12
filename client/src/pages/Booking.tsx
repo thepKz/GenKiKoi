@@ -9,21 +9,21 @@ import {
   Form,
   Input,
   message,
+  Modal,
   Row,
   Select,
   Spin,
-  Modal,
 } from "antd";
 
 import dayjs from "dayjs";
 import { debounce } from "lodash";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 import { handleAPI } from "../apis/handleAPI";
 import Map from "../components/Map";
 import { CustomCalendar } from "../share";
 import { IAuth } from "../types";
-import { Link } from "react-router-dom";
 
 const { TextArea } = Input;
 
@@ -60,8 +60,19 @@ const Booking = () => {
   const [movingPrice, setMovingPrice] = useState<number>(0);
 
   const [isAddressDisabled, setIsAddressDisabled] = useState(false);
+  const [isOutOfRange, setIsOutOfRange] = useState(false);
 
   const [isModalVisible, setIsModalVisible] = useState(false);
+
+  useEffect(() => {
+    const checkInitialAddress = async () => {
+      const currentAddress = form.getFieldValue("detailAddress");
+      if (currentAddress && !isAddressDisabled) {
+        await handleAddressSelect(currentAddress);
+      }
+    };
+    checkInitialAddress();
+  }, []);
 
   const showModal = async () => {
     try {
@@ -298,6 +309,15 @@ const Booking = () => {
         setRoute(data.route);
         setDistance(data.distance);
         form.setFieldsValue({ detailAddress: value });
+
+        // Kiểm tra khoảng cách
+        const distanceInKm = parseFloat(data.distance);
+        if (distanceInKm > 20) {
+          setIsOutOfRange(true);
+          message.error("Khu vực này không được hỗ trợ dịch vụ tại GenKiKoi (>20km)");
+        } else {
+          setIsOutOfRange(false);
+        }
       }
     } catch (error: any) {
       console.log(error);
@@ -309,8 +329,15 @@ const Booking = () => {
     if (value === "Tư vấn trực tuyến" || value === "Tại phòng khám") {
       setIsAddressDisabled(true);
       form.setFieldsValue({ detailAddress: "" });
+      setIsOutOfRange(false); // Reset trạng thái khi chọn dịch vụ không cần địa chỉ
     } else {
       setIsAddressDisabled(false);
+      // Kiểm tra lại địa chỉ hiện tại nếu có
+      const currentAddress = form.getFieldValue("detailAddress");
+      if (currentAddress && distance) {
+        const distanceInKm = parseFloat(distance);
+        setIsOutOfRange(distanceInKm > 20);
+      }
     }
   };
 
@@ -337,7 +364,7 @@ const Booking = () => {
   }
 
   return (
-    <div className="booking bg-green-dark py-36 pb-16 text-white">
+    <div className="min-h-screen pt-32 lg:pt-30 bg-gradient-to-t from-[#2A7F9E] to-[#175670] pb-20">
       <div className="container mx-auto lg:px-28">
         <div className="rounded-md bg-blue-primary p-5 px-10">
           <ConfigProvider
@@ -680,13 +707,27 @@ const Booking = () => {
                 token: {
                   fontFamily: "Pro-Rounded",
                 },
+                components: {
+                  Button: {
+                    colorPrimary: '#2196F3', // Màu xanh dương cho trạng thái bình thường
+                    colorPrimaryHover: '#1976D2', // Màu hover
+                    colorPrimaryActive: '#1976D2', // Màu active 
+                    colorBgContainerDisabled: 'rgba(33, 150, 243, 0.5)', // Màu nền mờ
+                    colorTextDisabled: 'rgba(255, 255, 255, 0.8)', // Màu chữ mờ
+                  }
+                }
               }}
             >
               <Button
                 size="large"
                 type="primary"
-                className="mt-3 w-fit"
+                className={`mt-3 w-fit transition-all duration-300 ${
+                  isOutOfRange || (!isAddressDisabled && !form.getFieldValue("detailAddress"))
+                    ? 'opacity-70 cursor-not-allowed hover:opacity-70'
+                    : 'hover:shadow-lg hover:-translate-y-0.5'
+                }`}
                 onClick={showModal}
+                disabled={isOutOfRange || (!isAddressDisabled && !form.getFieldValue("detailAddress"))}
               >
                 Thanh toán
               </Button>

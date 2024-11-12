@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import "react-multi-carousel/lib/styles.css";
 import FishBanner2 from "../assets/banner_2.jpg";
 import FishBanner from "../assets/long-background.jpg";
-import { AnimatedSection, DividerComponent } from "../share";
+import { AnimatedSection } from "../share";
 
 const AboutUs = () => {
   useEffect(() => {

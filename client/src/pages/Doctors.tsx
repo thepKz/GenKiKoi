@@ -1,9 +1,9 @@
-import { Button, Card, message, Rate, Spin } from "antd";
+import { Button, Card, message, Spin } from "antd";
 import { ArrowRight2, User } from "iconsax-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { AnimatedSection } from "../share";
 import { handleAPI } from "../apis/handleAPI";
+import { AnimatedSection } from "../share";
 
 const Doctors = () => {
   const navigate = useNavigate();
