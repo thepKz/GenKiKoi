@@ -230,7 +230,8 @@ const Records = () => {
       <div className="section">
         <HeaderPage
           heading="Danh sách hồ sơ"
-          placeholder="Tìm kiếm hồ sơ"
+          placeholder="Tìm kiếm hồ sơ (Tên khách hàng, số điện thoại)"
+          alt="Tìm kiếm hồ sơ (Tên khách hàng, số điện thoại)"
           onSearch={handleSearch}
         />
         <Tabs defaultActiveKey="1" items={items} />

@@ -14,6 +14,8 @@ import { GiCirclingFish } from "react-icons/gi";
 import { HeaderPage } from "../../components";
 import { useEffect, useState } from "react";
 import { handleAPI } from "../../apis/handleAPI";
+import { AnimatePresence, motion } from "framer-motion";
+import { FaTimes } from "react-icons/fa";
 
 const RecordDetail = () => {
   const { pathname } = useLocation();
@@ -23,6 +25,7 @@ const RecordDetail = () => {
 
   const [medicalRecord, setMedicalRecord] = useState<any>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   useEffect(() => {
     const getRecord = async () => {
@@ -116,18 +119,24 @@ const RecordDetail = () => {
               <div className="">
                 <p className="font-semibold">Hình ảnh:</p>
                 <div className="mt-3 grid grid-cols-2 gap-5">
-                  {medicalRecord?.images.map((image: string) => (
-                    <Avatar
-                      shape="square"
-                      style={{
-                        backgroundColor: "transparent",
-                        border: "2px dashed #ccc",
-                        margin: "0px auto",
-                      }}
-                      src={image}
-                      icon={<GiCirclingFish color="#ccc" />}
-                      size={155}
-                    />
+                  {medicalRecord?.images.map((image: string, i: any) => (
+                    <div
+                      key={i}
+                      className="cursor-pointer"
+                      onClick={() => setSelectedImage(image)}
+                    >
+                      <Avatar
+                        shape="square"
+                        style={{
+                          backgroundColor: "transparent",
+                          border: "2px dashed #ccc",
+                          margin: "0px auto",
+                        }}
+                        src={image}
+                        icon={<GiCirclingFish color="#ccc" />}
+                        size={155}
+                      />
+                    </div>
                   ))}
                 </div>
               </div>
@@ -171,6 +180,34 @@ const RecordDetail = () => {
           </div>
         </Col>
       </Row>
+      <AnimatePresence>
+        {selectedImage && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90"
+            onClick={() => setSelectedImage(null)}
+          >
+            <div className="relative max-h-[90vh] max-w-[90vw]">
+              <motion.img
+                src={selectedImage}
+                alt="Hình ảnh chi tiết"
+                className="max-h-[70vh] max-w-[70vw] object-contain"
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 0.3 }}
+              />
+              <button
+                className="absolute -right-10 -top-10 text-2xl text-white"
+                onClick={() => setSelectedImage(null)}
+              >
+                <FaTimes />
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

@@ -120,7 +120,8 @@ const ListFishes = () => {
     <div className="section">
       <HeaderPage
         heading="Danh sách cá"
-        placeholder="Tìm hồ sơ cá"
+        placeholder="Tìm hồ sơ cá (Mã hồ sơ, mô tả)"
+        alt="Tìm hồ sơ cá (Mã hồ sơ, mô tả)"
         onSearch={handleSearch}
       />
       <Breadcrumb

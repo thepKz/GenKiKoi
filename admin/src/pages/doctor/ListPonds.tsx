@@ -59,7 +59,8 @@ const ListPonds = () => {
     <div className="section">
       <HeaderPage
         heading="Danh sách báo cáo"
-        placeholder="Tìm hồ báo cáo"
+        placeholder="Tìm báo cáo hồ (Mã báo cáo, kích thước hồ)"
+        alt="Tìm báo cáo hồ (Mã báo cáo, kích thước hồ)"
         onSearch={handleSearch}
       />
       <Breadcrumb

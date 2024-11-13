@@ -146,7 +146,9 @@ export const checkEmailWithPhoneNumber = async (
       const existedEmail = await User.findOne({ email });
 
       if (existedEmail) {
-        return res.status(400).json({ message: "Email này đã được sử dụng!" });
+        return res.status(200).json({ exists: true });
+      } else {
+        return res.status(200).json({ exists: false });
       }
     } else {
       const emailCheck = await User.findOne({ email });

@@ -288,21 +288,22 @@ const Booking = () => {
       const res: any = await handleAPI(api, { phoneNumber }, "POST");
 
       if (res.message) {
-        message.warning(res.message);
         setProfile(null);
       }
 
-      setProfile(res.data);
-      form.resetFields([
-        "email",
-        "fullName",
-        "gender",
-        "city",
-        "district",
-        "ward",
-        "detailAddress",
-        "distance",
-      ]);
+      if (res.data) {
+        setProfile(res.data);
+        form.resetFields([
+          "email",
+          "fullName",
+          "gender",
+          "city",
+          "district",
+          "ward",
+          "detailAddress",
+          "distance",
+        ]);
+      }
     } catch (error: any) {
       console.log(error);
       message.error(error.message);

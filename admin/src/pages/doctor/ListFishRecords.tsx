@@ -121,7 +121,8 @@ const ListFishRecords = () => {
     <div className="section">
       <HeaderPage
         heading="Danh sách hồ sơ"
-        placeholder="Tìm hồ sơ"
+        placeholder="Tìm hồ sơ (Mã hồ sơ, tên dịch vụ, tên bác sĩ)"
+        alt="Tìm hồ sơ (Mã hồ sơ, tên dịch vụ, tên bác sĩ)"
         onSearch={handleSearch}
       />
       <Breadcrumb

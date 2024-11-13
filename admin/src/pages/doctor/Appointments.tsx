@@ -228,7 +228,8 @@ const Appointments = () => {
     <div className="section">
       <HeaderPage
         heading="Danh sách cuộc hẹn"
-        placeholder="Tìm kiếm cuộc hẹn"
+        placeholder="Tìm kiếm cuộc hẹn (Tên khách hàng, dịch vụ, số điện thoại)"
+        alt="Tìm kiếm cuộc hẹn (Tên khách hàng, dịch vụ, số điện thoại)"
         onSearch={handleSearch}
       />
       <div className="doctor-view appointments">

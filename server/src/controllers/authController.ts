@@ -146,6 +146,17 @@ export const registerAtCenter = async (req: Request, res: Response) => {
       detailAddress,
     } = req.body;
 
+    console.log(
+      phoneNumber,
+      email,
+      fullName,
+      gender,
+      city,
+      district,
+      ward,
+      detailAddress
+    );
+
     const formatEmail = email.trim().toLowerCase();
     const formatUserName = email.split("@")[0];
 

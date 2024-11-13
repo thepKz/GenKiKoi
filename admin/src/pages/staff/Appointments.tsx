@@ -118,11 +118,13 @@ const Appointments = () => {
       key: "Dịch vụ",
       title: "Dịch vụ",
       dataIndex: "serviceName",
+      width: 220,
     },
     {
       key: "Bác sĩ",
       title: "Bác sĩ",
       dataIndex: "doctorFullName",
+      width: 150,
     },
     {
       key: "Ngày hẹn",
@@ -165,7 +167,7 @@ const Appointments = () => {
       key: "Lý do khám",
       title: "Lý do khám",
       dataIndex: "reasons",
-      width: 400,
+      width: 300,
     },
     {
       key: "Hủy lịch",
