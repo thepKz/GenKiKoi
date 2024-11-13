@@ -103,11 +103,20 @@ const Appointment = () => {
         comment: values.comment,
       };
       const res: any = await handleAPI(api, feedbackData, "POST");
+
+      setAppointments((prevAppointments: any) =>
+        prevAppointments.map((appointment: any) =>
+          appointment.appointmentId === currentAppointment.appointmentId
+            ? { ...appointment, isFeedback: true }
+            : appointment,
+        ),
+      );
+
       message.success(res.message);
       setIsFeedbackModalVisible(false);
     } catch (error: any) {
       console.log(error);
-      message.error("Có lỗi xảy ra khi gửi đánh giá");
+      message.error(error.message || "Có lỗi xảy ra khi gửi đánh giá");
     } finally {
       setFeedbackLoading(false);
       form.resetFields();

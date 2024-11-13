@@ -8,20 +8,18 @@ const TermsOfService = () => {
     <div className="relative">
       {/* Background layer */}
       <div className="fixed inset-0 z-0">
-        <div className="min-h-screen pt-32 lg:pt-30 bg-gradient-to-t from-[#2A7F9E] to-[#175670]"></div>
+        <div className="lg:pt-30 min-h-screen bg-gradient-to-t from-[#2A7F9E] to-[#175670] pt-32"></div>
       </div>
 
-      <div className="relative z-10 container mx-auto px-4 lg:px-40 py-20">
-        <h1 className="mb-12 mt-10 text-center text-4xl font-bold bg-white bg-clip-text text-transparent">
+      <div className="container relative z-10 mx-auto px-4 py-20 lg:px-40">
+        <h1 className="mb-12 mt-10 bg-white bg-clip-text text-center text-4xl font-bold text-transparent">
           Điều khoản Dịch vụ GenKiKoi
         </h1>
 
         <div className="space-y-8">
           {/* Đặt lịch hẹn */}
           <div className="rounded-xl bg-white/5 p-8 backdrop-blur-sm transition-all duration-300 hover:bg-white/10">
-            <h2 className="mb-6 text-2xl font-semibold text-blue-200">
-              I. Quy định đặt lịch hẹn
-            </h2>
+            <h2 className="mb-6 text-2xl font-semibold text-blue-200">I. Quy định đặt lịch hẹn</h2>
             <div className="space-y-4 text-gray-200">
               <p>1.1. Thời gian đặt lịch: Tối thiểu 24 tiếng trước giờ hẹn.</p>
               <p>1.2. Mỗi khung giờ tối đa 2 lịch hẹn cho mỗi bác sĩ.</p>
@@ -40,9 +38,8 @@ const TermsOfService = () => {
               <p>2.1. Thanh toán đầy đủ trước khi xác nhận lịch hẹn.</p>
               <p>2.2. Phí di chuyển: 5,000 VND/km đối với dịch vụ tại nhà.</p>
               <p>2.3. Chính sách hoàn tiền:</p>
-              <ul className="list-disc pl-8 space-y-2">
+              <ul className="list-disc space-y-2 pl-8">
                 <li>Hủy trước 24 giờ: Hoàn tiền 100%</li>
-                <li>Hủy trong vòng 24 giờ: Hoàn tiền 50%</li>
                 <li>Không đến mà không báo trước: Không hoàn tiền</li>
               </ul>
             </div>
@@ -50,13 +47,11 @@ const TermsOfService = () => {
 
           {/* Lịch làm việc */}
           <div className="rounded-xl bg-white/5 p-8 backdrop-blur-sm transition-all duration-300 hover:bg-white/10">
-            <h2 className="mb-6 text-2xl font-semibold text-blue-200">
-              III. Thời gian làm việc
-            </h2>
+            <h2 className="mb-6 text-2xl font-semibold text-blue-200">III. Thời gian làm việc</h2>
             <div className="space-y-4 text-gray-200">
               <p>3.1. Giờ làm việc: 8:00 - 17:00</p>
               <p>3.2. Khung giờ khám:</p>
-              <ul className="list-disc pl-8 space-y-2">
+              <ul className="list-disc space-y-2 pl-8">
                 <li>Sáng: 8:00 - 11:00</li>
                 <li>Chiều: 13:00 - 16:00</li>
               </ul>
@@ -79,9 +74,7 @@ const TermsOfService = () => {
 
           {/* Tài khoản người dùng */}
           <div className="rounded-xl bg-white/5 p-8 backdrop-blur-sm transition-all duration-300 hover:bg-white/10">
-            <h2 className="mb-6 text-2xl font-semibold text-blue-200">
-              V. Quy định tài khoản
-            </h2>
+            <h2 className="mb-6 text-2xl font-semibold text-blue-200">V. Quy định tài khoản</h2>
             <div className="space-y-4 text-gray-200">
               <p>5.1. Yêu cầu mật khẩu: chữ thường, chữ hoa, số, ký tự đặc biệt.</p>
               <p>5.2. Tên người dùng: 8-30 ký tự.</p>
@@ -90,9 +83,7 @@ const TermsOfService = () => {
 
           {/* Đánh giá dịch vụ */}
           <div className="rounded-xl bg-white/5 p-8 backdrop-blur-sm transition-all duration-300 hover:bg-white/10">
-            <h2 className="mb-6 text-2xl font-semibold text-blue-200">
-              VI. Đánh giá dịch vụ
-            </h2>
+            <h2 className="mb-6 text-2xl font-semibold text-blue-200">VI. Đánh giá dịch vụ</h2>
             <div className="space-y-4 text-gray-200">
               <p>6.1. Chỉ được đánh giá sau khi hoàn thành dịch vụ.</p>
               <p>6.2. Mỗi lịch hẹn chỉ được đánh giá một lần.</p>
@@ -101,13 +92,13 @@ const TermsOfService = () => {
 
           {/* Liên hệ */}
           <div className="rounded-xl bg-white/5 p-8 backdrop-blur-sm transition-all duration-300 hover:bg-white/10">
-            <h2 className="mb-6 text-2xl font-semibold text-blue-200">
-              VII. Thông tin liên hệ
-            </h2>
+            <h2 className="mb-6 text-2xl font-semibold text-blue-200">VII. Thông tin liên hệ</h2>
             <div className="space-y-4 text-gray-200">
               <p>Email: support@genkikoi.com</p>
-              <p>Hotline: 0888 500 703</p>
-              <p>Địa chỉ: Lô E2a-7, Đường D1, Khu Công nghệ cao, P.Long Thạnh Mỹ, Tp. Thủ Đức, TP.HCM</p>
+              <p>Hotline: 0352195876</p>
+              <p>
+                Địa chỉ: Lô E2a-7, Đường D1, Khu Công nghệ cao, P.Long Thạnh Mỹ, Tp. Thủ Đức, TP.HCM
+              </p>
             </div>
           </div>
         </div>

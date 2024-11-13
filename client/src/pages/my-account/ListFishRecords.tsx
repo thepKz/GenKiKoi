@@ -6,6 +6,7 @@ import { Link, useLocation } from "react-router-dom";
 import { handleAPI } from "../../apis/handleAPI";
 import { HeaderComponent } from "../../components";
 import { CustomTable } from "../../share";
+import { removeVietnameseTones } from "../../utils";
 
 const ListFishRecords = () => {
   const { pathname } = useLocation();
@@ -16,9 +17,26 @@ const ListFishRecords = () => {
 
   const [isLoading, setIsLoading] = useState(false);
 
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+  });
+
   const handleSearch = (value: string) => {
     setSearchText(value.toLowerCase());
   };
+
+  const filteredRecords = records.filter((record: any) => {
+    const searchValue = removeVietnameseTones(searchText.toLowerCase());
+    const serviceName = removeVietnameseTones(record.serviceName.toLowerCase());
+    const doctorName = removeVietnameseTones(record.doctorName.toLowerCase());
+
+    return (
+      serviceName.includes(searchValue) ||
+      doctorName.includes(searchValue) ||
+      record.recordId.includes(searchValue)
+    );
+  });
 
   useEffect(() => {
     const getAllRecords = async () => {
@@ -45,7 +63,9 @@ const ListFishRecords = () => {
       title: "#",
       dataIndex: "key",
       width: 70,
-      render: (_text, _record, index) => index + 1,
+      render: (_text, _record, index) => {
+        return (pagination.current - 1) * pagination.pageSize + index + 1;
+      },
     },
     {
       key: "Mã lưu trữ",
@@ -127,7 +147,9 @@ const ListFishRecords = () => {
       <div className="my-account-section">
         <HeaderComponent
           heading="Danh sách hồ sơ"
-          placeholder="Tìm hồ sơ"
+          alt="Tìm hồ sơ (Mã hồ sơ, dịch vụ, bác sĩ)"
+          placeholder="Tìm hồ sơ (Mã hồ sơ, dịch vụ, bác sĩ)"
+          onSearch={handleSearch}
         />
         <Breadcrumb
           separator=">"
@@ -150,7 +172,8 @@ const ListFishRecords = () => {
         <div className="doctor-view fish-record mt-3">
           <CustomTable
             columns={columns}
-            dataSource={records}
+            dataSource={filteredRecords}
+            onChange={(pagination) => setPagination(pagination)}
           />
         </div>
       </div>

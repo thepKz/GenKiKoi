@@ -539,8 +539,7 @@ const Staffs = () => {
                       },
                     },
                   ]}
-                  hasFeedback
-                  validateDebounce={1000}
+                  validateTrigger="onBlur"
                 >
                   <Input
                     allowClear
@@ -577,8 +576,7 @@ const Staffs = () => {
                       },
                     },
                   ]}
-                  hasFeedback
-                  validateDebounce={1000}
+                  validateTrigger="onBlur"
                 >
                   <Input allowClear placeholder="Nhập email" />
                 </Form.Item>
@@ -654,8 +652,7 @@ const Staffs = () => {
                       <Form.Item
                         name="specialization"
                         label="Chứng chỉ"
-                        hasFeedback
-                        validateDebounce={1000}
+                        validateTrigger="onBlur"
                         rules={[
                           {
                             required: true,

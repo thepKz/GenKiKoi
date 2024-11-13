@@ -288,10 +288,15 @@ const Services = () => {
               <Form.Item
                 name="serviceName"
                 label="Tên dịch vụ"
+                validateTrigger="onBlur"
                 rules={[
                   {
                     required: true,
                     message: "Vui lòng nhập tên dịch vụ",
+                  },
+                  {
+                    min: 5,
+                    message: "Tên dịch vụ phải chứa ít nhất 5 ký tự",
                   },
                   {
                     max: 50,
@@ -357,10 +362,15 @@ const Services = () => {
               <Form.Item
                 name="description"
                 label="Mô tả dịch vụ"
+                validateTrigger="onBlur"
                 rules={[
                   {
                     required: true,
                     message: "Vui lòng nhập mô tả dịch vụ",
+                  },
+                  {
+                    min: 10,
+                    message: "Mô tả dịch vụ phải chứa ít nhất 10 ký tự",
                   },
                   {
                     max: 1000,

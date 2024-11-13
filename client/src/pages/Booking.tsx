@@ -293,7 +293,7 @@ const Booking = () => {
     setDistance(null);
     setIsValidAddress(false);
     setMovingPrice(0);
-    
+
     if (value.length > 2) {
       try {
         const api = `/api/distance/autocomplete`;
@@ -805,14 +805,13 @@ const Booking = () => {
               </li>
               <li>
                 <span className="font-semibold">Hủy lịch hẹn:</span> Việc hủy hoặc thay đổi lịch hẹn
-                phải được thực hiện ít nhất 30 phút trước giờ hẹn.
+                phải được thực hiện ít nhất 1 ngày trước ngày hẹn.
               </li>
               <li>
                 <span className="font-semibold">Chính sách hoàn tiền:</span>
                 <ol className="ml-5 list-disc">
                   <li>
-                    <span className="font-semibold">Hủy lịch hẹn trước 30 phút:</span> Hoàn tiền
-                    100%.
+                    <span className="font-semibold">Hủy trước 24 giờ:</span> Hoàn tiền 100%.
                   </li>
                   <li>
                     <span className="font-semibold">Không đến mà không báo trước:</span> Không hoàn
