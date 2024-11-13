@@ -64,6 +64,8 @@ const Booking = () => {
 
   const [isModalVisible, setIsModalVisible] = useState(false);
 
+  const [isValidAddress, setIsValidAddress] = useState<boolean>(false);
+
   useEffect(() => {
     const checkInitialAddress = async () => {
       const currentAddress = form.getFieldValue("detailAddress");
@@ -80,6 +82,12 @@ const Booking = () => {
 
       if (!date || !slot || !doctorSchedule) {
         message.error("Vui lòng chọn đầy đủ ngày và giờ khám");
+        return;
+      }
+
+      const consultingType = form.getFieldValue("typeOfConsulting");
+      if (consultingType === "Tại nhà" && !isValidAddress) {
+        message.error("Vui lòng nhập địa chỉ hợp lệ");
         return;
       }
 
@@ -279,6 +287,13 @@ const Booking = () => {
   };
 
   const handleAddressSearch = debounce(async (value: string) => {
+    // Reset các giá trị liên quan đến địa chỉ cũ
+    setOrigin(null);
+    setRoute(null);
+    setDistance(null);
+    setIsValidAddress(false);
+    setMovingPrice(0);
+    
     if (value.length > 2) {
       try {
         const api = `/api/distance/autocomplete`;
@@ -301,6 +316,7 @@ const Booking = () => {
 
   const handleAddressSelect = async (value: string) => {
     try {
+      setIsValidAddress(false);
       const api = `/api/distance/calculate-route`;
       const { data } = await handleAPI(api, undefined, "GET", { address: value });
 
@@ -314,12 +330,24 @@ const Booking = () => {
         const distanceInKm = parseFloat(data.distance);
         if (distanceInKm > 20) {
           setIsOutOfRange(true);
+          setIsValidAddress(false);
           message.error("Khu vực này không được hỗ trợ dịch vụ tại GenKiKoi (>20km)");
         } else {
           setIsOutOfRange(false);
+          setIsValidAddress(true);
         }
+      } else {
+        setIsValidAddress(false);
+        setOrigin(null);
+        setRoute(null);
+        setDistance(null);
+        message.error("Không thể tìm thấy địa chỉ này");
       }
     } catch (error: any) {
+      setIsValidAddress(false);
+      setOrigin(null);
+      setRoute(null);
+      setDistance(null);
       console.log(error);
       message.error(error.message || "Không thể tính toán tuyến đường");
     }
@@ -330,15 +358,15 @@ const Booking = () => {
       setIsAddressDisabled(true);
       form.setFieldsValue({ detailAddress: "" });
       setMovingPrice(0);
-      setIsOutOfRange(false); // Reset trạng thái khi chọn dịch vụ không cần địa chỉ
+      setIsOutOfRange(false);
+      setIsValidAddress(true);
     } else {
       setIsAddressDisabled(false);
-      // Kiểm tra lại địa chỉ hiện tại nếu có
-      const currentAddress = form.getFieldValue("detailAddress");
-      if (currentAddress && distance) {
-        const distanceInKm = parseFloat(distance);
-        setIsOutOfRange(distanceInKm > 20);
-      }
+      setIsValidAddress(false);
+      setOrigin(null);
+      setRoute(null);
+      setDistance(null);
+      form.setFieldsValue({ detailAddress: "" });
     }
   };
 
@@ -723,14 +751,12 @@ const Booking = () => {
                 size="large"
                 type="primary"
                 className={`mt-3 w-fit transition-all duration-300 ${
-                  isOutOfRange || (!isAddressDisabled && !form.getFieldValue("detailAddress"))
+                  isOutOfRange || (!isAddressDisabled && !isValidAddress)
                     ? "cursor-not-allowed opacity-70 hover:opacity-70"
                     : "hover:-translate-y-0.5 hover:shadow-lg"
                 }`}
                 onClick={showModal}
-                disabled={
-                  isOutOfRange || (!isAddressDisabled && !form.getFieldValue("detailAddress"))
-                }
+                disabled={isOutOfRange || (!isAddressDisabled && !isValidAddress)}
               >
                 Thanh toán
               </Button>
