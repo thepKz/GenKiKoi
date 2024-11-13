@@ -1,4 +1,4 @@
-import { Breadcrumb, Button, Card, Spin } from "antd";
+import { Breadcrumb, Button, Card, Empty, message, Spin } from "antd";
 import { Stickynote } from "iconsax-react";
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
@@ -25,8 +25,12 @@ const ListPonds = () => {
         const res = await handleAPI(api, undefined, "GET");
 
         setPonds(res.data);
-      } catch (error) {
+      } catch (error: any) {
         console.log(error);
+        message.error(
+          error.message ||
+            "Có lỗi khi lấy dữ liệu, vui lòng thử lại sau ít phút!",
+        );
       } finally {
         setIsLoading(false);
       }
@@ -55,7 +59,8 @@ const ListPonds = () => {
     <div className="section">
       <HeaderPage
         heading="Danh sách báo cáo"
-        placeholder="Tìm hồ báo cáo"
+        placeholder="Tìm báo cáo hồ (Mã báo cáo, kích thước hồ)"
+        alt="Tìm báo cáo hồ (Mã báo cáo, kích thước hồ)"
         onSearch={handleSearch}
       />
       <Breadcrumb
@@ -77,16 +82,12 @@ const ListPonds = () => {
         ]}
       />
       <div className="mt-3 flex h-[calc(100vh-200px)] flex-col gap-5 overflow-y-auto">
-        {filteredPonds.map((pond: any, i) => (
-          <Card key={i} className="duration-100 ease-in hover:border-[#4096ff]">
-            <div className="flex items-center gap-5">
-              <div className="">
-                <img
-                  src="https://placehold.co/150x150"
-                  alt=""
-                  className="rounded-lg"
-                />
-              </div>
+        {filteredPonds ? (
+          filteredPonds.map((pond: any, i) => (
+            <Card
+              key={i}
+              className="duration-100 ease-in hover:border-[#4096ff]"
+            >
               <div className="flex w-full">
                 <div className="flex flex-1 flex-col gap-2">
                   <p>
@@ -95,17 +96,15 @@ const ListPonds = () => {
                   </p>
                   <p>
                     <span className="font-semibold">Kích cỡ hồ: </span>
-                    {pond.pondSize}
+                    {pond.pondSize} (L)
                   </p>
                   <p>
                     <span className="font-semibold">Tình trạng: </span>
                     {pond.status}
                   </p>
                   <p>
-                    <span className="font-semibold">
-                      Kích cỡ hệ thống lọc:{" "}
-                    </span>
-                    {pond.filtrationSystem}
+                    <span className="font-semibold">Ngày khảo sát: </span>
+                    {new Date(pond.createAt).toLocaleDateString()}
                   </p>
                   <p>
                     <span className="font-semibold">Ghi chú: </span>
@@ -120,9 +119,15 @@ const ListPonds = () => {
                   </Link>
                 </div>
               </div>
-            </div>
-          </Card>
-        ))}
+            </Card>
+          ))
+        ) : (
+          <Empty
+            className="mt-20"
+            imageStyle={{ height: 200 }}
+            description="Không tìm thấy hồ sơ nào"
+          />
+        )}
       </div>
     </div>
   );

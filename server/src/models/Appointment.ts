@@ -14,6 +14,7 @@ export interface IAppointment {
   appointmentDate: Date;
   slotTime: string;
   typeOfConsulting: string;
+  address: string;
   status: string;
   reasons?: string;
   notes?: string;
@@ -61,6 +62,10 @@ const AppointmentSchema = new mongoose.Schema<IAppointment>(
     },
     notes: {
       type: String,
+    },
+    address: {
+      type: String,
+      default: "",
     },
     isFeedback: {
       type: Boolean,

@@ -14,6 +14,7 @@ import {
   RecordDetail,
   Records,
 } from "../pages/doctor";
+import ChangePassword from "../pages/ChangePassword";
 
 const DoctorRouter = () => {
   return (
@@ -42,6 +43,7 @@ const DoctorRouter = () => {
         <Route path="feedbacks" element={<Feedback />} />
         <Route path="profile" element={<Profile />} />
       </Route>
+      <Route path="change-password" element={<ChangePassword />} />
       <Route path="*" element={<NotFound to="/doctor" />} />
     </Routes>
   );

@@ -5,6 +5,7 @@ const { Search } = Input;
 interface Props {
   heading: string;
   placeholder?: string;
+  alt?: string;
   filter?: boolean;
   onSearch?: (value: string) => void;
   filterItems?: MenuProps["items"];
@@ -19,6 +20,7 @@ const HeaderPage = (props: Props) => {
     onSearch,
     filterItems,
     onFilterSelect,
+    alt,
   } = props;
   return (
     <div>
@@ -26,6 +28,7 @@ const HeaderPage = (props: Props) => {
         <h1 className="heading-3">{heading}</h1>
         {placeholder && (
           <Search
+            title={alt}
             size="large"
             placeholder={placeholder}
             allowClear

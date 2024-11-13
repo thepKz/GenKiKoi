@@ -10,7 +10,7 @@ import {
   Row,
   Select,
   SelectProps,
-  Spin
+  Spin,
 } from "antd";
 import { KeySquare, User } from "iconsax-react";
 import { useEffect, useRef, useState } from "react";
@@ -154,9 +154,23 @@ const Profile = () => {
     }
   };
 
+  const handleCheckExistencePhoneNumber = async (field: string, value: string) => {
+    const api = `/api/users/check-${field}`;
+    try {
+      const res: any = await handleAPI(api, { [field]: value }, "POST");
+
+      if (res.exists && res.userId !== auth.id) {
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   if (isLoading) {
     return (
-      <div className="flex h-[calc(100vh-115px)] items-center justify-center">
+      <div className="my-account-section flex items-center justify-center">
         <Spin size="large" />
       </div>
     );
@@ -219,10 +233,15 @@ const Profile = () => {
               </label>
             </div>
             <Divider />
-            <div className="mx-5 flex items-center gap-2">
-              <KeySquare />
-              <Link to="/change-password">Thay đổi mật khẩu ở đây!</Link>
-            </div>
+            <Link to="/change-password">
+              <Button
+                size="large"
+                className="w-full"
+              >
+                <KeySquare />
+                Thay đổi mật khẩu ở đây!
+              </Button>
+            </Link>
           </Col>
           <Col span={18}>
             <div className="mr-10 mt-8">
@@ -320,13 +339,55 @@ const Profile = () => {
                             label="Số điện thoại"
                             hasFeedback
                             rules={[
-                              { required: true, message: "Vui lòng nhập số điện thoại" },
-                              { pattern: /^[0-9]{10}$/, message: "Số điện thoại không hợp lệ" },
+                              {
+                                required: true,
+                                message: "Vui lòng nhập số điện thoại",
+                              },
+                              {
+                                pattern: /^(0[3|5|7|8|9])+([0-9]{8})\b/,
+                                message: "Số điện thoại không hợp lệ",
+                              },
+                              {
+                                validator: async (_, value) => {
+                                  if (value && value.trim().length > 0) {
+                                    const exists = await handleCheckExistencePhoneNumber(
+                                      "phoneNumber",
+                                      value,
+                                    );
+
+                                    if (exists) {
+                                      return Promise.reject(
+                                        new Error("Số điện thoại này đã được đăng ký!"),
+                                      );
+                                    }
+                                  }
+                                  return Promise.resolve();
+                                },
+                              },
                             ]}
                             validateDebounce={1000}
                           >
                             <Input
-                              addonBefore="+84"
+                              addonBefore={
+                                <svg
+                                  width="24"
+                                  height="24"
+                                  viewBox="0 0 30 20"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  version="1.1"
+                                >
+                                  <rect
+                                    width="30"
+                                    height="20"
+                                    fill="#da251d"
+                                    rx={3}
+                                  />
+                                  <polygon
+                                    points="15,4 11.47,14.85 20.71,8.15 9.29,8.15 18.53,14.85"
+                                    fill="#ff0"
+                                  />
+                                </svg>
+                              }
                               placeholder="Số điện thoại"
                             />
                           </Form.Item>

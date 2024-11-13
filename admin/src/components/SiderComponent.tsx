@@ -67,10 +67,11 @@ const SiderComponent = () => {
       type: "divider",
     },
     {
-      key: "logout",
-      label: "Đăng xuất",
-      icon: <Logout size={20} />,
-      onClick: () => dispatch(removeAuth({})),
+      key: "profile",
+      label: <Link to={"/manager/profile"}>Hồ sơ cá nhân</Link>,
+      icon: (
+        <Avatar icon={<User size={16} color="white" />} src={auth.photoUrl} />
+      ),
     },
   ];
 
@@ -111,12 +112,6 @@ const SiderComponent = () => {
         <Avatar icon={<User size={16} color="white" />} src={auth.photoUrl} />
       ),
     },
-    {
-      key: "logout",
-      label: "Đăng xuất",
-      icon: <Logout size={20} />,
-      onClick: () => dispatch(removeAuth({})),
-    },
   ];
 
   const staffItems: MenuProps["items"] = [
@@ -134,7 +129,7 @@ const SiderComponent = () => {
     },
     {
       key: "booking",
-      label: <Link to={"/staff/booking"}>Cuộc hẹn khách hàng</Link>,
+      label: <Link to={"/staff/booking"}>Tạo cuộc hẹn</Link>,
       icon: <CalendarAdd size={20} />,
     },
     {
@@ -147,12 +142,6 @@ const SiderComponent = () => {
       icon: (
         <Avatar icon={<User size={16} color="white" />} src={auth.photoUrl} />
       ),
-    },
-    {
-      key: "logout",
-      label: "Đăng xuất",
-      icon: <Logout size={20} />,
-      onClick: () => dispatch(removeAuth({})),
     },
   ];
 
@@ -201,9 +190,20 @@ const SiderComponent = () => {
           }
           theme="light"
         />
-        <p className="text-blue-primary text-center font-bold">
-          © 2024 GenKiKoi
-        </p>
+        <div>
+          <div
+            className="m-1 rounded-md px-6 py-[10px] transition-colors duration-150 ease-in hover:bg-[#f0f0f0]"
+            onClick={() => dispatch(removeAuth({}))}
+          >
+            <div className="flex items-center justify-center gap-2">
+              <Logout size={20} />
+              <span>Đăng xuất</span>
+            </div>
+          </div>
+          <p className="text-blue-primary text-center font-bold">
+            © 2024 GenKiKoi
+          </p>
+        </div>
       </div>
     </Sider>
   );

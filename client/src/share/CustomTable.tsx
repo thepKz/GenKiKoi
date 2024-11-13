@@ -1,4 +1,4 @@
-import { Table, TableProps } from "antd";
+import { Empty, Table, TableProps } from "antd";
 
 interface Props {
   columns: TableProps["columns"];
@@ -6,6 +6,7 @@ interface Props {
   scroll?: string;
   loading?: boolean;
   className?: string;
+  onChange?: (pagination: any) => void;
 }
 
 const CustomTable = (props: Props) => {
@@ -15,6 +16,7 @@ const CustomTable = (props: Props) => {
     dataSource,
     scroll = "calc(100vh - 330px)",
     className,
+    onChange,
   } = props;
   return (
     <Table
@@ -23,11 +25,15 @@ const CustomTable = (props: Props) => {
       pagination={{
         showSizeChanger: true,
       }}
+      locale={{
+        emptyText: <Empty description="No Data" />,
+      }}
       columns={columns}
       dataSource={dataSource}
       scroll={{
         y: scroll,
       }}
+      onChange={onChange}
     />
   );
 };

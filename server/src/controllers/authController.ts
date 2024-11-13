@@ -146,6 +146,17 @@ export const registerAtCenter = async (req: Request, res: Response) => {
       detailAddress,
     } = req.body;
 
+    console.log(
+      phoneNumber,
+      email,
+      fullName,
+      gender,
+      city,
+      district,
+      ward,
+      detailAddress
+    );
+
     const formatEmail = email.trim().toLowerCase();
     const formatUserName = email.split("@")[0];
 
@@ -377,6 +388,11 @@ export const loginWithGoogle = async (req: Request, res: Response) => {
 
       if (!customer) {
         return res.status(404).json({ message: "Không tìm thấy khách hàng" });
+      }
+
+      if (user.photoUrl === "") {
+        user.photoUrl = photoUrl;
+        await user.save();
       }
 
       customer.isVerified = true;

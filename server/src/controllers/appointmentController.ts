@@ -2,12 +2,6 @@ import { Request, Response } from "express";
 import { Doctor, DoctorSchedule, Payment, Service } from "../models";
 import Appointment from "../models/Appointment";
 import Customer from "../models/Customer";
-/**
- * Người Làm: ĐIỀN VÀO :)
- * Người Test: Thép
- * Loại Test: API TEST (Đã xong), UNIT TEST (Đang làm), E2E TEST (Đang làm)
- * Chỉnh Sửa Lần Cuối : 13/10/2024 (Thép)
- */
 
 export const getAllAppointments = async (req: Request, res: Response) => {
   try {
@@ -20,28 +14,43 @@ export const getAllAppointments = async (req: Request, res: Response) => {
   }
 };
 
-// Lấy danh sách cuộc hẹn theo doctorId
 export const getAllAppointmentsByDoctorId = async (
   req: Request,
   res: Response
 ) => {
   try {
-    const doctorId = req.params.doctorId;
+    const { doctorId } = req.params;
 
-    const appointments = await Appointment.find({ doctorId })
-      .sort({ appointmentDate: -1 })
+    const doctor = await Doctor.findById(doctorId);
+
+    if (!doctor) {
+      return res.status(404).json({ message: "Không tìm thấy bác sĩ" });
+    }
+
+    // Chưa đúng lắm nhưng fix tạm
+    const appointments = await Appointment.find({
+      doctorId,
+      appointmentDate: {
+        $gte: new Date(new Date().setDate(new Date().getDate() - 1)),
+      },
+      status: "Đã xác nhận",
+    })
+      // .sort({ appointmentDate: -1 })
       .populate({
         path: "customerId",
+        select: "detailAddress",
         populate: {
           path: "userId",
-          select: "fullName phoneNumber",
+          select: "fullName phoneNumber gender email",
         },
       })
       .populate({
         path: "serviceId",
         select: "serviceName",
       })
-      .select("status appointmentDate isFeedback");
+      .select(
+        "status appointmentDate isFeedback typeOfConsulting slotTime reasons address"
+      );
 
     if (!appointments || appointments.length === 0) {
       return res.status(404).json({ message: "Danh sách cuộc hẹn trống!" });
@@ -63,6 +72,13 @@ export const getAllAppointmentsByDoctorId = async (
             status: appointment.status,
             paymentStatus: payment.status,
             isFeedback: appointment.isFeedback,
+            slotTime: appointment.slotTime,
+            typeOfConsulting: appointment.typeOfConsulting,
+            googleMeetLink: doctor.googleMeetLink,
+            detailAddress: appointment.address,
+            gender: appointment.customerId.userId.gender,
+            email: appointment.customerId.userId.email,
+            reasons: appointment.reasons,
           };
         }
         return null;
@@ -96,7 +112,7 @@ export const updateStatusAppointment = async (req: Request, res: Response) => {
             ? "Đã hủy"
             : "Đã xác nhận",
         notes:
-          notes.length > 0
+          notes && notes.length > 0
             ? notes
             : status === "PENDING"
             ? "Quý khách cần thanh toán dịch vụ để được xác nhận!"
@@ -131,7 +147,7 @@ export const updateStatusAppointment = async (req: Request, res: Response) => {
             ) {
               slot.appointmentIds.splice(appointmentIndex, 1);
               slot.currentCount = Math.max(0, slot.currentCount - 1);
-              slot.isBooked = slot.currentCount >= 3;
+              slot.isBooked = slot.currentCount >= 2;
               break;
             }
           }
@@ -166,6 +182,7 @@ export const getAppointmentsByCustomerId = async (
     const appointments = await Appointment.find({
       customerId: customerId,
     })
+      .sort({ appointmentDate: -1, createdAt: 1 })
       .populate({
         path: "doctorId",
         select: "userId",
@@ -179,7 +196,6 @@ export const getAppointmentsByCustomerId = async (
         select: "serviceName",
       })
       .select("_id appointmentDate status notes reasons isFeedback");
-
     const formattedAppointment = appointments.map((appointment: any) => ({
       appointmentId: appointment._id,
       serviceName: appointment.serviceId.serviceName,
@@ -208,6 +224,7 @@ export const createNewAppointment = async (req: Request, res: Response) => {
       slotTime,
       reasons,
       doctorScheduleId,
+      detailAddress,
     } = req.body;
 
     const customerId = req.params.customerId;
@@ -242,6 +259,7 @@ export const createNewAppointment = async (req: Request, res: Response) => {
       slotTime,
       typeOfConsulting,
       reasons,
+      address: detailAddress,
       notes: "Quý khách cần thanh toán dịch vụ để được xác nhận!",
     });
 
@@ -256,5 +274,52 @@ export const createNewAppointment = async (req: Request, res: Response) => {
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "Lỗi khi tạo cuộc hẹn" });
+  }
+};
+
+export const getBookingsByDay = async (req: Request, res: Response) => {
+  try {
+    const bookingsByDay = await Appointment.aggregate([
+      {
+        $match: {
+          status: "Đã xác nhận",
+        },
+      },
+      {
+        $group: {
+          _id: {
+            day: { $dayOfMonth: "$appointmentDate" },
+            month: { $month: "$appointmentDate" },
+            year: { $year: "$appointmentDate" },
+          },
+          value: { $sum: 1 },
+        },
+      },
+      {
+        $sort: {
+          "_id.year": 1,
+          "_id.month": 1,
+          "_id.day": 1,
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          day: "$_id.day",
+          month: "$_id.month",
+          value: 1,
+        },
+      },
+    ]);
+
+    return res.status(200).json({
+      data: bookingsByDay,
+    });
+  } catch (error: any) {
+    console.error("Lỗi:", error);
+    return res.status(500).json({
+      message: "Lỗi khi lấy thống kê cuộc hẹn theo ngày",
+      error: error.message,
+    });
   }
 };

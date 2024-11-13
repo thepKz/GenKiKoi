@@ -16,7 +16,8 @@ export const getAllStaffs = async (req: Request, res: Response) => {
         match: { isDisabled: false },
         select: "fullName email gender",
       })
-      .select("startDate position workShift");
+      .select("startDate position workShift")
+      .sort({ createdAt: -1 });
 
     const filteredStaffs = staffs.filter((staff) => staff.userId !== null);
 
@@ -26,6 +27,7 @@ export const getAllStaffs = async (req: Request, res: Response) => {
 
     const formatStaff = filteredStaffs.map((staff: any) => ({
       _id: staff._id,
+      userId: staff.userId._id,
       fullName: staff.userId.fullName,
       gender: staff.userId.gender,
       position: staff.position,
@@ -35,6 +37,7 @@ export const getAllStaffs = async (req: Request, res: Response) => {
     }));
     return res.status(200).json({ data: formatStaff });
   } catch (error: any) {
+    console.log(error);
     return res.status(500).json({ message: error.message });
   }
 };
@@ -67,6 +70,7 @@ export const getStaffByStaffId = async (req: Request, res: Response) => {
 
     return res.status(200).json({ data: formattedData });
   } catch (error: any) {
+    console.log(error);
     return res.status(500).json({ message: error.message });
   }
 };
@@ -109,6 +113,7 @@ export const addNewStaff = async (req: Request, res: Response) => {
         formatStaff = {
           _id: staff._id,
           fullName: existUser.fullName,
+          userId: existUser._id,
           gender: existUser.gender,
           position: staff.position,
           startDate: staff.startDate,
@@ -152,6 +157,7 @@ export const addNewStaff = async (req: Request, res: Response) => {
       data: formatStaff,
     });
   } catch (error: any) {
+    console.log(error);
     return res.status(500).json({ message: error.message });
   }
 };
@@ -162,25 +168,30 @@ export const addNewStaff = async (req: Request, res: Response) => {
  * PROTECTED
  */
 export const getStaffById = async (req: Request, res: Response) => {
-  const staffId = req.params.id;
-  const staff = await Staff.findById(staffId).populate(
-    "userId",
-    "fullName email phoneNumber gender photoUrl"
-  );
-  if (!staff) {
-    return res.status(404).json({ message: "Không tìm thấy nhân viên" });
+  try {
+    const staffId = req.params.id;
+    const staff = await Staff.findById(staffId).populate(
+      "userId",
+      "fullName email phoneNumber gender photoUrl"
+    );
+    if (!staff) {
+      return res.status(404).json({ message: "Không tìm thấy nhân viên" });
+    }
+    const formattedStaff = {
+      _id: staff._id,
+      position: staff.position,
+      workShift: staff.workShift,
+      fullName: staff?.userId?.fullName,
+      email: staff?.userId?.email,
+      phoneNumber: staff?.userId?.phoneNumber,
+      gender: staff?.userId?.gender,
+      photoUrl: staff?.userId?.photoUrl,
+    };
+    return res.status(200).json(formattedStaff);
+  } catch (error: any) {
+    console.log(error);
+    return res.status(500).json({ message: error.message });
   }
-  const formattedStaff = {
-    _id: staff._id,
-    position: staff.position,
-    workShift: staff.workShift,
-    fullName: staff?.userId?.fullName,
-    email: staff?.userId?.email,
-    phoneNumber: staff?.userId?.phoneNumber,
-    gender: staff?.userId?.gender,
-    photoUrl: staff?.userId?.photoUrl,
-  };
-  res.status(200).json(formattedStaff);
 };
 
 export const updateStaffById = async (req: Request, res: Response) => {
@@ -195,19 +206,6 @@ export const updateStaffById = async (req: Request, res: Response) => {
       email,
       workShift,
     } = req.body;
-
-    // if (
-    //   !phoneNumber ||
-    //   !photoUrl ||
-    //   !fullName ||
-    //   !gender ||
-    //   !position ||
-    //   !email
-    // ) {
-    //   return res
-    //     .status(400)
-    //     .json({ message: "Vui lòng cung cấp đầy đủ thông tin" });
-    // }
 
     // check nhan vien co ton tai khong
     const existsStaff = await Staff.findById(staffId);
@@ -264,6 +262,7 @@ export const updateStaffById = async (req: Request, res: Response) => {
     const updatedInfo = {
       _id: updatedStaff._id,
       fullName: updatedUser.fullName,
+      userId: updatedUser._id,
       gender: updatedUser.gender,
       photoUrl: updatedUser.photoUrl,
       position: updatedStaff.position,
@@ -306,6 +305,7 @@ export const deleteStaffById = async (req: Request, res: Response) => {
 
     return res.status(200).json({ message: "Xóa thành công" });
   } catch (error: any) {
+    console.log(error);
     return res.status(500).json({ message: error.message });
   }
 };

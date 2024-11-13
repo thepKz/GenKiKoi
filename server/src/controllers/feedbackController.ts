@@ -1,11 +1,10 @@
-import { Response, Request } from "express";
-import { AuthRequest } from "../types";
+import { Request, Response } from "express";
 import { Appointment, Customer, Doctor, Feedback } from "../models";
+import { AuthRequest } from "../types";
 
 export const createNewFeedback = async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user?._id;
-
     const { appointmentId, rating, comment } = req.body;
 
     if (!appointmentId || !rating || !comment) {
@@ -28,6 +27,10 @@ export const createNewFeedback = async (req: AuthRequest, res: Response) => {
         .status(404)
         .json({ message: "Không tìm thấy cuộc hẹn hợp lệ" });
     }
+
+    appointment.isFeedback = true;
+
+    await appointment.save();
 
     const existingFeedback = await Feedback.findOne({ appointmentId });
 
@@ -87,7 +90,8 @@ export const getFeedbacksByDoctorId = async (
         path: "serviceId",
         select: "serviceName",
       })
-      .select("rating comment feedbackDate");
+      .select("rating comment feedbackDate")
+      .sort({ feedbackDate: -1 });
 
     if (feedbacks.length === 0) {
       return res.status(404).json({ message: "Danh sách đánh giá trống" });
@@ -103,6 +107,43 @@ export const getFeedbacksByDoctorId = async (
     }));
 
     return res.status(200).json({ data: formattedData });
+  } catch (error: any) {
+    console.log(error);
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+export const getAllPublicFeedbacks = async (req: Request, res: Response) => {
+  try {
+    const feedbacks = await Feedback.find()
+      .populate({
+        path: "customerId",
+        populate: {
+          path: "userId",
+          select: "fullName photoUrl",
+        },
+      })
+      .populate({
+        path: "serviceId",
+        select: "serviceName",
+      })
+      .select("rating comment feedbackDate")
+      .sort({ feedbackDate: -1 });
+
+    if (!feedbacks || feedbacks.length === 0) {
+      return res.status(404).json({ message: "Không tìm thấy đánh giá nào" });
+    }
+
+    const formattedFeedbacks = feedbacks.map((feedback: any) => ({
+      customerName: feedback.customerId.userId.fullName,
+      customerAvatar: feedback.customerId.userId.photoUrl,
+      serviceName: feedback.serviceId.serviceName,
+      rating: feedback.rating,
+      comment: feedback.comment,
+      feedbackDate: feedback.feedbackDate,
+    }));
+
+    return res.status(200).json({ data: formattedFeedbacks });
   } catch (error: any) {
     console.log(error);
     return res.status(500).json({ message: error.message });

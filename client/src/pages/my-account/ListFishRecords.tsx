@@ -1,23 +1,47 @@
-import { Breadcrumb, Button, ConfigProvider, message } from "antd";
+import { Breadcrumb, Button, ConfigProvider, message, Spin } from "antd";
 import { TableProps } from "antd/lib";
 import { Stickynote } from "iconsax-react";
 import { useEffect, useState } from "react";
-// import { useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
 import { handleAPI } from "../../apis/handleAPI";
 import { HeaderComponent } from "../../components";
 import { CustomTable } from "../../share";
-// import { IAuth } from "../../types";
+import { removeVietnameseTones } from "../../utils";
+
 const ListFishRecords = () => {
   const { pathname } = useLocation();
-  // const auth: IAuth = useSelector((state: any) => state.authReducer.data);
 
   const fishId = pathname.split("/")[4];
   const [records, setRecords] = useState([]);
+  const [searchText, setSearchText] = useState("");
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+  });
+
+  const handleSearch = (value: string) => {
+    setSearchText(value.toLowerCase());
+  };
+
+  const filteredRecords = records.filter((record: any) => {
+    const searchValue = removeVietnameseTones(searchText.toLowerCase());
+    const serviceName = removeVietnameseTones(record.serviceName.toLowerCase());
+    const doctorName = removeVietnameseTones(record.doctorName.toLowerCase());
+
+    return (
+      serviceName.includes(searchValue) ||
+      doctorName.includes(searchValue) ||
+      record.recordId.includes(searchValue)
+    );
+  });
 
   useEffect(() => {
     const getAllRecords = async () => {
       try {
+        setIsLoading(true);
         const api = `/api/medicalRecords/fishes/${fishId}`;
 
         const res = await handleAPI(api, undefined, "GET");
@@ -25,7 +49,9 @@ const ListFishRecords = () => {
         setRecords(res.data);
       } catch (error: any) {
         console.log(error);
-        message.error(error.message);
+        message.error(error.message || "Có lỗi khi lấy dữ liệu, vui lòng thử lại sau ít phút!");
+      } finally {
+        setIsLoading(false);
       }
     };
     getAllRecords();
@@ -37,26 +63,38 @@ const ListFishRecords = () => {
       title: "#",
       dataIndex: "key",
       width: 70,
-      render: (_text, _record, index) => index + 1,
+      render: (_text, _record, index) => {
+        return (pagination.current - 1) * pagination.pageSize + index + 1;
+      },
     },
     {
       key: "Mã lưu trữ",
       title: "Mã lưu trữ",
       dataIndex: "recordId",
-      width: 180,
-      render: (text) => (text.length > 20 ? `${text.slice(0, 17)}...` : text),
+      width: 230,
     },
     {
       key: "Dịch vụ khám",
       title: "Dịch vụ khám",
       dataIndex: "serviceName",
-      width: 150,
+      width: 200,
     },
     {
       key: "Loại khám",
       title: "Loại khám",
       dataIndex: "examType",
       width: 130,
+      filters: [
+        {
+          text: "Khám bệnh",
+          value: "Khám bệnh",
+        },
+        {
+          text: "Tái khám",
+          value: "Tái khám",
+        },
+      ],
+      onFilter: (value: any, record) => record.examType === value,
     },
     {
       key: "Bác sĩ khám",
@@ -69,6 +107,11 @@ const ListFishRecords = () => {
       title: "Ngày khám",
       dataIndex: "date",
       render: (date) => new Date(date).toLocaleDateString(),
+      sorter: (a, b) => {
+        const dateA = new Date(a.date);
+        const dateB = new Date(b.date);
+        return dateA.getTime() - dateB.getTime();
+      },
     },
     {
       key: "Chi tiết",
@@ -84,6 +127,14 @@ const ListFishRecords = () => {
     },
   ];
 
+  if (isLoading) {
+    return (
+      <div className="my-account-section flex items-center justify-center">
+        <Spin size="large" />
+      </div>
+    );
+  }
+
   return (
     <ConfigProvider
       theme={{
@@ -96,7 +147,9 @@ const ListFishRecords = () => {
       <div className="my-account-section">
         <HeaderComponent
           heading="Danh sách hồ sơ"
-          placeholder="Tìm hồ sơ"
+          alt="Tìm hồ sơ (Mã hồ sơ, dịch vụ, bác sĩ)"
+          placeholder="Tìm hồ sơ (Mã hồ sơ, dịch vụ, bác sĩ)"
+          onSearch={handleSearch}
         />
         <Breadcrumb
           separator=">"
@@ -119,7 +172,8 @@ const ListFishRecords = () => {
         <div className="doctor-view fish-record mt-3">
           <CustomTable
             columns={columns}
-            dataSource={records}
+            dataSource={filteredRecords}
+            onChange={(pagination) => setPagination(pagination)}
           />
         </div>
       </div>

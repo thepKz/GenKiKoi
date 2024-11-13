@@ -1,9 +1,17 @@
+// Test register(authController.ts)
+// Test login(authController.ts)
+// Test loginWithGoogle(authController.ts)
+// Test loginAdmin(authController.ts)
+// Test checkUsername(authController.ts)
+// Test checkEmail(authController.ts)
+// Model: User, Customer, Manager
 import bcrypt from 'bcryptjs';
 import { Request, Response } from 'express';
 import { checkEmail, checkUsername, login, loginAdmin, loginWithGoogle, register } from '../../controllers/authController';
 import Customer from '../../models/Customer';
 import Manager from '../../models/Manager';
 import User from '../../models/User';
+import * as emailService from '../../services/emails';
 
 jest.mock('../../models/User');
 jest.mock('../../models/Customer');
@@ -13,16 +21,40 @@ jest.mock('../../utils', () => ({
     signToken: jest.fn().mockResolvedValue('mocked-token'),
     randomText: jest.fn().mockReturnValue('random-text'),
 }));
+
+jest.mock('../../services/emails', () => ({
+  sendVerificationEmail: jest.fn().mockResolvedValue(true),
+  sendResetPasswordEmail: jest.fn().mockResolvedValue(true),
+  sendAppointmentConfirmation: jest.fn().mockResolvedValue(true),
+}));
+
+
+
 describe('AuthController', () => {
     let req: Partial<Request>;
     let res: Partial<Response>;
     let jsonMock: jest.Mock;
     let statusMock: jest.Mock;
 
+    beforeAll(() => {
+      process.env.NODE_ENV = 'test';
+      process.env.EMAIL_SERVICE = 'test';
+      process.env.EMAIL_USER = 'test@example.com';
+      process.env.EMAIL_PASS = 'test-password';
+    });
+
     beforeEach(() => {
         jsonMock = jest.fn();
         statusMock = jest.fn().mockReturnValue({ json: jsonMock });
         res = { status: statusMock, json: jsonMock } as Partial<Response>;
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    afterAll(() => {
+      jest.restoreAllMocks();
     });
 
     describe('register', () => {
@@ -52,6 +84,7 @@ describe('AuthController', () => {
 
             await register(req as Request, res as Response);
 
+            expect(emailService.sendVerificationEmail).toHaveBeenCalledTimes(1);
             expect(statusMock).toHaveBeenCalledWith(201);
             expect(jsonMock).toHaveBeenCalledWith(expect.objectContaining({
                 message: 'Đăng ký thành công!',
@@ -60,6 +93,7 @@ describe('AuthController', () => {
                 }),
             }));
         });
+
         it('should return validation error if email already exists', async () => {
             (User.findOne as jest.Mock).mockResolvedValue({ email: 'test@example.com' });
 
@@ -82,6 +116,7 @@ describe('AuthController', () => {
                 confirmPassword: 'Mật khẩu xác nhận không khớp!',
             }));
         });
+        
         it('should return validation error if username format is invalid', async () => {
             req.body.username = 'inva';
             (User.findOne as jest.Mock).mockResolvedValue(null);

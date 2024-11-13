@@ -8,10 +8,12 @@ import {
   Dashboard,
   DoctorCalendar,
   ListDoctors,
+  Profile,
   Services,
   Staffs,
 } from "../pages/manager";
 import { NotFound } from "../pages/notfound";
+import ChangePassword from "../pages/ChangePassword";
 
 const ManagerRouter = () => {
   return (
@@ -35,7 +37,9 @@ const ManagerRouter = () => {
         <Route path="accounts">
           <Route index element={<Accounts />} />
         </Route>
+        <Route path="profile" element={<Profile />} />
       </Route>
+      <Route path="change-password" element={<ChangePassword />} />
       <Route path="*" element={<NotFound to="/" />} />
     </Routes>
   );

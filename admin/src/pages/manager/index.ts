@@ -5,6 +5,7 @@ import Customers from "./Customers";
 import Dashboard from "./Dashboard";
 import DoctorCalendar from "./DoctorCalendar";
 import ListDoctors from "./ListDoctors";
+import Profile from "./Profile";
 import Services from "./Services";
 import Staffs from "./Staffs";
 
@@ -18,4 +19,5 @@ export {
   Appointments,
   Dashboard,
   Accounts,
+  Profile,
 };

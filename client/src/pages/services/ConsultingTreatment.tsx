@@ -2,13 +2,18 @@ import { AnimatedSection } from "../../share";
 
 import { Button } from "antd";
 import { ArrowRight2 } from "iconsax-react";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 import Banner1 from "../../assets/ct_banner1.png";
 import Banner2 from "../../assets/ct_banner2.png";
+import { useEffect } from "react";
 
 const ConsultingTreatment = () => {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
     <div>
@@ -32,9 +37,7 @@ const ConsultingTreatment = () => {
               >
                 <img
                   src={Banner1}
-                  className="rounded-2xl shadow-2xl hover:scale-105 transition-all duration-500 
-                    opacity-90 contrast-125 brightness-90 saturate-[0.85]
-                    hover:opacity-100 hover:contrast-100 hover:brightness-100 hover:saturate-100"
+                  className="rounded-2xl opacity-90 shadow-2xl brightness-90 contrast-125 saturate-[0.85] transition-all duration-500 hover:scale-105 hover:opacity-100 hover:brightness-100 hover:contrast-100 hover:saturate-100"
                   alt=""
                 />
               </AnimatedSection>
@@ -53,23 +56,29 @@ const ConsultingTreatment = () => {
                   },
                 }}
               >
-                <h1 className="text-4xl lg:text-5xl font-bold text-center leading-tight mb-8 bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
+                <h1 className="mb-8 bg-gradient-to-r from-white to-blue-100 bg-clip-text text-center text-4xl font-bold leading-tight text-transparent lg:text-5xl">
                   Tư vấn và Điều trị
                 </h1>
 
                 <div className="space-y-6">
-                  <div className="flex items-start gap-4 p-4 bg-white/10 rounded-xl backdrop-blur-sm hover:bg-white/15 transition-all duration-300">
+                  <div className="flex items-start gap-4 rounded-xl bg-white/10 p-4 backdrop-blur-sm transition-all duration-300 hover:bg-white/15">
                     <span className="text-2xl">🏥</span>
                     <div className="text-lg leading-relaxed">
                       <p className="mb-3">
-                        Dịch vụ tư vấn và điều trị cho cá Koi là việc cung cấp các dịch vụ liên quan đến
-                        sức khỏe và chăm sóc cho cá Koi như khám bệnh, điều trị, các cách thức phòng
-                        ngừa, tư vấn dinh dưỡng, chăm sóc cá nhân và nhiều những việc khác.
+                        Dịch vụ tư vấn và điều trị cho cá Koi là việc cung cấp các dịch vụ liên quan
+                        đến sức khỏe và chăm sóc cho cá Koi như khám bệnh, điều trị, các cách thức
+                        phòng ngừa, tư vấn dinh dưỡng, chăm sóc cá nhân và nhiều những việc khác.
                       </p>
                       <p className="mb-3">Chúng tôi cung cấp hai hình thức tư vấn chính:</p>
-                      <ul className="list-disc list-inside space-y-2">
-                        <li>Tư vấn trực tuyến (Online): Hỗ trợ nhanh chóng và tiện lợi thông qua video call hoặc chat.</li>
-                        <li>Tư vấn trực tiếp (Offline): Kiểm tra và tư vấn chi tiết tại phòng khám của chúng tôi.</li>
+                      <ul className="list-inside list-disc space-y-2">
+                        <li>
+                          Tư vấn trực tuyến (Online): Hỗ trợ nhanh chóng và tiện lợi thông qua video
+                          call hoặc chat.
+                        </li>
+                        <li>
+                          Tư vấn trực tiếp (Offline): Kiểm tra và tư vấn chi tiết tại phòng khám của
+                          chúng tôi.
+                        </li>
                       </ul>
                     </div>
                   </div>
@@ -78,10 +87,13 @@ const ConsultingTreatment = () => {
                 <Button
                   size="large"
                   onClick={() => navigate("/booking")}
-                  className="mt-8 px-8 py-6 bg-white/10 hover:bg-white/20 text-white border-none rounded-full text-lg font-semibold flex items-center gap-2 transition-all duration-300 hover:scale-105"
+                  className="mt-8 flex items-center gap-2 rounded-full border-none bg-white/10 px-8 py-6 text-lg font-semibold text-white transition-all duration-300 hover:scale-105 hover:bg-white/20"
                 >
                   Đặt Lịch Ngay
-                  <ArrowRight2 className="animate-bounce" size={20} />
+                  <ArrowRight2
+                    className="animate-bounce"
+                    size={20}
+                  />
                 </Button>
               </AnimatedSection>
             </div>
@@ -90,7 +102,7 @@ const ConsultingTreatment = () => {
       </div>
       {/* Section 2 */}
       <div className="bg-gradient-to-b from-[#2A7F9E] to-[#1A5F7E]">
-      <svg
+        <svg
           viewBox="0 0 1000 100"
           xmlns="http://www.w3.org/2000/svg"
           preserveAspectRatio="none"
@@ -110,21 +122,57 @@ const ConsultingTreatment = () => {
             d="M0 58C0 58 188.29 90 508 90C798 90 1002 55 1002 55V100H0V58Z"
           ></path>
           <defs>
-            <linearGradient id="gradient1" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#2A7F9E" />
-              <stop offset="100%" stopColor="#236F8E" />
+            <linearGradient
+              id="gradient1"
+              x1="0"
+              y1="0"
+              x2="0"
+              y2="1"
+            >
+              <stop
+                offset="0%"
+                stopColor="#2A7F9E"
+              />
+              <stop
+                offset="100%"
+                stopColor="#236F8E"
+              />
             </linearGradient>
-            <linearGradient id="gradient2" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#236F8E" />
-              <stop offset="100%" stopColor="#1C5F7E" />
+            <linearGradient
+              id="gradient2"
+              x1="0"
+              y1="0"
+              x2="0"
+              y2="1"
+            >
+              <stop
+                offset="0%"
+                stopColor="#236F8E"
+              />
+              <stop
+                offset="100%"
+                stopColor="#1C5F7E"
+              />
             </linearGradient>
-            <linearGradient id="gradient3" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#1C5F7E" />
-              <stop offset="100%" stopColor="#1A5F7E" />
+            <linearGradient
+              id="gradient3"
+              x1="0"
+              y1="0"
+              x2="0"
+              y2="1"
+            >
+              <stop
+                offset="0%"
+                stopColor="#1C5F7E"
+              />
+              <stop
+                offset="100%"
+                stopColor="#1A5F7E"
+              />
             </linearGradient>
           </defs>
         </svg>
-        <div className="section bg-gradient-to-b from-[#1A5F7E] hover:bg-white/15 to-[#154F6E] text-center text-white">
+        <div className="section bg-gradient-to-b from-[#1A5F7E] to-[#154F6E] text-center text-white hover:bg-white/15">
           <div className="container mx-auto lg:px-40">
             <div className="flex items-center justify-between gap-10">
               <div className="w-1/2 text-left">
@@ -142,7 +190,7 @@ const ConsultingTreatment = () => {
                       },
                     }}
                   >
-                    <div className="flex items-start gap-4 p-4 bg-white/10 rounded-t-xl backdrop-blur-sm hover:bg-white/15 transition-all duration-300">
+                    <div className="flex items-start gap-4 rounded-t-xl bg-white/10 p-4 backdrop-blur-sm transition-all duration-300 hover:bg-white/15">
                       <span className="text-2xl">🏥</span>
                       <p className="text-lg leading-relaxed">
                         Dịch vụ tư vấn và điều trị cho cá Koi là một phần không thể thiếu trong việc
@@ -150,17 +198,19 @@ const ConsultingTreatment = () => {
                       </p>
                     </div>
 
-                    <div className="flex items-start gap-4 p-4 bg-white/10 backdrop-blur-sm hover:bg-white/15 transition-all duration-300 rounded-b-xl">
+                    <div className="flex items-start gap-4 rounded-b-xl bg-white/10 p-4 backdrop-blur-sm transition-all duration-300 hover:bg-white/15">
                       <span className="text-2xl">👨‍⚕️</span>
                       <div className="text-lg leading-relaxed">
                         <p className="mb-3">
-                          Phòng khám Thú y GenKiKoi với đội ngũ bác sĩ chuyên khoa, trình độ cao và giàu
-                          kinh nghiệm, luôn sẵn sàng tiếp nhận cá Koi của bạn. Chúng tôi luôn mong có
-                          thể đáp ứng được nhu cầu chăm sóc sức khoẻ cho cá Koi một cách đa dạng nhất.
+                          Phòng khám Thú y GenKiKoi với đội ngũ bác sĩ chuyên khoa, trình độ cao và
+                          giàu kinh nghiệm, luôn sẵn sàng tiếp nhận cá Koi của bạn. Chúng tôi luôn
+                          mong có thể đáp ứng được nhu cầu chăm sóc sức khoẻ cho cá Koi một cách đa
+                          dạng nhất.
                         </p>
                         <p>
-                          Với những điều đó, GenKiKoi tin rằng chúng tôi sẽ là một trong những điểm đến
-                          uy tín của khách hàng trong việc chăm sóc và bảo vệ sức khoẻ cho cá Koi.
+                          Với những điều đó, GenKiKoi tin rằng chúng tôi sẽ là một trong những điểm
+                          đến uy tín của khách hàng trong việc chăm sóc và bảo vệ sức khoẻ cho cá
+                          Koi.
                         </p>
                       </div>
                     </div>
@@ -182,9 +232,7 @@ const ConsultingTreatment = () => {
                   }}
                 >
                   <img
-                    className="rounded-2xl shadow-2xl hover:scale-105 transition-all duration-500 
-                    opacity-90 contrast-125 brightness-90 saturate-[0.85]
-                    hover:opacity-100 hover:contrast-100 hover:brightness-100 hover:saturate-100"
+                    className="rounded-2xl opacity-90 shadow-2xl brightness-90 contrast-125 saturate-[0.85] transition-all duration-500 hover:scale-105 hover:opacity-100 hover:brightness-100 hover:contrast-100 hover:saturate-100"
                     src={Banner2}
                     alt=""
                   />
@@ -193,7 +241,6 @@ const ConsultingTreatment = () => {
             </div>
           </div>
         </div>
-       
       </div>
     </div>
   );

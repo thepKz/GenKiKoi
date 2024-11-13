@@ -7,6 +7,7 @@ import {
   TableProps,
   Tag,
   Input,
+  Form,
 } from "antd";
 import { HeaderPage } from "../../components";
 import { CustomTable } from "../../share";
@@ -33,6 +34,7 @@ const Appointments = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState<any>(null);
   const [cancelReason, setCancelReason] = useState("");
+  const [form] = Form.useForm();
 
   useEffect(() => {
     const getAppointments = async () => {
@@ -41,8 +43,11 @@ const Appointments = () => {
         const api = `/api/appointments/customers/${customerId}`;
         const res = await handleAPI(api, undefined, "GET");
         setAppointments(res.data);
-      } catch (error) {
-        message.error("Có lỗi xảy ra khi lấy danh sách cuộc hẹn");
+      } catch (error: any) {
+        console.log(error);
+        message.error(
+          error.message || "Có lỗi xảy ra khi lấy danh sách cuộc hẹn",
+        );
       } finally {
         setIsLoading(false);
       }
@@ -77,8 +82,9 @@ const Appointments = () => {
         return app;
       });
       setAppointments(updatedAppointments);
-    } catch (error) {
-      message.error("Có lỗi xảy ra khi hủy lịch hẹn");
+    } catch (error: any) {
+      console.log(error);
+      message.error(error.message || "Có lỗi xảy ra khi hủy lịch hẹn");
     } finally {
       setIsLoadingForm(false);
     }
@@ -112,17 +118,24 @@ const Appointments = () => {
       key: "Dịch vụ",
       title: "Dịch vụ",
       dataIndex: "serviceName",
+      width: 200,
     },
     {
       key: "Bác sĩ",
       title: "Bác sĩ",
       dataIndex: "doctorFullName",
+      width: 150,
     },
     {
       key: "Ngày hẹn",
       title: "Ngày hẹn",
       dataIndex: "appointmentDate",
       render: (date) => new Date(date).toLocaleDateString(),
+      sorter: (a, b) => {
+        const dateA = new Date(a.appointmentDate);
+        const dateB = new Date(b.appointmentDate);
+        return dateA.getTime() - dateB.getTime();
+      },
     },
     {
       key: "Trạng thái",
@@ -130,12 +143,27 @@ const Appointments = () => {
       dataIndex: "status",
       width: 150,
       render: (status) => <Tag color={getValue(status)}>{status}</Tag>,
+      filters: [
+        {
+          text: "Đã xác nhận",
+          value: "Đã xác nhận",
+        },
+        {
+          text: "Đã hoàn thành",
+          value: "Đã hoàn thành",
+        },
+        {
+          text: "Đã hủy",
+          value: "Đã hủy",
+        },
+      ],
+      onFilter: (value: any, record) => record.status === value,
     },
     {
       key: "Lý do khám",
       title: "Lý do khám",
       dataIndex: "reasons",
-      width: 400,
+      width: 350,
     },
     {
       key: "Hủy lịch",
@@ -169,7 +197,8 @@ const Appointments = () => {
     <div className="section">
       <HeaderPage
         heading="Danh sách cuộc hẹn"
-        placeholder="Tìm cuộc hẹn"
+        alt="Tìm cuộc hẹn (Tên dịch vụ, bác sĩ)"
+        placeholder="Tìm cuộc hẹn (Tên dịch vụ, bác sĩ)"
         onSearch={handleSearch}
       />
       <Breadcrumb
@@ -199,6 +228,7 @@ const Appointments = () => {
       />
       <div className="mt-2">
         <CustomTable
+          scroll="calc(100vh - 280px)"
           columns={columns}
           dataSource={filteredAppointments}
           onChange={(pagination) => setPagination(pagination)}
@@ -208,7 +238,7 @@ const Appointments = () => {
         confirmLoading={isLoadingForm}
         open={isModalOpen}
         okText="Xác nhận"
-        onOk={handleCancelAppointment}
+        onOk={() => form.submit()}
         cancelText="Hủy"
         onCancel={() => {
           setIsModalOpen(false);
@@ -220,13 +250,26 @@ const Appointments = () => {
           <p className="my-2 text-base">
             Bạn có chắc chắn muốn hủy lịch hẹn này?
           </p>
-          <TextArea
+          <Form
             size="large"
-            value={cancelReason}
-            onChange={(e) => setCancelReason(e.target.value)}
-            placeholder="Lý do hủy cuộc hẹn"
-            rows={6}
-          />
+            layout="vertical"
+            form={form}
+            onFinish={handleCancelAppointment}
+          >
+            <Form.Item
+              name="cancelReason"
+              label="Lý do hủy"
+              rules={[{ required: true, message: "Vui lòng nhập lý do hủy" }]}
+            >
+              <TextArea
+                size="large"
+                value={cancelReason}
+                onChange={(e) => setCancelReason(e.target.value)}
+                placeholder="Lý do hủy cuộc hẹn"
+                rows={6}
+              />
+            </Form.Item>
+          </Form>
         </div>
       </Modal>
     </div>

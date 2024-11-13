@@ -4,8 +4,10 @@ import {
   Card,
   ConfigProvider,
   Divider,
+  Empty,
   Form,
   Input,
+  InputNumber,
   message,
   Modal,
   Select,
@@ -16,7 +18,7 @@ import { useEffect, useRef, useState } from "react";
 import { handleAPI } from "../../apis/handleAPI";
 import { useSelector } from "react-redux";
 import { IAuth } from "../../types";
-import { getValue, uploadFile } from "../../utils";
+import { getValue, removeVietnameseTones, uploadFile } from "../../utils";
 import { Link } from "react-router-dom";
 import { HeaderComponent } from "../../components";
 import { GiCirclingFish } from "react-icons/gi";
@@ -32,8 +34,13 @@ const MedicalRecord = () => {
   const [selectedFish, setSelectedFish] = useState<any>(null);
   const [isFishModalOpen, setIsFishModalOpen] = useState<boolean>(false);
   const [isLoadingForm, setIsLoadingForm] = useState<boolean>(false);
+  const [searchText, setSearchText] = useState("");
 
   const auth: IAuth = useSelector((state: any) => state.authReducer.data);
+
+  const handleSearch = (value: string) => {
+    setSearchText(value.toLowerCase());
+  };
 
   const handleOpenFishModal = async (fish: any) => {
     try {
@@ -88,8 +95,20 @@ const MedicalRecord = () => {
     }
   };
 
+  const filteredFishes = fishes.filter((fish: any) => {
+    const searchValue = removeVietnameseTones(searchText.toLowerCase());
+    const fishId = removeVietnameseTones(fish._id.toLowerCase());
+    const description = removeVietnameseTones(fish.description.toLowerCase());
+
+    return fishId.includes(searchValue) || description.includes(searchValue);
+  });
+
   if (isLoading) {
-    return <Spin />;
+    return (
+      <div className="my-account-section flex items-center justify-center">
+        <Spin size="large" />
+      </div>
+    );
   }
 
   return (
@@ -105,66 +124,76 @@ const MedicalRecord = () => {
         {/* Header */}
         <HeaderComponent
           heading="Hồ sơ điều trị"
-          placeholder="Tìm hồ sơ"
+          placeholder="Tìm hồ sơ (Mã hồ sơ, mô tả)"
+          alt="Tìm hồ sơ (Mã hồ sơ, mô tả)"
+          onSearch={handleSearch}
         />
         {/* List Card */}
         <div className="flex h-[calc(100vh-170px)] flex-col gap-5 overflow-y-auto">
-          {fishes.map((fish: any, i: any) => (
-            <Card
-              key={i}
-              className="duration-100 ease-in hover:border-[#4096ff]"
-            >
-              <div className="flex items-center gap-5">
-                <div className="h-[150px] w-[250px] overflow-hidden rounded-lg">
-                  <img
-                    src={fish.photoUrl}
-                    alt=""
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-                <div className="flex w-full">
-                  <div className="flex flex-1 flex-col gap-2">
-                    <p>
-                      <span className="font-semibold">Mã hồ sơ: </span>
-                      {fish._id}
-                    </p>
-                    <p>
-                      <span className="font-semibold">Tuổi: </span>
-                      {fish.age}
-                    </p>
-                    <p>
-                      <span className="font-semibold">Giới tính: </span>{" "}
-                      {fish.gender &&
-                        (fish.gender === "đực" ? (
-                          <Tag color={getValue("đực")}>Đực</Tag>
-                        ) : (
-                          <Tag color={getValue("cái")}>Cái</Tag>
-                        ))}
-                    </p>
-                    <p>
-                      <span className="font-semibold">Kích thước: </span>
-                      {fish.size} cm
-                    </p>
-                    <p>
-                      <span className="font-semibold">Mô tả thêm: </span>
-                      {fish.description}
-                    </p>
+          {filteredFishes.length > 0 ? (
+            filteredFishes.map((fish: any, i: any) => (
+              <Card
+                key={i}
+                className="duration-100 ease-in hover:border-[#4096ff]"
+              >
+                <div className="flex items-center gap-5">
+                  <div className="h-[150px] w-[250px] overflow-hidden rounded-lg">
+                    <img
+                      src={fish.photoUrl}
+                      alt=""
+                      className="h-full w-full object-cover"
+                    />
                   </div>
-                  <div className="flex w-1/5 flex-col items-end gap-2">
-                    <Link to={`/my-account/medical-record/fishes/${fish._id}/records`}>
-                      <Button type="primary">Xem chi tiết</Button>
-                    </Link>
-                    <Button
-                      style={{ width: "fit-content" }}
-                      onClick={() => handleOpenFishModal(fish)}
-                    >
-                      Chỉnh sửa
-                    </Button>
+                  <div className="flex w-full">
+                    <div className="flex flex-1 flex-col gap-2">
+                      <p>
+                        <span className="font-semibold">Mã hồ sơ: </span>
+                        {fish._id}
+                      </p>
+                      <p>
+                        <span className="font-semibold">Tuổi: </span>
+                        {fish.age}
+                      </p>
+                      <p>
+                        <span className="font-semibold">Giới tính: </span>{" "}
+                        {fish.gender &&
+                          (fish.gender === "đực" ? (
+                            <Tag color={getValue("đực")}>Đực</Tag>
+                          ) : (
+                            <Tag color={getValue("cái")}>Cái</Tag>
+                          ))}
+                      </p>
+                      <p>
+                        <span className="font-semibold">Kích thước: </span>
+                        {fish.size} cm
+                      </p>
+                      <p>
+                        <span className="font-semibold">Mô tả thêm: </span>
+                        {fish.description}
+                      </p>
+                    </div>
+                    <div className="flex w-1/5 flex-col items-end gap-2">
+                      <Link to={`/my-account/medical-record/fishes/${fish._id}/records`}>
+                        <Button type="primary">Xem chi tiết</Button>
+                      </Link>
+                      <Button
+                        style={{ width: "fit-content" }}
+                        onClick={() => handleOpenFishModal(fish)}
+                      >
+                        Chỉnh sửa
+                      </Button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </Card>
-          ))}
+              </Card>
+            ))
+          ) : (
+            <Empty
+              className="mt-20"
+              imageStyle={{ height: 200 }}
+              description="Không tìm thấy hồ sơ nào"
+            />
+          )}
         </div>
         <Modal
           okText="Cập nhật"
@@ -218,29 +247,49 @@ const MedicalRecord = () => {
               <Form.Item
                 name="size"
                 label="Kích thước (cm)"
-                required
+                rules={[
+                  { required: true, message: "Vui lòng nhập kích thước" },
+                  {
+                    type: "number",
+                    min: 0,
+                    max: 200,
+                    message: "Kích thước phải nằm trong khoảng từ 0 tới 200",
+                  },
+                ]}
               >
-                <Input
+                <InputNumber
                   min={0}
+                  max={200}
                   type="number"
                   placeholder="Nhập kích thước"
+                  style={{ width: "100%" }}
                 />
               </Form.Item>
               <Form.Item
                 name="age"
                 label="Tuổi"
-                required
+                rules={[
+                  { required: true, message: "Vui lòng nhập tuổi" },
+                  {
+                    type: "number",
+                    min: 0,
+                    max: 200,
+                    message: "Tuổi phải lớn hơn 0",
+                  },
+                ]}
               >
-                <Input
-                  min={1}
+                <InputNumber
+                  min={0}
+                  max={200}
                   type="number"
                   placeholder="Nhập tuổi"
+                  style={{ width: "100%" }}
                 />
               </Form.Item>
               <Form.Item
                 name="gender"
                 label="Giới tính"
-                required
+                rules={[{ required: true, message: "Vui lòng chọn giới tính" }]}
               >
                 <Select
                   placeholder="Chọn giới tính"
@@ -253,7 +302,11 @@ const MedicalRecord = () => {
               <Form.Item
                 name="description"
                 label="Mô tả"
-                required
+                rules={[
+                  { required: true, message: "Vui lòng nhập mô tả" },
+                  { min: 10, message: "Mô tả phải có ít nhất 10 ký tự" },
+                  { max: 500, message: "Mô tả không được vượt quá 500 ký tự" },
+                ]}
               >
                 <TextArea
                   placeholder="Nhập mô tả"

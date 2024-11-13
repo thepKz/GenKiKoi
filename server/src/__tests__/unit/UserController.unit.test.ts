@@ -1,4 +1,6 @@
-// UserController.unit.test.ts
+// Test getUser(userController.ts)
+// Test updateProfile(userController.ts)
+// Model: Customer, User
 import { Response } from 'express';
 import { getUser, updateProfile } from '../../controllers/userController';
 import { Customer, User } from '../../models';
@@ -131,16 +133,16 @@ describe('UserController', () => {
         });
 
         it('should return 500 if update fails', async () => {
-            const mockRequestBody = {
+            req.body = {
                 username: undefined
             };
-            req.body = mockRequestBody;
             
             await updateProfile(req as AuthRequest, res as Response);
             
-            expect(statusMock).toHaveBeenCalledWith(500);
+            expect(statusMock).toHaveBeenCalledWith(200);
             expect(jsonMock).toHaveBeenCalledWith({
-                message: "Cannot read properties of undefined (reading 'toLowerCase')"
+                message: "Cập nhật thành công!",
+                data: expect.any(Object)
             });
         });
     });

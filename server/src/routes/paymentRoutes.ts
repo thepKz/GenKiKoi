@@ -2,8 +2,7 @@ import express from "express";
 import {
   createPaymentAtCenter,
   createPaymentOnline,
-  getBookingsByMonth,
-  getMoneyByMonth,
+  getMoneyByDay,
   getPaymentByAppointmentId,
   // getPaymentById,
   getPaymentsByCustomerId,
@@ -22,8 +21,7 @@ router.post("/:paymentId", updatePaymentById);
 router.get("/top-customers", getTopCustomers); // Đặt trước các route có params
 router.get("/statistics", getStatistics);
 router.get("/top-services", getTopServices);
-router.get("/booking-by-month", getBookingsByMonth);
-router.get("/money-by-month", getMoneyByMonth);
+router.get("/money-by-day", getMoneyByDay);
 router.get("/appointments/:appointmentId", getPaymentByAppointmentId);
 router.get("/:customerId", getPaymentsByCustomerId);
 
