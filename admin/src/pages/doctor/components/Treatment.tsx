@@ -22,7 +22,6 @@ import { handleAPI } from "../../../apis/handleAPI";
 import { uploadFile } from "../../../utils";
 import { useSelector } from "react-redux";
 import { IAuth } from "../../../types";
-import { m } from "framer-motion";
 
 const { TextArea } = Input;
 
