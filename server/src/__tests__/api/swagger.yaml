@@ -9,6 +9,34 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+  schemas:
+    Doctor:
+      type: object
+      properties:
+        _id:
+          type: string
+        userId:
+          type: string
+        fullName:
+          type: string
+        email:
+          type: string
+        gender:
+          type: string
+        photoUrl:
+          type: string
+        specialization:
+          type: string
+        licenseNumber:
+          type: string
+        yearOfExperience:
+          type: number
+        movingService:
+          type: boolean
+        googleMeetLink:
+          type: string
+        introduction:
+          type: string
 security:
   - bearerAuth: []
 servers:
@@ -105,6 +133,8 @@ paths:
               schema:
                 type: object
                 properties:
+                  message:
+                    type: string
                   username:
                     type: string
                   email:
@@ -123,6 +153,89 @@ paths:
                   message:
                     type: string
                     example: Đã xảy ra lỗi server
+
+  /api/auth/register-at-center:
+    post:
+      summary: Register customer at center
+      tags: [Authentication]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - phoneNumber
+                - email 
+                - fullName
+                - gender
+              properties:
+                phoneNumber:
+                  type: string
+                email:
+                  type: string
+                fullName:
+                  type: string
+                gender:
+                  type: string
+                city:
+                  type: string
+                district:
+                  type: string
+                ward:
+                  type: string
+                detailAddress:
+                  type: string
+      responses:
+        '201':
+          description: Customer registered successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Đăng ký thành công!
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      username:
+                        type: string
+                      email:
+                        type: string
+                      role:
+                        type: string
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  phoneNumber:
+                    type: string
+                  email:
+                    type: string
+                  fullName:
+                    type: string
+                  gender:
+                    type: string
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Đã xảy ra lỗi server
+
   /api/auth/login:
     post:
       summary: User login
@@ -190,6 +303,7 @@ paths:
                 properties:
                   message:
                     type: string
+
   /api/auth/login-google:
     post:
       summary: Login with Google
@@ -258,6 +372,7 @@ paths:
                   message:
                     type: string
                     description: Error message
+
   /api/auth/login-admin:
     post:
       summary: Admin login
@@ -334,6 +449,7 @@ paths:
                   message:
                     type: string
                     description: Error message
+
   /api/auth/check-username:
     post:
       summary: Check if a username exists
@@ -376,6 +492,7 @@ paths:
                   message:
                     type: string
                     description: Error message
+
   /api/auth/check-email:
     post:
       summary: Check if an email exists
@@ -418,6 +535,7 @@ paths:
                   message:
                     type: string
                     description: Error message
+
   /api/users/:
     get:
       summary: Get user profile (ALL EXCEPT GUEST)
@@ -493,7 +611,7 @@ paths:
         - bearerAuth: []
       responses:
         200:
-          description: User profile retrieved successfully
+          description: User profile updated successfully
           content:
             application/json:
               schema:
@@ -528,6 +646,7 @@ paths:
           description: User information not found
         500:
           description: Server error
+
   /api/services:
     get:
       summary: Get all services
@@ -610,6 +729,7 @@ paths:
                   message:
                     type: string
                     example: Đã xảy ra lỗi server
+
   /api/services/{id}:
     delete:
       summary: Delete a service
@@ -723,6 +843,7 @@ paths:
                   message:
                     type: string
                     example: Đã xảy ra lỗi server
+
   /api/doctors:
     get:
       summary: Get all doctors
@@ -835,6 +956,7 @@ paths:
                   message:
                     type: string
                     example: Đã xảy ra lỗi server
+
   /api/doctors/{doctorId}:
     patch:
       summary: Update a doctor
@@ -966,6 +1088,7 @@ paths:
                   message:
                     type: string
                     example: Đã xảy ra lỗi server
+
   /api/doctors/all:
     get:
       summary: Get all doctors for booking
@@ -1009,6 +1132,7 @@ paths:
                   message:
                     type: string
                     example: Đã xảy ra lỗi server
+
   /api/doctors/{doctorId}:
     get:
       summary: Get a doctor by ID
@@ -1052,6 +1176,7 @@ paths:
                   message:
                     type: string
                     example: Đã xảy ra lỗi server
+
   /api/doctor-schedules:
     get:
       summary: Get all doctor schedules
@@ -1090,6 +1215,7 @@ paths:
                   message:
                     type: string
                     example: Đã xảy ra lỗi khi lấy lịch trình
+
   /api/doctor-schedules/{doctorId}:
     get:
       summary: Get schedule by doctor ID
@@ -1133,6 +1259,7 @@ paths:
                   message:
                     type: string
                     example: Đã xảy ra lỗi khi lấy lịch trình
+
   /api/doctor-schedules/{doctorId}/slots:
     get:
       summary: Get slots by doctor and date
@@ -1194,9 +1321,10 @@ paths:
                   message:
                     type: string
                     example: Đã xảy ra lỗi khi lấy slots
+
   /api/doctor-schedules/{doctorId}/view-calendar:
     get:
-      summary: Get view calendar by doctor ID
+      summary: Get doctor calendar view
       tags: [Doctors]
       security:
         - bearerAuth: []
@@ -1635,6 +1763,36 @@ paths:
                   message:
                     type: string
                     example: Lỗi khi lấy danh sách bệnh án
+  /api/medical-records:
+  post:
+    summary: Create medical record
+    tags: [Medical Records]
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              appointmentId:
+                type: string
+              diagnosis:
+                type: string
+              prescription:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    medicineName:
+                      type: string
+                    dosage:
+                      type: string
+                    duration:
+                      type: string
+              note:
+                type: string
   /api/medical-records/fish/{fishId}:
     get:
       summary: Get medical records by fish ID
