@@ -1,6 +1,9 @@
 import {
   Button,
   ConfigProvider,
+  Divider,
+  Form,
+  Input,
   message,
   Modal,
   Rate,
@@ -8,16 +11,13 @@ import {
   Table,
   TableProps,
   Tag,
-  Input,
-  Divider,
-  Form,
 } from "antd";
-import { getValue, removeVietnameseTones } from "../../utils";
 import { useEffect, useState } from "react";
-import { handleAPI } from "../../apis/handleAPI";
 import { useSelector } from "react-redux";
-import { IAuth } from "../../types";
+import { handleAPI } from "../../apis/handleAPI";
 import { HeaderComponent } from "../../components";
+import { IAuth } from "../../types";
+import { getValue, removeVietnameseTones } from "../../utils";
 
 const { TextArea } = Input;
 
@@ -360,7 +360,12 @@ const Appointment = () => {
                   max: 500,
                   message: "Nhận xét không được vượt quá 500 ký tự",
                 },
+                {
+                  required: true,
+                  message: "Vui lòng viết nhận xét của bạn",
+                }
               ]}
+
             >
               <TextArea
                 size="large"

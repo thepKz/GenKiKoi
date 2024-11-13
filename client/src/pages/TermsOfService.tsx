@@ -21,7 +21,7 @@ const TermsOfService = () => {
           <div className="rounded-xl bg-white/5 p-8 backdrop-blur-sm transition-all duration-300 hover:bg-white/10">
             <h2 className="mb-6 text-2xl font-semibold text-blue-200">I. Quy định đặt lịch hẹn</h2>
             <div className="space-y-4 text-gray-200">
-              <p>1.1. Thời gian đặt lịch: Tối thiểu 24 tiếng trước giờ hẹn.</p>
+              <p>1.1. Thời gian đặt lịch: Tối thiểu 1 ngày trước giờ hẹn.</p>
               <p>1.2. Mỗi khung giờ tối đa 2 lịch hẹn cho mỗi bác sĩ.</p>
               <p>1.3. Lịch hẹn sẽ tự động hủy nếu không thanh toán trong vòng 15 phút.</p>
               <p>1.4. Chỉ khách hàng đã xác thực mới có thể đặt lịch.</p>
@@ -40,6 +40,7 @@ const TermsOfService = () => {
               <p>2.3. Chính sách hoàn tiền:</p>
               <ul className="list-disc space-y-2 pl-8">
                 <li>Hủy trước 24 giờ: Hoàn tiền 100%</li>
+                <li>Hủy lịch ít hơn 24 giờ kể từ lịch hẹn: Không hoàn tiền</li>
                 <li>Không đến mà không báo trước: Không hoàn tiền</li>
               </ul>
             </div>
