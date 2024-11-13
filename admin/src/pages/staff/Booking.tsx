@@ -302,7 +302,6 @@ const Booking = () => {
         "ward",
         "detailAddress",
         "distance",
-        "reasons",
       ]);
     } catch (error: any) {
       console.log(error);
