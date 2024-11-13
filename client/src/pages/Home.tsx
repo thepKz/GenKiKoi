@@ -1,5 +1,5 @@
-import { Avatar, Button } from "antd";
-import { ArrowLeft2, ArrowRight2, Calendar, Call, EmojiHappy, Heart, HeartTick, Moneys, Profile2User, Star } from "iconsax-react";
+import { Avatar, Button, message, Rate, Spin } from "antd";
+import { ArrowLeft2, ArrowRight2, Calendar, Call, EmojiHappy, Heart, HeartTick, Moneys, Profile2User, Star, User } from "iconsax-react";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import Background from "../assets/background.webp";
@@ -8,18 +8,15 @@ import Image2 from "../assets/Image1.jpg";
 import Image1 from "../assets/Image2.jpg";
 import Image3 from "../assets/Image3.jpg";
 
-import Avatar1 from "../assets/avatar1.png";
-import Avatar2 from "../assets/avatar2.png";
-import Avatar3 from "../assets/avatar3.png";
-import Avatar4 from "../assets/avatar4.png";
 
 import Fish1 from "../assets/fish-care-1.jpg";
 import Fish2 from "../assets/fish-care-2.webp";
 import Fish3 from "../assets/fish-care-3.jpg";
 import Fish4 from "../assets/fish-care-4.jpg";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { handleAPI } from "../apis/handleAPI";
 import FishBanner from "../assets/fish-banner.png";
 import { AnimatedSection, DividerComponent } from "../share";
 
@@ -40,6 +37,26 @@ const responsive = {
 
 const Home = () => {
   const navigate = useNavigate();
+  const [feedbacks, setFeedbacks] = useState<any[]>([]);
+  const [isLoadingFeedbacks, setIsLoadingFeedbacks] = useState(false);
+
+  useEffect(() => {
+    const getFeedbacks = async () => {
+      try {
+        setIsLoadingFeedbacks(true);
+        const api = `/api/feedbacks/public`;
+        const res = await handleAPI(api, undefined, "GET");
+        setFeedbacks(res.data);
+      } catch (error: any) {
+        console.log(error);
+        message.error(error.message || "Có lỗi xảy ra khi tải phản hồi");
+      } finally {
+        setIsLoadingFeedbacks(false); 
+      }
+    };
+    getFeedbacks();
+  }, []);
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -516,61 +533,39 @@ const Home = () => {
                 className="p-1"
                 responsive={responsive}
               >
-                <div className="mx-2 flex h-full flex-col justify-between rounded-xl bg-white/10 p-5 py-10 backdrop-blur-sm transition-all duration-300 hover:bg-white/20">
-                  <p className="mb-3 text-lg">
-                    Phòng khám sạch sẽ, bác sĩ giàu chuyên môn, đầy tình thương. Cá của mình đã khỏi
-                    bệnh khi điều trị ở đây.
-                  </p>
-                  <div className="text-center">
-                    <Avatar
-                      src={Avatar1}
-                      size="large"
-                      className="mb-2 border-2 border-blue-300"
-                    />
-                    <h3 className="font-bold text-blue-100">Anh Quân</h3>
+                {isLoadingFeedbacks ? (
+                  <div className="flex justify-center">
+                    <Spin size="large" />
                   </div>
-                </div>
-                <div className="mx-2 flex h-full flex-col justify-between rounded-xl bg-white/10 p-5 py-10 backdrop-blur-sm transition-all duration-300 hover:bg-white/20">
-                  <p className="mb-3 text-lg">
-                    Bé con trai cưng mê anh chị ở đây lắm nè. Phòng khám hiện đại. Dễ thương. Nhiệt
-                    tình. Anh mắt kính dễ thương lắm.
-                  </p>
-                  <div className="text-center">
-                    <Avatar
-                      src={Avatar2}
-                      size="large"
-                      className="mb-2 border-2 border-blue-300"
-                    />
-                    <h3 className="font-bold text-blue-100">Chị Mai</h3>
+                ) : feedbacks.length > 0 ? (
+                  feedbacks.map((feedback, index) => (
+                    <div key={index} className="mx-2 flex h-full flex-col justify-between rounded-xl bg-white/10 p-5 py-10 backdrop-blur-sm transition-all duration-300 hover:bg-white/20">
+                      <div>
+                        <div className="mb-3">
+                          <Rate disabled defaultValue={feedback.rating} />
+                        </div>
+                        <p className="mb-3 text-lg">{feedback.comment}</p>
+                        <p className="text-sm text-gray-300">Dịch vụ: {feedback.serviceName}</p>
+                      </div>
+                      <div className="text-center mt-4">
+                        <Avatar
+                          size="large"
+                          className="mb-2 border-2 border-blue-300"
+                          src={feedback.customerAvatar}
+                          icon={<User />}
+                        />
+                        <h3 className="font-bold text-blue-100">{feedback.customerName}</h3>
+                        <p className="text-sm text-gray-300">
+                          {new Date(feedback.feedbackDate).toLocaleDateString()}
+                        </p>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-center py-10">
+                    <p>Chưa có đánh giá nào</p>
                   </div>
-                </div>
-                <div className="mx-2 flex h-full flex-col justify-between rounded-xl bg-white/10 p-5 py-10 backdrop-blur-sm transition-all duration-300 hover:bg-white/20">
-                  <p className="mb-3 text-lg">
-                    Bác sĩ từ Sài Gòn mới về làm, còn trẻ nhưng chuyên môn rất cao. Cám ơn các bác
-                    sĩ rất nhiều 🥰
-                  </p>
-                  <div className="text-center">
-                    <Avatar
-                      src={Avatar3}
-                      size="large"
-                      className="mb-2 border-2 border-blue-300"
-                    />
-                    <h3 className="font-bold text-blue-100">Anh Dũng Đẹp Trai</h3>
-                  </div>
-                </div>
-                <div className="mx-2 flex h-full flex-col justify-between rounded-xl bg-white/10 p-5 py-10 backdrop-blur-sm transition-all duration-300 hover:bg-white/20">
-                  <p className="mb-3 text-lg">
-                    Anh chủ phòng khám rất dễ thương và nhiệt tình nha mn. Chữa bệnh rất giỏi nữa.
-                  </p>
-                  <div className="text-center">
-                    <Avatar
-                      src={Avatar4}
-                      size="large"
-                      className="mb-2 border-2 border-blue-300"
-                    />
-                    <h3 className="font-bold text-blue-100">Anh Thép Xấu Trai</h3>
-                  </div>
-                </div>
+                )}
               </Carousel>
             </div>
           </AnimatedSection>
