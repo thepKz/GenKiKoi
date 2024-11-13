@@ -811,7 +811,11 @@ const Booking = () => {
                 <span className="font-semibold">Chính sách hoàn tiền:</span>
                 <ol className="ml-5 list-disc">
                   <li>
-                    <span className="font-semibold">Hủy trước 24 giờ:</span> Hoàn tiền 100%.
+                    <span className="font-semibold">Hủy lịch trước 24 giờ:</span> Hoàn tiền 100%.
+                  </li>
+                  <li>
+                  <span className="font-semibold">Hủy lịch ít hơn 24 giờ kể từ lịch hẹn:</span> Không hoàn
+                  tiền.
                   </li>
                   <li>
                     <span className="font-semibold">Không đến mà không báo trước:</span> Không hoàn

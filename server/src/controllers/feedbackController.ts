@@ -5,7 +5,6 @@ import { AuthRequest } from "../types";
 export const createNewFeedback = async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user?._id;
-
     const { appointmentId, rating, comment } = req.body;
 
     if (!appointmentId || !rating || !comment) {
