@@ -29,7 +29,7 @@ const CustomCalendar = (props: Props) => {
 
   const disabledDate = (current: Dayjs) => {
     const isBeforeToday = current.isBefore(
-      dayjs().tz(DEFAULT_TIMEZONE).startOf("day"),
+      dayjs().tz(DEFAULT_TIMEZONE).endOf("day"),
     );
 
     if (!doctorSchedule) return true;

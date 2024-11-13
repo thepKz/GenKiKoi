@@ -90,7 +90,7 @@ const History = () => {
                   {payment.status === "PENDING" && (
                     <Link
                       to={`https://pay.payos.vn/web/${payment.paymentLinkId}`}
-                      target="_blank"
+                      target="_self"
                     >
                       <Button type="primary">Thanh toán</Button>
                     </Link>

@@ -34,6 +34,7 @@ const Booking = () => {
   const [city, setCity] = useState<string>("");
   const [district, setDistrict] = useState<string>("");
   const [ward, setWard] = useState<string>("");
+  const [detailAddress, setDetailAddress] = useState<string>("");
 
   const [cities, setCities] = useState<SelectProps["options"]>([]);
   const [districts, setDistricts] = useState<SelectProps["options"]>([]);
@@ -54,6 +55,8 @@ const Booking = () => {
 
   const handleSubmit = async (values: any) => {
     try {
+      const { phoneNumber, email, fullName, gender } = values;
+
       setIsLoadingForm(true);
 
       if (date && slot && doctorSchedule) {
@@ -72,14 +75,14 @@ const Booking = () => {
         const res = await handleAPI(
           registerApi,
           {
-            phoneNumber: values.phoneNumber,
-            email: values.email,
-            fullName: values.fullName,
-            gender: values.gender,
-            city: values.city,
-            district: values.district,
-            ward: values.ward,
-            detailAddress: values.detailAddress,
+            phoneNumber,
+            email,
+            fullName,
+            gender,
+            city,
+            district,
+            ward,
+            detailAddress,
           },
           "POST",
         );
@@ -88,18 +91,17 @@ const Booking = () => {
           currentProfile = res.data;
           setProfile(res.data);
         }
-        console.log(profile);
       } else {
         const updateApi = `/api/customers/${profile.id}`;
         const res = await handleAPI(
           updateApi,
           {
-            fullName: values.fullName,
-            gender: values.gender,
-            city: values.city,
-            district: values.district,
-            ward: values.ward,
-            detailAddress: values.detailAddress,
+            fullName,
+            gender,
+            city,
+            district,
+            ward,
+            detailAddress,
           },
           "PATCH",
         );
@@ -142,9 +144,13 @@ const Booking = () => {
       message.success("Tạo cuộc hẹn thành công");
     } catch (error: any) {
       console.error(error);
-      message.error(error.message);
+      message.error(
+        error.message || "Đã có lỗi xảy ra, vui lòng thử lại sau ít phút",
+      );
     } finally {
       setIsLoadingForm(false);
+      form.resetFields();
+      setSlot(null);
     }
   };
 
@@ -241,15 +247,15 @@ const Booking = () => {
       const res = await handleAPI(api, undefined, "GET");
       if (res.data) {
         setDoctorSchedule(res.data);
-        const today = dayjs();
-        const formattedToday = today.format("DD/MM/YYYY");
-        const todaySchedule = res.data.weekSchedule.find(
-          (day: any) => day.dayOfWeek === formattedToday,
-        );
-        if (todaySchedule) {
-          setDate(today);
-          setAvailableSlots(todaySchedule.slots);
-        }
+        // const today = dayjs();
+        // const formattedToday = today.format("DD/MM/YYYY");
+        // const todaySchedule = res.data.weekSchedule.find(
+        //   (day: any) => day.dayOfWeek === formattedToday,
+        // );
+        // if (todaySchedule) {
+        //   setDate(today);
+        //   setAvailableSlots(todaySchedule.slots);
+        // }
       }
     } catch (error: any) {
       console.log(error);
@@ -287,6 +293,17 @@ const Booking = () => {
       }
 
       setProfile(res.data);
+      form.resetFields([
+        "email",
+        "fullName",
+        "gender",
+        "city",
+        "district",
+        "ward",
+        "detailAddress",
+        "distance",
+        "reasons",
+      ]);
     } catch (error: any) {
       console.log(error);
       message.error(error.message);
@@ -694,7 +711,12 @@ const Booking = () => {
                 <Row gutter={24}>
                   <Col span={16}>
                     <Form.Item name="detailAddress" label="Địa chỉ">
-                      <Input placeholder="Địa chỉ" />
+                      <Input
+                        placeholder="Địa chỉ"
+                        onChange={(e) => {
+                          setDetailAddress(e.target.value);
+                        }}
+                      />
                     </Form.Item>
                   </Col>
                   <Col span={8}>

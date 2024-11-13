@@ -311,22 +311,26 @@ export const deleteDoctorById = async (req: Request, res: Response) => {
  */
 export const getAllDoctorsForBooking = async (req: Request, res: Response) => {
   try {
-    const doctors = await Doctor.find({}, "fullName").populate(
-      "userId",
-      "fullName"
-    );
+    const doctors = await Doctor.find({}, "fullName").populate({
+      path: "userId",
+      match: { isDisabled: false }, // Chỉ lấy những user không bị khóa
+      select: "fullName",
+    });
 
-    if (!doctors || doctors.length === 0) {
+    const activeDoctors = doctors.filter((doctor) => doctor.userId);
+
+    if (!activeDoctors || activeDoctors.length === 0) {
       return res.status(404).json({ message: "Không tìm thấy bác sĩ nào" });
     }
 
-    const doctorList = doctors.map((doctor: any) => ({
+    const doctorList = activeDoctors.map((doctor: any) => ({
       id: doctor._id,
-      fullName: doctor.userId ? doctor.userId.fullName : doctor.fullName,
+      fullName: doctor.userId.fullName,
     }));
 
     return res.status(200).json({ data: doctorList });
   } catch (error: any) {
+    console.log(error);
     return res.status(500).json({ message: error.message });
   }
 };

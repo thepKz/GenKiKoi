@@ -81,7 +81,7 @@ const Appointment = () => {
       const res = await handleAPI(api, undefined, "GET");
 
       if (res.data) {
-        window.open(`https://pay.payos.vn/web/${res.data.paymentLinkId}`, "_blank");
+        window.open(`https://pay.payos.vn/web/${res.data.paymentLinkId}`, "_self");
       }
     } catch (error: any) {
       console.log(error);
