@@ -15,6 +15,7 @@ export const getMedicalRecordByFishId = async (req: Request, res: Response) => {
   const fishId = req.params.fishId;
   try {
     const medicalRecords = await MedicalRecord.find({ fishId })
+      .sort({ createdAt: -1 })
       .populate({
         path: "customerId",
         populate: {

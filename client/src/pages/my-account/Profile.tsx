@@ -154,6 +154,20 @@ const Profile = () => {
     }
   };
 
+  const handleCheckExistencePhoneNumber = async (field: string, value: string) => {
+    const api = `/api/users/check-${field}`;
+    try {
+      const res: any = await handleAPI(api, { [field]: value }, "POST");
+
+      if (res.exists && res.userId !== auth.id) {
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="my-account-section flex items-center justify-center">
@@ -325,8 +339,31 @@ const Profile = () => {
                             label="Số điện thoại"
                             hasFeedback
                             rules={[
-                              { required: true, message: "Vui lòng nhập số điện thoại" },
-                              { pattern: /^[0-9]{10}$/, message: "Số điện thoại không hợp lệ" },
+                              {
+                                required: true,
+                                message: "Vui lòng nhập số điện thoại",
+                              },
+                              {
+                                pattern: /^(0[3|5|7|8|9])+([0-9]{8})\b/,
+                                message: "Số điện thoại không hợp lệ",
+                              },
+                              {
+                                validator: async (_, value) => {
+                                  if (value && value.trim().length > 0) {
+                                    const exists = await handleCheckExistencePhoneNumber(
+                                      "phoneNumber",
+                                      value,
+                                    );
+
+                                    if (exists) {
+                                      return Promise.reject(
+                                        new Error("Số điện thoại này đã được đăng ký!"),
+                                      );
+                                    }
+                                  }
+                                  return Promise.resolve();
+                                },
+                              },
                             ]}
                             validateDebounce={1000}
                           >

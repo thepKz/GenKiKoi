@@ -22,6 +22,7 @@ import { handleAPI } from "../../../apis/handleAPI";
 import { uploadFile } from "../../../utils";
 import { useSelector } from "react-redux";
 import { IAuth } from "../../../types";
+import { m } from "framer-motion";
 
 const { TextArea } = Input;
 
@@ -111,13 +112,24 @@ const Treatment = () => {
     try {
       setFishRecords([]);
       const api = `/api/fishes/customers/${phoneNumber}`;
-      const res = await handleAPI(api, undefined, "GET");
+      const res: any = await handleAPI(api, undefined, "GET");
 
       if (res.data) {
         setFishRecords(res.data);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.log(error);
+      if (error.message === "Người dùng không tồn tại") {
+        form.setFields([
+          {
+            name: "phoneNumber",
+            errors: ["Khách hàng không tồn tại!"],
+            validating: false,
+          },
+        ]);
+      } else {
+        message.error(error.message);
+      }
     }
   };
 

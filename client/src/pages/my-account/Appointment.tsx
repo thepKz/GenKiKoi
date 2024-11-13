@@ -12,7 +12,7 @@ import {
   Divider,
   Form,
 } from "antd";
-import { getValue } from "../../utils";
+import { getValue, removeVietnameseTones } from "../../utils";
 import { useEffect, useState } from "react";
 import { handleAPI } from "../../apis/handleAPI";
 import { useSelector } from "react-redux";
@@ -27,11 +27,15 @@ const Appointment = () => {
   const [feedbackLoading, setFeedbackLoading] = useState(false);
   const [isFeedbackModalVisible, setIsFeedbackModalVisible] = useState<boolean>(false);
   const [currentAppointment, setCurrentAppointment] = useState<any>(null);
-  const [form] = Form.useForm();
-
-  console.log(currentAppointment);
+  const [searchText, setSearchText] = useState("");
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+  });
 
   const auth: IAuth = useSelector((state: any) => state.authReducer.data);
+
+  const [form] = Form.useForm();
 
   useEffect(() => {
     const getAppointments = async () => {
@@ -116,13 +120,27 @@ const Appointment = () => {
     form.resetFields();
   };
 
+  const handleSearch = (value: string) => {
+    setSearchText(value.toLowerCase());
+  };
+
+  const filteredAppointments = appointments.filter((appointment: any) => {
+    const searchValue = removeVietnameseTones(searchText.toLowerCase());
+    const serviceName = removeVietnameseTones(appointment.serviceName.toLowerCase());
+    const doctorName = removeVietnameseTones(appointment.doctorFullName.toLowerCase());
+
+    return serviceName.includes(searchValue) || doctorName.includes(searchValue);
+  });
+
   const columns: TableProps["columns"] = [
     {
       key: "#",
       title: "#",
       dataIndex: "key",
       width: 70,
-      render: (_text, _record, index) => index + 1,
+      render: (_text, _record, index) => {
+        return (pagination.current - 1) * pagination.pageSize + index + 1;
+      },
     },
     {
       key: "Tên dịch vụ",
@@ -252,7 +270,9 @@ const Appointment = () => {
         {/* Header */}
         <HeaderComponent
           heading="Danh sách cuộc hẹn"
-          placeholder="Tìm cuộc hẹn"
+          alt="Tìm cuộc hẹn (Tên dịch vụ, bác sĩ)"
+          placeholder="Tìm cuộc hẹn (Tên dịch vụ, bác sĩ)"
+          onSearch={handleSearch}
         />
         {/* Table */}
         <div className="">
@@ -261,10 +281,11 @@ const Appointment = () => {
               showSizeChanger: true,
             }}
             columns={columns}
-            dataSource={appointments}
+            dataSource={filteredAppointments}
             scroll={{
               y: "calc(100vh - 270px)",
             }}
+            onChange={(pagination: any) => setPagination(pagination)}
           />
         </div>
       </div>

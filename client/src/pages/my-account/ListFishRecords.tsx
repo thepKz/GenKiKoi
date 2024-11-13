@@ -12,8 +12,13 @@ const ListFishRecords = () => {
 
   const fishId = pathname.split("/")[4];
   const [records, setRecords] = useState([]);
+  const [searchText, setSearchText] = useState("");
 
   const [isLoading, setIsLoading] = useState(false);
+
+  const handleSearch = (value: string) => {
+    setSearchText(value.toLowerCase());
+  };
 
   useEffect(() => {
     const getAllRecords = async () => {
@@ -26,7 +31,7 @@ const ListFishRecords = () => {
         setRecords(res.data);
       } catch (error: any) {
         console.log(error);
-        message.error(error.message);
+        message.error(error.message || "Có lỗi khi lấy dữ liệu, vui lòng thử lại sau ít phút!");
       } finally {
         setIsLoading(false);
       }

@@ -78,6 +78,23 @@ const Consulting = () => {
     return false;
   };
 
+  const handleCheckExistencePhoneNumber = async (
+    field: string,
+    value: string,
+  ) => {
+    const api = `/api/users/check-${field}`;
+    try {
+      const res: any = await handleAPI(api, { [field]: value }, "POST");
+
+      if (res.exists) {
+        return false;
+      }
+      return true;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div>
       <ConfigProvider
@@ -104,10 +121,30 @@ const Consulting = () => {
                   label="Số điện thoại"
                   hasFeedback
                   rules={[
-                    { required: true, message: "Vui lòng nhập số điện thoại" },
+                    {
+                      required: true,
+                      message: "Vui lòng nhập số điện thoại",
+                    },
                     {
                       pattern: /^(0[3|5|7|8|9])+([0-9]{8})\b/,
                       message: "Số điện thoại không hợp lệ",
+                    },
+                    {
+                      validator: async (_, value) => {
+                        if (value && value.trim().length > 0) {
+                          const exists = await handleCheckExistencePhoneNumber(
+                            "phoneNumber",
+                            value,
+                          );
+
+                          if (exists) {
+                            return Promise.reject(
+                              new Error("Khách hàng không tồn tại!"),
+                            );
+                          }
+                        }
+                        return Promise.resolve();
+                      },
                     },
                   ]}
                   validateDebounce={1000}

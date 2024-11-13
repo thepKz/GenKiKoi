@@ -99,7 +99,7 @@ export const getPaymentById = async (req: Request, res: Response) => {
 export const getPaymentsByCustomerId = async (req: Request, res: Response) => {
   const customerId = req.params.customerId;
   try {
-    const payments = await Payment.find({ customerId });
+    const payments = await Payment.find({ customerId }).sort({ createdAt: -1 });
 
     const formattedPayments = payments.map((payment) => ({
       date: payment.date,
