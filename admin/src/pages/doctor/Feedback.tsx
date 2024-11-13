@@ -54,21 +54,51 @@ const Feedback = () => {
       width: 200,
     },
     {
+      key: "Ngày đánh giá",
+      title: "Ngày đánh giá",
+      dataIndex: "feedbackDate",
+      render: (date) => new Date(date).toLocaleDateString(),
+      sorter: (a, b) => {
+        const dateA = new Date(a.feedbackDate);
+        const dateB = new Date(b.feedbackDate);
+        return dateA.getTime() - dateB.getTime();
+      },
+      width: 150,
+    },
+    {
       key: "Đánh giá",
       title: "Đánh giá",
       dataIndex: "rating",
       render: (star) => <Rate value={star} />,
+      filters: [
+        {
+          text: "5 stars",
+          value: 5,
+        },
+        {
+          text: "4 stars",
+          value: 4,
+        },
+        {
+          text: "3 stars",
+          value: 3,
+        },
+        {
+          text: "2 stars",
+          value: 2,
+        },
+        {
+          text: "1 stars",
+          value: 1,
+        },
+      ],
+      onFilter: (value: any, record) => record.rating === value,
+      width: 180,
     },
     {
       key: "Bình luận",
       title: "Bình luận",
       dataIndex: "comment",
-    },
-    {
-      key: "Ngày đánh giá",
-      title: "Ngày đánh giá",
-      dataIndex: "feedbackDate",
-      render: (date) => new Date(date).toLocaleDateString(),
     },
   ];
 

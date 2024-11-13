@@ -51,20 +51,30 @@ const ListFishRecords = () => {
       key: "Mã lưu trữ",
       title: "Mã lưu trữ",
       dataIndex: "recordId",
-      width: 180,
-      render: (text) => (text.length > 20 ? `${text.slice(0, 17)}...` : text),
+      width: 230,
     },
     {
       key: "Dịch vụ khám",
       title: "Dịch vụ khám",
       dataIndex: "serviceName",
-      width: 150,
+      width: 200,
     },
     {
       key: "Loại khám",
       title: "Loại khám",
       dataIndex: "examType",
       width: 130,
+      filters: [
+        {
+          text: "Khám bệnh",
+          value: "Khám bệnh",
+        },
+        {
+          text: "Tái khám",
+          value: "Tái khám",
+        },
+      ],
+      onFilter: (value: any, record) => record.examType === value,
     },
     {
       key: "Bác sĩ khám",
@@ -77,6 +87,11 @@ const ListFishRecords = () => {
       title: "Ngày khám",
       dataIndex: "date",
       render: (date) => new Date(date).toLocaleDateString(),
+      sorter: (a, b) => {
+        const dateA = new Date(a.date);
+        const dateB = new Date(b.date);
+        return dateA.getTime() - dateB.getTime();
+      },
     },
     {
       key: "Chi tiết",
