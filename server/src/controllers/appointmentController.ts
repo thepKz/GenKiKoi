@@ -281,7 +281,7 @@ export const getBookingsByDay = async (req: Request, res: Response) => {
     const bookingsByDay = await Appointment.aggregate([
       {
         $match: {
-          status: "Đã xác nhận",
+          $or: [{ status: "Đã xác nhận" }, { status: "Đã hoàn thành" }],
         },
       },
       {
