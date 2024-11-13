@@ -4,6 +4,7 @@ import {
   getAllAppointments,
   getAllAppointmentsByDoctorId,
   getAppointmentsByCustomerId,
+  getBookingsByDay,
   updateStatusAppointment,
 } from "../controllers/appointmentController";
 import { authMiddleware } from "../middleware/authMiddleware";
@@ -18,7 +19,7 @@ router.get(
   authMiddleware,
   getAppointmentsByCustomerId
 );
-
+router.get("/bookings-by-day", getBookingsByDay);
 router.post("/customers/:customerId", authMiddleware, createNewAppointment);
 
 router.patch("/:appointmentId/status", authMiddleware, updateStatusAppointment);
