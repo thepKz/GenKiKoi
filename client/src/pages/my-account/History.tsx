@@ -5,13 +5,19 @@ import { Link } from "react-router-dom";
 import { handleAPI } from "../../apis/handleAPI";
 import { HeaderComponent } from "../../components";
 import { IAuth } from "../../types";
-import { getValue } from "../../utils";
+import { getValue, removeVietnameseTones } from "../../utils";
 
 const History = () => {
   const auth: IAuth = useSelector((state: any) => state.authReducer.data);
 
   const [payments, setPayments] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+
+  const [searchText, setSearchText] = useState("");
+
+  const handleSearch = (value: string) => {
+    setSearchText(value.toLowerCase());
+  };
 
   useEffect(() => {
     const getAllPayments = async () => {
@@ -29,6 +35,14 @@ const History = () => {
     };
     getAllPayments();
   }, []);
+
+  const filteredPayments = payments.filter((payment: any) => {
+    const searchValue = removeVietnameseTones(searchText.toLowerCase());
+    const serviceName = removeVietnameseTones(payment.serviceName.toLowerCase());
+    const status = removeVietnameseTones(payment.status.toLowerCase());
+
+    return serviceName.includes(searchValue) || status.includes(searchValue);
+  });
 
   if (isLoading) {
     return (
@@ -50,12 +64,14 @@ const History = () => {
       <div className="my-account-section">
         <HeaderComponent
           heading="Danh sách hóa đơn"
-          placeholder="Tìm hóa đơn"
+          placeholder="Tìm hóa đơn (Dịch vụ, trạng thái)"
+          alt="Tìm hóa đơn (Dịch vụ, trạng thái)"
+          onSearch={handleSearch}
         />
         {/* List Card */}
         <div className="flex h-[calc(100vh-170px)] flex-col gap-5 overflow-y-auto">
-          {payments.length > 0 ? (
-            payments.map((payment: any, i) => (
+          {filteredPayments.length > 0 ? (
+            filteredPayments.map((payment: any, i) => (
               <Card
                 key={i}
                 className="duration-100 ease-in hover:border-[#4096ff]"
@@ -102,7 +118,7 @@ const History = () => {
             <Empty
               className="mt-20"
               imageStyle={{ height: 200 }}
-              description="Không danh sách lịch sử giao dịch trống"
+              description="Danh sách lịch sử giao dịch trống"
             />
           )}
         </div>

@@ -18,7 +18,7 @@ import { useEffect, useRef, useState } from "react";
 import { handleAPI } from "../../apis/handleAPI";
 import { useSelector } from "react-redux";
 import { IAuth } from "../../types";
-import { getValue, uploadFile } from "../../utils";
+import { getValue, removeVietnameseTones, uploadFile } from "../../utils";
 import { Link } from "react-router-dom";
 import { HeaderComponent } from "../../components";
 import { GiCirclingFish } from "react-icons/gi";
@@ -34,8 +34,13 @@ const MedicalRecord = () => {
   const [selectedFish, setSelectedFish] = useState<any>(null);
   const [isFishModalOpen, setIsFishModalOpen] = useState<boolean>(false);
   const [isLoadingForm, setIsLoadingForm] = useState<boolean>(false);
+  const [searchText, setSearchText] = useState("");
 
   const auth: IAuth = useSelector((state: any) => state.authReducer.data);
+
+  const handleSearch = (value: string) => {
+    setSearchText(value.toLowerCase());
+  };
 
   const handleOpenFishModal = async (fish: any) => {
     try {
@@ -90,6 +95,14 @@ const MedicalRecord = () => {
     }
   };
 
+  const filteredFishes = fishes.filter((fish: any) => {
+    const searchValue = removeVietnameseTones(searchText.toLowerCase());
+    const fishId = removeVietnameseTones(fish._id.toLowerCase());
+    const description = removeVietnameseTones(fish.description.toLowerCase());
+
+    return fishId.includes(searchValue) || description.includes(searchValue);
+  });
+
   if (isLoading) {
     return (
       <div className="my-account-section flex items-center justify-center">
@@ -111,12 +124,14 @@ const MedicalRecord = () => {
         {/* Header */}
         <HeaderComponent
           heading="Hồ sơ điều trị"
-          placeholder="Tìm hồ sơ"
+          placeholder="Tìm hồ sơ (Mã hồ sơ, mô tả)"
+          alt="Tìm hồ sơ (Mã hồ sơ, mô tả)"
+          onSearch={handleSearch}
         />
         {/* List Card */}
         <div className="flex h-[calc(100vh-170px)] flex-col gap-5 overflow-y-auto">
-          {fishes.length > 0 ? (
-            fishes.map((fish: any, i: any) => (
+          {filteredFishes.length > 0 ? (
+            filteredFishes.map((fish: any, i: any) => (
               <Card
                 key={i}
                 className="duration-100 ease-in hover:border-[#4096ff]"

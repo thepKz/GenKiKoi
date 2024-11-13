@@ -276,3 +276,50 @@ export const createNewAppointment = async (req: Request, res: Response) => {
     return res.status(500).json({ message: "Lỗi khi tạo cuộc hẹn" });
   }
 };
+
+export const getBookingsByDay = async (req: Request, res: Response) => {
+  try {
+    const bookingsByDay = await Appointment.aggregate([
+      {
+        $match: {
+          status: "Đã xác nhận",
+        },
+      },
+      {
+        $group: {
+          _id: {
+            day: { $dayOfMonth: "$appointmentDate" },
+            month: { $month: "$appointmentDate" },
+            year: { $year: "$appointmentDate" },
+          },
+          value: { $sum: 1 },
+        },
+      },
+      {
+        $sort: {
+          "_id.year": 1,
+          "_id.month": 1,
+          "_id.day": 1,
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          day: "$_id.day",
+          month: "$_id.month",
+          value: 1,
+        },
+      },
+    ]);
+
+    return res.status(200).json({
+      data: bookingsByDay,
+    });
+  } catch (error: any) {
+    console.error("Lỗi:", error);
+    return res.status(500).json({
+      message: "Lỗi khi lấy thống kê cuộc hẹn theo ngày",
+      error: error.message,
+    });
+  }
+};

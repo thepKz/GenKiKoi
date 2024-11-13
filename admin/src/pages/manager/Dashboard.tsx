@@ -26,7 +26,7 @@ const Dashboard = () => {
         const apiTotalCustomers = `/api/customers/total`;
         const apiTopServices = `/api/payments/top-services`;
         const apiTopCustomers = `/api/payments/top-customers`;
-        const apiTotalBookingByDay = `/api/payments/booking-by-day`;
+        const apiTotalBookingByDay = `/api/appointments/bookings-by-day`;
         const apiTotalMoneyByDay = `/api/payments/money-by-day`;
 
         const resEaringAndBooking = await handleAPI(

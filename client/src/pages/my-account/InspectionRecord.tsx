@@ -5,11 +5,18 @@ import { Link } from "react-router-dom";
 import { handleAPI } from "../../apis/handleAPI";
 import { HeaderComponent } from "../../components";
 import { IAuth } from "../../types";
+import { removeVietnameseTones } from "../../utils";
 
 const InspectionRecord = () => {
   const [ponds, setPonds] = useState([]);
 
   const auth: IAuth = useSelector((state: any) => state.authReducer.data);
+
+  const [searchText, setSearchText] = useState("");
+
+  const handleSearch = (value: string) => {
+    setSearchText(value.toLowerCase());
+  };
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -30,6 +37,13 @@ const InspectionRecord = () => {
     };
     getAllPondsByCustomer();
   }, []);
+
+  const filteredPonds = ponds.filter((pond: any) => {
+    const searchValue = removeVietnameseTones(searchText.toLowerCase());
+    const recordId = removeVietnameseTones(pond.recordId.toLowerCase());
+
+    return recordId.includes(searchValue) || pond.pondSize.toString().includes(searchValue); // Sửa include thành includes
+  });
 
   if (isLoading) {
     return (
@@ -52,12 +66,14 @@ const InspectionRecord = () => {
         {/* Header */}
         <HeaderComponent
           heading="Hồ sơ kiểm định"
-          placeholder="Tìm hồ sơ"
+          placeholder="Tìm hồ sơ (Mã báo cáo, tình trạng)"
+          alt="Tìm hồ sơ (Mã báo cáo, tình trạng)"
+          onSearch={handleSearch}
         />
         {/* List Card */}
         <div className="flex h-[calc(100vh-170px)] flex-col gap-5 overflow-y-auto">
-          {ponds.length > 0 ? (
-            ponds.map((pond: any, i) => (
+          {filteredPonds.length > 0 ? (
+            filteredPonds.map((pond: any, i) => (
               <Card
                 key={i}
                 className="duration-100 ease-in hover:border-[#4096ff]"
@@ -70,7 +86,7 @@ const InspectionRecord = () => {
                     </p>
                     <p>
                       <span className="font-semibold">Kích cỡ hồ: </span>
-                      {pond.pondSize}
+                      {pond.pondSize} (L)
                     </p>
                     <p>
                       <span className="font-semibold">Tình trạng: </span>
