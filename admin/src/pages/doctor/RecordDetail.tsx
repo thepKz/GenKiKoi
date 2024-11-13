@@ -35,7 +35,10 @@ const RecordDetail = () => {
         setMedicalRecord(res.data);
       } catch (error: any) {
         console.log(error);
-        message.error(error.message);
+        message.error(
+          error.message ||
+            "Có lỗi khi lấy dữ liệu, vui lòng thử lại sau ít phút!",
+        );
       } finally {
         setIsLoading(false);
       }

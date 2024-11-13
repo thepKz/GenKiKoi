@@ -4,7 +4,10 @@ import { AuthRequest } from "../types";
 import { ICustomer } from "../models/Customer";
 import { IUser } from "../models/User";
 import bcrypt from "bcryptjs";
-import { sendResetPasswordEmail } from "../services/emails";
+import {
+  sendPasswordChangeAlert,
+  sendResetPasswordEmail,
+} from "../services/emails";
 
 export const getUser = async (req: AuthRequest, res: Response) => {
   try {
@@ -123,18 +126,51 @@ export const updateProfile = async (req: AuthRequest, res: Response) => {
       .status(200)
       .json({ message: "Cập nhật thành công!", data: formattedUser });
   } catch (error: any) {
+    console.log(error);
     return res.status(500).json({
       message: error.message,
     });
   }
 };
 
+export const checkEmailWithPhoneNumber = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const { email, phoneNumber } = req.body;
+
+    const user = await User.findOne({ phoneNumber });
+
+    if (!user) {
+      const existedEmail = await User.findOne({ email });
+
+      if (existedEmail) {
+        return res.status(400).json({ message: "Email này đã được sử dụng!" });
+      }
+    } else {
+      const emailCheck = await User.findOne({ email });
+
+      if (emailCheck && emailCheck._id.toString() !== user._id.toString()) {
+        return res.status(200).json({ exists: true });
+      } else {
+        return res.status(200).json({ exists: false });
+      }
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "Đã xảy ra lỗi khi kiểm tra thông tin",
+    });
+  }
+};
+
 export const getAllUsers = async (req: Request, res: Response) => {
   try {
-    const users = await User.find();
+    const users = await User.find({ role: { $ne: "manager" } });
 
     if (!users || users.length === 0) {
-      return res.status(404).json("Danh sách tài khoản trống");
+      return res.status(404).json({ message: "Danh sách tài khoản trống" });
     }
 
     const formattedData = users.map((user) => ({
@@ -150,6 +186,7 @@ export const getAllUsers = async (req: Request, res: Response) => {
 
     return res.status(200).json({ data: formattedData });
   } catch (error: any) {
+    console.log(error);
     return res.status(500).json({
       message: error.message,
     });
@@ -172,6 +209,7 @@ export const toggleUserStatus = async (req: Request, res: Response) => {
       data: user,
     });
   } catch (error: any) {
+    console.log(error);
     return res.status(500).json({
       message:
         error.message || "Đã xảy ra lỗi khi cập nhật trạng thái tài khoản",
@@ -180,10 +218,17 @@ export const toggleUserStatus = async (req: Request, res: Response) => {
 };
 
 export const checkPhoneNumber = async (req: Request, res: Response) => {
-  const { phoneNumber } = req.body;
+  try {
+    const { phoneNumber } = req.body;
 
-  const user = await User.findOne({ phoneNumber });
-  return res.status(200).json({ exists: !!user, userId: user?._id });
+    const user = await User.findOne({ phoneNumber });
+    return res.status(200).json({ exists: !!user, userId: user?._id });
+  } catch (error: any) {
+    console.log(error);
+    return res.status(500).json({
+      message: error.message,
+    });
+  }
 };
 
 export const changePassword = async (req: AuthRequest, res: Response) => {
@@ -208,8 +253,12 @@ export const changePassword = async (req: AuthRequest, res: Response) => {
     user.password = hashedPassword;
     await user.save();
 
+    // Gửi email cảnh báo
+    await sendPasswordChangeAlert(user.email, user.username);
+
     return res.status(200).json({ message: "Đổi mật khẩu thành công" });
   } catch (error: any) {
+    console.log(error);
     return res.status(500).json({
       message: error.message || "Đã xảy ra lỗi khi đổi mật khẩu",
     });
@@ -243,6 +292,7 @@ export const forgotPassword = async (req: Request, res: Response) => {
       message: "Email khôi phục mật khẩu đã được gửi",
     });
   } catch (error: any) {
+    console.log(error);
     return res.status(500).json({
       message: error.message || "Đã xảy ra lỗi khi xử lý yêu cầu",
     });
@@ -275,6 +325,7 @@ export const resetPassword = async (req: Request, res: Response) => {
       message: "Đặt lại mật khẩu thành công",
     });
   } catch (error: any) {
+    console.log(error);
     return res.status(500).json({
       message: error.message || "Đã xảy ra lỗi khi đặt lại mật khẩu",
     });

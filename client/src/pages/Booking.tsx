@@ -9,6 +9,7 @@ import {
   Form,
   Input,
   message,
+  Modal,
   Row,
   Select,
   Spin,
@@ -18,6 +19,7 @@ import dayjs from "dayjs";
 import { debounce } from "lodash";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 import { handleAPI } from "../apis/handleAPI";
 import Map from "../components/Map";
 import { CustomCalendar } from "../share";
@@ -38,7 +40,6 @@ const Booking = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [slot, setSlot] = useState<string | null>(null);
   const [date, setDate] = useState<dayjs.Dayjs | null>(null);
-  const [profile, setProfile] = useState<any | null>(null);
 
   const [services, setServices] = useState([]);
   const [doctors, setDoctors] = useState([]);
@@ -59,8 +60,49 @@ const Booking = () => {
   const [movingPrice, setMovingPrice] = useState<number>(0);
 
   const [isAddressDisabled, setIsAddressDisabled] = useState(false);
+  const [isOutOfRange, setIsOutOfRange] = useState(false);
 
-  console.log(profile);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
+  const [isValidAddress, setIsValidAddress] = useState<boolean>(false);
+
+  useEffect(() => {
+    const checkInitialAddress = async () => {
+      const currentAddress = form.getFieldValue("detailAddress");
+      if (currentAddress && !isAddressDisabled) {
+        await handleAddressSelect(currentAddress);
+      }
+    };
+    checkInitialAddress();
+  }, []);
+
+  const showModal = async () => {
+    try {
+      await form.validateFields();
+
+      if (!date || !slot || !doctorSchedule) {
+        message.error("Vui lòng chọn đầy đủ ngày và giờ khám");
+        return;
+      }
+
+      const consultingType = form.getFieldValue("typeOfConsulting");
+      if (consultingType === "Tại nhà" && !isValidAddress) {
+        message.error("Vui lòng nhập địa chỉ hợp lệ");
+        return;
+      }
+
+      setIsModalVisible(true);
+    } catch (error) {
+      const errorFields = (error as any).errorFields;
+      if (errorFields?.length) {
+        message.error("Vui lòng điền đầy đủ thông tin bắt buộc");
+      }
+    }
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+  };
 
   useEffect(() => {
     const getProfile = async () => {
@@ -68,8 +110,10 @@ const Booking = () => {
         setIsLoading(true);
         const api = `api/users/`;
         const res = await handleAPI(api, undefined, "GET");
-        setProfile(res.data);
-        form.setFieldsValue(res.data);
+        form.setFieldsValue({
+          ...res.data,
+          detailAddress: "",
+        });
       } catch (error) {
         console.log(error);
         message.error("Có lỗi xảy ra khi tải thông tin người dùng.");
@@ -79,14 +123,6 @@ const Booking = () => {
     };
     getProfile();
   }, []);
-
-  useEffect(() => {
-    if (profile) {
-      form.setFieldsValue({
-        detailAddress: profile.detailAddress,
-      });
-    }
-  }, [profile]);
 
   useEffect(() => {
     const getAllServices = async () => {
@@ -127,7 +163,6 @@ const Booking = () => {
       const pricePerKm = 5000; // 5.000 VNĐ/km
       const calculatedPrice = distanceInKm * pricePerKm;
 
-      // Làm tròn đến hàng nghìn
       setMovingPrice(Math.round(calculatedPrice / 1000) * 1000);
     }
   }, [distance]);
@@ -163,15 +198,15 @@ const Booking = () => {
       const res = await handleAPI(api, undefined, "GET");
       if (res.data) {
         setDoctorSchedule(res.data);
-        const today = dayjs();
-        const formattedToday = today.format("DD/MM/YYYY");
-        const todaySchedule = res.data.weekSchedule.find(
-          (day: any) => day.dayOfWeek === formattedToday,
-        );
-        if (todaySchedule) {
-          setDate(today);
-          setAvailableSlots(todaySchedule.slots);
-        }
+        // const today = dayjs();
+        // const formattedToday = today.format("DD/MM/YYYY");
+        // const todaySchedule = res.data.weekSchedule.find(
+        //   (day: any) => day.dayOfWeek === formattedToday,
+        // );
+        // if (todaySchedule) {
+        //   setDate(today);
+        //   setAvailableSlots(todaySchedule.slots);
+        // }
       }
     } catch (error: any) {
       console.log(error);
@@ -206,14 +241,9 @@ const Booking = () => {
       const bookSlotApi = `/api/doctorSchedules/${doctorSchedule.doctorId}`;
       const profileApi = `/api/users/update-profile`;
 
-      if (date && slot && doctorSchedule) {
-        values.appointmentDate = date.format("YYYY-MM-DD");
-        values.doctorScheduleId = doctorSchedule._id;
-        values.slotTime = slot;
-      } else {
-        message.error("Vui lòng chọn ngày và giờ khám");
-        return;
-      }
+      values.appointmentDate = date?.format("YYYY-MM-DD");
+      values.doctorScheduleId = doctorSchedule._id;
+      values.slotTime = slot;
 
       await handleAPI(profileApi, { fullName, phoneNumber, gender }, "PATCH");
 
@@ -252,10 +282,18 @@ const Booking = () => {
       message.error(error.message);
     } finally {
       setIsLoadingForm(false);
+      setIsModalVisible(false);
     }
   };
 
   const handleAddressSearch = debounce(async (value: string) => {
+    // Reset các giá trị liên quan đến địa chỉ cũ
+    setOrigin(null);
+    setRoute(null);
+    setDistance(null);
+    setIsValidAddress(false);
+    setMovingPrice(0);
+    
     if (value.length > 2) {
       try {
         const api = `/api/distance/autocomplete`;
@@ -278,6 +316,7 @@ const Booking = () => {
 
   const handleAddressSelect = async (value: string) => {
     try {
+      setIsValidAddress(false);
       const api = `/api/distance/calculate-route`;
       const { data } = await handleAPI(api, undefined, "GET", { address: value });
 
@@ -286,8 +325,29 @@ const Booking = () => {
         setRoute(data.route);
         setDistance(data.distance);
         form.setFieldsValue({ detailAddress: value });
+
+        // Kiểm tra khoảng cách
+        const distanceInKm = parseFloat(data.distance);
+        if (distanceInKm > 20) {
+          setIsOutOfRange(true);
+          setIsValidAddress(false);
+          message.error("Khu vực này không được hỗ trợ dịch vụ tại GenKiKoi (>20km)");
+        } else {
+          setIsOutOfRange(false);
+          setIsValidAddress(true);
+        }
+      } else {
+        setIsValidAddress(false);
+        setOrigin(null);
+        setRoute(null);
+        setDistance(null);
+        message.error("Không thể tìm thấy địa chỉ này");
       }
     } catch (error: any) {
+      setIsValidAddress(false);
+      setOrigin(null);
+      setRoute(null);
+      setDistance(null);
       console.log(error);
       message.error(error.message || "Không thể tính toán tuyến đường");
     }
@@ -297,8 +357,16 @@ const Booking = () => {
     if (value === "Tư vấn trực tuyến" || value === "Tại phòng khám") {
       setIsAddressDisabled(true);
       form.setFieldsValue({ detailAddress: "" });
+      setMovingPrice(0);
+      setIsOutOfRange(false);
+      setIsValidAddress(true);
     } else {
       setIsAddressDisabled(false);
+      setIsValidAddress(false);
+      setOrigin(null);
+      setRoute(null);
+      setDistance(null);
+      form.setFieldsValue({ detailAddress: "" });
     }
   };
 
@@ -325,7 +393,7 @@ const Booking = () => {
   }
 
   return (
-    <div className="booking bg-green-dark py-36 pb-16 text-white">
+    <div className="lg:pt-30 booking min-h-screen bg-gradient-to-t from-[#2A7F9E] to-[#175670] pb-20 pt-32">
       <div className="container mx-auto lg:px-28">
         <div className="rounded-md bg-blue-primary p-5 px-10">
           <ConfigProvider
@@ -528,14 +596,19 @@ const Booking = () => {
                         hasFeedback
                         rules={[
                           { required: true, message: "Vui lòng nhập số điện thoại" },
-                          { pattern: /^[0-9]{10}$/, message: "Số điện thoại không hợp lệ" },
+                          {
+                            pattern: /^(0[3|5|7|8|9])+([0-9]{8})\b/,
+                            message: "Số điện thoại không hợp lệ",
+                          },
                           {
                             validator: async (_, value) => {
-                              const exists = await handleCheckExistence("phoneNumber", value);
-                              if (exists) {
-                                return Promise.reject(
-                                  new Error("Tên số điện thoại này đã tồn tại!"),
-                                );
+                              if (value && value.trim().length > 0) {
+                                const exists = await handleCheckExistence("phoneNumber", value);
+                                if (exists) {
+                                  return Promise.reject(
+                                    new Error("Tên số điện thoại này đã tồn tại!"),
+                                  );
+                                }
                               }
 
                               return Promise.resolve();
@@ -546,7 +619,26 @@ const Booking = () => {
                       >
                         <Input
                           className="addon-input"
-                          addonBefore="+84"
+                          addonBefore={
+                            <svg
+                              width="24"
+                              height="24"
+                              viewBox="0 0 30 20"
+                              xmlns="http://www.w3.org/2000/svg"
+                              version="1.1"
+                            >
+                              <rect
+                                width="30"
+                                height="20"
+                                fill="#da251d"
+                                rx={3}
+                              />
+                              <polygon
+                                points="15,4 11.47,14.85 20.71,8.15 9.29,8.15 18.53,14.85"
+                                fill="#ff0"
+                              />
+                            </svg>
+                          }
                           placeholder="Số điện thoại"
                         />
                       </Form.Item>
@@ -592,6 +684,15 @@ const Booking = () => {
                       <Form.Item
                         name="detailAddress"
                         label="Địa chỉ"
+                        required={!isAddressDisabled}
+                        rules={[
+                          !isAddressDisabled
+                            ? {
+                                required: true,
+                                message: "Vui lòng nhập địa chỉ",
+                              }
+                            : {},
+                        ]}
                       >
                         <AutoComplete
                           options={addressOptions}
@@ -635,14 +736,27 @@ const Booking = () => {
                 token: {
                   fontFamily: "Pro-Rounded",
                 },
+                components: {
+                  Button: {
+                    colorPrimary: "#2196F3", // Màu xanh dương cho trạng thái bình thường
+                    colorPrimaryHover: "#1976D2", // Màu hover
+                    colorPrimaryActive: "#1976D2", // Màu active
+                    colorBgContainerDisabled: "rgba(33, 150, 243, 0.5)", // Màu nền mờ
+                    colorTextDisabled: "rgba(255, 255, 255, 0.8)", // Màu chữ mờ
+                  },
+                },
               }}
             >
               <Button
                 size="large"
                 type="primary"
-                loading={isLoadingForm}
-                className="mt-3 w-fit"
-                onClick={() => form.submit()}
+                className={`mt-3 w-fit transition-all duration-300 ${
+                  isOutOfRange || (!isAddressDisabled && !isValidAddress)
+                    ? "cursor-not-allowed opacity-70 hover:opacity-70"
+                    : "hover:-translate-y-0.5 hover:shadow-lg"
+                }`}
+                onClick={showModal}
+                disabled={isOutOfRange || (!isAddressDisabled && !isValidAddress)}
               >
                 Thanh toán
               </Button>
@@ -650,6 +764,66 @@ const Booking = () => {
           </div>
         </div>
       </div>
+      <ConfigProvider
+        theme={{
+          inherit: false,
+          token: {
+            fontFamily: "Pro-Rounded",
+          },
+          components: {
+            Divider: {
+              marginLG: 10,
+            },
+          },
+        }}
+      >
+        <Modal
+          open={isModalVisible}
+          onOk={() => form.submit()}
+          onCancel={handleCancel}
+          okText="Đồng ý"
+          confirmLoading={isLoadingForm}
+          cancelText="Thoát"
+        >
+          <div className="py-4">
+            <h1 className="heading-4">Xác nhận thanh toán</h1>
+            <Divider />
+            <p className="mb-2 text-base">
+              Quý khách vui lòng tham khảo trước các{" "}
+              <Link
+                to="/terms-of-service"
+                className="text-blue-600"
+                target="_blank"
+              >
+                điều khoản của công ty.
+              </Link>
+            </p>
+            <ol className="ml-5 flex list-decimal flex-col gap-2 text-base">
+              <li>
+                <span className="font-semibold">Đặt lịch:</span> Khách hàng có thể đặt lịch hẹn
+                thông qua website, ứng dụng hoặc gọi điện trực tiếp.
+              </li>
+              <li>
+                <span className="font-semibold">Hủy lịch hẹn:</span> Việc hủy hoặc thay đổi lịch hẹn
+                phải được thực hiện ít nhất 30 phút trước giờ hẹn.
+              </li>
+              <li>
+                <span className="font-semibold">Chính sách hoàn tiền:</span>
+                <ol className="ml-5 list-disc">
+                  <li>
+                    <span className="font-semibold">Hủy lịch hẹn trước 30 phút:</span> Hoàn tiền
+                    100%.
+                  </li>
+                  <li>
+                    <span className="font-semibold">Không đến mà không báo trước:</span> Không hoàn
+                    tiền.
+                  </li>
+                </ol>
+              </li>
+            </ol>
+          </div>
+        </Modal>
+      </ConfigProvider>
     </div>
   );
 };

@@ -12,6 +12,7 @@ import fishRoutes from "./fishRoutes";
 import doctorScheduleRoutes from "./doctorScheduleRoutes";
 import feedbackRoutes from "./feedbackRoutes";
 import customerRoutes from "./customerRoutes";
+import managerRoutes from "./managerRoutes";
 export {
   appointmentRoutes,
   authRoutes,
@@ -27,4 +28,5 @@ export {
   paymentRoutes,
   feedbackRoutes,
   customerRoutes,
+  managerRoutes,
 };

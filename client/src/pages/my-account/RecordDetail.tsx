@@ -16,8 +16,8 @@ const RecordDetail = () => {
 
   useEffect(() => {
     const getRecord = async () => {
-      setIsLoading(true);
       try {
+        setIsLoading(true);
         const api = `/api/medicalRecords/${medicalRecordId}`;
 
         const res = await handleAPI(api, undefined, "GET");
@@ -34,7 +34,11 @@ const RecordDetail = () => {
   }, []);
 
   if (isLoading) {
-    return <Spin size="large" />;
+    return (
+      <div className="my-account-section flex items-center justify-center">
+        <Spin size="large" />
+      </div>
+    );
   }
 
   return (

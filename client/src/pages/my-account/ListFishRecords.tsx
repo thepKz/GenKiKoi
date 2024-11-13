@@ -1,23 +1,29 @@
-import { Breadcrumb, Button, ConfigProvider, message } from "antd";
+import { Breadcrumb, Button, ConfigProvider, message, Spin } from "antd";
 import { TableProps } from "antd/lib";
 import { Stickynote } from "iconsax-react";
 import { useEffect, useState } from "react";
-// import { useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
 import { handleAPI } from "../../apis/handleAPI";
 import { HeaderComponent } from "../../components";
 import { CustomTable } from "../../share";
-// import { IAuth } from "../../types";
+
 const ListFishRecords = () => {
   const { pathname } = useLocation();
-  // const auth: IAuth = useSelector((state: any) => state.authReducer.data);
 
   const fishId = pathname.split("/")[4];
   const [records, setRecords] = useState([]);
+  const [searchText, setSearchText] = useState("");
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSearch = (value: string) => {
+    setSearchText(value.toLowerCase());
+  };
 
   useEffect(() => {
     const getAllRecords = async () => {
       try {
+        setIsLoading(true);
         const api = `/api/medicalRecords/fishes/${fishId}`;
 
         const res = await handleAPI(api, undefined, "GET");
@@ -25,7 +31,9 @@ const ListFishRecords = () => {
         setRecords(res.data);
       } catch (error: any) {
         console.log(error);
-        message.error(error.message);
+        message.error(error.message || "Có lỗi khi lấy dữ liệu, vui lòng thử lại sau ít phút!");
+      } finally {
+        setIsLoading(false);
       }
     };
     getAllRecords();
@@ -83,6 +91,14 @@ const ListFishRecords = () => {
       ),
     },
   ];
+
+  if (isLoading) {
+    return (
+      <div className="my-account-section flex items-center justify-center">
+        <Spin size="large" />
+      </div>
+    );
+  }
 
   return (
     <ConfigProvider

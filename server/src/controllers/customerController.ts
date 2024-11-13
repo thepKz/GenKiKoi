@@ -1,5 +1,5 @@
 import { Response, Request } from "express";
-import { Customer, User } from "../models";
+import { Appointment, Customer, User } from "../models";
 
 export const getAllCustomers = async (req: Request, res: Response) => {
   try {
@@ -8,13 +8,27 @@ export const getAllCustomers = async (req: Request, res: Response) => {
         path: "userId",
         select: "fullName gender phoneNumber email",
       })
-      .select("userId");
+      .select("userId")
+      .sort({ createdAt: -1 });
 
-    if (!customers || customers.length === 0) {
+    const customersWithAppointments = await Promise.all(
+      customers.map(async (customer) => {
+        const appointmentCount = await Appointment.countDocuments({
+          customerId: customer._id,
+        });
+        return appointmentCount > 0 ? customer : null;
+      })
+    );
+
+    const filteredCustomers = customersWithAppointments.filter(
+      (customer) => customer !== null
+    );
+
+    if (!filteredCustomers || filteredCustomers.length === 0) {
       return res.status(404).json({ message: "Danh sách khách hàng trống" });
     }
 
-    const formattedData = customers.map((customer) => ({
+    const formattedData = filteredCustomers.map((customer) => ({
       id: customer._id,
       email: customer.userId.email,
       customerName: customer.userId.fullName ?? "",

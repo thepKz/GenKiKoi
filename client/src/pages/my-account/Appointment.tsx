@@ -9,8 +9,10 @@ import {
   TableProps,
   Tag,
   Input,
+  Divider,
+  Form,
 } from "antd";
-import { getValue } from "../../utils";
+import { getValue, removeVietnameseTones } from "../../utils";
 import { useEffect, useState } from "react";
 import { handleAPI } from "../../apis/handleAPI";
 import { useSelector } from "react-redux";
@@ -25,12 +27,15 @@ const Appointment = () => {
   const [feedbackLoading, setFeedbackLoading] = useState(false);
   const [isFeedbackModalVisible, setIsFeedbackModalVisible] = useState<boolean>(false);
   const [currentAppointment, setCurrentAppointment] = useState<any>(null);
-  const [rating, setRating] = useState(0);
-  const [comment, setComment] = useState("");
-
-  console.log(currentAppointment);
+  const [searchText, setSearchText] = useState("");
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+  });
 
   const auth: IAuth = useSelector((state: any) => state.authReducer.data);
+
+  const [form] = Form.useForm();
 
   useEffect(() => {
     const getAppointments = async () => {
@@ -80,7 +85,7 @@ const Appointment = () => {
       const res = await handleAPI(api, undefined, "GET");
 
       if (res.data) {
-        window.open(`https://pay.payos.vn/web/${res.data.paymentLinkId}`, "_blank");
+        window.open(`https://pay.payos.vn/web/${res.data.paymentLinkId}`, "_self");
       }
     } catch (error: any) {
       console.log(error);
@@ -88,14 +93,14 @@ const Appointment = () => {
     }
   };
 
-  const handleFeedbackSubmit = async () => {
+  const handleFeedbackSubmit = async (values: any) => {
     try {
       setFeedbackLoading(true);
       const api = `/api/feedbacks`;
       const feedbackData = {
         appointmentId: currentAppointment.appointmentId,
-        rating,
-        comment,
+        rating: values.rating,
+        comment: values.comment,
       };
       const res: any = await handleAPI(api, feedbackData, "POST");
       message.success(res.message);
@@ -105,15 +110,27 @@ const Appointment = () => {
       message.error("Có lỗi xảy ra khi gửi đánh giá");
     } finally {
       setFeedbackLoading(false);
-      setComment("");
-      setRating(0);
+      form.resetFields();
     }
   };
 
   const showFeedbackModal = (record: any) => {
     setCurrentAppointment(record);
     setIsFeedbackModalVisible(true);
+    form.resetFields();
   };
+
+  const handleSearch = (value: string) => {
+    setSearchText(value.toLowerCase());
+  };
+
+  const filteredAppointments = appointments.filter((appointment: any) => {
+    const searchValue = removeVietnameseTones(searchText.toLowerCase());
+    const serviceName = removeVietnameseTones(appointment.serviceName.toLowerCase());
+    const doctorName = removeVietnameseTones(appointment.doctorFullName.toLowerCase());
+
+    return serviceName.includes(searchValue) || doctorName.includes(searchValue);
+  });
 
   const columns: TableProps["columns"] = [
     {
@@ -121,7 +138,9 @@ const Appointment = () => {
       title: "#",
       dataIndex: "key",
       width: 70,
-      render: (_text, _record, index) => index + 1,
+      render: (_text, _record, index) => {
+        return (pagination.current - 1) * pagination.pageSize + index + 1;
+      },
     },
     {
       key: "Tên dịch vụ",
@@ -135,6 +154,11 @@ const Appointment = () => {
       dataIndex: "appointmentDate",
       width: 120,
       render: (date) => new Date(date).toLocaleDateString(),
+      sorter: (a, b) => {
+        const dateA = new Date(a.appointmentDate);
+        const dateB = new Date(b.appointmentDate);
+        return dateA.getTime() - dateB.getTime();
+      },
     },
     {
       key: "Bác sĩ",
@@ -147,7 +171,7 @@ const Appointment = () => {
       key: "Trạng thái cuộc hẹn",
       title: "Trạng thái cuộc hẹn",
       dataIndex: "status",
-      width: 170,
+      width: 180,
       render: (status) => (
         <>
           <Tag
@@ -158,6 +182,25 @@ const Appointment = () => {
           </Tag>
         </>
       ),
+      filters: [
+        {
+          text: "Đang chờ xử lý",
+          value: "Đang chờ xử lý",
+        },
+        {
+          text: "Đã xác nhận",
+          value: "Đã xác nhận",
+        },
+        {
+          text: "Đã hoàn thành",
+          value: "Đã hoàn thành",
+        },
+        {
+          text: "Đã hủy",
+          value: "Đã hủy",
+        },
+      ],
+      onFilter: (value: any, record) => record.status === value,
     },
     {
       key: "Ghi chú",
@@ -208,7 +251,7 @@ const Appointment = () => {
 
   if (isLoading) {
     return (
-      <div className="flex h-[calc(100vh-115px)] items-center justify-center">
+      <div className="my-account-section flex items-center justify-center">
         <Spin size="large" />
       </div>
     );
@@ -227,7 +270,9 @@ const Appointment = () => {
         {/* Header */}
         <HeaderComponent
           heading="Danh sách cuộc hẹn"
-          placeholder="Tìm cuộc hẹn"
+          alt="Tìm cuộc hẹn (Tên dịch vụ, bác sĩ)"
+          placeholder="Tìm cuộc hẹn (Tên dịch vụ, bác sĩ)"
+          onSearch={handleSearch}
         />
         {/* Table */}
         <div className="">
@@ -236,10 +281,11 @@ const Appointment = () => {
               showSizeChanger: true,
             }}
             columns={columns}
-            dataSource={appointments}
+            dataSource={filteredAppointments}
             scroll={{
               y: "calc(100vh - 270px)",
             }}
+            onChange={(pagination: any) => setPagination(pagination)}
           />
         </div>
       </div>
@@ -248,13 +294,16 @@ const Appointment = () => {
         okText="Gửi nhận xét"
         cancelText="Hủy"
         open={isFeedbackModalVisible}
-        onOk={handleFeedbackSubmit}
+        onOk={() => form.submit()}
         confirmLoading={feedbackLoading}
-        onCancel={() => setIsFeedbackModalVisible(false)}
-        okButtonProps={{ disabled: rating === 0 || comment.trim() === "" }}
+        onCancel={() => {
+          setIsFeedbackModalVisible(false);
+          form.resetFields();
+        }}
       >
-        <div className="my-5">
+        <div className="feedback py-5 pb-0">
           <h1 className="heading-4">Viết đánh giá</h1>
+          <Divider style={{ margin: "10px 0" }} />
           <div className="my-2 flex flex-col gap-3 text-base">
             <p>
               <span className="font-semibold">Đánh giá dịch vụ:</span>{" "}
@@ -265,22 +314,52 @@ const Appointment = () => {
             </p>
             <p className="font-semibold">Bạn có hài lòng với cuộc hẹn này không 🥰</p>
           </div>
-          <div className="mt-3 text-center">
-            <Rate
-              onChange={setRating}
-              value={rating}
-              tooltips={["Rất tệ", "Tệ", "Ổn", "Tốt", "Rất tốt"]}
-              style={{ fontSize: 28 }}
-            />
-          </div>
-          <p className="mb-2 text-base font-semibold">Nhận xét</p>
-          <TextArea
+
+          <Form
+            form={form}
+            onFinish={handleFeedbackSubmit}
+            layout="vertical"
             size="large"
-            placeholder="Hãy viết nhận xét của mình ở đây nhé"
-            rows={5}
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-          />
+          >
+            <Form.Item
+              name="rating"
+              rules={[
+                {
+                  required: true,
+                  message: "Vui lòng đánh giá số sao",
+                },
+              ]}
+              className="mb-0 flex justify-center"
+            >
+              <Rate
+                tooltips={["Rất tệ", "Tệ", "Ổn", "Tốt", "Rất tốt"]}
+                style={{ fontSize: 28 }}
+                className=""
+              />
+            </Form.Item>
+
+            <Form.Item
+              name="comment"
+              label="Nhận xét"
+              validateTrigger="onBlur"
+              rules={[
+                {
+                  min: 10,
+                  message: "Nhận xét phải có ít nhất 10 ký tự",
+                },
+                {
+                  max: 500,
+                  message: "Nhận xét không được vượt quá 500 ký tự",
+                },
+              ]}
+            >
+              <TextArea
+                size="large"
+                placeholder="Hãy viết nhận xét của mình ở đây nhé"
+                rows={5}
+              />
+            </Form.Item>
+          </Form>
         </div>
       </Modal>
     </ConfigProvider>

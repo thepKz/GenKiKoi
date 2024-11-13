@@ -3,7 +3,9 @@ import { Service } from "../models";
 
 export const getAllServices = async (req: Request, res: Response) => {
   try {
-    const services = await Service.find({ isDeleted: false });
+    const services = await Service.find({ isDeleted: false }).sort({
+      createdAt: -1,
+    });
 
     if (services.length === 0) {
       return res.status(404).json({ message: "Danh sách dịch vụ trống!" });
@@ -43,6 +45,7 @@ export const createNewService = async (req: Request, res: Response) => {
       data: createdService,
     });
   } catch (error: any) {
+    console.log(error);
     return res.status(500).json({ message: error.message });
   }
 };
@@ -64,6 +67,7 @@ export const deleteServiceById = async (req: Request, res: Response) => {
 
     return res.status(200).json({ message: "Xóa thành công" });
   } catch (error: any) {
+    console.log(error);
     return res.status(500).json({ message: error.message });
   }
 };
@@ -100,6 +104,7 @@ export const updateServiceById = async (req: Request, res: Response) => {
       .status(200)
       .json({ message: "Cập nhật dịch vụ thành công", data: updatedService });
   } catch (error: any) {
+    console.log(error);
     return res.status(500).json({ message: error.message });
   }
 };

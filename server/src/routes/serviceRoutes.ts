@@ -11,20 +11,10 @@ const router = express.Router();
 
 router.get("/", getAllServices);
 
-router.post("/", authMiddleware, roleMiddleware(["manager"]), createNewService);
+router.post("/", authMiddleware, createNewService);
 
-router.delete(
-  "/:id",
-  authMiddleware,
-  roleMiddleware(["manager"]),
-  deleteServiceById
-);
+router.delete("/:id", authMiddleware, deleteServiceById);
 
-router.patch(
-  "/:id",
-  authMiddleware,
-  roleMiddleware(["manager"]),
-  updateServiceById
-);
+router.patch("/:id", authMiddleware, updateServiceById);
 
 export default router;

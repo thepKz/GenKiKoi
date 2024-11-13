@@ -3,6 +3,10 @@ import PayOS from "@payos/node";
 import dotenv from "dotenv";
 import Payment from "../models/Payment";
 import { Appointment, DoctorSchedule, Customer } from "../models";
+import {
+  sendAppointmentConfirmationEmail,
+  sendOnlineAppointmentEmail,
+} from "../services/emails";
 
 dotenv.config();
 
@@ -95,7 +99,7 @@ export const getPaymentById = async (req: Request, res: Response) => {
 export const getPaymentsByCustomerId = async (req: Request, res: Response) => {
   const customerId = req.params.customerId;
   try {
-    const payments = await Payment.find({ customerId });
+    const payments = await Payment.find({ customerId }).sort({ createdAt: -1 });
 
     const formattedPayments = payments.map((payment) => ({
       date: payment.date,
@@ -127,27 +131,66 @@ export const updatePaymentById = async (req: Request, res: Response) => {
       payment.status = status;
     }
 
-    const appointment = await Appointment.findById(payment.appointmentId);
+    const appointment = await Appointment.findById(payment.appointmentId)
+      .populate({
+        path: "serviceId",
+        select: "serviceName",
+      })
+      .populate({
+        path: "doctorId",
+        select: "userId googleMeetLink",
+        populate: {
+          path: "userId",
+          select: "fullName",
+        },
+      })
+      .populate({
+        path: "customerId",
+        select: "userId",
+        populate: {
+          path: "userId",
+          select: "fullName email",
+        },
+      });
 
     if (!appointment) {
       return res.status(404).json({ message: "Không tìm thấy cuộc hẹn" });
     }
 
     if (status === "PAID") {
-      if (!appointment) {
-        return res.status(404).json({ message: "Không tìm thấy cuộc hẹn" });
-      }
       appointment.status = "Đã xác nhận";
       appointment.notes = "Quý khách vui lòng tới trước giờ hẹn 15 phút!";
 
       await appointment.save();
+
+      if (
+        appointment.typeOfConsulting === "Tại phòng khám" ||
+        appointment.typeOfConsulting === "Tại nhà"
+      ) {
+        await sendAppointmentConfirmationEmail(
+          appointment.appointmentDate,
+          appointment.doctorId.userId.fullName || "",
+          appointment.slotTime,
+          appointment.serviceId.serviceName,
+          appointment.customerId.userId.fullName || "",
+          appointment.typeOfConsulting,
+          appointment.customerId.userId.email
+        );
+      } else {
+        await sendOnlineAppointmentEmail(
+          appointment.appointmentDate,
+          appointment.doctorId.userId.fullName || "",
+          appointment.slotTime,
+          appointment.serviceId.serviceName,
+          appointment.customerId.userId.fullName || "",
+          appointment.typeOfConsulting,
+          appointment.customerId.userId.email,
+          appointment.doctorId.googleMeetLink
+        );
+      }
     }
 
     if (status === "CANCELLED") {
-      if (!appointment) {
-        return res.status(404).json({ message: "Không tìm thấy cuộc hẹn" });
-      }
-
       appointment.status = "Đã hủy";
       appointment.notes = "";
 
@@ -172,7 +215,7 @@ export const updatePaymentById = async (req: Request, res: Response) => {
             ) {
               slot.appointmentIds.splice(appointmentIndex, 1);
               slot.currentCount = Math.max(0, slot.currentCount - 1);
-              slot.isBooked = slot.currentCount >= 3;
+              slot.isBooked = slot.currentCount >= 2;
               break;
             }
           }
@@ -268,7 +311,6 @@ export const getTopCustomers = async (req: Request, res: Response) => {
             orderCount: customer.orderCount,
           };
         } catch (err) {
-          // Nếu không tìm thấy thông tin khách hàng, vẫn trả về dữ liệu cơ bản
           return {
             customerId: customer._id,
             name: "Không xác định",
@@ -355,7 +397,7 @@ export const getTopServices = async (req: Request, res: Response) => {
       id: item.firstId,
       serviceName: item._id,
       count: item.count,
-      percentage: (item.count / totalPayments) * 100,
+      percentage: ((item.count / totalPayments) * 100).toFixed(2),
     }));
 
     return res.status(200).json({

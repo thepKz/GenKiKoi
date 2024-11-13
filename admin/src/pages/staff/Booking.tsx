@@ -34,6 +34,7 @@ const Booking = () => {
   const [city, setCity] = useState<string>("");
   const [district, setDistrict] = useState<string>("");
   const [ward, setWard] = useState<string>("");
+  const [detailAddress, setDetailAddress] = useState<string>("");
 
   const [cities, setCities] = useState<SelectProps["options"]>([]);
   const [districts, setDistricts] = useState<SelectProps["options"]>([]);
@@ -48,9 +49,14 @@ const Booking = () => {
   const [service, setService] = useState<any>(null);
   const [price, setPrice] = useState<number>(0);
   const [totalPrice, setTotalPrice] = useState<number>(0);
+  const [transportFee, setTransportFee] = useState<number>(0);
+
+  const [isDistanceDisabled, setIsDistanceDisabled] = useState(false);
 
   const handleSubmit = async (values: any) => {
     try {
+      const { phoneNumber, email, fullName, gender } = values;
+
       setIsLoadingForm(true);
 
       if (date && slot && doctorSchedule) {
@@ -69,14 +75,14 @@ const Booking = () => {
         const res = await handleAPI(
           registerApi,
           {
-            phoneNumber: values.phoneNumber,
-            email: values.email,
-            fullName: values.fullName,
-            gender: values.gender,
-            city: values.city,
-            district: values.district,
-            ward: values.ward,
-            detailAddress: values.detailAddress,
+            phoneNumber,
+            email,
+            fullName,
+            gender,
+            city,
+            district,
+            ward,
+            detailAddress,
           },
           "POST",
         );
@@ -85,18 +91,17 @@ const Booking = () => {
           currentProfile = res.data;
           setProfile(res.data);
         }
-        console.log(profile);
       } else {
         const updateApi = `/api/customers/${profile.id}`;
         const res = await handleAPI(
           updateApi,
           {
-            fullName: values.fullName,
-            gender: values.gender,
-            city: values.city,
-            district: values.district,
-            ward: values.ward,
-            detailAddress: values.detailAddress,
+            fullName,
+            gender,
+            city,
+            district,
+            ward,
+            detailAddress,
           },
           "PATCH",
         );
@@ -139,9 +144,13 @@ const Booking = () => {
       message.success("Tạo cuộc hẹn thành công");
     } catch (error: any) {
       console.error(error);
-      message.error(error.message);
+      message.error(
+        error.message || "Đã có lỗi xảy ra, vui lòng thử lại sau ít phút",
+      );
     } finally {
       setIsLoadingForm(false);
+      form.resetFields();
+      setSlot(null);
     }
   };
 
@@ -238,15 +247,15 @@ const Booking = () => {
       const res = await handleAPI(api, undefined, "GET");
       if (res.data) {
         setDoctorSchedule(res.data);
-        const today = dayjs();
-        const formattedToday = today.format("DD/MM/YYYY");
-        const todaySchedule = res.data.weekSchedule.find(
-          (day: any) => day.dayOfWeek === formattedToday,
-        );
-        if (todaySchedule) {
-          setDate(today);
-          setAvailableSlots(todaySchedule.slots);
-        }
+        // const today = dayjs();
+        // const formattedToday = today.format("DD/MM/YYYY");
+        // const todaySchedule = res.data.weekSchedule.find(
+        //   (day: any) => day.dayOfWeek === formattedToday,
+        // );
+        // if (todaySchedule) {
+        //   setDate(today);
+        //   setAvailableSlots(todaySchedule.slots);
+        // }
       }
     } catch (error: any) {
       console.log(error);
@@ -284,16 +293,48 @@ const Booking = () => {
       }
 
       setProfile(res.data);
+      form.resetFields([
+        "email",
+        "fullName",
+        "gender",
+        "city",
+        "district",
+        "ward",
+        "detailAddress",
+        "distance",
+        "reasons",
+      ]);
     } catch (error: any) {
       console.log(error);
       message.error(error.message);
     }
   };
 
+  const getCustomerByEmailAndPhoneNumber = async (
+    email: string,
+    phoneNumber: string,
+  ) => {
+    try {
+      const api = `/api/users/check-email-with-phoneNumber`;
+      const res: any = await handleAPI(api, { email, phoneNumber }, "POST");
+
+      if (res.exists) {
+        message.warning("Email này đã được sử dụng bởi người khác!");
+        return true;
+      }
+      return false;
+    } catch (error: any) {
+      console.log(error);
+      message.error(
+        error.message || "Có lỗi xảy ra, vui lòng thử lại sau ít phút!",
+      );
+    }
+  };
+
   useEffect(() => {
     setTotalPrice(0);
-    setTotalPrice((prevPrice) => prevPrice + price);
-  }, [price]);
+    setTotalPrice((prevPrice) => prevPrice + price + transportFee);
+  }, [price, transportFee]);
 
   useEffect(() => {
     if (profile) {
@@ -329,6 +370,26 @@ const Booking = () => {
       okText: "Xác nhận",
       cancelText: "Hủy",
     });
+  };
+
+  const handleDistanceChange = (value: string) => {
+    const distanceValue = parseFloat(value);
+    if (!isNaN(distanceValue)) {
+      const fee = distanceValue * 5000;
+      setTransportFee(fee);
+    } else {
+      setTransportFee(0);
+    }
+  };
+
+  const handleConsultingChange = (value: string) => {
+    if (value === "Tại phòng khám" || value === "Tư vấn trực tuyến") {
+      setIsDistanceDisabled(true);
+      setTransportFee(0);
+      form.setFieldValue("distance", undefined);
+    } else {
+      setIsDistanceDisabled(false);
+    }
   };
 
   return (
@@ -410,6 +471,7 @@ const Booking = () => {
                     placeholder="Chọn hình thức khám"
                     style={{ width: "100%" }}
                     options={consultingOptions}
+                    onChange={handleConsultingChange}
                   />
                 </Form.Item>
                 <div className="mt-20">
@@ -422,6 +484,15 @@ const Booking = () => {
                         style: "currency",
                         currency: "VND",
                       }).format(price)}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span>Phí di chuyển:</span>
+                    <span>
+                      {new Intl.NumberFormat("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      }).format(transportFee)}
                     </span>
                   </div>
                   <Divider />
@@ -493,7 +564,26 @@ const Booking = () => {
                     >
                       <Input
                         className="addon-input"
-                        addonBefore="+84"
+                        addonBefore={
+                          <svg
+                            width="24"
+                            height="24"
+                            viewBox="0 0 30 20"
+                            xmlns="http://www.w3.org/2000/svg"
+                            version="1.1"
+                          >
+                            <rect
+                              width="30"
+                              height="20"
+                              fill="#da251d"
+                              rx={3}
+                            />
+                            <polygon
+                              points="15,4 11.47,14.85 20.71,8.15 9.29,8.15 18.53,14.85"
+                              fill="#ff0"
+                            />
+                          </svg>
+                        }
                         placeholder="Số điện thoại"
                       />
                     </Form.Item>
@@ -503,17 +593,50 @@ const Booking = () => {
                     <Form.Item
                       name="email"
                       label="Email"
+                      hasFeedback
                       rules={[
                         {
                           required: true,
                           message: "Vui lòng nhập email",
                         },
+                        {
+                          validator: async (_, value) => {
+                            // Kiểm tra định dạng email trước
+                            if (
+                              value &&
+                              !/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(value)
+                            ) {
+                              return Promise.reject(
+                                "Vui lòng nhập đúng định dạng email!",
+                              );
+                            }
+                            const phoneNumber =
+                              form.getFieldValue("phoneNumber");
+
+                            if (value && value.trim().length > 0) {
+                              const isExist =
+                                await getCustomerByEmailAndPhoneNumber(
+                                  value,
+                                  phoneNumber,
+                                );
+
+                              if (isExist) {
+                                return Promise.reject(
+                                  "Email này đã có người sử dụng",
+                                );
+                              }
+                            }
+                            return Promise.resolve();
+                          },
+                        },
                       ]}
+                      validateDebounce={1000}
                     >
                       <Input placeholder="Email" />
                     </Form.Item>
                   </Col>
                 </Row>
+
                 <Row gutter={24}>
                   <Col span={12}>
                     <Form.Item
@@ -585,10 +708,33 @@ const Booking = () => {
                     </Form.Item>
                   </Col>
                 </Row>
-                <Row>
-                  <Col span={24}>
+                <Row gutter={24}>
+                  <Col span={16}>
                     <Form.Item name="detailAddress" label="Địa chỉ">
-                      <Input placeholder="Địa chỉ" />
+                      <Input
+                        placeholder="Địa chỉ"
+                        onChange={(e) => {
+                          setDetailAddress(e.target.value);
+                        }}
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col span={8}>
+                    <Form.Item
+                      name="distance"
+                      label="Khoảng cách"
+                      rules={[
+                        {
+                          pattern: /^(?:[0-9]|1[0-9]|20)(\.\d+)?$/,
+                          message: "Khoảng cách phải từ 0 đến 20 km",
+                        },
+                      ]}
+                    >
+                      <Input
+                        placeholder="Khoảng cách"
+                        onChange={(e) => handleDistanceChange(e.target.value)}
+                        disabled={isDistanceDisabled}
+                      />
                     </Form.Item>
                   </Col>
                 </Row>

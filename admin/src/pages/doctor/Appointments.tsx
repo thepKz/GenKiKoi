@@ -1,4 +1,14 @@
-import { message, Modal, Spin, Switch, TableProps, Tag } from "antd";
+import {
+  Button,
+  Divider,
+  message,
+  Modal,
+  Spin,
+  Switch,
+  TableProps,
+  Tag,
+  Input,
+} from "antd";
 import { CustomTable } from "../../share";
 import { getValue } from "../../utils";
 import { HeaderPage } from "../../components";
@@ -7,6 +17,9 @@ import { useSelector } from "react-redux";
 import { IAuth } from "../../types";
 import { handleAPI } from "../../apis/handleAPI";
 import { removeVietnameseTones } from "../../utils";
+import GoogleMeetButton from "../../share/GoogleMeetButton";
+
+const { TextArea } = Input;
 
 const Appointments = () => {
   const auth: IAuth = useSelector((state: any) => state.authReducer.data);
@@ -14,10 +27,14 @@ const Appointments = () => {
   const [appointments, setAppointments] = useState([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchText, setSearchText] = useState("");
+  const [switchStates, setSwitchStates] = useState<{ [key: string]: boolean }>(
+    {},
+  );
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 10,
   });
+  const [selectedAppointment, setSelectedAppointment] = useState<any>(null);
 
   useEffect(() => {
     const getAppointments = async () => {
@@ -30,7 +47,9 @@ const Appointments = () => {
         setAppointments(res.data);
       } catch (error: any) {
         console.log(error);
-        message.error(error.message);
+        message.error(
+          error.message || "Đã có lỗi xẩy ra, vui lòng thử lại sau ít phút!",
+        );
       } finally {
         setIsLoading(false);
       }
@@ -39,6 +58,8 @@ const Appointments = () => {
   }, [auth.adminId]);
 
   const handleCheck = (checked: boolean, appointmentId: string) => {
+    const currentState = switchStates[appointmentId] || false;
+
     Modal.confirm({
       title: `${checked ? "Xác nhận hoàn thành" : "Hoàn tác"}` + ` dịch vụ`,
       content: checked
@@ -66,7 +87,20 @@ const Appointments = () => {
           message.error(error.message || "Có lỗi xảy ra");
         }
       },
+      onCancel: () => {
+        setSwitchStates((prev) => ({ ...prev, [appointmentId]: currentState }));
+      },
     });
+
+    setSwitchStates((prev) => ({ ...prev, [appointmentId]: checked }));
+  };
+
+  const handleViewDetails = (appointment: any) => {
+    setSelectedAppointment(appointment);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedAppointment(null);
   };
 
   const columns: TableProps["columns"] = [
@@ -89,27 +123,61 @@ const Appointments = () => {
       key: "Số điện thoại",
       title: "Số điện thoại",
       dataIndex: "phoneNumber",
-      width: 120,
+      width: 130,
     },
     {
       key: "Tên dịch vụ",
       title: "Tên dịch vụ",
       dataIndex: "serviceName",
-      width: 200,
+      width: 180,
     },
     {
       key: "Ngày hẹn",
       title: "Ngày hẹn",
       dataIndex: "appointmentDate",
-      width: 200,
+      width: 120,
       render: (date) => new Date(date).toLocaleDateString(),
+      sorter: (a, b) => {
+        const dateA = new Date(a.appointmentDate);
+        const dateB = new Date(b.appointmentDate);
+        return dateA.getTime() - dateB.getTime();
+      },
     },
     {
-      key: "Trạng thái",
-      title: "Trạng thái",
+      key: "Giờ khám",
+      title: "Giờ khám",
+      width: 100,
+      dataIndex: "slotTime",
+      render: (slotTime) => <Tag>{slotTime}</Tag>,
+    },
+    {
+      key: "Hình thức khám",
+      title: "Hình thức khám",
       width: 150,
-      dataIndex: "status",
+      dataIndex: "typeOfConsulting",
       render: (status) => <Tag color={getValue(status)}>{status}</Tag>,
+      filters: [
+        {
+          text: "Tại nhà",
+          value: "Tại nhà",
+        },
+        {
+          text: "Tại phòng khám",
+          value: "Tại phòng khám",
+        },
+        {
+          text: "Tư vấn trực tuyến",
+          value: "Tư vấn trực tuyến",
+        },
+      ],
+      onFilter: (value: any, record) => record.typeOfConsulting === value,
+    },
+    {
+      key: "Chi tiết",
+      title: "Xem chi tiết",
+      render: (record) => (
+        <Button onClick={() => handleViewDetails(record)}>Xem chi tiết</Button>
+      ),
     },
     {
       key: "Xác nhận",
@@ -117,11 +185,16 @@ const Appointments = () => {
       width: 100,
       render: (_text: any, record: any) => (
         <div className="text-center">
-          <Switch onChange={(checked) => handleCheck(checked, record.id)} />
+          <Switch
+            checked={switchStates[record.id] || false}
+            onChange={(checked) => handleCheck(checked, record.id)}
+          />
         </div>
       ),
     },
   ];
+
+  console.log(appointments);
 
   const handleSearch = (value: string) => {
     setSearchText(value.toLowerCase());
@@ -161,11 +234,86 @@ const Appointments = () => {
       <div className="doctor-view appointments">
         <CustomTable
           columns={columns}
+          scroll="calc(100vh - 280px)"
           dataSource={filteredAppointments}
           className="staff-table"
           onChange={(pagination) => setPagination(pagination)}
         />
       </div>
+      <Modal
+        style={{ top: 70 }}
+        open={!!selectedAppointment}
+        onCancel={handleCloseModal}
+        footer={null}
+      >
+        {selectedAppointment && (
+          <div className="my-5 text-base">
+            <h1 className="heading-4">Chi tiết cuộc hẹn</h1>
+            <Divider />
+            <div className="flex flex-col gap-2">
+              <p>
+                <strong>Tên khách hàng:</strong>{" "}
+                {selectedAppointment.customerName}
+              </p>
+              <p className="flex items-center gap-2">
+                <strong>Giới tính:</strong>
+                {selectedAppointment.gender === "nam" ? (
+                  <Tag color={getValue("nam")}>Nam</Tag>
+                ) : (
+                  <Tag color={getValue("nữ")}>Nữ</Tag>
+                )}
+              </p>
+              <p>
+                <strong>Số điện thoại:</strong>{" "}
+                {selectedAppointment.phoneNumber}
+              </p>
+              {selectedAppointment.typeOfConsulting === "Tại nhà" && (
+                <p>
+                  <strong>Địa chỉ:</strong> {selectedAppointment.detailAddress}
+                </p>
+              )}
+              <p>
+                <strong>Tên dịch vụ:</strong> {selectedAppointment.serviceName}
+              </p>
+              <p className="flex items-center gap-2">
+                <strong>Hình thức khám:</strong>{" "}
+                <Tag color={getValue(selectedAppointment.typeOfConsulting)}>
+                  {selectedAppointment.typeOfConsulting}
+                </Tag>
+              </p>
+              <p>
+                <strong>Ngày hẹn:</strong>{" "}
+                {new Date(
+                  selectedAppointment.appointmentDate,
+                ).toLocaleDateString()}
+              </p>
+              <p>
+                <strong>Giờ hẹn:</strong> {selectedAppointment.slotTime}
+              </p>
+              <p className="flex items-center gap-2">
+                <strong>Trạng thái:</strong>
+                <Tag color={getValue(selectedAppointment.status)}>
+                  {selectedAppointment.status}
+                </Tag>
+              </p>
+              {selectedAppointment.typeOfConsulting === "Tư vấn trực tuyến" && (
+                <p className="flex items-center gap-2">
+                  <strong>Google Meet:</strong>{" "}
+                  <GoogleMeetButton to={selectedAppointment.googleMeetLink} />
+                </p>
+              )}
+              <strong>Lý do khám:</strong>
+              {selectedAppointment.reasons && (
+                <TextArea
+                  size="large"
+                  value={selectedAppointment.reasons}
+                  readOnly
+                />
+              )}
+            </div>
+          </div>
+        )}
+      </Modal>
     </div>
   );
 };

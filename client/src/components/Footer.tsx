@@ -61,23 +61,53 @@ const Footer = () => {
           </div>
 
           {/* Cột 2: Về Phòng Khám và Dịch Vụ */}
-          <div className="mb-6 w-full md:mb-0 md:w-1/4">
+          <div className="mb-6 mr-4 w-full md:mb-0 md:w-1/4">
             <div className="flex">
               <div className="w-1/2">
                 <h3 className="mb-4 flex items-center text-lg font-bold">
                   <Happyemoji className="mr-2" /> Về Phòng Khám
                 </h3>
                 <ul className="space-y-2">
-                  {["Giới thiệu", "Chọn GenKiKoi", "Hình ảnh hoạt động", "Liên hệ"].map((item) => (
-                    <li key={item}>
-                      <Link
-                        to="#"
-                        className="transition-colors hover:text-blue-300"
-                      >
-                        {item}
-                      </Link>
-                    </li>
-                  ))}
+                  <li>
+                    <Link
+                      to="/about-us"
+                      className="transition-colors hover:text-blue-300"
+                    >
+                      Giới thiệu
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/images"
+                      className="transition-colors hover:text-blue-300"
+                    >
+                      Hình ảnh hoạt động
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/faq"
+                      className="transition-colors hover:text-blue-300"
+                    >
+                      Hỏi đáp
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/doctors"
+                      className="transition-colors hover:text-blue-300"
+                    >
+                      Bác sĩ
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/terms-of-service"
+                      className="transition-colors hover:text-blue-300"
+                    >
+                      Điều khoản dịch vụ
+                    </Link>
+                  </li>
                 </ul>
               </div>
               <div className="w-1/2">
@@ -85,25 +115,38 @@ const Footer = () => {
                   <Pet className="mr-2" /> Dịch Vụ
                 </h3>
                 <ul className="space-y-2">
-                  {[
-                    "Tư vấn & Điều trị",
-                    "Xét nghiệm",
-                    "Ký sinh trùng máu",
-                    "Kháng sinh đồ",
-                    "Siêu âm",
-                    "Phẫu thuật",
-                    "Tiêm ngừa",
-                    "Pet Shop",
-                  ].map((item) => (
-                    <li key={item}>
-                      <Link
-                        to="#"
-                        className="transition-colors hover:text-blue-300"
-                      >
-                        {item}
-                      </Link>
-                    </li>
-                  ))}
+                  <li>
+                    <Link
+                      to="/services/consulting-treatment"
+                      className="transition-colors hover:text-blue-300"
+                    >
+                      Tư vấn & Điều trị
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/services/vaccine"
+                      className="transition-colors hover:text-blue-300"
+                    >
+                      Tiêm ngừa
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/services/water-quality"
+                      className="transition-colors hover:text-blue-300"
+                    >
+                      Kiểm tra chất lượng nước
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/services/service-price-table"
+                      className="transition-colors hover:text-blue-300"
+                    >
+                      Bảng giá dịch vụ
+                    </Link>
+                  </li>
                 </ul>
               </div>
             </div>

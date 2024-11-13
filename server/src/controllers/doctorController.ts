@@ -14,11 +14,12 @@ export const getAllDoctors = async (req: Request, res: Response) => {
       .populate({
         path: "userId",
         match: { isDisabled: false },
-        select: "fullName email gender",
+        select: "fullName email gender photoUrl",
       })
       .select(
-        "startDate movingService specialization licenseNumber yearOfExperience"
-      );
+        "startDate movingService specialization licenseNumber yearOfExperience googleMeetLink introduction"
+      )
+      .sort({ createdAt: -1 });
 
     const filteredDoctors = doctors.filter((doctor) => doctor.userId !== null);
 
@@ -26,9 +27,11 @@ export const getAllDoctors = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "Danh sách bác sĩ trống!" });
     }
 
-    const formatDoctor = doctors.map((doctor: any) => ({
+    const formatDoctor = filteredDoctors.map((doctor: any) => ({
       _id: doctor._id,
       fullName: doctor.userId.fullName,
+      userId: doctor.userId._id,
+      photoUrl: doctor.userId.photoUrl,
       gender: doctor.userId.gender,
       movingService: doctor.movingService,
       startDate: doctor.startDate,
@@ -36,10 +39,13 @@ export const getAllDoctors = async (req: Request, res: Response) => {
       licenseNumber: doctor.licenseNumber,
       yearOfExperience: doctor.yearOfExperience,
       email: doctor.userId.email,
+      googleMeetLink: doctor.googleMeetLink,
+      introduction: doctor.introduction,
     }));
 
     return res.status(200).json({ data: formatDoctor });
   } catch (error: any) {
+    console.log(error);
     return res.status(500).json({ message: error.message });
   }
 };
@@ -59,6 +65,7 @@ export const addNewDoctor = async (req: Request, res: Response) => {
       licenseNumber,
       yearOfExperience,
       movingService,
+      googleMeetLink,
     } = req.body;
 
     if (
@@ -68,7 +75,7 @@ export const addNewDoctor = async (req: Request, res: Response) => {
       !email ||
       !licenseNumber ||
       !yearOfExperience ||
-      !movingService
+      !googleMeetLink
     ) {
       return res
         .status(400)
@@ -94,10 +101,12 @@ export const addNewDoctor = async (req: Request, res: Response) => {
           licenseNumber,
           yearOfExperience,
           movingService,
+          googleMeetLink,
         });
 
         formatDoctor = {
           _id: doctor._id,
+          userId: existUser._id,
           fullName: existUser.fullName,
           gender: existUser.gender,
           movingService: doctor.movingService,
@@ -105,6 +114,7 @@ export const addNewDoctor = async (req: Request, res: Response) => {
           licenseNumber: doctor.licenseNumber,
           yearOfExperience: doctor.yearOfExperience,
           startDate: doctor.startDate,
+          googleMeetLink: doctor.googleMeetLink,
           email: existUser.email,
         };
       }
@@ -128,17 +138,20 @@ export const addNewDoctor = async (req: Request, res: Response) => {
         licenseNumber,
         yearOfExperience,
         movingService,
+        googleMeetLink,
       });
 
       formatDoctor = {
         _id: doctor._id,
         fullName: newUser.fullName,
+        userId: newUser._id,
         gender: newUser.gender,
         movingService: doctor.movingService,
         specialization: doctor.specialization,
         licenseNumber: doctor.licenseNumber,
         yearOfExperience: doctor.yearOfExperience,
         startDate: doctor.startDate,
+        googleMeetLink: doctor.googleMeetLink,
         email: newUser.email,
       };
     }
@@ -173,6 +186,7 @@ export const updateByDoctorId = async (req: Request, res: Response) => {
       yearOfExperience,
       movingService,
       introduction,
+      googleMeetLink,
     } = req.body;
 
     const existsDoctor = await Doctor.findById(doctorId);
@@ -214,6 +228,7 @@ export const updateByDoctorId = async (req: Request, res: Response) => {
         licenseNumber,
         yearOfExperience,
         movingService,
+        googleMeetLink,
       },
       { new: true, runValidators: true }
     );
@@ -238,6 +253,7 @@ export const updateByDoctorId = async (req: Request, res: Response) => {
 
     const updatedInfo = {
       _id: updatedDoctor._id,
+      userId: updatedUser._id,
       photoUrl: updatedUser.photoUrl,
       fullName: updatedUser.fullName,
       gender: updatedUser.gender,
@@ -245,9 +261,11 @@ export const updateByDoctorId = async (req: Request, res: Response) => {
       specialization: updatedDoctor.specialization,
       licenseNumber: updatedDoctor.licenseNumber,
       yearOfExperience: updatedDoctor.yearOfExperience,
+      startDate: updatedDoctor.startDate,
       email: updatedUser.email,
       phoneNumber: updatedUser.phoneNumber,
       introduction: updatedDoctor.introduction,
+      googleMeetLink: updatedDoctor.googleMeetLink,
     };
 
     return res.status(200).json({
@@ -293,22 +311,26 @@ export const deleteDoctorById = async (req: Request, res: Response) => {
  */
 export const getAllDoctorsForBooking = async (req: Request, res: Response) => {
   try {
-    const doctors = await Doctor.find({}, "fullName").populate(
-      "userId",
-      "fullName"
-    );
+    const doctors = await Doctor.find({}, "fullName").populate({
+      path: "userId",
+      match: { isDisabled: false }, // Chỉ lấy những user không bị khóa
+      select: "fullName",
+    });
 
-    if (!doctors || doctors.length === 0) {
+    const activeDoctors = doctors.filter((doctor) => doctor.userId);
+
+    if (!activeDoctors || activeDoctors.length === 0) {
       return res.status(404).json({ message: "Không tìm thấy bác sĩ nào" });
     }
 
-    const doctorList = doctors.map((doctor: any) => ({
+    const doctorList = activeDoctors.map((doctor: any) => ({
       id: doctor._id,
-      fullName: doctor.userId ? doctor.userId.fullName : doctor.fullName,
+      fullName: doctor.userId.fullName,
     }));
 
     return res.status(200).json({ data: doctorList });
   } catch (error: any) {
+    console.log(error);
     return res.status(500).json({ message: error.message });
   }
 };
@@ -360,7 +382,9 @@ export const getScheduleByDoctorId = async (req: Request, res: Response) => {
         path: "userId",
         select: "fullName photoUrl email gender",
       })
-      .select("startDate movingService");
+      .select(
+        "startDate movingService googleMeetLink specialization licenseNumber yearOfExperience"
+      );
 
     if (!doctor) {
       return res.status(404).json({ message: "Không tìm thấy bác sĩ" });
@@ -393,6 +417,10 @@ export const getScheduleByDoctorId = async (req: Request, res: Response) => {
       gender: doctor.userId.gender,
       startDate: doctor.startDate,
       movingService: doctor.movingService,
+      googleMeetLink: doctor.googleMeetLink,
+      specialization: doctor.specialization,
+      licenseNumber: doctor.licenseNumber,
+      yearOfExperience: doctor.yearOfExperience,
       doctorSchedule: futureDates,
     };
 
@@ -516,10 +544,14 @@ export const updateDoctorSchedule = async (req: Request, res: Response) => {
     await schedule.save();
 
     // Lấy thông tin đã cập nhật để trả về
-    const updatedDoctor = await Doctor.findById(doctorId).populate(
-      "userId",
-      "fullName photoUrl email gender"
-    );
+    const updatedDoctor = await Doctor.findById(doctorId)
+      .populate({
+        path: "userId",
+        select: "fullName photoUrl email gender",
+      })
+      .select(
+        "startDate movingService googleMeetLink specialization licenseNumber yearOfExperience"
+      );
 
     if (!updatedDoctor) {
       return res.status(404).json({ message: "Không tìm thấy bác sĩ" });
@@ -541,6 +573,10 @@ export const updateDoctorSchedule = async (req: Request, res: Response) => {
       startDate: updatedDoctor.startDate,
       movingService: updatedDoctor.movingService,
       doctorSchedule: updatedSchedule.weekSchedule.map((day) => day.dayOfWeek),
+      googleMeetLink: doctor.googleMeetLink,
+      specialization: doctor.specialization,
+      licenseNumber: doctor.licenseNumber,
+      yearOfExperience: doctor.yearOfExperience,
     };
 
     return res.status(200).json({
@@ -548,6 +584,21 @@ export const updateDoctorSchedule = async (req: Request, res: Response) => {
       data: formattedData,
     });
   } catch (error: any) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+export const checkLicenseNumber = async (req: Request, res: Response) => {
+  try {
+    const { licenseNumber } = req.body;
+
+    console.log(licenseNumber);
+
+    const doctor = await Doctor.findOne({ licenseNumber });
+
+    return res.status(200).json({ exists: !!doctor, doctorId: doctor?._id });
+  } catch (error: any) {
+    console.log(error);
     return res.status(500).json({ message: error.message });
   }
 };

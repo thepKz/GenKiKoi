@@ -27,6 +27,9 @@ const PaymentCancel = () => {
     <ConfigProvider
       theme={{
         inherit: false,
+        token: {
+          fontFamily: "Pro-Rounded",
+        },
       }}
     >
       <Result

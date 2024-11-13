@@ -22,9 +22,11 @@ const Accounts = () => {
         const api = `/api/users/all`;
         const res = await handleAPI(api, undefined, "GET");
         setAccounts(res.data);
-      } catch (error) {
+      } catch (error: any) {
         console.error(error);
-        message.error("Có lỗi xảy ra khi lấy danh sách tài khoản");
+        message.error(
+          error.message || "Có lỗi xảy ra khi lấy danh sách tài khoản",
+        );
       } finally {
         setIsLoading(false);
       }
@@ -54,9 +56,11 @@ const Accounts = () => {
 
           setAccounts(updatedAccounts);
           message.success("Cập nhật thành công");
-        } catch (error) {
+        } catch (error: any) {
           console.error(error);
-          message.error("Có lỗi xảy ra khi cập nhật trạng thái tài khoản");
+          message.error(
+            error.message || "Có lỗi xảy ra khi cập nhật trạng thái tài khoản",
+          );
         } finally {
           setIsLoading(false);
         }
@@ -73,7 +77,7 @@ const Accounts = () => {
     const username = removeVietnameseTones(account.username.toLowerCase());
     const email = account.email.toLowerCase();
     const fullName = removeVietnameseTones(
-      (account.fullName || "").toLowerCase()
+      (account.fullName || "").toLowerCase(),
     );
     const phoneNumber = account.phoneNumber || "";
 
@@ -125,6 +129,13 @@ const Accounts = () => {
       dataIndex: "role",
       width: 120,
       render: (role) => <Tag color={getValue(role)}>{role}</Tag>,
+      filters: [
+        { text: "Quản lý", value: "manager" },
+        { text: "Bác sĩ", value: "doctor" },
+        { text: "Nhân viên", value: "staff" },
+        { text: "Khách hàng", value: "customer" },
+      ],
+      onFilter: (value: any, record) => record.role === value,
     },
     {
       key: "isDisabled",
@@ -136,6 +147,11 @@ const Accounts = () => {
           {status ? "Đã khóa" : "Hoạt động"}
         </Tag>
       ),
+      filters: [
+        { text: "Hoạt động", value: false },
+        { text: "Đã khóa", value: true },
+      ],
+      onFilter: (value: any, record) => record.isDisabled === value,
     },
     {
       key: "action",
@@ -164,9 +180,10 @@ const Accounts = () => {
 
   return (
     <div className="section accounts">
-      <HeaderPage 
-        heading="Danh sách tài khoản" 
-        placeholder="Tìm tài khoản" 
+      <HeaderPage
+        heading="Danh sách tài khoản"
+        placeholder="Tìm tài khoản (Tên tài khoản, email, họ và tên, số điện thoại)"
+        alt="Tìm tài khoản (Tên tài khoản, email, họ và tên, số điện thoại)"
         onSearch={handleSearch}
       />
       <div className="mt-2">

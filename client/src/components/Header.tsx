@@ -1,5 +1,5 @@
-import { Avatar, Badge, Button, Dropdown, MenuProps } from "antd";
-import { CalendarEdit, Logout, Notification, User } from "iconsax-react";
+import { Avatar, Button, Dropdown, MenuProps } from "antd";
+import { CalendarEdit, Logout, User } from "iconsax-react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import Logo from "../assets/logo.jpg";
@@ -27,9 +27,6 @@ const Header = () => {
       key: "4",
       label: <Link to={"/services/service-price-table"}>Bảng giá dịch vụ</Link>,
     },
-    
-    
-    
   ];
 
   const profile: MenuProps["items"] = [
@@ -91,6 +88,11 @@ const Header = () => {
               <Link to="/faq">Hỏi & Đáp</Link>
               <div className="h-[1.5px] bg-white duration-300 ease-in" />
             </div>
+
+            <div className="link cursor-pointer">
+              <Link to="/terms-of-service">Điều khoản dịch vụ</Link>
+              <div className="h-[1.5px] bg-white duration-300 ease-in" />
+            </div>
           </ul>
           {!auth.token ? (
             <div className="flex items-center gap-3">
@@ -142,16 +144,6 @@ const Header = () => {
                   </Button>
                 </Link>
               )}
-              <Badge
-                count={9}
-                size="small"
-                offset={[-4, 3]}
-              >
-                <Notification
-                  className="cursor-pointer"
-                  color="white"
-                />
-              </Badge>
               <Dropdown menu={{ items: profile }}>
                 <Avatar
                   src={auth.photoUrl}

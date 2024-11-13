@@ -31,7 +31,10 @@ const ListFishRecords = () => {
         setRecords(res.data);
       } catch (error: any) {
         console.log(error);
-        message.error(error.message);
+        message.error(
+          error.message ||
+            "Có lỗi khi lấy dữ liệu, vui lòng thử lại sau ít phút!",
+        );
       } finally {
         setIsLoading(false);
       }
@@ -51,14 +54,13 @@ const ListFishRecords = () => {
       key: "Mã lưu trữ",
       title: "Mã lưu trữ",
       dataIndex: "recordId",
-      width: 180,
-      render: (text) => (text.length > 20 ? `${text.slice(0, 17)}...` : text),
+      width: 250,
     },
     {
       key: "Dịch vụ khám",
       title: "Dịch vụ khám",
       dataIndex: "serviceName",
-      width: 150,
+      width: 200,
     },
     {
       key: "Loại khám",

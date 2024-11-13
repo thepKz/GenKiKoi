@@ -22,6 +22,7 @@ import { handleAPI } from "../../../apis/handleAPI";
 import { uploadFile } from "../../../utils";
 import { useSelector } from "react-redux";
 import { IAuth } from "../../../types";
+import { m } from "framer-motion";
 
 const { TextArea } = Input;
 
@@ -111,13 +112,24 @@ const Treatment = () => {
     try {
       setFishRecords([]);
       const api = `/api/fishes/customers/${phoneNumber}`;
-      const res = await handleAPI(api, undefined, "GET");
+      const res: any = await handleAPI(api, undefined, "GET");
 
       if (res.data) {
         setFishRecords(res.data);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.log(error);
+      if (error.message === "Người dùng không tồn tại") {
+        form.setFields([
+          {
+            name: "phoneNumber",
+            errors: ["Khách hàng không tồn tại!"],
+            validating: false,
+          },
+        ]);
+      } else {
+        message.error(error.message);
+      }
     }
   };
 
@@ -168,6 +180,10 @@ const Treatment = () => {
                       message: "Vui lòng nhập số điện thoại",
                     },
                     {
+                      pattern: /^(0[3|5|7|8|9])+([0-9]{8})\b/,
+                      message: "Số điện thoại không hợp lệ",
+                    },
+                    {
                       validator: async (_, value) => {
                         if (value) {
                           await getFishRecordByPhoneNumber(value);
@@ -178,7 +194,24 @@ const Treatment = () => {
                   ]}
                   validateDebounce={1000}
                 >
-                  <Input placeholder="Số điện thoại" />
+                  <Input
+                    addonBefore={
+                      <svg
+                        width="24"
+                        height="24"
+                        viewBox="0 0 30 20"
+                        xmlns="http://www.w3.org/2000/svg"
+                        version="1.1"
+                      >
+                        <rect width="30" height="20" fill="#da251d" rx={3} />
+                        <polygon
+                          points="15,4 11.47,14.85 20.71,8.15 9.29,8.15 18.53,14.85"
+                          fill="#ff0"
+                        />
+                      </svg>
+                    }
+                    placeholder="Số điện thoại"
+                  />
                 </Form.Item>
                 <Form.Item
                   name="fishId"
@@ -266,10 +299,45 @@ const Treatment = () => {
                 </Form.Item>
               </Col>
               <Col span={9}>
-                <Form.Item name="diagnosis" label="Chẩn đoán">
+                <Form.Item
+                  name="diagnosis"
+                  label="Chẩn đoán"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Vui lòng nhập chẩn đoán",
+                    },
+                    {
+                      min: 3,
+                      message: "Chẩn đoán phải có ít nhất 3 ký tự",
+                    },
+                    {
+                      max: 200,
+                      message: "Chẩn đoán không được vượt quá 200 ký tự",
+                    },
+                  ]}
+                >
                   <Input placeholder="Chẩn đoán" />
                 </Form.Item>
-                <Form.Item name="treatment" label="Phác đồ điều trị">
+                <Form.Item
+                  name="treatment"
+                  label="Phác đồ điều trị"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Vui lòng nhập phác đồ điều trị",
+                    },
+                    {
+                      min: 10,
+                      message: "Phác đồ điều trị phải có ít nhất 10 ký tự",
+                    },
+                    {
+                      max: 1000,
+                      message:
+                        "Phác đồ điều trị không được vượt quá 1000 ký tự",
+                    },
+                  ]}
+                >
                   <TextArea placeholder="Phác đồ điều trị" rows={10} />
                 </Form.Item>
               </Col>

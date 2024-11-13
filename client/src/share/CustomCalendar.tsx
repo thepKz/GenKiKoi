@@ -25,10 +25,8 @@ interface Props {
 const CustomCalendar = (props: Props) => {
   const { setDate, doctorSchedule } = props;
 
-  console.log(doctorSchedule);
-
   const disabledDate = (current: Dayjs) => {
-    const isBeforeToday = current.isBefore(dayjs().tz(DEFAULT_TIMEZONE).startOf("day"));
+    const isBeforeToday = current.isBefore(dayjs().tz(DEFAULT_TIMEZONE).endOf("day"));
 
     if (!doctorSchedule) return true;
 

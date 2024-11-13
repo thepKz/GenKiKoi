@@ -20,7 +20,6 @@ router.get("/customers", authMiddleware, getAllCustomers);
 
 router.get("/:medicalRecordId", authMiddleware, getMedicalRecordById);
 
-// Lấy bệnh án theo ID của cá
 router.get("/fishes/:fishId", authMiddleware, getMedicalRecordByFishId);
 
 export default router;

@@ -24,8 +24,9 @@ const Customers = () => {
         const api = `/api/customers/`;
         const res = await handleAPI(api, undefined, "GET");
         setCustomers(res.data);
-      } catch (error) {
-        message.error("Lỗi khi lấy dữ liệu người dùng");
+      } catch (error: any) {
+        console.log(error);
+        message.error(error.message || "Lỗi khi lấy dữ liệu người dùng");
       } finally {
         setIsLoading(false);
       }
@@ -79,6 +80,11 @@ const Customers = () => {
           {text === "nam" ? "Nam" : text === "" ? "NULL" : "Nữ"}
         </Tag>
       ),
+      filters: [
+        { text: "Nam", value: "nam" },
+        { text: "Nữ", value: "nữ" },
+      ],
+      onFilter: (value: any, record) => record.gender === value,
     },
     {
       key: "Số điện thoại",
@@ -119,7 +125,8 @@ const Customers = () => {
     <div className="section">
       <HeaderPage
         heading="Danh sách khách hàng"
-        placeholder="Tìm khách hàng"
+        placeholder="Tìm khách hàng (Tên, email, số điện thoại)"
+        alt="Tìm khách hàng (Tên, email, số điện thoại)"
         onSearch={handleSearch}
       />
       <Breadcrumb
@@ -139,6 +146,7 @@ const Customers = () => {
       />
       <div className="mt-2">
         <CustomTable
+          scroll="calc(100vh - 280px)"
           loading={isLoading}
           columns={columns}
           dataSource={filteredCustomers}

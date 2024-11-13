@@ -1,3 +1,4 @@
+import bcrypt from "bcryptjs";
 import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
@@ -16,6 +17,7 @@ import {
   doctorScheduleRoutes,
   feedbackRoutes,
   fishRoutes,
+  managerRoutes,
   medicalRecordRoutes,
   paymentRoutes,
   pondRoutes,
@@ -27,6 +29,7 @@ import {
 // SERVICES
 import { startScheduledTasks } from "./services/sheduledTasks";
 import { updateExpiredPayments } from "./services/updateExpiredPayments";
+import { Manager, User } from "./models";
 
 const app = express();
 
@@ -69,6 +72,7 @@ app.use("/api/appointments", appointmentRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/services", serviceRoutes);
 app.use("/api/staffs", staffRoutes);
+app.use("/api/managers", managerRoutes);
 app.use("/api/doctors", doctorRoutes);
 app.use("/api/medicalRecords", medicalRecordRoutes);
 app.use("/api/ponds", pondRoutes);
@@ -77,13 +81,47 @@ app.use("/api/distance", distanceRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/doctorSchedules", doctorScheduleRoutes);
 app.use("/api/feedbacks", feedbackRoutes);
-app.use("/api/customers", customerRoutes);
 
 // Export the app for testing purposes
 export { app };
 
 startScheduledTasks();
 updateExpiredPayments();
+
+const AddManager = async () => {
+  try {
+    const salt = await bcrypt.genSalt(10);
+    const hashedPass = await bcrypt.hash("11111111", salt);
+
+    const newUser = new User({
+      username: "lehuy89",
+      email: "manager.lehuy@gmail.com",
+      password: hashedPass,
+      fullName: "Lê Huy Vũ",
+      phoneNumber: "0352195824",
+      photoUrl: "https://firebasestorage.googleapis.com/v0/b/genkikoi-e18b5.appspot.com/o/managers%2Fmanager.jpg?alt=media&token=8733e5a4-fdb5-48b4-8132-66d5d90f08ba",
+      role: "manager",
+      gender: "nam",
+      isDisabled: false,
+    });
+
+    const savedUser = await newUser.save();
+
+    const newManager = new Manager({
+      userId: savedUser._id,
+      position: "Quản lý cấp cao",
+      startDate: new Date(),
+    });
+
+    await newManager.save();
+
+    console.log(newManager);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+// AddManager();
 
 // Only start the server if this file is run directly (not imported as a module)
 if (require.main === module) {
