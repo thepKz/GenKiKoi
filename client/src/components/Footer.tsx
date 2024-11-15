@@ -1,4 +1,4 @@
-import { Happyemoji, Map, Pet } from "iconsax-react";
+import { Facebook, Happyemoji, Instagram, Map, Pet, Youtube } from "iconsax-react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { useEffect, useRef } from "react";
@@ -28,7 +28,10 @@ const Footer = () => {
         popupAnchor: [0, -32],
       });
 
-      L.marker([lat, lon], { icon: genkikoiIcon }).addTo(map).bindPopup("GenKiKoi").openPopup();
+      L.marker([lat, lon], { icon: genkikoiIcon })
+        .addTo(map)
+        .bindPopup("GenKiKoi")
+        .openPopup();
     };
 
     initMap();
@@ -42,149 +45,151 @@ const Footer = () => {
   }, []);
 
   return (
-    <footer className="section relative z-20 bg-blue-primary py-8 text-white">
-      <div className="container mx-auto px-4">
-        <div className="flex flex-wrap justify-center">
-          {/* Cột 1: Thông tin phòng khám */}
-          <div className="mb-6 w-full md:mb-0 md:w-1/5">
-            <div className="mb-4 flex items-center">
-              <img
-                src={Logo}
-                alt="GenKiKoi Logo"
-                className="mr-2 h-12 w-12"
-              />
+    <footer className="relative z-20 bg-gradient-to-b from-[#0e314e] to-[#175670]">
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
+        {/* Main Content */}
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+          {/* Left Column */}
+          <div className="space-y-8">
+            {/* Brand */}
+            <div className="flex flex-col items-center md:items-start">
+              <Link to="/" className="group">
+                <img
+                  src={Logo}
+                  alt="GenKiKoi Logo"
+                  className="h-16 w-16 rounded-full transition-transform group-hover:scale-110"
+                />
+              </Link>
+              <h2 className="mt-4 text-xl font-bold text-white">Phòng khám Thú Y</h2>
+              <h1 className="text-2xl font-bold text-white">GenKiKoi</h1>
+            </div>
+
+            {/* Quick Links */}
+            <div className="grid grid-cols-2 gap-8">
+              {/* About Links */}
               <div>
-                <h2 className="text-xl font-bold">Phòng khám Thú Y</h2>
-                <h1 className="text-2xl font-bold">GenKiKoi</h1>
-              </div>
-            </div>
-          </div>
-
-          {/* Cột 2: Về Phòng Khám và Dịch Vụ */}
-          <div className="mb-6 mr-4 w-full md:mb-0 md:w-1/4">
-            <div className="flex">
-              <div className="w-1/2">
-                <h3 className="mb-4 flex items-center text-lg font-bold">
-                  <Happyemoji className="mr-2" /> Về Phòng Khám
+                <h3 className="mb-4 flex items-center justify-center text-lg font-semibold text-white md:justify-start">
+                  <Happyemoji className="mr-2 h-5 w-5" />
+                  Về Phòng Khám
                 </h3>
-                <ul className="space-y-2">
-                  <li>
-                    <Link
-                      to="/about-us"
-                      className="transition-colors hover:text-blue-300"
-                    >
-                      Giới thiệu
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to="/images"
-                      className="transition-colors hover:text-blue-300"
-                    >
-                      Hình ảnh hoạt động
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to="/faq"
-                      className="transition-colors hover:text-blue-300"
-                    >
-                      Hỏi đáp
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to="/doctors"
-                      className="transition-colors hover:text-blue-300"
-                    >
-                      Bác sĩ
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to="/terms-of-service"
-                      className="transition-colors hover:text-blue-300"
-                    >
-                      Điều khoản dịch vụ
-                    </Link>
-                  </li>
+                <ul className="space-y-2 text-center md:text-left">
+                  <FooterLink to="/about-us">Giới thiệu</FooterLink>
+                  <FooterLink to="/images">Hình ảnh</FooterLink>
+                  <FooterLink to="/faq">Hỏi đáp</FooterLink>
+                  <FooterLink to="/doctors">Bác sĩ</FooterLink>
+                  <FooterLink to="/terms-of-service">Điều khoản</FooterLink>
                 </ul>
               </div>
-              <div className="w-1/2">
-                <h3 className="mb-4 flex items-center text-lg font-bold">
-                  <Pet className="mr-2" /> Dịch Vụ
+
+              {/* Services Links */}
+              <div>
+                <h3 className="mb-4 flex items-center justify-center text-lg font-semibold text-white md:justify-start">
+                  <Pet className="mr-2 h-5 w-5" />
+                  Dịch Vụ
                 </h3>
-                <ul className="space-y-2">
-                  <li>
-                    <Link
-                      to="/services/consulting-treatment"
-                      className="transition-colors hover:text-blue-300"
-                    >
-                      Tư vấn & Điều trị
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to="/services/vaccine"
-                      className="transition-colors hover:text-blue-300"
-                    >
-                      Tiêm ngừa
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to="/services/water-quality"
-                      className="transition-colors hover:text-blue-300"
-                    >
-                      Kiểm tra chất lượng nước
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to="/services/service-price-table"
-                      className="transition-colors hover:text-blue-300"
-                    >
-                      Bảng giá dịch vụ
-                    </Link>
-                  </li>
+                <ul className="space-y-2 text-center md:text-left">
+                  <FooterLink to="/services/consulting-treatment">
+                    Tư vấn & Điều trị
+                  </FooterLink>
+                  <FooterLink to="/services/vaccine">Tiêm ngừa</FooterLink>
+                  <FooterLink to="/services/water-quality">
+                    Kiểm tra nước
+                  </FooterLink>
+                  <FooterLink to="/services/service-price-table">
+                    Bảng giá
+                  </FooterLink>
                 </ul>
               </div>
             </div>
           </div>
 
-          {/* Cột 3: Google Maps */}
-          <div className="w-full md:w-1/3">
-            <h3 className="mb-4 flex items-center text-lg font-bold">
-              <Map className="mr-2" /> Google Maps
+          {/* Right Column - Map */}
+          <div className="space-y-4">
+            <h3 className="flex items-center justify-center text-lg font-semibold text-white md:justify-start">
+              <Map className="mr-2 h-5 w-5" />
+              Bản đồ
             </h3>
-            <div
-              id="map"
-              className="mb-2 h-80 w-full rounded-md"
-            ></div>
+            <div className="overflow-hidden rounded-xl shadow-lg">
+              <div id="map" className="h-[300px] w-full md:h-[400px]" />
+            </div>
             <button
-              className="mt-2 w-full rounded bg-blue-600 px-4 py-2 font-bold text-white transition-colors hover:bg-blue-700"
               onClick={() =>
                 window.open(
                   `https://www.google.com/maps/search/?api=1&query=FPT+University+Ho+Chi+Minh+City`,
-                  "_blank",
+                  "_blank"
                 )
               }
+              className="w-full rounded-lg bg-white/10 px-4 py-3 text-sm font-medium text-white 
+                transition-all hover:bg-white/20 hover:shadow-lg focus:outline-none 
+                focus:ring-2 focus:ring-white/20"
             >
               Xem bản đồ lớn
             </button>
           </div>
         </div>
 
-        {/* Copyright và Social Icons */}
-        <div className="mt-8 border-t border-blue-400 pt-8">
-          <div className="flex items-center justify-center">
-            <p>© 2024 Phòng khám Thú Y GenKiKoi. Tất cả các quyền được bảo lưu.</p>
-            <div className="flex space-x-4">{/* Add your social icons here */}</div>
+        {/* Bottom Bar */}
+        <div className="mt-8 border-t border-white/10 pt-8">
+          <div className="flex flex-col items-center gap-4 md:flex-row md:justify-between">
+            <p className="text-center text-sm text-gray-300">
+              © 2024 Phòng khám Thú Y GenKiKoi. Tất cả các quyền được bảo lưu.
+            </p>
+            <div className="flex items-center space-x-6">
+              <SocialLink 
+                href="https://facebook.com" 
+                icon="facebook" 
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                <Facebook className="h-6 w-6" />
+              </SocialLink>
+              <SocialLink 
+                href="https://instagram.com" 
+                icon="instagram"
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                <Instagram className="h-6 w-6" />
+              </SocialLink>
+              <SocialLink 
+                href="https://youtube.com" 
+                icon="youtube"
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                <Youtube className="h-6 w-6" />
+              </SocialLink>
+            </div>
           </div>
         </div>
       </div>
     </footer>
   );
 };
+
+const FooterLink = ({ to, children }: { to: string; children: React.ReactNode }) => (
+  <li>
+    <Link
+      to={to}
+      className="text-sm text-gray-300 transition-colors hover:text-white hover:underline"
+    >
+      {children}
+    </Link>
+  </li>
+);
+
+const SocialLink = ({ href, icon, children, className }: { 
+  href: string; 
+  icon: string;
+  children: React.ReactNode;
+  className?: string;
+}) => (
+  <a
+    href={href}
+    className={className}
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    <span className="sr-only">{icon}</span>
+    {children}
+  </a>
+);
 
 export default Footer;

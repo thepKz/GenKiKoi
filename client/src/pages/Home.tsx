@@ -1,5 +1,5 @@
 import { Avatar, Button, message, Rate, Spin } from "antd";
-import { ArrowLeft2, ArrowRight2, Calendar, Call, EmojiHappy, Heart, HeartTick, Moneys, Profile2User, Star, User } from "iconsax-react";
+import { ArrowLeft2, ArrowRight2, Calendar, Call, EmojiHappy, Moneys, Profile2User, Star, User } from "iconsax-react";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import Background from "../assets/background.webp";
@@ -21,18 +21,22 @@ import FishBanner from "../assets/fish-banner.png";
 import { AnimatedSection, DividerComponent } from "../share";
 
 const responsive = {
+  superLargeDesktop: {
+    breakpoint: { max: 4000, min: 3000 },
+    items: 3
+  },
   desktop: {
     breakpoint: { max: 3000, min: 1024 },
-    items: 2,
+    items: 2
   },
   tablet: {
     breakpoint: { max: 1024, min: 464 },
-    items: 2,
+    items: 2
   },
   mobile: {
     breakpoint: { max: 464, min: 0 },
-    items: 1,
-  },
+    items: 1
+  }
 };
 
 const Home = () => {
@@ -74,29 +78,29 @@ const Home = () => {
       </div>
 
       {/* Banner Container */}
-      <div className="h-[100 vh] relative">
+      <div className="relative min-h-screen">
         {/* Banner Content */}
-        <div className="relative z-0 flex min-h-screen items-center justify-between px-40 text-white">
+        <div className="relative z-0 flex min-h-screen flex-col items-center justify-between px-4 py-20 text-white lg:flex-row lg:px-40">
           <AnimatedSection
             variants={{
               hidden: { opacity: 0, x: -50 },
               visible: { opacity: 1, x: 0, transition: { duration: 1, ease: "easeOut" } },
             }}
-            className="w-3/6 rounded-lg bg-opacity-50 p-6"
+            className="w-full rounded-lg bg-opacity-50 p-6 lg:w-3/6"
           >
-            <h1 className="heading-1 mb-4 text-4xl font-bold">Hơn cả sự hài lòng.</h1>
-            <p className="py-4 text-justify text-base">
+            <h1 className="heading-1 mb-4 text-center text-3xl font-bold lg:text-left lg:text-4xl">Hơn cả sự hài lòng.</h1>
+            <p className="py-4 text-center text-sm lg:text-left lg:text-base">
               GenKiKoi là tập thể những người trẻ, đầy nhiệt huyết và giàu kinh nghiệm trong lĩnh
               vực điều trị và chăm sóc cho cá Koi. <br />
               Tôn chỉ của chúng tôi là Uy tín – Chất lượng – Tận tâm.
             </p>
-            <div className="flex gap-4">
+            <div className="flex flex-col gap-4 sm:flex-row">
               <Button
                 ghost
                 size="large"
                 type="primary"
                 onClick={() => window.open('https://zalo.me/0888500703', '_blank')}
-                className="z-20 mt-4 border-2 border-white transition-all duration-300 hover:bg-white hover:text-blue-700 flex items-center"
+                className="z-20 mt-4 flex items-center justify-center border-2 border-white transition-all duration-300 hover:bg-white hover:text-blue-700"
               >
                 Gọi tổng đài
                 <Call size={18} className="ml-2" />
@@ -104,10 +108,10 @@ const Home = () => {
 
               <Button
                 ghost
-                size="large"
+                size="large" 
                 type="primary"
                 onClick={() => navigate('/booking')}
-                className="z-20 mt-4 border-2 border-white transition-all duration-300 hover:bg-white hover:text-blue-700 flex items-center"
+                className="z-20 mt-4 flex items-center justify-center border-2 border-white transition-all duration-300 hover:bg-white hover:text-blue-700"
               >
                 Đặt lịch hẹn
                 <Calendar size={18} className="ml-2" />
@@ -116,22 +120,23 @@ const Home = () => {
               <Button
                 ghost
                 size="large"
-                type="primary" 
+                type="primary"
                 onClick={() => navigate('/doctors')}
-                className="z-20 mt-4 border-2 border-white transition-all duration-300 hover:bg-white hover:text-blue-700 flex items-center"
+                className="z-20 mt-4 flex items-center justify-center border-2 border-white transition-all duration-300 hover:bg-white hover:text-blue-700"
               >
                 Tìm bác sĩ
                 <Profile2User size={18} className="ml-2" />
               </Button>
             </div>
           </AnimatedSection>
-          <div className="ml-8 flex w-1/2 items-center justify-center gap-4">
+
+          <div className="mt-8 flex w-full items-center justify-center gap-4 lg:mt-0 lg:w-1/2">
             <AnimatedSection
               variants={{
                 hidden: { opacity: 0, y: 50 },
                 visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
               }}
-              className="h-80 w-1/3 transform overflow-hidden rounded-2xl shadow-lg transition-all duration-500 hover:scale-105"
+              className="h-60 w-1/3 transform overflow-hidden rounded-2xl shadow-lg transition-all duration-500 hover:scale-105 lg:h-80"
             >
               <img
                 src={Image1}
@@ -144,7 +149,7 @@ const Home = () => {
                 hidden: { opacity: 0, y: -50 },
                 visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
               }}
-              className="h-96 w-1/3 transform overflow-hidden rounded-2xl shadow-lg transition-all duration-500 hover:scale-105"
+              className="h-72 w-1/3 transform overflow-hidden rounded-2xl shadow-lg transition-all duration-500 hover:scale-105 lg:h-96"
             >
               <img
                 src={Image2}
@@ -157,7 +162,7 @@ const Home = () => {
                 hidden: { opacity: 0, y: 50 },
                 visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
               }}
-              className="h-80 w-1/3 transform overflow-hidden rounded-2xl shadow-lg transition-all duration-500 hover:scale-105"
+              className="h-60 w-1/3 transform overflow-hidden rounded-2xl shadow-lg transition-all duration-500 hover:scale-105 lg:h-80"
             >
               <img
                 src={Image3}
@@ -168,24 +173,18 @@ const Home = () => {
           </div>
         </div>
       </div>
-      {/* Why? Section */}
-      <div className="section relative min-h-screen bg-gradient-to-t from-[#2A7F9E] to-[#175670] text-center text-white">
-        <div className="container mx-auto py-20 lg:px-40">
+
+      {/* Why Section */}
+      <div className="section relative min-h-screen bg-gradient-to-t from-[#2A7F9E] to-[#175670] py-20 text-center text-white">
+        <div className="container mx-auto px-4 lg:px-40">
           <AnimatedSection
             variants={{
-              hidden: {
-                opacity: 0,
-                x: -100,
-              },
-              visible: {
-                opacity: 1,
-                x: 0,
-                transition: { duration: 2, delay: 0.5 },
-              },
+              hidden: { opacity: 0, x: -100 },
+              visible: { opacity: 1, x: 0, transition: { duration: 2, delay: 0.5 } },
             }}
           >
-            <h1 className="heading-1 mb-5">Tại sao chọn GenKiKoi?</h1>
-            <p className="text-lg">
+            <h1 className="heading-1 mb-5 text-3xl lg:text-4xl">Tại sao chọn GenKiKoi?</h1>
+            <p className="text-base lg:text-lg">
               Rất cảm ơn bạn đã sử dụng dịch vụ tại GenKiKoi. Nếu chưa, chúng tôi có những lý do sau
               để hy vọng một lúc nào đó sẽ được phục vụ bạn.
             </p>
@@ -193,17 +192,10 @@ const Home = () => {
 
           <AnimatedSection
             variants={{
-              hidden: {
-                opacity: 0,
-                x: 100,
-              },
-              visible: {
-                opacity: 1,
-                x: 0,
-                transition: { duration: 2, delay: 0.5 },
-              },
+              hidden: { opacity: 0, x: 100 },
+              visible: { opacity: 1, x: 0, transition: { duration: 2, delay: 0.5 } },
             }}
-            className="my-10 grid grid-cols-2 gap-10"
+            className="my-10 grid grid-cols-1 gap-6 sm:grid-cols-2"
           >
             <div className="transform rounded-xl bg-gradient-to-br from-[#ffffff20] to-[#ffffff10] p-8 shadow-xl backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:shadow-2xl">
               <div className="flex items-center gap-6">
@@ -244,10 +236,7 @@ const Home = () => {
             <div className="transform rounded-xl bg-gradient-to-br from-[#ffffff20] to-[#ffffff10] p-8 shadow-xl backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:shadow-2xl">
               <div className="flex items-center gap-6">
                 <div className="rounded-full bg-[#2ed67b] p-4 shadow-lg">
-                  <HeartTick
-                    size={40}
-                    variant="Bold"
-                  />
+                  
                 </div>
                 <div className="text-left">
                   <h2 className="mb-2 bg-gradient-to-r from-white to-blue-200 bg-clip-text text-2xl font-bold text-transparent">
@@ -322,13 +311,10 @@ const Home = () => {
             }}
           >
             <div className="mb-16 text-center">
-              <h1 className="mb-6 text-4xl font-bold">Đầy đủ dịch vụ cho thú cưng của bạn</h1>
-              <div className="flex items-center justify-center gap-2">
-                <div className="relative"></div>
-              </div>
+              <h1 className="mb-6 text-3xl font-bold lg:text-4xl">Đầy đủ dịch vụ cho thú cưng của bạn</h1>
             </div>
 
-            <div className="grid gap-8 md:grid-cols-2">
+            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
               {[
                 {
                   icon: "🏥",
@@ -502,18 +488,7 @@ const Home = () => {
             </h1>
             <div className="flex justify-center gap-2">
               <p className="text-xl">Sự hài lòng của khách hàng là thứ chúng tôi luôn mong muốn</p>
-              <div className="relative">
-                <Heart
-                  variant="Bold"
-                  color="#FF6B6B"
-                  className="absolute"
-                />
-                <Heart
-                  variant="Bold"
-                  color="#FF6B6B"
-                  className="absolute animate-ping"
-                />
-              </div>
+
             </div>
             <div className="my-10 cursor-grabbing">
               <Carousel
