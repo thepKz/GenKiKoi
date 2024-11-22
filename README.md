@@ -107,4 +107,4 @@
 ---
 ## GIAO DIỆN
 Tham khảo giao diện tuyệt vời của GENKIKOI ở đâyyyy!
-LINK: https://drive.google.com/drive/folders/1s_zN8NncwQv8-xQ_9Bj5p5ucGdRFEdVb?usp=sharing
+* LINK: https://drive.google.com/drive/folders/1s_zN8NncwQv8-xQ_9Bj5p5ucGdRFEdVb?usp=sharing
