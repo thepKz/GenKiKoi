@@ -63,3 +63,44 @@
 6. **Cập nhật hồ sơ**
     - Bác sĩ có thể cập nhật các thông tin của bản thân, chỉnh sửa thông tin giới thiệu về mình.
     - Bác sĩ có thể thay đổi mật khẩu.
+### 👩‍💻 Nhân viên
+1. **Xem được lịch làm việc của bác sĩ**
+    - Nhân viên có thể xem được lịch làm việc của bác sĩ được trực quan hóa thông qua calendar.
+    - Có nhiều chế độ xem (theo ngày, tuần, tháng).
+    - Nhân viên có thể chỉnh sửa lịch làm việc của bác sĩ.
+2. **Xem được lịch hẹn của khách hàng**
+    - Nhân viên có thể xem được danh sách các cuộc hẹn của từng khách hàng.
+    - Nhân viên có thể hủy lịch hẹn của khách hàng kèm theo lý do hủy lịch (Khi đã thống nhất với khách hàng và tuân theo quy định của công ty)
+3. **Đặt lịch hẹn**
+    - Nhân viên có thể đặt cuộc hẹn hộ khách hàng tại trung tâm.
+    - Nhân viên xác nhận khách hàng đã thanh toán chi phí và tiến hành xác nhận tạo cuộc hẹn.
+4. **Cập nhật hồ sơ**
+    - Nhân viên có thể cập nhật các thông tin của bản thân.
+    - Nhân viên có thể thay đổi mật khẩu.
+### 👨‍💼 Quản lý
+1. **Dashboard**
+    - Quản lý có xem toàn diện về hệ thống:
+        - Tổng doanh thu
+        - Tổng đặt lịch
+        - Tổng khách hàng
+        - Biểu đồ doanh thu theo ngày
+        - Biểu đồ số lượng cuộc hẹn được đặt theo ngày
+        - Top 5 dịch vụ bán chạy
+        - Top 5 khách hàng VIP
+2. **Quản lý danh sách dịch vụ**
+    - Quản lý có thể thêm, xóa, sửa dịch vụ.
+3. **Quản lý danh sách nhân viên**
+    - Quản lý có thể thêm, xóa, sửa nhân viên.
+    - Quản lý có thể thêm, xóa, sửa bác sĩ.
+4. **Xem được lịch làm việc của bác sĩ**
+    - Quản lý có thể xem được lịch làm việc của bác sĩ được trực quan hóa thông qua calendar.
+    - Có nhiều chế độ xem (theo ngày, tuần, tháng).
+    - Quản lý có thể chỉnh sửa lịch làm việc của bác sĩ.
+5. **Xem được lịch hẹn của khách hàng**
+    - Quản lý có thể xem được danh sách các cuộc hẹn của từng khách hàng.
+    - Quản lý có thể hủy lịch hẹn của khách hàng kèm theo lý do hủy lịch (Khi đã thống nhất với khách hàng và tuân theo quy định của công ty).
+6. **Quản lý tài khoản trong hệ thống**
+    - Có thể vô hiệu hóa hoặc bỏ vô hiệu hóa với tài khoản bất kỳ (ngoại trừ quản lý).
+7. **Cập nhật hồ sơ**
+    - Quản lý có thể cập nhật các thông tin của bản thân.
+    - Quản lý có thể thay đổi mật khẩu.
