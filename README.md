@@ -43,3 +43,23 @@
     - Người dùng có thể thay đổi mật khẩu.
     - Hệ thống hỗ trợ người dùng cập nhật lại mật khẩu khi quên.
 ### 🏥 Dành cho nhân viên hệ thống
+### 👨‍⚕️ Bác sĩ
+1. **Xem được lịch làm việc**
+    - Bác sĩ xem được lịch làm việc của bản thân được trực quan hóa thông qua calendar.
+    - Có nhiều chế độ xem (theo ngày, tuần, tháng).
+2. **Xem được danh sách cuộc hẹn**
+    - Bác sĩ xem được danh sách cuộc hẹn của mình.
+    - Bác sĩ xem được chi tiết về thông tin cuộc hẹn.
+    - Bác sĩ có thể xác nhận hoàn thành cuộc hẹn đó.
+3. **Xem được hồ sơ khách hàng**
+    - Bác sĩ có thể tra cứu hồ sơ của khách hàng (Hồ sơ điều trị, hồ sơ kiểm định chất lượng nước).
+    - Bác sĩ có thể chỉnh sửa thông tin về con cá.
+4. **Tạo hồ sơ bệnh án**
+    - Bác sĩ có thể tạo hồ sơ khám bệnh (Hồ sơ điều trị, hồ sơ kiểm định).
+    - Có thể thêm hình ảnh, ghi chú, chuẩn đoán bổ sung.
+    - Có thể kê thuốc nếu cần thiết.
+5. **Xem đánh giá của khách hàng**
+    - Bác sĩ có thể xem danh sách đánh giá của khách hàng.
+6. **Cập nhật hồ sơ**
+    - Bác sĩ có thể cập nhật các thông tin của bản thân, chỉnh sửa thông tin giới thiệu về mình.
+    - Bác sĩ có thể thay đổi mật khẩu.
