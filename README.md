@@ -104,3 +104,7 @@
 7. **Cập nhật hồ sơ**
     - Quản lý có thể cập nhật các thông tin của bản thân.
     - Quản lý có thể thay đổi mật khẩu.
+---
+## GIAO DIỆN
+Tham khảo giao diện tuyệt vời của GENKIKOI ở đâyyyy!
+LINK: https://drive.google.com/drive/folders/1s_zN8NncwQv8-xQ_9Bj5p5ucGdRFEdVb?usp=sharing
