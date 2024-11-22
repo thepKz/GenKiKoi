@@ -28,10 +28,7 @@ const Footer = () => {
         popupAnchor: [0, -32],
       });
 
-      L.marker([lat, lon], { icon: genkikoiIcon })
-        .addTo(map)
-        .bindPopup("GenKiKoi")
-        .openPopup();
+      L.marker([lat, lon], { icon: genkikoiIcon }).addTo(map).bindPopup("GenKiKoi").openPopup();
     };
 
     initMap();
@@ -53,7 +50,10 @@ const Footer = () => {
           <div className="space-y-8">
             {/* Brand */}
             <div className="flex flex-col items-center md:items-start">
-              <Link to="/" className="group">
+              <Link
+                to="/"
+                className="group"
+              >
                 <img
                   src={Logo}
                   alt="GenKiKoi Logo"
@@ -72,7 +72,7 @@ const Footer = () => {
                   <Happyemoji className="mr-2 h-5 w-5" />
                   Về Phòng Khám
                 </h3>
-                <ul className="space-y-2 text-center md:text-left">
+                <ul className="ml-7 space-y-2 text-center md:text-left">
                   <FooterLink to="/about-us">Giới thiệu</FooterLink>
                   <FooterLink to="/images">Hình ảnh</FooterLink>
                   <FooterLink to="/faq">Hỏi đáp</FooterLink>
@@ -87,17 +87,11 @@ const Footer = () => {
                   <Pet className="mr-2 h-5 w-5" />
                   Dịch Vụ
                 </h3>
-                <ul className="space-y-2 text-center md:text-left">
-                  <FooterLink to="/services/consulting-treatment">
-                    Tư vấn & Điều trị
-                  </FooterLink>
+                <ul className="ml-7 space-y-2 text-center md:text-left">
+                  <FooterLink to="/services/consulting-treatment">Tư vấn & Điều trị</FooterLink>
                   <FooterLink to="/services/vaccine">Tiêm ngừa</FooterLink>
-                  <FooterLink to="/services/water-quality">
-                    Kiểm tra nước
-                  </FooterLink>
-                  <FooterLink to="/services/service-price-table">
-                    Bảng giá
-                  </FooterLink>
+                  <FooterLink to="/services/water-quality">Kiểm tra nước</FooterLink>
+                  <FooterLink to="/services/service-price-table">Bảng giá</FooterLink>
                 </ul>
               </div>
             </div>
@@ -110,18 +104,19 @@ const Footer = () => {
               Bản đồ
             </h3>
             <div className="overflow-hidden rounded-xl shadow-lg">
-              <div id="map" className="h-[300px] w-full md:h-[400px]" />
+              <div
+                id="map"
+                className="h-[300px] w-full md:h-[400px]"
+              />
             </div>
             <button
               onClick={() =>
                 window.open(
                   `https://www.google.com/maps/search/?api=1&query=FPT+University+Ho+Chi+Minh+City`,
-                  "_blank"
+                  "_blank",
                 )
               }
-              className="w-full rounded-lg bg-white/10 px-4 py-3 text-sm font-medium text-white 
-                transition-all hover:bg-white/20 hover:shadow-lg focus:outline-none 
-                focus:ring-2 focus:ring-white/20"
+              className="w-full rounded-lg bg-white/10 px-4 py-3 text-sm font-medium text-white transition-all hover:bg-white/20 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-white/20"
             >
               Xem bản đồ lớn
             </button>
@@ -135,24 +130,24 @@ const Footer = () => {
               © 2024 Phòng khám Thú Y GenKiKoi. Tất cả các quyền được bảo lưu.
             </p>
             <div className="flex items-center space-x-6">
-              <SocialLink 
-                href="https://facebook.com" 
-                icon="facebook" 
-                className="text-gray-400 hover:text-white transition-colors"
+              <SocialLink
+                href="https://facebook.com"
+                icon="facebook"
+                className="text-gray-400 transition-colors hover:text-white"
               >
                 <Facebook className="h-6 w-6" />
               </SocialLink>
-              <SocialLink 
-                href="https://instagram.com" 
+              <SocialLink
+                href="https://instagram.com"
                 icon="instagram"
-                className="text-gray-400 hover:text-white transition-colors"
+                className="text-gray-400 transition-colors hover:text-white"
               >
                 <Instagram className="h-6 w-6" />
               </SocialLink>
-              <SocialLink 
-                href="https://youtube.com" 
+              <SocialLink
+                href="https://youtube.com"
                 icon="youtube"
-                className="text-gray-400 hover:text-white transition-colors"
+                className="text-gray-400 transition-colors hover:text-white"
               >
                 <Youtube className="h-6 w-6" />
               </SocialLink>
@@ -168,15 +163,20 @@ const FooterLink = ({ to, children }: { to: string; children: React.ReactNode })
   <li>
     <Link
       to={to}
-      className="text-sm text-gray-300 transition-colors hover:text-white hover:underline"
+      className="text-gray-300 transition-colors hover:text-white hover:underline"
     >
       {children}
     </Link>
   </li>
 );
 
-const SocialLink = ({ href, icon, children, className }: { 
-  href: string; 
+const SocialLink = ({
+  href,
+  icon,
+  children,
+  className,
+}: {
+  href: string;
   icon: string;
   children: React.ReactNode;
   className?: string;
