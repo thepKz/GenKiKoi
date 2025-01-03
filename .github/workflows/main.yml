@@ -1,7 +1,4 @@
-# This is the main workflow for the CI/CD pipeline.
-# It is triggered on push to main, develop, or feature/* branches,
-# and on pull requests to main or develop branches.
-# It also has a manual trigger for workflow_dispatch.
+# CI/CD for Admin page and Client Page bonus Backend Page
 name: CI/CD
 
 on:
